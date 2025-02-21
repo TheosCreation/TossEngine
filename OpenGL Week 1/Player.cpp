@@ -35,15 +35,15 @@ void Player::onUpdate(float deltaTime)
 {
     auto& inputManager = InputManager::GetInstance();
 
-    inputManager.enablePlayMode(m_playMode);
-
     if (!inputManager.isMouseDown(MouseButtonLeft))
     {
         m_playMode = false;
+        inputManager.enablePlayMode(m_playMode);
         return;
     }
 
     m_playMode = true;
+    inputManager.enablePlayMode(m_playMode);
 
 
     auto& lightManager = LightManager::GetInstance();
