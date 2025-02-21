@@ -59,6 +59,8 @@ public:
      */
     void setClampToEdge();
 
+    void resize(Rect newTextureSize);
+
     /**
      * @brief Destructor for the Texture2D class.
      * Cleans up resources associated with the texture.
