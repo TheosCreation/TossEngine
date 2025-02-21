@@ -29,12 +29,6 @@ public:
     void onGraphicsUpdate(UniformData data) override;
 
     /**
-     * @brief Executes the lighting pass for the SSRQuad.
-     * @param data Uniform data containing information needed for lighting calculations.
-     */
-    void onLightingPass(UniformData data) override;
-
-    /**
      * @brief Executes the shadow pass for the SSRQuad.
      * @param index The index of the shadow being processed.
      */

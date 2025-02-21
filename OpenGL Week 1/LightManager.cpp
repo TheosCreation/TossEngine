@@ -56,6 +56,7 @@ void LightManager::applyLighting(ShaderPtr shader) const
             shader->setFloat("PointLightArray[" + index + "].AttenuationConstant", m_pointLights[i].AttenuationConstant);
             shader->setFloat("PointLightArray[" + index + "].AttenuationLinear", m_pointLights[i].AttenuationLinear);
             shader->setFloat("PointLightArray[" + index + "].AttenuationExponent", m_pointLights[i].AttenuationExponent);
+            shader->setFloat("PointLightArray[" + index + "].Radius", m_pointLights[i].Radius);
         }
 
         shader->setUint("PointLightCount", m_pointLightCount);

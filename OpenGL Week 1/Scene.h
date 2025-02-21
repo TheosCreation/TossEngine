@@ -48,24 +48,6 @@ public:
     virtual void onCreateLate();
 
     /**
-     * @brief Called to execute the shadow rendering pass.
-     * Override this method in derived classes to customize shadow rendering.
-     */
-    virtual void onShadowPass();
-
-    /**
-     * @brief Called to execute the geometry rendering pass.
-     * Override this method in derived classes to customize geometry rendering.
-     */
-    virtual void onGeometryPass();
-
-    /**
-     * @brief Called to execute the lighting rendering pass.
-     * Override this method in derived classes to customize lighting rendering.
-     */
-    virtual void onLightingPass();
-
-    /**
      * @brief Updates the graphics rendering mode.
      * Default rendering mode is deferred rendering.
      */
@@ -110,6 +92,7 @@ public:
 protected:
     UniformData uniformData = {};
 
+    ShaderPtr ssrQuadLightingShader = nullptr;
     ShaderPtr defaultFullscreenShader = nullptr;
 
     ShaderPtr m_solidColorMeshShader = nullptr; /**< @brief Shader for rendering solid color meshes. */
@@ -126,6 +109,7 @@ protected:
     unique_ptr<SkyboxEntity> m_skyBox; /**< @brief Pointer to the skybox instance used in the scene. */
     unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the entity system managing game entities. */
     FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
+    SSRQuadPtr m_deferredRenderSSRQ;
     SSRQuadPtr m_postProcessSSRQ;
 
     Game* gameOwner; /**< @brief Pointer to the owner Game instance. */

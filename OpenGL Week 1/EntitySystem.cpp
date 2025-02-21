@@ -185,19 +185,23 @@ void GameObjectManager::onShadowPass(int index)
 	}
 }
 
-void GameObjectManager::onLightingPass(UniformData _data)
-{
-	for (auto& graphicsEntity : m_graphicsEntities)
-	{
-		graphicsEntity->onLightingPass(_data);
-	}
-}
-
 void GameObjectManager::onGeometryPass(UniformData _data)
 {
 	for (auto& graphicsEntity : m_graphicsEntities)
 	{
+		if (graphicsEntity->getTransparency() < 1.0f) continue; // if the renderer is transparent we skip it
+
 		graphicsEntity->onGeometryPass(_data);
+	}
+}
+
+void GameObjectManager::onTransparencyPass(UniformData _data)
+{
+	for (auto& graphicsEntity : m_graphicsEntities)
+	{
+		if (graphicsEntity->getTransparency() == 1.0f) continue; // if the renderer is opaque we skip it
+
+		graphicsEntity->onGraphicsUpdate(_data);
 	}
 }
 

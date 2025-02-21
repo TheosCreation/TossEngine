@@ -482,6 +482,8 @@ struct PointLight
     float AttenuationConstant;
     float AttenuationLinear;
     float AttenuationExponent;
+
+    float Radius;
 };
 
 // Struct representing a spot light

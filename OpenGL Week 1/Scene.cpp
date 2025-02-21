@@ -19,6 +19,7 @@ Scene::Scene(Game* game)
     gameOwner = game;
     m_postProcessingFramebuffer = std::make_unique<Framebuffer>(gameOwner->getWindow()->getInnerSize());
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
+    m_deferredRenderSSRQ = std::make_unique<SSRQuad>();
     m_postProcessSSRQ = std::make_unique<SSRQuad>();
 }
 
@@ -37,6 +38,14 @@ void Scene::onCreate()
             "ScreenQuad",
             "QuadShader"
         });
+
+    ssrQuadLightingShader = graphicsEngine.createShader({
+            "ScreenQuad",
+            "SSRLightingShader"
+        });
+
+    m_deferredRenderSSRQ->onCreate();
+    m_deferredRenderSSRQ->setShader(ssrQuadLightingShader);
 
     m_postProcessSSRQ->onCreate();
     m_postProcessSSRQ->setShader(defaultFullscreenShader);
@@ -237,7 +246,7 @@ void Scene::onCreate()
 
     float pointLightSpacing = 30.0f;
     // Initialize 2 point lights
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 4; i++) {
         // Create a new point light entity
         auto pointLightObject = m_gameObjectManager->createGameObject<MeshEntity>();
         pointLightObject->setTransparency(0.75f);
@@ -268,6 +277,7 @@ void Scene::onCreate()
         pointLight.AttenuationConstant = 1.0f;
         pointLight.AttenuationLinear = 0.022f;
         pointLight.AttenuationExponent = 0.0019f;
+        pointLight.Radius = 200.0f;
 
         // Add the point light to the light manager
         lightManager.createPointLight(pointLight);
@@ -323,24 +333,6 @@ void Scene::onLateUpdate(float deltaTime)
     m_gameObjectManager->onLateUpdate(deltaTime);
 }
 
-void Scene::onShadowPass()
-{
-    
-}
-
-void Scene::onGeometryPass()
-{
-    auto& lightManager = LightManager::GetInstance();
-
-    m_gameObjectManager->onGeometryPass(uniformData);
-}
-
-void Scene::onLightingPass()
-{
-    auto& lightManager = LightManager::GetInstance();
-    gameOwner->getScreenSpaceQuad()->onLightingPass(uniformData);
-}
-
 void Scene::onGraphicsUpdate()
 {
     auto& lightManager = LightManager::GetInstance();
@@ -371,8 +363,9 @@ void Scene::onGraphicsUpdate()
         //Geometry Pass
         auto& geometryBuffer = GeometryBuffer::GetInstance();
         geometryBuffer.Bind();
-        onGeometryPass(); // Render opaque objects
+        m_gameObjectManager->onGeometryPass(uniformData); // Render opaque objects
         geometryBuffer.UnBind();
+
 
         // Shadow Pass: Render shadows for directional lights
         for (uint i = 0; i < lightManager.getDirectionalLightCount(); i++)
@@ -383,17 +376,28 @@ void Scene::onGraphicsUpdate()
         }
         graphicsEngine.setViewport(gameOwner->getWindow()->getInnerSize());
 
-        geometryBuffer.WriteDepth();
+
+        graphicsEngine.setShader(ssrQuadLightingShader);
         // Lighting Pass: Apply lighting using G-buffer data
-        onLightingPass(); // Compute lighting
-        
-        
-        //m_gameObjectManager->onForwardPass():
-        for (auto& light : m_lights)
-        {
-            light->onGraphicsUpdate(uniformData);
-        }
+        // Populate the shader with geometry buffer information for the lighting pass
+        GeometryBuffer::GetInstance().PopulateShader(ssrQuadLightingShader);
+
+        // Apply lighting settings using the LightManager
+        LightManager::GetInstance().applyLighting(ssrQuadLightingShader);
+
+        // Apply shadows
+        auto& lightManager = LightManager::GetInstance();
+        lightManager.applyShadows(ssrQuadLightingShader);
+
+        // Render the screenspace quad using the lighting, shadow and geometry data
+        m_deferredRenderSSRQ->onGraphicsUpdate(uniformData);
+        geometryBuffer.WriteDepth();
+
+        // Render the transparent objects after
+        m_gameObjectManager->onTransparencyPass(uniformData);
         m_skyBox->onGraphicsUpdate(uniformData);
+
+        //cant seem to get post process to work maybe later
     }
     
     // Example of Forward Rendering Pipeline
@@ -414,28 +418,15 @@ void Scene::onGraphicsUpdate()
         m_skyBox->onGraphicsUpdate(uniformData);
 
         m_postProcessingFramebuffer->UnBind();
+
+
+        // Post processing 
+        graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
+        //m_postProcessingFramebuffer->PopulateShader();
+        m_postProcessSSRQ->onGraphicsUpdate(uniformData);
     }
 
-
-
-    // Post processing 
-    graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
-    m_postProcessSSRQ->setTexture(m_postProcessingFramebuffer->RenderTexture);
-    m_postProcessSSRQ->onGraphicsUpdate(uniformData);
-
-    //NewUniformData uniformData;
-    //uniformData.CreateData<float>("Time", m_currentTime);
-    //uniformData.CreateData<Vector2>("Resolution", m_display->getInnerSize());
-    //if (currentTexture1)
-    //{
-    //    //if the current shader needs a second texture we pass that into it
-    //    NewExtraTextureData textureData;
-    //    textureData.AddTexture("Texture1", currentTexture1, 1);
-    //    m_canvasQuad->onGraphicsUpdate(uniformData, textureData);
-    //}
-    //else
-    //{
-    //}
+    // ui canvas of some sort with the ui camera
 }
 
 void Scene::onResize(int _width, int _height)

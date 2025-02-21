@@ -135,10 +135,6 @@ void MeshEntity::onGeometryPass(UniformData data)
     graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, meshVBO->getNumIndices());
 }
 
-void MeshEntity::onLightingPass(UniformData data)
-{
-}
-
 float MeshEntity::getShininess() const
 {
     return m_shininess;
