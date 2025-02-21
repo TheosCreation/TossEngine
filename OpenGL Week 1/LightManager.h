@@ -160,7 +160,7 @@ private:
 
     float AmbientStrength = 0.2f; //The strength of the ambient light
     Vector3 AmbientColor = Vector3(1.0f, 1.0f, 1.0f); //The color of the ambient light
-    static const int MAX_POINT_LIGHTS = 20; //The maximum number of point lights
+    static const int MAX_POINT_LIGHTS = 25; //The maximum number of point lights
     PointLight m_pointLights[MAX_POINT_LIGHTS] = {}; // Array of point lights
     uint m_pointLightCount = 0; // The current count of point lights
 

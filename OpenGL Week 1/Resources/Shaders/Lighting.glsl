@@ -1,22 +1,23 @@
 // Structure representing a generic light source with color and specular strength.
 struct Light {
-    vec3 Color;           // The color of the light.
-    float SpecularStrength; // The strength of the specular reflection from the light.
+    vec3 Color;                 // The color of the light.
+    float SpecularStrength;     // The strength of the specular reflection from the light.
 };
 
 // Structure representing a directional light with direction.
 struct DirectionalLight {
-    Light Base;          // Base properties of the light.
-    vec3 Direction;     // Direction vector of the light, typically normalized.
+    Light Base;                 // Base properties of the light.
+    vec3 Direction;             // Direction vector of the light, typically normalized.
 };
 
 // Structure representing a point light with position and attenuation properties.
 struct PointLight {
-    Light Base;                  // Base properties of the light.
+    Light Base;                 // Base properties of the light.
     vec3 Position;              // Position of the point light in world space.
-    float AttenuationConstant;   // Constant term for attenuation.
-    float AttenuationLinear;     // Linear term for distance-based attenuation.
-    float AttenuationExponent;    // Quadratic term for distance-based attenuation.
+    float AttenuationConstant;  // Constant term for attenuation.
+    float AttenuationLinear;    // Linear term for distance-based attenuation.
+    float AttenuationExponent;  // Quadratic term for distance-based attenuation.
+    float Radius;               // Radius for the max distance to cutoff the lighting calculations
 };
 
 // Structure representing a spotlight with position, direction, and cutoff angles.
@@ -26,9 +27,9 @@ struct SpotLight {
     vec3 Direction;             // Direction vector of the spotlight, typically normalized.
     float CutOff;               // Inner cutoff angle for the spotlight.
     float OuterCutOff;          // Outer cutoff angle for the spotlight.
-    float AttenuationConstant;   // Constant term for attenuation.
-    float AttenuationLinear;     // Linear term for distance-based attenuation.
-    float AttenuationExponent;    // Quadratic term for distance-based attenuation.
+    float AttenuationConstant;  // Constant term for attenuation.
+    float AttenuationLinear;    // Linear term for distance-based attenuation.
+    float AttenuationExponent;  // Quadratic term for distance-based attenuation.
 };
 
 /**
@@ -98,9 +99,15 @@ vec3 CalculatePointLight(PointLight light, vec3 viewDir, float objectShininess, 
 {
     vec3 LightDir = normalize(fragPos - light.Position); // Calculate direction to the point light.
     float Distance = length(light.Position - fragPos); // Calculate distance to the light.
-    // Calculate attenuation based on the distance.
-    float Attenuation = light.AttenuationConstant + (light.AttenuationLinear * Distance) + (light.AttenuationExponent * Distance * Distance);
-    return CalculateLight(light.Base, LightDir, viewDir, fragNormal, Attenuation, objectShininess); // Call CalculateLight with calculated attenuation.
+
+    if(Distance < light.Radius)
+    {
+        // Calculate attenuation based on the distance.
+        float Attenuation = light.AttenuationConstant + (light.AttenuationLinear * Distance) + (light.AttenuationExponent * Distance * Distance);
+        return CalculateLight(light.Base, LightDir, viewDir, fragNormal, Attenuation, objectShininess); // Call CalculateLight with calculated attenuation.
+    }
+
+    return vec3(0,0,0);
 }
 
 /**

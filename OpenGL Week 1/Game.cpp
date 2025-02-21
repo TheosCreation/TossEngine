@@ -70,26 +70,6 @@ void Game::onCreate()
     m_cubeMesh = resourceManager.createMeshFromFile("Resources/Meshes/cube.obj");
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
-    
-    ssrQuadShader = graphicsEngine.createShader({
-            "ScreenQuad",
-            "SSRShader"
-        });
-    ssrQuadLightingShader = graphicsEngine.createShader({
-            "ScreenQuad",
-            "SSRLightingShader"
-        });
-    
-    ssrQuadShadowShader = graphicsEngine.createShader({
-            "ScreenQuad",
-            "SSRLightingShader"
-        });
-
-    m_SSRQuad = std::make_unique<SSRQuad>();
-    m_SSRQuad->onCreate();
-    m_SSRQuad->setShader(ssrQuadShader);
-    m_SSRQuad->setLightingShader(ssrQuadLightingShader);
-    m_SSRQuad->setShadowShader(ssrQuadShadowShader);
 
     auto scene = std::make_shared<Scene>(this);
     SetScene(scene);
@@ -227,8 +207,3 @@ MeshPtr Game::getSphereMesh()
 //    }
 //    currentTexture1 = _texture;
 //}
-
-SSRQuadPtr Game::getScreenSpaceQuad()
-{
-    return m_SSRQuad;
-}

@@ -58,13 +58,6 @@ public:
     virtual void onGeometryPass(UniformData data) override;
 
     /**
-     * @brief Handles the lighting pass rendering for the graphics entity
-     * @param data Contains uniform data needed for lighting calculations, such as
-     * light positions, colors, and any other parameters relevant to the lighting pass.
-     */
-    virtual void onLightingPass(UniformData data) override;
-
-    /**
      * @brief Gets the Shininess used by this entity.
      * @return A float of the amount of shininess.
      */

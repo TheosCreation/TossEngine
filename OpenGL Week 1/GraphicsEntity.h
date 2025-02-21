@@ -43,7 +43,6 @@ public:
     virtual void onGraphicsUpdate(UniformData data);
     virtual void onShadowPass(uint index);
     virtual void onGeometryPass(UniformData data);
-    virtual void onLightingPass(UniformData data);
 
     /**
      * @brief Sets the uniform data for the shader.
@@ -65,7 +64,6 @@ public:
 
     void setShadowShader(const ShaderPtr& shader);
     void setGeometryShader(const ShaderPtr& shader);
-    void setLightingShader(const ShaderPtr& shader);
 
     /**
      * @brief Gets the texture used by this entity.
@@ -84,6 +82,7 @@ public:
     void setHeightMap(const TexturePtr& heightMapTexture);
 
     void setTransparency(float transparency);
+    float getTransparency();
 
     /**
      * @brief Sets the color to be used by this entity.
@@ -96,7 +95,6 @@ protected:
     ShaderPtr m_shader = nullptr; //The shader used by this entity
     ShaderPtr m_shadowShader = nullptr; //The shader used for the shadow pass by this entity
     ShaderPtr m_geometryShader = nullptr; //The shader used for the geometry pass by this entity
-    ShaderPtr m_lightingShader = nullptr; //The shader used for the lighting pass by this entity
     Vector3 m_color = Color::Red; //backup color or for solid colored objects
     TexturePtr m_texture = nullptr; //The texture used by this entity
     TexturePtr m_texture1 = nullptr;
