@@ -213,6 +213,25 @@ TexturePtr ResourceManager::getSkyboxTexture()
     return m_textureCubeMap;
 }
 
+void ResourceManager::deleteTexture(TexturePtr texture)
+{
+    for (auto it = m_mapResources.begin(); it != m_mapResources.end(); ++it)
+    {
+        if (it->second == texture)
+        {
+            m_mapResources.erase(it); // Remove from map
+
+            if (texture.use_count() == 1) // If it's the last reference
+            {
+                uint id = texture->getId();
+                glDeleteTextures(1, &id); // Delete OpenGL texture
+            }
+
+            return;
+        }
+    }
+}
+
 void ResourceManager::ClearInstancesFromMeshes()
 {
     // Iterate over all resources in the map
