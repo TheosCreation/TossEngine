@@ -272,6 +272,7 @@ struct Texture2DDesc
     unsigned char* textureData = nullptr;   // Pointer to the texture data
     Rect textureSize = {};                  // Size of the texture
     uint numChannels = 0;                   // Number of channels in the texture
+
 };
 
 // Structure to hold information about a heightmap
@@ -509,7 +510,7 @@ struct SpotLight
 template<glm::length_t L, typename T, glm::qualifier Q>
 GLM_FUNC_QUALIFIER glm::vec<L, T, Q> Normalize(glm::vec<L, T, Q> const& vector)
 {
-    return glm::normalize(vector); // Returns the normalized vector
+    return glm::normalize(vector); // Returns the normalized vectorUntil
 }
 
 // Converts a value of any type to a string
@@ -519,6 +520,11 @@ template <typename T>
 std::string ToString(const T& value) {
     return std::to_string(value); // Uses std::to_string to convert the value to a string
 }
+
+// Specialization of ToString for RenderingPath
+template <>
+std::string ToString<RenderingPath>(const RenderingPath& value);
+
 
 class Debug
 {
