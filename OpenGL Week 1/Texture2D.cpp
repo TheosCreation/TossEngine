@@ -78,7 +78,38 @@ void Texture2D::setClampToEdge()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
+void Texture2D::resize(Rect newTextureSize)
+{
+    m_desc.textureSize = newTextureSize;
+
+    // Determine number of color channels
+    GLenum glChannels = (m_desc.numChannels == 4) ? GL_RGBA : GL_RGB;
+
+    // Delete old texture to prevent memory leaks
+    if (m_textureId != 0)
+    {
+        glDeleteTextures(1, &m_textureId);
+    }
+
+    // Generate and bind new texture
+    glGenTextures(1, &m_textureId);
+    glBindTexture(GL_TEXTURE_2D, m_textureId);
+
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // Upload new texture data (or NULL if resizing without data)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_desc.textureSize.width, m_desc.textureSize.height, 0, glChannels, GL_UNSIGNED_BYTE, m_desc.textureData);
+
+    // Unbind texture
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 // Destructor for the Texture2D class.
 Texture2D::~Texture2D()
 {
+    glDeleteTextures(1, &m_textureId);
 }
