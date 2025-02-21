@@ -50,6 +50,7 @@ void Scene::onCreate()
     m_postProcessSSRQ->onCreate();
     m_postProcessSSRQ->setShader(defaultFullscreenShader);
     m_postProcessSSRQ->setTexture(m_postProcessingFramebuffer->RenderTexture);
+
     //Creating skybox object
     m_skyBox = std::make_unique<SkyboxEntity>();
     ShaderPtr skyboxShader = graphicsEngine.createShader({
@@ -435,6 +436,8 @@ void Scene::onResize(int _width, int _height)
     {
         camera->setScreenArea(Vector2(_width, _height));
     }
+    // resize the post processing frame buffer 
+    m_postProcessingFramebuffer->Resize(Vector2(_width, _height));
 }
 
 void Scene::onQuit()
