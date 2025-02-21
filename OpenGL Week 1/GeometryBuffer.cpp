@@ -52,16 +52,25 @@ void GeometryBuffer::Init(Vector2 _windowSize)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
+	// Create the Reflectivity texture
+	glGenTextures(1, &Texture_Reflectivity);
+	glBindTexture(GL_TEXTURE_2D, Texture_Reflectivity);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, (int)_windowSize.x, (int)_windowSize.y, 0, GL_RED, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
 	// Attach the textures to the framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, Texture_Position, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, Texture_Normal, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, Texture_AlbedoShininess, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, Texture_Reflectivity, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, Texture_Depth, 0);
 
 	// Define the color buffers as output targets for the fragment shader
-	GLuint Attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	glDrawBuffers(3, Attachments);
+	GLuint Attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+	glDrawBuffers(4, Attachments);
 
 	// Check if the framebuffer is still complete
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -99,7 +108,8 @@ void GeometryBuffer::PopulateShader(ShaderPtr _shader)
 	_shader->setTexture2D(Texture_Position, 0, "Texture_Position");
 	_shader->setTexture2D(Texture_Normal, 1, "Texture_Normal");
 	_shader->setTexture2D(Texture_AlbedoShininess, 2, "Texture_AlbedoShininess"); 
-	//_shader->setTexture2D(Texture_Depth, 3, "Texture_Depth");
+	_shader->setTexture2D(Texture_Depth, 3, "Texture_Depth");
+	_shader->setTexture2D(Texture_Reflectivity, 4, "Texture_Reflectivity");
 }
 
 void GeometryBuffer::Resize(Vector2 _windowSize)
@@ -122,7 +132,7 @@ void GeometryBuffer::Resize(Vector2 _windowSize)
 
 	// Update the Albedo/Shininess texture
 	glBindTexture(GL_TEXTURE_2D, Texture_AlbedoShininess);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int)_windowSize.x, (int)_windowSize.y, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (int)_windowSize.x, (int)_windowSize.y, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -134,11 +144,19 @@ void GeometryBuffer::Resize(Vector2 _windowSize)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
+	// Update the Reflectivity texture
+	glBindTexture(GL_TEXTURE_2D, Texture_Reflectivity);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, (int)_windowSize.x, (int)_windowSize.y, 0, GL_RED, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
 	// Bind the framebuffer to update its attachments
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, Texture_Position, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, Texture_Normal, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, Texture_AlbedoShininess, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, Texture_Reflectivity, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, Texture_Depth, 0);
 
 	// Check if the framebuffer is still complete

@@ -108,6 +108,7 @@ public:
     virtual void onQuit();
 
 protected:
+    UniformData uniformData = {};
     ShaderPtr m_solidColorMeshShader = nullptr; /**< @brief Shader for rendering solid color meshes. */
     ShaderPtr m_particleSystemShader = nullptr; /**< @brief Shader for rendering particle systems. */
     ShaderPtr m_shadowShader = nullptr; /**< @brief Shader for rendering shadows. */

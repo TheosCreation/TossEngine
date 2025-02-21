@@ -108,6 +108,9 @@ public:
 
     void setTexture2D(const uint textureId, uint slot, std::string bindingName);
 
+    RenderingPath getRenderingPath();
+    void setRenderingPath(RenderingPath newRenderingPath);
+
 
     /**
      * @brief Sets the active 2D Texture.
@@ -148,6 +151,8 @@ public:
 
 private:
     ShaderPtr currentShader = nullptr;
+    RenderingPath renderingPath = RenderingPath::Deferred;
+
     /**
      * @brief Private constructor to prevent external instantiation.
      */

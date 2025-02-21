@@ -244,6 +244,16 @@ void GraphicsEngine::setTexture2D(const uint textureId, uint slot, std::string b
     currentShader->setTexture2D(textureId, slot, bindingName);
 }
 
+RenderingPath GraphicsEngine::getRenderingPath()
+{
+    return renderingPath;
+}
+
+void GraphicsEngine::setRenderingPath(RenderingPath newRenderingPath)
+{
+    renderingPath = newRenderingPath;
+}
+
 void GraphicsEngine::setTexture2D(const TexturePtr& texture, uint slot, std::string bindingName)
 {
     currentShader->setTexture2D(texture, slot, bindingName);

@@ -198,6 +198,19 @@ void Scene::onCreate()
     //Init instance buffer
     statueMesh->initInstanceBuffer();
 
+    // Create and initialize a DirectionalLight struct
+    DirectionalLight directionalLight1;
+    directionalLight1.Direction = Vector3(0.0f, -1.0f, -0.5f);
+    directionalLight1.Color = Vector3(0.6f);
+    directionalLight1.SpecularStrength = 0.1f;
+    lightManager.createDirectionalLight(directionalLight1);
+
+    // Create and initialize a DirectionalLight struct
+    DirectionalLight directionalLight2;
+    directionalLight2.Direction = Vector3(0.0f, -1.0f, 0.5f);
+    directionalLight2.Color = Vector3(0.6f);
+    directionalLight2.SpecularStrength = 0.1f;
+    lightManager.createDirectionalLight(directionalLight2);
 
     // Create and initialize SpotLight struct
     SpotLight spotLight;
@@ -263,115 +276,6 @@ void Scene::onCreateLate()
     }
 }
 
-void Scene::onShadowPass()
-{
-    
-}
-
-void Scene::onGeometryPass()
-{
-    auto& lightManager = LightManager::GetInstance();
-
-    UniformData data = {};
-    data.currentTime = gameOwner->GetCurrentTime();
-    for (auto& camera : m_gameObjectManager->getCameras())
-    {
-        if (camera->getCameraType() == CameraType::Perspective)
-        {
-            camera->getViewMatrix(data.viewMatrix);
-            camera->getProjectionMatrix(data.projectionMatrix);
-            data.cameraPosition = camera->getPosition();
-            lightManager.setSpotlightPosition(data.cameraPosition);
-            lightManager.setSpotlightDirection(camera->getFacingDirection());
-        }
-        else
-        {
-            camera->getViewMatrix(data.uiViewMatrix);
-            camera->getProjectionMatrix(data.uiProjectionMatrix);
-        }
-    }
-
-
-    m_gameObjectManager->onGeometryPass(data);
-}
-
-void Scene::onLightingPass()
-{
-    auto& lightManager = LightManager::GetInstance();
-
-    UniformData data = {};
-    data.currentTime = gameOwner->GetCurrentTime();
-    for (auto& camera : m_gameObjectManager->getCameras())
-    {
-        if (camera->getCameraType() == CameraType::Perspective)
-        {
-            camera->getViewMatrix(data.viewMatrix);
-            camera->getProjectionMatrix(data.projectionMatrix);
-            data.cameraPosition = camera->getPosition();
-            lightManager.setSpotlightPosition(data.cameraPosition);
-            lightManager.setSpotlightDirection(camera->getFacingDirection());
-        }
-        else
-        {
-            camera->getViewMatrix(data.uiViewMatrix);
-            camera->getProjectionMatrix(data.uiProjectionMatrix);
-        }
-    }
-    gameOwner->getScreenSpaceQuad()->onLightingPass(data);
-    //m_skyBox->onLightingPass(data);
-
-    //m_entitySystem->onLightingPass(data);
-}
-
-void Scene::onGraphicsUpdate()
-{
-    //Geometry Pass
-    auto& geometryBuffer = GeometryBuffer::GetInstance();
-    geometryBuffer.Bind();
-    onGeometryPass();
-    geometryBuffer.UnBind();
-
-    auto& lightManager = LightManager::GetInstance();
-    for (uint i = 0; i < lightManager.getDirectionalLightCount(); i++)
-    {
-        //Shadow Pass
-        lightManager.BindShadowMap(i);
-        m_gameObjectManager->onShadowPass(i);
-        lightManager.UnBindShadowMap(i);
-    }
-
-    GraphicsEngine::GetInstance().setViewport(gameOwner->getWindow()->getInnerSize());
-
-    onLightingPass();
-
-    geometryBuffer.WriteDepth();
-
-
-    UniformData data = {};
-    data.currentTime = gameOwner->GetCurrentTime();
-    for (auto& camera : m_gameObjectManager->getCameras())
-    {
-        if (camera->getCameraType() == CameraType::Perspective)
-        {
-            camera->getViewMatrix(data.viewMatrix);
-            camera->getProjectionMatrix(data.projectionMatrix);
-            data.cameraPosition = camera->getPosition();
-            lightManager.setSpotlightPosition(data.cameraPosition);
-            lightManager.setSpotlightDirection(camera->getFacingDirection());
-        }
-        else
-        {
-            camera->getViewMatrix(data.uiViewMatrix);
-            camera->getProjectionMatrix(data.uiProjectionMatrix);
-        }
-    }
-
-    for(auto& light : m_lights)
-    {
-        light->onGraphicsUpdate(data);
-    }
-    m_skyBox->onGraphicsUpdate(data);
-}
 
 void Scene::onUpdate(float deltaTime)
 {
@@ -408,6 +312,123 @@ void Scene::onFixedUpdate(float fixedDeltaTime)
 void Scene::onLateUpdate(float deltaTime)
 {
     m_gameObjectManager->onLateUpdate(deltaTime);
+}
+
+void Scene::onShadowPass()
+{
+    
+}
+
+void Scene::onGeometryPass()
+{
+    auto& lightManager = LightManager::GetInstance();
+
+    m_gameObjectManager->onGeometryPass(uniformData);
+}
+
+void Scene::onLightingPass()
+{
+    auto& lightManager = LightManager::GetInstance();
+    gameOwner->getScreenSpaceQuad()->onLightingPass(uniformData);
+}
+
+void Scene::onGraphicsUpdate()
+{
+    auto& lightManager = LightManager::GetInstance();
+    auto& graphicsEngine = GraphicsEngine::GetInstance();
+    graphicsEngine.clear(glm::vec4(0, 0, 0, 1));
+
+    // Populate the uniform data struct
+    uniformData.currentTime = gameOwner->GetCurrentTime();
+    for (auto& camera : m_gameObjectManager->getCameras())
+    {
+        if (camera->getCameraType() == CameraType::Perspective)
+        {
+            camera->getViewMatrix(uniformData.viewMatrix);
+            camera->getProjectionMatrix(uniformData.projectionMatrix);
+            uniformData.cameraPosition = camera->getPosition();
+            lightManager.setSpotlightPosition(uniformData.cameraPosition);
+            lightManager.setSpotlightDirection(camera->getFacingDirection());
+        }
+        else
+        {
+            camera->getViewMatrix(uniformData.uiViewMatrix);
+            camera->getProjectionMatrix(uniformData.uiProjectionMatrix);
+        }
+    }
+
+    // Example of Defered Rendering Pipeline
+    if (graphicsEngine.getRenderingPath() == RenderingPath::Deferred)
+    {
+        //Geometry Pass
+        auto& geometryBuffer = GeometryBuffer::GetInstance();
+        geometryBuffer.Bind();
+        onGeometryPass(); // Render opaque objects
+        geometryBuffer.UnBind();
+
+        // Shadow Pass: Render shadows for directional lights
+        for (uint i = 0; i < lightManager.getDirectionalLightCount(); i++)
+        {
+            lightManager.BindShadowMap(i);
+            m_gameObjectManager->onShadowPass(i); // Render shadow maps
+            lightManager.UnBindShadowMap(i);
+        }
+        graphicsEngine.setViewport(gameOwner->getWindow()->getInnerSize());
+
+        // Lighting Pass: Apply lighting using G-buffer data
+        onLightingPass(); // Compute lighting
+        
+        geometryBuffer.WriteDepth();
+        
+        //m_gameObjectManager->onForwardPass():
+        for (auto& light : m_lights)
+        {
+            light->onGraphicsUpdate(uniformData);
+        }
+        m_skyBox->onGraphicsUpdate(uniformData);
+    }
+    
+    // Example of Forward Rendering Pipeline
+    if (graphicsEngine.getRenderingPath() == RenderingPath::Forward)
+    {
+        for (uint i = 0; i < lightManager.getDirectionalLightCount(); i++)
+        {
+            //Shadow Pass
+            lightManager.BindShadowMap(i);
+            m_gameObjectManager->onShadowPass(i);
+            lightManager.UnBindShadowMap(i);
+        }
+        graphicsEngine.setViewport(gameOwner->getWindow()->getInnerSize());
+
+        //m_postProcessingFramebuffer->Bind();
+
+        m_gameObjectManager->onGraphicsUpdate(uniformData);
+        m_skyBox->onGraphicsUpdate(uniformData);
+
+        //m_postProcessingFramebuffer->UnBind();
+    }
+
+
+
+    // Post processing 
+
+    //
+    //graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
+    //NewUniformData uniformData;
+    //uniformData.CreateData<float>("Time", m_currentTime);
+    //uniformData.CreateData<Vector2>("Resolution", m_display->getInnerSize());
+    //if (currentTexture1)
+    //{
+    //	//if the current shader needs a second texture we pass that into it
+    //	NewExtraTextureData textureData;
+    //	textureData.AddTexture("Texture1", currentTexture1, 1);
+    //	m_canvasQuad->onGraphicsUpdate(uniformData, textureData);
+    //}
+    //else
+    //{
+    //	m_canvasQuad->onGraphicsUpdate(uniformData);
+    //}
+    
 }
 
 void Scene::onResize(int _width, int _height)

@@ -6,9 +6,12 @@
 
 in vec2 FragTexcoord;
 
-uniform sampler2D Texture_Position;     // G-buffer: Fragment position
-uniform sampler2D Texture_Normal;       // G-buffer: Fragment normal
-uniform sampler2D Texture_AlbedoShininess; // G-buffer: Albedo and shininess
+uniform sampler2D Texture_Position;         // G-buffer: Fragment position
+uniform sampler2D Texture_Normal;           // G-buffer: Fragment normal
+uniform sampler2D Texture_AlbedoShininess;  // G-buffer: Albedo and shininess
+uniform sampler2D Texture_Depth;            // G-buffer: Depth
+uniform sampler2D Texture_Reflectivity;     // G-buffer: Reflectivity
+uniform samplerCube Texture_Skybox;         // Skybox Texture: Reflectivity
 
 // Shadow maps and light space matrices
 uniform sampler2D Texture_ShadowMap[MAX_DIR_LIGHTS]; // Array for shadow maps
@@ -38,13 +41,13 @@ void main()
     vec3 FragNormal = texture(Texture_Normal, FragTexcoord).xyz;
     vec3 FragAlbedo = texture(Texture_AlbedoShininess, FragTexcoord).rgb;
     float ObjectShininess = texture(Texture_AlbedoShininess, FragTexcoord).a;
-    
+
     vec3 ViewDir = normalize(FragPos - CameraPos);
     vec3 Normal = normalize(FragNormal);
-    //vec3 ReflectDir = reflect(ViewDir, FragNormal);
+    vec3 ReflectDir = reflect(ViewDir, Normal);
 
     // Ambient Component
-    vec3 Ambient = AmbientColor * FragAlbedo * AmbientStrength;
+    vec3 Ambient = AmbientColor * AmbientStrength;
 
     // Calculate lighting
     vec3 TotalLightOutput = vec3(0.0);
@@ -65,7 +68,16 @@ void main()
     }
 
     vec3 Lighting = Ambient + TotalLightOutput;
+    
+    // Sample reflection texture from the skybox
+    vec4 ReflectionTexture = texture(Texture_Skybox, ReflectDir);
+
+    // Sample reflectivity from the G-buffer
+    float Reflectivity = texture(Texture_Reflectivity, FragTexcoord).r;
+
+    // Mix albedo and reflection based on reflectivity
+    vec3 MixedTexture = mix(FragAlbedo, ReflectionTexture.rgb, Reflectivity);
 
     // Output final color
-    FinalColor = vec4(Lighting, 1.0);
+    FinalColor = vec4(ReflectionTexture.rgb, 1.0);
 }
