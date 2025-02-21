@@ -165,6 +165,12 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
 void InputManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	MouseButton translatedButton = static_cast<MouseButton>(button);
+	if (ImGui::GetIO().WantCaptureMouse)
+	{
+		ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+		currentMouseStates[translatedButton] = false;
+		return;
+	}
 
 	if (action == GLFW_PRESS && !currentMouseStates[translatedButton]) {
 		currentMouseStates[translatedButton] = true;

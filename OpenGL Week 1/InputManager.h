@@ -3,8 +3,7 @@
 #include "Utils.h"
 #include "Math.h"
 #include "Rect.h"
-#include <glew.h>
-#include <glfw3.h>
+#include "Window.h"
 #include <map>
 
 /**
