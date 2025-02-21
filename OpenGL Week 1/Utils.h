@@ -303,6 +303,12 @@ enum class CameraType
     Perspective     // Perspective camera
 };
 
+enum class RenderingPath
+{
+    Deferred = 0,   // Deferred Rendering
+    Forward         // Forward Rendering
+};
+
 // Enum representing triangle types
 enum class TriangleType
 {

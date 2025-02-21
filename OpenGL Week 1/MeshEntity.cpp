@@ -120,6 +120,11 @@ void MeshEntity::onGeometryPass(UniformData data)
         graphicsEngine.setTexture2D(m_texture, 0, "Texture0");
     }
 
+    if (m_reflectiveMap)
+    {
+        graphicsEngine.setTexture2D(m_reflectiveMap, 2, "ReflectionMap");
+    }
+
     // Bind the vertex array object for the mesh
     auto meshVBO = m_mesh->getVertexArrayObject();
 
@@ -132,30 +137,6 @@ void MeshEntity::onGeometryPass(UniformData data)
 
 void MeshEntity::onLightingPass(UniformData data)
 {
-    auto& graphicsEngine = GraphicsEngine::GetInstance();
-    graphicsEngine.setFaceCulling(CullType::BackFace);
-    graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
-    graphicsEngine.setDepthFunc(DepthType::Less);
-    graphicsEngine.setShader(m_lightingShader);
-
-    GeometryBuffer::GetInstance().PopulateShader(m_lightingShader);
-
-    m_lightingShader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
-    m_lightingShader->setMat4("ModelMatrix", m_transform.GetMatrix());
-    m_lightingShader->setVec3("CameraPos", data.cameraPosition);
-
-    auto& lightManager = LightManager::GetInstance();
-    lightManager.applyLighting(m_lightingShader);
-
-    if (m_mesh == nullptr) return;
-    // Bind the vertex array object for the mesh
-    auto meshVBO = m_mesh->getVertexArrayObject();
-
-    // Retrieve the instance of the graphics engine
-    graphicsEngine.setVertexArrayObject(meshVBO);
-
-    // Draw the mesh to update the shadow map
-    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, meshVBO->getNumIndices());
 }
 
 float MeshEntity::getShininess() const

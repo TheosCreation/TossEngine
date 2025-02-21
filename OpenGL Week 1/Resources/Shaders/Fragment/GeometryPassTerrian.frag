@@ -39,7 +39,7 @@ void main()
     vec4 BlendedTexture = BaseTexture * blendGrass + AdditionalTexture1 * blendDirt + AdditionalTexture2 * blendStone + AdditionalTexture3 * blendSnow;
 	
     Texture_Position = vec4(FragPos, 1.0f);
-	Texture_Normal = vec4(normalize(FragNormal), 1.0f);
+	Texture_Normal = vec4(FragNormal, 1.0f);
 	Texture_AlbedoShininess.rgb = BlendedTexture.rgb;
 	Texture_AlbedoShininess.a = ObjectShininess;
 }

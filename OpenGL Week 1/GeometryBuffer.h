@@ -88,5 +88,6 @@ private:
 	uint Texture_Normal = 1; // Texture for normal data.
 	uint Texture_AlbedoShininess = 2; // Texture for albedo and shininess data.
 	uint Texture_Depth = 3; // Texture for depth data.
+	uint Texture_Reflectivity = 4; // Texture for reflectivity data.
 };
 
