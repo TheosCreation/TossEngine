@@ -34,6 +34,18 @@ void Player::onCreate()
 void Player::onUpdate(float deltaTime)
 {
     auto& inputManager = InputManager::GetInstance();
+
+    inputManager.enablePlayMode(m_playMode);
+
+    if (!inputManager.isMouseDown(MouseButtonLeft))
+    {
+        m_playMode = false;
+        return;
+    }
+
+    m_playMode = true;
+
+
     auto& lightManager = LightManager::GetInstance();
 
     float sensitivity = 0.1f;  // Sensitivity factor for mouse movement
@@ -54,18 +66,18 @@ void Player::onUpdate(float deltaTime)
     m_transform.rotation = yawRotation * pitchRotation;
 
     // Enable play mode when clicking on the window
-    if (inputManager.isMousePressed(MouseButtonLeft) && !m_playMode)
-    {
-        m_playMode = true;
-        inputManager.enablePlayMode(m_playMode);
-    }
-
-    // Disable play mode when pressing the Escape key
-    if (inputManager.isKeyPressed(Key::KeyEscape) && m_playMode)
-    {
-        m_playMode = false;
-        inputManager.enablePlayMode(m_playMode);
-    }
+    //if (inputManager.isMousePressed(MouseButtonLeft) && !m_playMode)
+    //{
+    //    m_playMode = true;
+    //    inputManager.enablePlayMode(m_playMode);
+    //}
+    //
+    //// Disable play mode when pressing the Escape key
+    //if (inputManager.isKeyPressed(Key::KeyEscape) && m_playMode)
+    //{
+    //    m_playMode = false;
+    //    inputManager.enablePlayMode(m_playMode);
+    //}
 
     //// Toggle point lights on/off
     //if (inputManager.isKeyPressed(Key::Key1))
