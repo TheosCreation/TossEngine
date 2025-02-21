@@ -55,8 +55,6 @@ Game::Game()
     inputManger.setScreenArea(windowSize);
 
     LightManager::GetInstance().Init();
-
-    m_postProcessingFramebuffer = std::make_unique<Framebuffer>(windowSize);
 }
 
 Game::~Game()
@@ -124,8 +122,17 @@ void Game::onUpdateInternal()
 
     m_currentScene->onGraphicsUpdate(); //Render the scene
 
-    ImGui::Begin("My name is window, ImGUI window");
-    ImGui::Text("Hello there adventurer!");
+    ImGui::Begin("Settings menu lol");
+    ImGui::Text("These are your options");
+
+    static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = 0;
+    if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
+    {
+        RenderingPath selectedPath = static_cast<RenderingPath>(Selecteditem);
+        Debug::Log("Rendering Path changed to option: " + ToString(selectedPath));
+        graphicsEngine.setRenderingPath(selectedPath);
+    }
+
     ImGui::End();
 
     ImGui::Render();
@@ -169,10 +176,9 @@ void Game::quit()
 
 void Game::onResize(int _width, int _height)
 {
-    m_currentScene->onResize(_width, _height);
-    m_postProcessingFramebuffer->Resize(Vector2(_width, _height));
-    GeometryBuffer::GetInstance().Resize(Vector2(_width, _height));
     GraphicsEngine::GetInstance().setViewport(Vector2(_width, _height));
+    m_currentScene->onResize(_width, _height);
+    GeometryBuffer::GetInstance().Resize(Vector2(_width, _height));
 }
 
 void Game::SetScene(shared_ptr<Scene> _scene)
