@@ -13,6 +13,8 @@ Mail : theo.morris@mds.ac.nz
 #pragma once
 #include "Utils.h"
 
+class Texture2D;
+
 /**
  * @class Framebuffer
  * @brief A class representing a framebuffer used for rendering operations.
@@ -47,7 +49,8 @@ public:
 	 */
 	void UnBind();
 
-	uint RenderTexture; // Identifier for the texture used for rendering.
+	Texture2DPtr RenderTexture;
+	//uint RenderTexture; // Identifier for the texture used for rendering.
 
 private:
 	uint FBO; // Frame Buffer Object identifier.

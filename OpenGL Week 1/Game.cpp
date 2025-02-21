@@ -55,6 +55,8 @@ Game::Game()
     inputManger.setScreenArea(windowSize);
 
     LightManager::GetInstance().Init();
+
+    m_postProcessingFramebuffer = std::make_unique<Framebuffer>(windowSize);
 }
 
 Game::~Game()
@@ -66,13 +68,9 @@ void Game::onCreate()
     auto& resourceManager = ResourceManager::GetInstance();
     m_sphereMesh = resourceManager.createMeshFromFile("Resources/Meshes/sphere.obj");
     m_cubeMesh = resourceManager.createMeshFromFile("Resources/Meshes/cube.obj");
-    
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
-    defaultQuadShader = graphicsEngine.createShader({
-            "ScreenQuad",
-            "QuadShader"
-        });
+    
     ssrQuadShader = graphicsEngine.createShader({
             "ScreenQuad",
             "SSRShader"
@@ -92,11 +90,6 @@ void Game::onCreate()
     m_SSRQuad->setShader(ssrQuadShader);
     m_SSRQuad->setLightingShader(ssrQuadLightingShader);
     m_SSRQuad->setShadowShader(ssrQuadShadowShader);
-
-    m_canvasQuad = std::make_unique<QuadEntity>();
-    //m_canvasQuad->onCreate();
-    //m_canvasQuad->setTextureFromId(m_postProcessingFramebuffer->RenderTexture);
-    //m_canvasQuad->setShader(defaultQuadShader);
 
     auto scene = std::make_shared<Scene>(this);
     SetScene(scene);
@@ -144,35 +137,10 @@ void Game::onUpdateInternal()
     double RenderTime_Begin = (double)glfwGetTime();
 
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
+
     m_currentScene->onGraphicsUpdate(); //Render the scene
 
     double RenderTime_End = (double)glfwGetTime();
-
-    //Example of post processing for later development
-    //m_postProcessingFramebuffer->Bind();
-    //graphicsEngine.clear(glm::vec4(0, 0, 0, 1));
-
-    //m_currentScene->onGraphicsUpdate();
-
-    //m_postProcessingFramebuffer->UnBind();
-
-
-    //graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
-    //NewUniformData uniformData;
-    //uniformData.CreateData<float>("Time", m_currentTime);
-    //uniformData.CreateData<Vector2>("Resolution", m_display->getInnerSize());
-    //if (currentTexture1)
-    //{
-    //    //if the current shader needs a second texture we pass that into it
-    //    NewExtraTextureData textureData;
-    //    textureData.AddTexture("Texture1", currentTexture1, 1);
-    //    m_canvasQuad->onGraphicsUpdate(uniformData, textureData);
-    //}
-    //else
-    //{
-    //    m_canvasQuad->onGraphicsUpdate(uniformData);
-    //}
-
 
     // Render to window
     m_display->present();
@@ -207,7 +175,7 @@ void Game::quit()
 void Game::onResize(int _width, int _height)
 {
     m_currentScene->onResize(_width, _height);
-    //m_postProcessingFramebuffer->resize(Vector2(_width, _height));
+    m_postProcessingFramebuffer->Resize(Vector2(_width, _height));
     GeometryBuffer::GetInstance().Resize(Vector2(_width, _height));
     GraphicsEngine::GetInstance().setViewport(Vector2(_width, _height));
 }
@@ -247,18 +215,18 @@ MeshPtr Game::getSphereMesh()
 {
     return m_sphereMesh;
 }
-void Game::SetFullScreenShader(ShaderPtr _shader, Texture2DPtr _texture)
-{
-    if (_shader == nullptr)
-    {
-        m_canvasQuad->setShader(defaultQuadShader);
-    }
-    else
-    {
-        m_canvasQuad->setShader(_shader);
-    }
-    currentTexture1 = _texture;
-}
+//void Game::SetFullScreenShader(ShaderPtr _shader, Texture2DPtr _texture)
+//{
+//    if (_shader == nullptr)
+//    {
+//        m_canvasQuad->setShader(defaultQuadShader);
+//    }
+//    else
+//    {
+//        m_canvasQuad->setShader(_shader);
+//    }
+//    currentTexture1 = _texture;
+//}
 
 SSRQuadPtr Game::getScreenSpaceQuad()
 {

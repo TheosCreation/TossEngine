@@ -19,6 +19,7 @@ Scene::Scene(Game* game)
     gameOwner = game;
     m_postProcessingFramebuffer = std::make_unique<Framebuffer>(gameOwner->getWindow()->getInnerSize());
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
+    m_postProcessSSRQ = std::make_unique<SSRQuad>();
 }
 
 Scene::~Scene()
@@ -32,6 +33,14 @@ void Scene::onCreate()
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     m_gameObjectManager->m_entityFactory->registerEntity<Player>();
 
+    defaultFullscreenShader = graphicsEngine.createShader({
+            "ScreenQuad",
+            "QuadShader"
+        });
+
+    m_postProcessSSRQ->onCreate();
+    m_postProcessSSRQ->setShader(defaultFullscreenShader);
+    m_postProcessSSRQ->setTexture(m_postProcessingFramebuffer->RenderTexture);
     //Creating skybox object
     m_skyBox = std::make_unique<SkyboxEntity>();
     ShaderPtr skyboxShader = graphicsEngine.createShader({
@@ -336,7 +345,6 @@ void Scene::onGraphicsUpdate()
 {
     auto& lightManager = LightManager::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
-    graphicsEngine.clear(glm::vec4(0, 0, 0, 1));
 
     // Populate the uniform data struct
     uniformData.currentTime = gameOwner->GetCurrentTime();
@@ -375,10 +383,10 @@ void Scene::onGraphicsUpdate()
         }
         graphicsEngine.setViewport(gameOwner->getWindow()->getInnerSize());
 
+        geometryBuffer.WriteDepth();
         // Lighting Pass: Apply lighting using G-buffer data
         onLightingPass(); // Compute lighting
         
-        geometryBuffer.WriteDepth();
         
         //m_gameObjectManager->onForwardPass():
         for (auto& light : m_lights)
@@ -400,35 +408,34 @@ void Scene::onGraphicsUpdate()
         }
         graphicsEngine.setViewport(gameOwner->getWindow()->getInnerSize());
 
-        //m_postProcessingFramebuffer->Bind();
+        m_postProcessingFramebuffer->Bind();
 
         m_gameObjectManager->onGraphicsUpdate(uniformData);
         m_skyBox->onGraphicsUpdate(uniformData);
 
-        //m_postProcessingFramebuffer->UnBind();
+        m_postProcessingFramebuffer->UnBind();
     }
 
 
 
     // Post processing 
+    graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
+    m_postProcessSSRQ->setTexture(m_postProcessingFramebuffer->RenderTexture);
+    m_postProcessSSRQ->onGraphicsUpdate(uniformData);
 
-    //
-    //graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
     //NewUniformData uniformData;
     //uniformData.CreateData<float>("Time", m_currentTime);
     //uniformData.CreateData<Vector2>("Resolution", m_display->getInnerSize());
     //if (currentTexture1)
     //{
-    //	//if the current shader needs a second texture we pass that into it
-    //	NewExtraTextureData textureData;
-    //	textureData.AddTexture("Texture1", currentTexture1, 1);
-    //	m_canvasQuad->onGraphicsUpdate(uniformData, textureData);
+    //    //if the current shader needs a second texture we pass that into it
+    //    NewExtraTextureData textureData;
+    //    textureData.AddTexture("Texture1", currentTexture1, 1);
+    //    m_canvasQuad->onGraphicsUpdate(uniformData, textureData);
     //}
     //else
     //{
-    //	m_canvasQuad->onGraphicsUpdate(uniformData);
     //}
-    
 }
 
 void Scene::onResize(int _width, int _height)
