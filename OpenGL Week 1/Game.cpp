@@ -11,6 +11,8 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "Game.h"
+#include <glew.h>
+#include <glfw3.h>
 #include "Window.h"
 #include "VertexArrayObject.h"
 #include "Shader.h"
@@ -19,8 +21,6 @@ Mail : theo.morris@mds.ac.nz
 #include "TextureCubeMap.h"
 #include "Camera.h"
 #include "SkyBoxEntity.h"
-#include <glew.h>
-#include <glfw3.h>
 #include "Scene.h"
 #include "Framebuffer.h"
 #include "GeometryBuffer.h"
@@ -117,8 +117,19 @@ void Game::onUpdateInternal()
     double RenderTime_Begin = (double)glfwGetTime();
 
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
+    
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
 
     m_currentScene->onGraphicsUpdate(); //Render the scene
+
+    ImGui::Begin("My name is window, ImGUI window");
+    ImGui::Text("Hello there adventurer!");
+    ImGui::End();
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     double RenderTime_End = (double)glfwGetTime();
 
@@ -149,6 +160,10 @@ void Game::run()
 
 void Game::quit()
 {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     m_display.release();
 }
 

@@ -63,6 +63,14 @@ Window::Window(Game* game) : gameOwner(game)
 
     // Show the window
     glfwShowWindow(m_windowPtr);
+
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(m_windowPtr, true);
+    ImGui_ImplOpenGL3_Init("#version 460");
 }
 
 Window::~Window()
