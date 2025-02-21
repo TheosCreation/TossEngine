@@ -101,7 +101,7 @@ protected:
     bool m_isRunning = true; //Indicates whether the game is running
     std::unique_ptr<Window> m_display; //Pointer to the window instance
     std::unique_ptr<Framebuffer> m_postProcessingFramebuffer; //Pointer to the framebuffer instance
-    std::unique_ptr<QuadEntity> m_canvasQuad; //Pointer to the framebuffer instance
+    //std::unique_ptr<QuadEntity> m_canvasQuad; //Pointer to the framebuffer instance
     SSRQuadPtr m_SSRQuad; //Pointer to
 
     float m_previousTime = 0; //The previous frame's time
@@ -115,7 +115,6 @@ protected:
     MeshPtr m_cubeMesh;
     MeshPtr m_sphereMesh;
 
-    ShaderPtr defaultQuadShader = nullptr;
     ShaderPtr ssrQuadShader = nullptr;
     ShaderPtr ssrQuadLightingShader = nullptr;
     ShaderPtr ssrQuadShadowShader = nullptr;

@@ -1,7 +1,6 @@
 #version 460 core
 
 in vec2 FragTexcoord;
-in vec3 FragPos;
 
 uniform sampler2D Texture0;
 

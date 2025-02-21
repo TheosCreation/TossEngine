@@ -109,6 +109,9 @@ public:
 
 protected:
     UniformData uniformData = {};
+
+    ShaderPtr defaultFullscreenShader = nullptr;
+
     ShaderPtr m_solidColorMeshShader = nullptr; /**< @brief Shader for rendering solid color meshes. */
     ShaderPtr m_particleSystemShader = nullptr; /**< @brief Shader for rendering particle systems. */
     ShaderPtr m_shadowShader = nullptr; /**< @brief Shader for rendering shadows. */
@@ -123,6 +126,7 @@ protected:
     unique_ptr<SkyboxEntity> m_skyBox; /**< @brief Pointer to the skybox instance used in the scene. */
     unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the entity system managing game entities. */
     FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
+    SSRQuadPtr m_postProcessSSRQ;
 
     Game* gameOwner; /**< @brief Pointer to the owner Game instance. */
     vector<MeshEntity*> m_lights; /**< @brief Pointers to the light objects (point and spotlights) in the scene. */

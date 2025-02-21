@@ -70,14 +70,15 @@ void main()
     vec3 Lighting = Ambient + TotalLightOutput;
     
     // Sample reflection texture from the skybox
-    vec4 ReflectionTexture = texture(Texture_Skybox, ReflectDir);
-
-    // Sample reflectivity from the G-buffer
-    float Reflectivity = texture(Texture_Reflectivity, FragTexcoord).r;
-
-    // Mix albedo and reflection based on reflectivity
-    vec3 MixedTexture = mix(FragAlbedo, ReflectionTexture.rgb, Reflectivity);
+    //vec4 ReflectionTexture = texture(Texture_Skybox, ReflectDir);
+    //
+    //// Sample reflectivity from the G-buffer
+    //float Reflectivity = texture(Texture_Reflectivity, FragTexcoord).r;
+    //
+    //// Mix albedo and reflection based on reflectivity
+    //vec3 MixedTexture = mix(FragAlbedo, ReflectionTexture.rgb, Reflectivity);
 
     // Output final color
-    FinalColor = vec4(ReflectionTexture.rgb, 1.0);
+    //FinalColor = vec4(ReflectionTexture.rgb, 1.0);
+    FinalColor = vec4(Lighting * FragAlbedo, 1.0);
 }

@@ -118,6 +118,24 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
     return Texture2DPtr();
 }
 
+Texture2DPtr ResourceManager::createTexture2D(Texture2DDesc desc, string textureName)
+{
+    // Create a 2D texture using the graphics engine.
+    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, "", this);
+    if (!texture2DPtr)
+    {
+        Debug::LogError("Texture not generated");
+    }
+
+    if (texture2DPtr)
+    {
+        m_mapResources.emplace(textureName, texture2DPtr);
+        return texture2DPtr;
+    }
+
+    return Texture2DPtr();
+}
+
 MeshPtr ResourceManager::createMeshFromFile(const std::string& filepath)
 {
     // Check if the resource has already been loaded

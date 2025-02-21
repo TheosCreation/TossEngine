@@ -151,7 +151,7 @@ public:
 
 private:
     ShaderPtr currentShader = nullptr;
-    RenderingPath renderingPath = RenderingPath::Deferred;
+    RenderingPath renderingPath = RenderingPath::Forward;
 
     /**
      * @brief Private constructor to prevent external instantiation.

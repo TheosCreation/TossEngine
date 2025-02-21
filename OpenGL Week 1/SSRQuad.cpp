@@ -7,8 +7,25 @@
 
 void SSRQuad::onGraphicsUpdate(UniformData data)
 {
-    // Call the base class's graphics update method
-    GraphicsEntity::onGraphicsUpdate(data);
+    // Set the shader for the lighting pass
+    auto& graphicsEngine = GraphicsEngine::GetInstance();
+    graphicsEngine.setShader(m_shader);
+
+    if (m_texture)
+    {
+        m_shader->setTexture2D(m_texture, 0, "Texture0");
+    }
+
+    if (m_texture1)
+    {
+        m_shader->setTexture2D(m_texture1, 1, "Texture1");
+    }
+
+    // Prepare the graphics engine for rendering
+    graphicsEngine.setFaceCulling(CullType::None); // Disable face culling
+    graphicsEngine.setWindingOrder(WindingOrder::ClockWise); // Set winding order
+    graphicsEngine.setVertexArrayObject(m_mesh); // Bind the vertex array object for the mesh
+    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_mesh->getNumIndices()); // Draw the indexed triangles
 }
 
 void SSRQuad::onLightingPass(UniformData data)
