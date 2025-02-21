@@ -114,57 +114,17 @@ void GeometryBuffer::PopulateShader(ShaderPtr _shader)
 
 void GeometryBuffer::Resize(Vector2 _windowSize)
 {
+	// Store new size
 	m_size = _windowSize;
 
-	// Update the Position texture
-	glBindTexture(GL_TEXTURE_2D, Texture_Position);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (int)_windowSize.x, (int)_windowSize.y, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	// Delete old framebuffer and textures
+	glDeleteFramebuffers(1, &FBO);
+	glDeleteTextures(1, &Texture_Position);
+	glDeleteTextures(1, &Texture_Normal);
+	glDeleteTextures(1, &Texture_AlbedoShininess);
+	glDeleteTextures(1, &Texture_Depth);
+	glDeleteTextures(1, &Texture_Reflectivity);
 
-	// Update the Normal texture
-	glBindTexture(GL_TEXTURE_2D, Texture_Normal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (int)_windowSize.x, (int)_windowSize.y, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	// Update the Albedo/Shininess texture
-	glBindTexture(GL_TEXTURE_2D, Texture_AlbedoShininess);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (int)_windowSize.x, (int)_windowSize.y, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	// Update the Depth texture
-	glBindTexture(GL_TEXTURE_2D, Texture_Depth);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, (int)_windowSize.x, (int)_windowSize.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	// Update the Reflectivity texture
-	glBindTexture(GL_TEXTURE_2D, Texture_Reflectivity);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, (int)_windowSize.x, (int)_windowSize.y, 0, GL_RED, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	// Bind the framebuffer to update its attachments
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, Texture_Position, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, Texture_Normal, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, Texture_AlbedoShininess, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, Texture_Reflectivity, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, Texture_Depth, 0);
-
-	// Check if the framebuffer is still complete
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		Debug::LogError("Framebuffer is not complete after resizing!");
-	}
-
-	// Unbindings
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// Reinitialize the framebuffer and textures
+	Init(_windowSize);
 }
