@@ -43,6 +43,8 @@ public:
 
     TexturePtr getSkyboxTexture();
 
+    void deleteTexture(TexturePtr texture);
+
     void ClearInstancesFromMeshes();
 
 protected:
