@@ -46,6 +46,7 @@ class HeightMap;
 class Mesh;
 class InstancedMesh;
 class SSRQuad;
+struct ProjectSettings;
 
 // Type definitions for common engine variables
 typedef unsigned int uint;
@@ -68,6 +69,7 @@ typedef std::shared_ptr<Mesh> MeshPtr;
 typedef std::shared_ptr<InstancedMesh> InstancedMeshPtr;
 typedef std::shared_ptr<HeightMap> HeightMapPtr;
 typedef std::shared_ptr<SSRQuad> SSRQuadPtr;
+typedef std::unique_ptr<ProjectSettings> ProjectSettingsPtr;
 
 // Using declarations to simplify the code and avoid typing the full namespace each time
 using std::shared_ptr;
@@ -307,7 +309,8 @@ enum class CameraType
 enum class RenderingPath
 {
     Deferred = 0,   // Deferred Rendering
-    Forward         // Forward Rendering
+    Forward,         // Forward Rendering
+    Unknown
 };
 
 // Enum representing triangle types
@@ -525,6 +528,13 @@ std::string ToString(const T& value) {
 template <>
 std::string ToString<RenderingPath>(const RenderingPath& value);
 
+
+template <typename T>
+T FromString(const std::string& input);
+
+// Specialization of FromString for RenderingPath
+template <>
+RenderingPath FromString<RenderingPath>(const std::string& input);
 
 class Debug
 {

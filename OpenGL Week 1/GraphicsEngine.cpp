@@ -18,6 +18,12 @@ Mail : theo.morris@mds.ac.nz
 #include "Texture2D.h"
 #include "ShadowMap.h"
 #include "TextureCubeMap.h"
+#include "ProjectSettings.h"
+
+void GraphicsEngine::Init(ProjectSettingsPtr& projectSettings)
+{
+    m_renderingPath = projectSettings->renderingPath;
+}
 
 VertexArrayObjectPtr GraphicsEngine::createVertexArrayObject(const VertexBufferDesc& vbDesc)
 {
@@ -246,12 +252,12 @@ void GraphicsEngine::setTexture2D(const uint textureId, uint slot, std::string b
 
 RenderingPath GraphicsEngine::getRenderingPath()
 {
-    return renderingPath;
+    return m_renderingPath;
 }
 
 void GraphicsEngine::setRenderingPath(RenderingPath newRenderingPath)
 {
-    renderingPath = newRenderingPath;
+    m_renderingPath = newRenderingPath;
 }
 
 void GraphicsEngine::setTexture2D(const TexturePtr& texture, uint slot, std::string bindingName)
