@@ -24,6 +24,8 @@ public:
     GraphicsEngine(const GraphicsEngine& other) = delete;
     GraphicsEngine& operator=(const GraphicsEngine& other) = delete;
 
+    void Init(ProjectSettingsPtr& projectSettings);
+
     /**
      * @brief Creates a Vertex Array Object (VAO) without an Index Buffer.
      * @param vbDesc Description of the Vertex Buffer.
@@ -151,7 +153,7 @@ public:
 
 private:
     ShaderPtr currentShader = nullptr;
-    RenderingPath renderingPath = RenderingPath::Deferred;
+    RenderingPath m_renderingPath;
 
     /**
      * @brief Private constructor to prevent external instantiation.

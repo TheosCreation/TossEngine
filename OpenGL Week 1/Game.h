@@ -112,4 +112,6 @@ protected:
     MeshPtr m_sphereMesh;
 
     shared_ptr<Scene> m_currentScene;
+
+    ProjectSettingsPtr m_projectSettings;
 };

@@ -25,6 +25,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Framebuffer.h"
 #include "GeometryBuffer.h"
 #include "SSRQuad.h"
+#include "ProjectSettings.h"
 
 Game::Game()
 {
@@ -34,6 +35,8 @@ Game::Game()
         Debug::LogError("GLFW failed to initialize properly. Terminating program.");
         return;
     }
+    m_projectSettings = std::make_unique<ProjectSettings>();
+    m_projectSettings->LoadFromFile("ProjectSettings.json");
 
     initRandomSeed();
     m_display = std::make_unique<Window>(this);
@@ -42,6 +45,7 @@ Game::Game()
     GeometryBuffer::GetInstance().Init(windowSize);
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
+    graphicsEngine.Init(m_projectSettings);
     graphicsEngine.setViewport(windowSize);
     graphicsEngine.setDepthFunc(DepthType::Less);
     graphicsEngine.setBlendFunc(BlendType::SrcAlpha, BlendType::OneMinusSrcAlpha);
@@ -50,9 +54,10 @@ Game::Game()
     graphicsEngine.setScissorSize(Rect(200, 200, 400, 300));
     graphicsEngine.setMultiSampling(true);
 
-    auto& inputManger = InputManager::GetInstance();
-    inputManger.setGameWindow(m_display->getWindow());
-    inputManger.setScreenArea(windowSize);
+    auto& inputManager = InputManager::GetInstance();
+    //inputManager.Init(m_projectSettings);
+    inputManager.setGameWindow(m_display->getWindow());
+    inputManager.setScreenArea(windowSize);
 
     LightManager::GetInstance().Init();
 }
@@ -125,12 +130,13 @@ void Game::onUpdateInternal()
     ImGui::Begin("Settings menu lol");
     ImGui::Text("These are your options");
 
-    static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = 0;
+    static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
     if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
     {
         RenderingPath selectedPath = static_cast<RenderingPath>(Selecteditem);
         Debug::Log("Rendering Path changed to option: " + ToString(selectedPath));
         graphicsEngine.setRenderingPath(selectedPath);
+        m_projectSettings->renderingPath = selectedPath;
     }
 
     ImGui::End();
@@ -172,6 +178,8 @@ void Game::quit()
     ImGui::DestroyContext();
 
     m_display.release();
+
+    m_projectSettings->SaveToFile("ProjectSettings.json");
 }
 
 void Game::onResize(int _width, int _height)
