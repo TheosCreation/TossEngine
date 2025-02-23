@@ -13,6 +13,8 @@ Mail : theo.morris@mds.ac.nz
 #include "Scene.h"
 #include "SSRQuad.h"
 #include "GeometryBuffer.h"
+#include "MeshRenderer.h"
+#include "AudioEngine.h"
 
 Scene::Scene(Game* game)
 {
@@ -51,8 +53,6 @@ void Scene::onCreate()
     m_postProcessSSRQ->setShader(defaultFullscreenShader);
     m_postProcessSSRQ->setTexture(m_postProcessingFramebuffer->RenderTexture);
 
-    //Creating skybox object
-    m_skyBox = std::make_unique<SkyboxEntity>();
     ShaderPtr skyboxShader = graphicsEngine.createShader({
             "SkyBoxShader",
             "SkyBoxShader"
@@ -108,6 +108,8 @@ void Scene::onCreate()
     //        "MeshLightingShader"
     //    });
 
+    //Creating skybox object
+    m_skyBox = std::make_unique<SkyboxEntity>();
     m_skyBox->setEntitySystem(m_gameObjectManager.get());
     m_skyBox->setMesh(gameOwner->getCubeMesh());
     m_skyBox->setShader(skyboxShader);
@@ -158,64 +160,66 @@ void Scene::onCreate()
         });
 
 
-    m_ship = m_gameObjectManager->createGameObject<MeshEntity>();
-    m_ship->m_transform.scale = Vector3(0.05f);
-    m_ship->m_transform.position = Vector3(0, 40, 0);
-    m_ship->setShininess(64.0f);
-    m_ship->setTexture(sciFiSpaceTexture2D);
-    m_ship->setReflectiveMapTexture(shipReflectiveMap);
-    m_ship->setMesh(fighterShip);
-    m_ship->setShader(meshShader);
-    m_ship->setShadowShader(m_shadowShader);
-    m_ship->setGeometryShader(m_meshGeometryShader);
-    //m_ship->setLightingShader(m_meshLightingShader);
-
-    HeightMapInfo buildInfo = { "Resources/Heightmaps/Heightmap0.raw", 256, 256, 4.0f };
-    HeightMapPtr heightmap = resourceManager.createHeightMap(buildInfo);
-
-    m_terrain = m_gameObjectManager->createGameObject<TerrainEntity>();
-    m_terrain->generateTerrainMesh(heightmap);
-    m_terrain->m_transform.position = Vector3(0, -20, 0);
-    m_terrain->setTexture(grassTexture);
-    m_terrain->setTexture1(dirtTexture);
-    m_terrain->setTexture2(stoneTexture);
-    m_terrain->setTexture3(snowTexture);
-    m_terrain->setHeightMap(heightMapTexture);
-    m_terrain->setShader(terrainShader);
-    m_terrain->setShadowShader(m_shadowShader);
-    m_terrain->setGeometryShader(m_terrainGeometryShader);
-
-    //Creating instanced tree obj
-    auto statues = m_gameObjectManager->createGameObject<InstancedMeshEntity>();
-    statues->setShininess(32.0f);
-    statues->setTexture(ancientWorldsTexture2D);
-    statues->setShader(instancedMeshShader);
-    statues->setMesh(statueMesh);
-    statues->setReflectiveMapTexture(shipReflectiveMap); //this is wrong
-    statues->setShadowShader(m_shadowInstancedShader);
-    statues->setGeometryShader(m_instancedmeshGeometryShader);
-    //statues->setLightingShader(m_meshLightingShader);
-
-
-    //adds instances to the instanced mine mesh
-    float spacing = 50.0f;
-    for (int row = -4; row < 4; ++row) {
-        for (int col = -4; col < 4; ++col) {
-            // Calculate the position of the current tree based on the grid and spacing
-            Vector3 position = Vector3(col * spacing, 0, row * spacing);
-
-            if (position == Vector3(0.0f)) break;
-
-            // Generate random rotation angles
-            float angleY = randomNumber(360.0f);
-
-            // Add the tree instance with random rotations
-            statueMesh->addInstance(position, Vector3(0.2f), Vector3(0, angleY, 0));
-        }
+    {
+        m_ship = m_gameObjectManager->createGameObject<GameObject>();
+        m_ship->m_transform.scale = Vector3(0.05f);
+        m_ship->m_transform.position = Vector3(0, 40, 0);
+        MeshRenderer* renderer = m_ship->addComponent<MeshRenderer>();
+        renderer->SetShininess(64.0f);
+        renderer->SetTexture(sciFiSpaceTexture2D);
+        renderer->SetReflectiveMapTexture(shipReflectiveMap);
+        renderer->SetMesh(fighterShip);
+        renderer->SetShader(meshShader);
+        renderer->SetShadowShader(m_shadowShader);
+        renderer->SetGeometryShader(m_meshGeometryShader);
     }
 
-    //Init instance buffer
-    statueMesh->initInstanceBuffer();
+    //HeightMapInfo buildInfo = { "Resources/Heightmaps/Heightmap0.raw", 256, 256, 4.0f };
+    //HeightMapPtr heightmap = resourceManager.createHeightMap(buildInfo);
+    //
+    //m_terrain = m_gameObjectManager->createGameObject<TerrainEntity>();
+    //m_terrain->generateTerrainMesh(heightmap);
+    //m_terrain->m_transform.position = Vector3(0, -20, 0);
+    //m_terrain->setTexture(grassTexture);
+    //m_terrain->setTexture1(dirtTexture);
+    //m_terrain->setTexture2(stoneTexture);
+    //m_terrain->setTexture3(snowTexture);
+    //m_terrain->setHeightMap(heightMapTexture);
+    //m_terrain->setShader(terrainShader);
+    //m_terrain->setShadowShader(m_shadowShader);
+    //m_terrain->setGeometryShader(m_terrainGeometryShader);
+    //
+    ////Creating instanced tree obj
+    //auto statues = m_gameObjectManager->createGameObject<InstancedMeshEntity>();
+    //statues->setShininess(32.0f);
+    //statues->setTexture(ancientWorldsTexture2D);
+    //statues->setShader(instancedMeshShader);
+    //statues->setMesh(statueMesh);
+    //statues->setReflectiveMapTexture(shipReflectiveMap);
+    //statues->setShadowShader(m_shadowInstancedShader);
+    //statues->setGeometryShader(m_instancedmeshGeometryShader);
+    ////statues->setLightingShader(m_meshLightingShader);
+    //
+    //
+    ////adds instances to the instanced mine mesh
+    //float spacing = 50.0f;
+    //for (int row = -4; row < 4; ++row) {
+    //    for (int col = -4; col < 4; ++col) {
+    //        // Calculate the position of the current tree based on the grid and spacing
+    //        Vector3 position = Vector3(col * spacing, 0, row * spacing);
+    //
+    //        if (position == Vector3(0.0f)) break;
+    //
+    //        // Generate random rotation angles
+    //        float angleY = randomNumber(360.0f);
+    //
+    //        // Add the tree instance with random rotations
+    //        statueMesh->addInstance(position, Vector3(0.2f), Vector3(0, angleY, 0));
+    //    }
+    //}
+    //
+    ////Init instance buffer
+    //statueMesh->initInstanceBuffer();
 
     // Create and initialize a DirectionalLight struct
     DirectionalLight directionalLight1;
@@ -249,13 +253,14 @@ void Scene::onCreate()
     // Initialize 2 point lights
     for (int i = 0; i < 4; i++) {
         // Create a new point light entity
-        auto pointLightObject = m_gameObjectManager->createGameObject<MeshEntity>();
-        pointLightObject->setTransparency(0.75f);
+        auto pointLightObject = m_gameObjectManager->createGameObject<GameObject>();
+        MeshRenderer* meshRenderer = pointLightObject->addComponent<MeshRenderer>();
+        meshRenderer->SetAlpha(0.75f);
 
         // Randomly set color to either red or blue
         int randomColorChoice = (int)randomNumber(2.0f); // Generates 0 or 1
         Vector3 lightColor = (randomColorChoice == 0) ? Color::Red * 2.0f : Color::Blue * 2.0f;
-        pointLightObject->setColor(lightColor);
+        meshRenderer->SetColor(lightColor);
 
         // Calculate the position based on row and column, center the grid around (0,0)
         float xPosition = i * pointLightSpacing; // Center horizontally
@@ -265,15 +270,15 @@ void Scene::onCreate()
         pointLightObject->m_transform.scale = Vector3(3.0f);
 
         // Set mesh and shaders
-        pointLightObject->setMesh(gameOwner->getSphereMesh());
-        pointLightObject->setShader(m_solidColorMeshShader);
-        pointLightObject->setShadowShader(m_shadowShader);
-        pointLightObject->setGeometryShader(m_meshGeometryShader);
+        meshRenderer->SetMesh(gameOwner->getSphereMesh());
+        meshRenderer->SetShader(m_solidColorMeshShader);
+        meshRenderer->SetShadowShader(m_shadowShader);
+        meshRenderer->SetGeometryShader(m_meshGeometryShader);
 
         // Configure point light properties
         PointLight pointLight;
         pointLight.Position = pointLightObject->m_transform.position;
-        pointLight.Color = pointLightObject->getColor();
+        pointLight.Color = lightColor;
         pointLight.SpecularStrength = 1.0f;
         pointLight.AttenuationConstant = 1.0f;
         pointLight.AttenuationLinear = 0.022f;
@@ -284,6 +289,16 @@ void Scene::onCreate()
         lightManager.createPointLight(pointLight);
     }
 
+    //{
+    //    auto newGameObject = m_gameObjectManager->createGameObject<GameObject>();
+    //    MeshRenderer* renderer = newGameObject->addComponent<MeshRenderer>();
+    //    renderer->SetMesh(fighterShip);
+    //    renderer->SetShader(meshShader);
+    //    renderer->SetTexture(sciFiSpaceTexture2D);
+    //    renderer->SetReflectiveMapTexture(shipReflectiveMap);
+    //    renderer->SetShadowShader(m_shadowShader);
+    //    renderer->SetGeometryShader(m_meshGeometryShader);
+    //}
     //m_entitySystem->loadEntitiesFromFile("Scenes/Scene1.json");
 }
 
@@ -365,6 +380,7 @@ void Scene::onGraphicsUpdate()
         auto& geometryBuffer = GeometryBuffer::GetInstance();
         geometryBuffer.Bind();
         m_gameObjectManager->onGeometryPass(uniformData); // Render opaque objects
+        m_gameObjectManager->Render(uniformData);
         geometryBuffer.UnBind();
 
 
@@ -417,6 +433,7 @@ void Scene::onGraphicsUpdate()
 
         m_gameObjectManager->onGraphicsUpdate(uniformData);
         m_skyBox->onGraphicsUpdate(uniformData);
+        m_gameObjectManager->Render(uniformData);
 
         m_postProcessingFramebuffer->UnBind();
 

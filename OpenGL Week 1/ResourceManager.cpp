@@ -17,6 +17,8 @@ Mail : theo.morris@mds.ac.nz
 #include "TextureCubeMap.h"
 #include "HeightMap.h"
 #include "Mesh.h"
+#include "Sound.h"
+#include "AudioEngine.h"
 #include "Game.h"
 #include <filesystem>
 #include <fstream>
@@ -54,7 +56,7 @@ TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vecto
     }
 
     // Create a cubemap texture using the graphics engine.
-    TextureCubeMapPtr textureCubeMapPtr = std::make_shared<TextureCubeMap>(desc, filepaths[0].c_str(), this);
+    TextureCubeMapPtr textureCubeMapPtr = std::make_shared<TextureCubeMap>(desc, filepaths[0].c_str(), "", this);
     if (!textureCubeMapPtr)
     {
         Debug::LogError("Cubemap texture not generated");
@@ -100,7 +102,7 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
     desc.numChannels = nrChannels;
 
     // Create a 2D texture using the graphics engine.
-    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, filepath.c_str(), this);
+    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, filepath.c_str(), "", this);
     if (!texture2DPtr)
     {
         Debug::LogError("Texture not generated");
@@ -121,7 +123,7 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
 Texture2DPtr ResourceManager::createTexture2D(Texture2DDesc desc, string textureName)
 {
     // Create a 2D texture using the graphics engine.
-    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, "", this);
+    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, "", "", this);
     if (!texture2DPtr)
     {
         Debug::LogError("Texture not generated");
@@ -205,6 +207,13 @@ HeightMapPtr ResourceManager::createHeightMap(HeightMapInfo& _buildInfo)
     // Store and return the created HeightMap
     m_mapResources.emplace(_buildInfo.filePath, heightMapPtr);
     return heightMapPtr;
+}
+
+SoundPtr ResourceManager::createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath)
+{
+    SoundPtr soundPtr = std::make_shared<Sound>(desc, uniqueID, filepath.c_str(), this);
+    AudioEngine::GetInstance().loadSound(soundPtr);
+    return soundPtr;
 }
 
 

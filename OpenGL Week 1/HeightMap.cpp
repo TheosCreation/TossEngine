@@ -1,7 +1,7 @@
 #include "HeightMap.h"
 #include <glew.h>
 
-HeightMap::HeightMap(const HeightMapDesc& desc, const HeightMapInfo& buildInfo, const char* path, ResourceManager* manager) : Resource(path, manager)
+HeightMap::HeightMap(const HeightMapDesc& desc, const HeightMapInfo& buildInfo, const char* path, ResourceManager* manager) : Resource(path, "", manager)
 {
     // Store the heightmap description.
     m_desc = desc;

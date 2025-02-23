@@ -118,6 +118,6 @@ protected:
     Player* m_player = nullptr; //Pointer to the player entity
 
     float m_elapsedSeconds = 0;
-    MeshEntity* m_ship = nullptr; //Pointer to the statue entity
+    GameObject* m_ship = nullptr; //Pointer to the statue entity
     TerrainEntity* m_terrain = nullptr; //Pointer to the terrain entity
 };

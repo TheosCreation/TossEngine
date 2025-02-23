@@ -12,7 +12,7 @@ Mail : theo.morris@mds.ac.nz
 
 #include "Resource.h"
 
-Resource::Resource(const char* path, ResourceManager* manager) : m_path(path)
+Resource::Resource(const char* path, const string& uniqueId, ResourceManager* manager) : m_path(path), m_uniqueID(uniqueId)
 {
 }
 
@@ -23,4 +23,9 @@ Resource::~Resource()
 std::string Resource::getPath()
 {
 	return m_path;
+}
+
+const std::string& Resource::getUniqueID()
+{
+	return m_uniqueID;
 }

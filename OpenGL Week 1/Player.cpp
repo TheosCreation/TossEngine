@@ -11,6 +11,8 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "Player.h"
+#include "AudioEngine.h"
+#include "ResourceManager.h"
 #include <algorithm>
 
 Player::Player()
@@ -23,9 +25,10 @@ Player::~Player()
 
 void Player::onCreate()
 {
-    m_cam = std::make_unique<Camera>();
-    addComponent<Camera>(m_cam.get());
+    m_cam = addComponent<Camera>(); // Move ownership into addComponent
 
+    auto& resourceManager = ResourceManager::GetInstance();
+    fireSound = resourceManager.createSound(SoundDesc(), "Fire", "Resources/Audio/fire.ogg");
     //m_uiCamera = std::make_unique<Camera>();
     //addComponent<Camera>(m_uiCamera.get());
     //m_uiCamera->setCameraType(CameraType::Orthogonal);
@@ -34,7 +37,11 @@ void Player::onCreate()
 void Player::onUpdate(float deltaTime)
 {
     auto& inputManager = InputManager::GetInstance();
-
+    auto& audioEngine = AudioEngine::GetInstance();
+    if (inputManager.isKeyPressed(Key::Key1))
+    {
+        audioEngine.playSound(fireSound);
+    }
     if (!inputManager.isMouseDown(MouseButtonRight))
     {
         m_playMode = false;

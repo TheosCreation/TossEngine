@@ -14,7 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include <glew.h>
 
 // Constructor that initializes a 2D texture with the given description.
-Texture2D::Texture2D(const Texture2DDesc& desc, const char* path, ResourceManager* manager) : Texture(path, manager)
+Texture2D::Texture2D(const Texture2DDesc& desc, const char* path, const string& uniqueId, ResourceManager* manager) : Texture(path, uniqueId, manager)
 {
     // Generate a texture ID and bind it as a 2D texture.
     glGenTextures(1, &m_textureId);

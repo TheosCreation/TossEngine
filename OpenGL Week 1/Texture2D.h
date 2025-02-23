@@ -27,7 +27,7 @@ public:
      * @param path File path of the 2D texture.
      * @param manager Resource Manager of the 2D texture.
      */
-    Texture2D(const Texture2DDesc& desc, const char* path, ResourceManager* manager);
+    Texture2D(const Texture2DDesc& desc, const char* path, const string& uniqueId, ResourceManager* manager);
 
     /**
      * @brief Gets the height of the texture.

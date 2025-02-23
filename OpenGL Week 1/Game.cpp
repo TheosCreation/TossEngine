@@ -26,6 +26,7 @@ Mail : theo.morris@mds.ac.nz
 #include "GeometryBuffer.h"
 #include "SSRQuad.h"
 #include "ProjectSettings.h"
+#include "AudioEngine.h"
 
 Game::Game()
 {
@@ -60,6 +61,8 @@ Game::Game()
     inputManager.setScreenArea(windowSize);
 
     LightManager::GetInstance().Init();
+    auto& audioEngine = AudioEngine::GetInstance();
+    audioEngine.Init();
 }
 
 Game::~Game()
@@ -87,6 +90,7 @@ void Game::onUpdateInternal()
 {
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     auto& inputManager = InputManager::GetInstance();
+    auto& audioEngine = AudioEngine::GetInstance();
     inputManager.onUpdate();
 
     // delta time
@@ -98,6 +102,7 @@ void Game::onUpdateInternal()
     m_accumulatedTime += deltaTime;
 
     m_currentScene->onUpdate(deltaTime);
+    audioEngine.Update();
 
     //if (inputManager.isKeyPressed(Key::Key1))
     //{

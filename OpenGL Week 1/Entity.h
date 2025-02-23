@@ -136,31 +136,36 @@ public:
 
     // Add components to the game object
     template <typename Component>
-    void addComponent(Component* component) {
-        // Use type_index to store the component by its type
-        std::type_index typeIndex(typeid(Component));
-        m_components[typeIndex] = component;
+    Component* addComponent() {
+        // Create a new unique_ptr for the component
+        auto component = std::make_unique<Component>();
 
-        // Set the owner of the component (game object itself)
+        std::type_index typeIndex(typeid(Component)); // Store using compile-time type
         component->setOwner(this);
-
-        // Call the component's onCreate method
         component->onCreate();
+
+        // Move ownership into the component map
+        m_components[typeIndex] = std::move(component);
+
+        // Return the raw pointer to the stored component
+        return static_cast<Component*>(m_components[typeIndex].get());
     }
 
     template <typename Component>
     Component* getComponent() {
         std::type_index typeIndex(typeid(Component));
         auto it = m_components.find(typeIndex);
+
         if (it != m_components.end()) {
-            return static_cast<Component*>(it->second);
+            return static_cast<Component*>(it->second.get());
         }
         return nullptr;
     }
 
 
+
 protected:
-    std::map<std::type_index, Component*> m_components;
+    std::map<std::type_index, std::unique_ptr<Component>> m_components;
 
 	GameObjectManager* m_entitySystem = nullptr; //Pointer to the EntitySystem managing this entity.
 

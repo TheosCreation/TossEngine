@@ -174,13 +174,14 @@
     <ClCompile Include="GameObjectRegistry.cpp" />
     <ClCompile Include="GeometryBuffer.cpp" />
     <ClCompile Include="HeightMap.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SkyboxEntity.cpp" />
-    <ClCompile Include="SoundInfo.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SSRQuad.cpp" />
     <ClCompile Include="TerrainEntity.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -268,6 +269,7 @@
     <ClInclude Include="GameObjectRegistry.h" />
     <ClInclude Include="GeometryBuffer.h" />
     <ClInclude Include="HeightMap.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PerlinNoise.h" />
@@ -275,7 +277,7 @@
     <ClInclude Include="Serializable.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="SkyboxEntity.h" />
-    <ClInclude Include="SoundInfo.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="SSRQuad.h" />
     <ClInclude Include="TerrainEntity.h" />
     <ClInclude Include="Texture.h" />
