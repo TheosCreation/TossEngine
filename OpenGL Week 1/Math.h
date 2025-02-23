@@ -17,6 +17,7 @@ Mail : theo.morris@mds.ac.nz
 #include <gtc/quaternion.hpp>
 #include <cstdlib>
 #include <ctime>
+#include <algorithm>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <gtx/component_wise.hpp>
@@ -47,4 +48,9 @@ inline float randomNumber(float max)
 inline float randomRange(float min, float max)
 {
     return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
+}
+
+template<typename T>
+constexpr const T& Clamp(const T& value, const T& min, const T& max) {
+    return std::clamp(value, min, max);
 }
