@@ -60,7 +60,7 @@ private:
     float m_minSpeed = 1.0f; // 
     float m_maxSpeed = 500.0f; // 
     float m_movementSpeed = 50.0f; // Movement speed of the movable object
-    float m_speedAdjustmentFactor = 0.5f; // 
+    float m_speedAdjustmentFactor = 2.0f; // 
     float m_yaw = 0.0f; // Yaw angle for rotation of the camera
     float m_pitch = 0.0f; // Pitch angle for rotation of the camera
     float m_minFov = 1.0f; // Minimum fov for the camera
@@ -70,6 +70,7 @@ private:
     bool m_playMode = false; // Flag for locking the cursor
     bool m_wireframeMode = false; // Flag for wireframe mode
 
-    unique_ptr<Camera> m_cam = nullptr; // Pointer to the main camera
+    Camera* m_cam = nullptr; // Pointer to the main camera
+    SoundPtr fireSound = nullptr;
     //unique_ptr<Camera> m_uiCamera = nullptr; // Pointer to the UI camera
 };

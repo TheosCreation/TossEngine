@@ -1,7 +1,7 @@
 #include "TextureCubeMap.h"
 #include <glew.h>
 
-TextureCubeMap::TextureCubeMap(const TextureCubeMapDesc& desc, const char* path, ResourceManager* manager) : Texture(path, manager)
+TextureCubeMap::TextureCubeMap(const TextureCubeMapDesc& desc, const char* path, const string& uniqueId, ResourceManager* manager) : Texture(path, uniqueId,  manager)
 {
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureId);

@@ -39,9 +39,7 @@ void MeshEntity::onGraphicsUpdate(UniformData data)
 
     m_shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
     m_shader->setMat4("modelMatrix", m_transform.GetMatrix());
-
     m_shader->setVec3("CameraPos", data.cameraPosition);
-
     m_shader->setFloat("ObjectShininess", getShininess());
     LightManager::GetInstance().applyLighting(m_shader);
 
@@ -84,7 +82,6 @@ void MeshEntity::onGraphicsUpdate(UniformData data)
 void MeshEntity::onShadowPass(uint index)
 {
     GraphicsEntity::onShadowPass(index);
-
 
     auto& lightManager = LightManager::GetInstance();
     m_shadowShader->setMat4("VPLight", lightManager.getLightSpaceMatrix(index));

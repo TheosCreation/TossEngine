@@ -20,7 +20,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Game.h"
 #include "GraphicsEngine.h"
 
-Mesh::Mesh(const char* path, ResourceManager* manager) : Resource(path, manager)
+Mesh::Mesh(const char* path, ResourceManager* manager) : Resource(path, "", manager)
 {
     tinyobj::attrib_t attribs;
     std::vector<tinyobj::shape_t> shapes;

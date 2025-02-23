@@ -17,7 +17,7 @@
 #include <vector>
 #include <list>
 #include <map>
-#include "SoundInfo.h"
+#include "Sound.h"
 
 /**
  * Error Handling Function for FMOD Errors
@@ -33,16 +33,22 @@ void ERRCHECK_fn(FMOD_RESULT result, const char* file, int line);
  */
 class AudioEngine {
 public:
-    /**
-     * Default AudioEngine constructor. 
-     * AudioEngine::init() must be called before using the Audio Engine 
-     */
-    AudioEngine();
 
     /**
-     * Initializes Audio Engine Studio and Core systems to default values. 
+     * @brief Provides access to the singleton instance of GraphicsEngine.
+     * @return A reference to the GraphicsEngine instance.
      */
-    void init();
+    static AudioEngine& GetInstance()
+    {
+        static AudioEngine instance;
+        return instance;
+    }
+
+    // Delete the copy constructor and assignment operator to prevent copying
+    AudioEngine(const AudioEngine& other) = delete;
+    AudioEngine& operator=(const AudioEngine& other) = delete;
+
+    void Init();
 
     /**
      * Method that is called to deactivate the audio engine after use.
@@ -52,7 +58,7 @@ public:
     /**
     * Method which should be called every frame of the game loop
     */
-    void update();
+    void Update();
     
     /**
      * Loads a sound from disk using provided settings
@@ -60,7 +66,7 @@ public:
      * Only reads the audio file and loads into the audio engine
      * if the sound file has already been added to the cache
      */
-    void loadSound(SoundInfo soundInfo);
+    void loadSound(SoundPtr& soundInfo);
 
     /**
     * Plays a sound file using FMOD's low level audio system. If the sound file has not been
@@ -69,12 +75,12 @@ public:
     * @param filename - relative path to file from project directory. (Can be .OGG, .WAV, .MP3,
     *                 or any other FMOD-supported audio format)
     */
-    void playSound(SoundInfo soundInfo);
+    void playSound(SoundPtr soundInfo);
     
     /**
      * Stops a looping sound if it's currently playing.
      */
-    void stopSound(SoundInfo soundInfo);
+    void stopSound(SoundPtr soundInfo);
 
     /**
      * Method that updates the volume of a soundloop that is playing. This can be used to create audio 'fades'
@@ -82,7 +88,7 @@ public:
      * @param fadeSampleLength the length in samples of the intended volume sample. If less than 64 samples, the default 
      *                         FMOD fade out is used
      */
-    void updateSoundLoopVolume(SoundInfo &soundInfo, float newVolume, unsigned int fadeSampleLength = 0);
+    void updateSoundLoopVolume(SoundPtr& soundInfo, float newVolume, unsigned int fadeSampleLength = 0);
 
    
 
@@ -91,12 +97,12 @@ public:
     * The SoundInfo object's position coordinates will be used for the new sound position, so
     * SoundInfo::set3DCoords(x,y,z) should be called before this method to set the new desired location.
     */
-    void update3DSoundPosition(SoundInfo soundInfo); 
+    void update3DSoundPosition(SoundPtr soundInfo);
       
     /**
      * Checks if a looping sound is playing.
      */
-    bool soundIsPlaying(SoundInfo soundInfo); 
+    bool soundIsPlaying(SoundPtr soundInfo);
    
 
     /**
@@ -113,7 +119,7 @@ public:
     * Utility method that returns the length of a SoundInfo's audio file in milliseconds
     * If the sound hasn't been loaded, returns 0
     */
-    unsigned int getSoundLengthInMS(SoundInfo soundInfo);
+    unsigned int getSoundLengthInMS(SoundPtr soundInfo);
 
     /**
      * Loads an FMOD Studio soundbank 
@@ -177,14 +183,24 @@ public:
 private:  
 
     /**
+     * @brief Private constructor to prevent external instantiation.
+     */
+    AudioEngine() = default;
+
+    /**
+     * @brief Private destructor to prevent external deletion.
+     */
+    ~AudioEngine() = default;
+
+    /**
      * Checks if a sound file is in the soundCache
      */
-    bool soundLoaded(SoundInfo soundInfo);
+    bool soundLoaded(SoundPtr soundInfo);
 
     /**
      * Sets the 3D position of a sound
      */
-    void set3dChannelPosition(SoundInfo soundInfo, FMOD::Channel* channel);
+    void set3dChannelPosition(SoundPtr soundInfo, FMOD::Channel* channel);
 
     /**
      * Initializes the reverb effect

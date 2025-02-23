@@ -12,11 +12,11 @@ Mail : theo.morris@mds.ac.nz
 
 #include "Texture.h"
 
-Texture::Texture() : Resource("", nullptr)
+Texture::Texture() : Resource("", "", nullptr)
 {
 }
 
-Texture::Texture(const char* path, ResourceManager* manager) : Resource(path, manager)
+Texture::Texture(const char* path, const string& uniqueId, ResourceManager* manager) : Resource(path, uniqueId, manager)
 {
 }
 

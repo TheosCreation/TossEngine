@@ -15,6 +15,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Camera.h"
 #include "GraphicsEntity.h"
 #include "GraphicsEngine.h"
+#include "MeshRenderer.h"
 
 GameObjectManager::GameObjectManager()
 {
@@ -179,9 +180,36 @@ void GameObjectManager::onLateUpdate(float deltaTime)
 
 void GameObjectManager::onShadowPass(int index)
 {
-	for (auto& graphicsEntity : m_graphicsEntities)
+	//for (auto& graphicsEntity : m_graphicsEntities)
+	//{
+	//	graphicsEntity->onShadowPass(index);
+	//}
+
+	for (auto&& [id, gameObjects] : m_gameObjects)
 	{
-		graphicsEntity->onShadowPass(index);
+		for (auto&& [ptr, gameObject] : gameObjects)
+		{
+			MeshRenderer* renderer = gameObject->getComponent<MeshRenderer>();
+			if (renderer)
+			{
+				renderer->onShadowPass(index);
+			}
+		}
+	}
+}
+
+void GameObjectManager::Render(UniformData _data)
+{
+	for (auto&& [id, gameObjects] : m_gameObjects)
+	{
+		for (auto&& [ptr, gameObject] : gameObjects)
+		{
+			MeshRenderer* renderer = gameObject->getComponent<MeshRenderer>();
+			if (renderer)
+			{
+				renderer->Render(_data);
+			}
+		}
 	}
 }
 
@@ -202,6 +230,21 @@ void GameObjectManager::onTransparencyPass(UniformData _data)
 		if (graphicsEntity->getTransparency() == 1.0f) continue; // if the renderer is opaque we skip it
 
 		graphicsEntity->onGraphicsUpdate(_data);
+	}
+
+
+	for (auto&& [id, gameObjects] : m_gameObjects)
+	{
+		for (auto&& [ptr, gameObject] : gameObjects)
+		{
+			MeshRenderer* renderer = gameObject->getComponent<MeshRenderer>();
+			if (renderer)
+			{
+				if(renderer->GetAlpha()  == 1.0f) continue;
+
+				renderer->Render(_data);
+			}
+		}
 	}
 }
 

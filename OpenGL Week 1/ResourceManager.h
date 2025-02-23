@@ -40,6 +40,7 @@ public:
     MeshPtr createMeshFromFile(const std::string& filepath);
     InstancedMeshPtr createInstancedMeshFromFile(const std::string& filepath);
     HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
+    SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath);
 
     TexturePtr getSkyboxTexture();
 
