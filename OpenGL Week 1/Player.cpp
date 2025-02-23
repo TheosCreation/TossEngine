@@ -35,7 +35,7 @@ void Player::onUpdate(float deltaTime)
 {
     auto& inputManager = InputManager::GetInstance();
 
-    if (!inputManager.isMouseDown(MouseButtonLeft))
+    if (!inputManager.isMouseDown(MouseButtonRight))
     {
         m_playMode = false;
         inputManager.enablePlayMode(m_playMode);
@@ -123,47 +123,52 @@ void Player::onUpdate(float deltaTime)
     //{
     //    std::cout << "Mouse Coordinates: (" << cursorPosition.x << ", " << cursorPosition.y << ")" << std::endl;
     //}
+
+    Vector2 mouseScroll = inputManager.getMouseScroll();
+    if (inputManager.isKeyDown(Key::KeyLeftControl))
+    {
+        if (mouseScroll.y < 0 || mouseScroll.y > 0)
+        {
+            //adjust the movement speed
+            m_movementSpeed += mouseScroll.y * m_speedAdjustmentFactor;
+            m_movementSpeed = Clamp(m_movementSpeed, m_minSpeed, m_maxSpeed);
+        }
+    }
+    else
+    {
+        if (mouseScroll.y < 0 || mouseScroll.y > 0)
+        {
+            m_fov -= mouseScroll.y * m_zoomSpeed;
+            m_fov = Clamp(m_fov, m_minFov, m_maxFov);
+            m_cam->setFieldOfView(m_fov);
+        }
+    }
+
+    float adjustedMoveSpeed = m_movementSpeed;
     // Adjust camera speed if Shift key is pressed
     if (inputManager.isKeyDown(Key::KeyShift)) {
-        m_movementSpeed = m_originalMovementSpeed * 2.0f;
+        adjustedMoveSpeed = m_movementSpeed * 2.0f;
     }
-    else {
-        m_movementSpeed = m_originalMovementSpeed;
-    }
+
 
     Vector3 forward = m_transform.GetForward();
     Vector3 right = m_transform.GetRight();
     Vector3 up = m_transform.GetUp();
-    
+
     if (inputManager.isKeyDown(Key::KeyW))
-        m_transform.position += forward * m_movementSpeed * deltaTime;
+        m_transform.position += forward * adjustedMoveSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyS))
-        m_transform.position -= forward * m_movementSpeed * deltaTime;
+        m_transform.position -= forward * adjustedMoveSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyA))
-        m_transform.position -= right * m_movementSpeed * deltaTime;
+        m_transform.position -= right * adjustedMoveSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyD))
-        m_transform.position += right * m_movementSpeed * deltaTime;
+        m_transform.position += right * adjustedMoveSpeed * deltaTime;
 
     // Handle input for player rotation
     if (inputManager.isKeyDown(Key::KeyQ))
         m_transform.position -= up * m_movementSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyE))
-        m_transform.position += up * m_movementSpeed * deltaTime; 
-    
-    Vector2 mouseScroll = inputManager.getMouseScroll();
-    if (mouseScroll.y < 0 || mouseScroll.y > 0)
-    {
-        m_fov -= mouseScroll.y * m_zoomSpeed;
-
-        // Clamp the FOV to prevent it from going out of a reasonable range
-        if (m_fov < m_minFov) {
-            m_fov = m_minFov;
-        }
-        if (m_fov > m_maxFov) {
-            m_fov = m_maxFov;
-        }
-        m_cam->setFieldOfView(m_fov);
-    }
+        m_transform.position += up * m_movementSpeed * deltaTime;
 }
 
 void Player::onFixedUpdate(float fixedDeltaTime)

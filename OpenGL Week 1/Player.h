@@ -57,8 +57,10 @@ public:
 private:
     float m_elapsedSeconds = 0.0f; // Elapsed time in seconds
     
+    float m_minSpeed = 1.0f; // 
+    float m_maxSpeed = 500.0f; // 
     float m_movementSpeed = 50.0f; // Movement speed of the movable object
-    float m_originalMovementSpeed = m_movementSpeed; // Original movement speed
+    float m_speedAdjustmentFactor = 0.5f; // 
     float m_yaw = 0.0f; // Yaw angle for rotation of the camera
     float m_pitch = 0.0f; // Pitch angle for rotation of the camera
     float m_minFov = 1.0f; // Minimum fov for the camera

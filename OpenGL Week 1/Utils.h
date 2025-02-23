@@ -450,6 +450,7 @@ enum Key
     KeyDown,
     KeyUp,
     KeyShift = 340,
+    KeyLeftControl = 341,
 };
 
 // Enum representing mouse buttons

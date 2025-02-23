@@ -18,7 +18,7 @@ struct ProjectSettings
         file >> j;
 
         if (j.contains("RenderingPath") && j["RenderingPath"].is_string()) {
-            renderingPath = FromString<RenderingPath>(j["RenderingPath"].get<std::string>());
+            renderingPath = FromString<RenderingPath>(j["RenderingPath"].get<std::string>()); 
         }
     }
 
