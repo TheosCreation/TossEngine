@@ -55,7 +55,7 @@ void MeshRenderer::Render(UniformData data)
     graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
     graphicsEngine.setDepthFunc(DepthType::Less);
 
-    if (graphicsEngine.getRenderingPath() == RenderingPath::Deferred)
+    if (graphicsEngine.getRenderingPath() == RenderingPath::Deferred && m_alpha == 1)
     {
         graphicsEngine.setShader(m_geometryShader);
         m_geometryShader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
@@ -64,18 +64,24 @@ void MeshRenderer::Render(UniformData data)
 
         if (m_texture != nullptr)
         {
-            graphicsEngine.setTexture2D(m_texture, 0, "Texture0");
+            m_geometryShader->setTexture2D(m_texture, 0, "Texture0");
+            m_geometryShader->setBool("useTexture", true);
+        }
+        else
+        {
+            m_geometryShader->setVec3("uColor", m_color);
+            m_geometryShader->setBool("useTexture", false);
         }
 
         if (m_reflectiveMap)
         {
-            graphicsEngine.setTexture2D(m_reflectiveMap, 2, "ReflectionMap");
+            m_geometryShader->setTexture2D(m_reflectiveMap, 2, "ReflectionMap");
         }
 
     }
     
 
-    if (graphicsEngine.getRenderingPath() == RenderingPath::Forward)
+    if (graphicsEngine.getRenderingPath() == RenderingPath::Forward || m_alpha < 1)
     {
         graphicsEngine.setShader(m_shader);
         m_shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
@@ -85,15 +91,15 @@ void MeshRenderer::Render(UniformData data)
 
         LightManager::GetInstance().applyLighting(m_shader);
 
-
-        auto& graphicsEngine = GraphicsEngine::GetInstance();
         if (m_texture != nullptr)
         {
-            graphicsEngine.setTexture2D(m_texture, 0, "Texture0");
+            m_shader->setTexture2D(m_texture, 0, "Texture0");
+            m_shader->setBool("useTexture", true);
         }
         else
         {
             m_shader->setVec3("uColor", m_color);
+            m_shader->setBool("useTexture", false);
             m_shader->setFloat("alpha", m_alpha);
         }
 

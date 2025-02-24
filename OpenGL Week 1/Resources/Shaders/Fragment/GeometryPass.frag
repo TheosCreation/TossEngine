@@ -13,6 +13,8 @@ uniform sampler2D Texture0; // Albedo texture
 uniform sampler2D Texture_ReflectivityMap; // Reflectivity texture (optional)
 uniform float ObjectShininess = 32.0f;
 uniform float ObjectReflectivity = 1.0f; // Default reflectivity value
+uniform vec3 uColor;
+uniform bool useTexture;
 
 void main()
 {
@@ -21,10 +23,10 @@ void main()
 
     // Write fragment normal to G-buffer
     Texture_Normal = vec4(normalize(FragNormal), 1.0f);
-
+    
+    vec3 Albedo = useTexture ? texture(Texture0, FragTexcoord).rgb : uColor;
     // Write albedo and shininess to G-buffer
-    Texture_AlbedoShininess.rgb = texture(Texture0, FragTexcoord).rgb;
-    Texture_AlbedoShininess.a = ObjectShininess;
+    Texture_AlbedoShininess = vec4(Albedo, ObjectShininess);
 
     // Write reflectivity to G-buffer
     //float Reflectivity = ObjectReflectivity; // Default value

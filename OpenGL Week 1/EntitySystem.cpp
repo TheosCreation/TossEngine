@@ -193,6 +193,8 @@ void GameObjectManager::onShadowPass(int index)
 			MeshRenderer* renderer = gameObject->getComponent<MeshRenderer>();
 			if (renderer)
 			{
+				if (renderer->GetAlpha() < 1.0f) continue; // if the renderer is transparent we skip it
+
 				renderer->onShadowPass(index);
 			}
 		}
