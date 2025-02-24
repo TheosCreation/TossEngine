@@ -481,6 +481,7 @@ struct Color {
     static constexpr Vector3 Blue = Vector3(0.0f, 0.0f, 1.0f);
     static constexpr Vector3 White = Vector3(1.0f, 1.0f, 1.0f);
     static constexpr Vector3 Black = Vector3(0.0f, 0.0f, 0.0f);
+    static constexpr Vector3 Gray = Vector3(0.5f, 0.5f, 0.5f);
     static constexpr Vector3 Purple = Vector3(1.0f, 0.0f, 1.0f);
 };
 

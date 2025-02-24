@@ -2,7 +2,7 @@
 #define MAX_POINT_LIGHTS 25
 #define MAX_DIR_LIGHTS 2
 #include "Shadows.glsl"
-#include "Lighting.glsl"
+#include "BlinnPhonglighting.glsl"
 
 in vec2 FragTexcoord;
 
