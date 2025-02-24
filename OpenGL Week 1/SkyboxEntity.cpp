@@ -39,7 +39,7 @@ void SkyboxEntity::onGraphicsUpdate(UniformData data)
     }
 
     // Get the mesh's vertex array object and bind it to the graphics pipeline
-    auto meshVBO = getMesh()->getVertexArrayObject();
+    auto meshVBO = m_mesh->getVertexArrayObject();
     graphicsEngine.setVertexArrayObject(meshVBO);
 
     // Draw the indexed triangles for the skybox
@@ -68,7 +68,7 @@ void SkyboxEntity::onGeometryPass(UniformData data)
     }
 
     // Get the mesh's vertex array object and bind it to the graphics pipeline
-    auto meshVBO = getMesh()->getVertexArrayObject();
+    auto meshVBO = m_mesh->getVertexArrayObject();
     graphicsEngine.setVertexArrayObject(meshVBO);
 
     // Draw the indexed triangles for the geometry pass
@@ -76,4 +76,9 @@ void SkyboxEntity::onGeometryPass(UniformData data)
 
     // Unbind the skybox texture
     m_geometryShader->setTextureCubeMap(nullptr, 0, "");
+}
+
+void SkyboxEntity::setMesh(MeshPtr mesh)
+{
+    m_mesh = mesh;
 }

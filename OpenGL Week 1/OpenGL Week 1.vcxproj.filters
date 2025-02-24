@@ -105,12 +105,6 @@
     <ClCompile Include="EntitySystem.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="MeshEntity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InstancedMeshEntity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="QuadEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -216,7 +210,6 @@
     <None Include="Resources\Shaders\Vertex\SkyBoxShader.vert" />
     <None Include="Resources\Meshes\sphere.mtl" />
     <None Include="Resources\Meshes\teapot.mtl" />
-    <None Include="Resources\Shaders\Fragment\InstancedMesh.frag" />
     <None Include="Resources\Shaders\Vertex\InstancedMesh.vert" />
     <None Include="Resources\Shaders\Fragment\MeshShader.frag" />
     <None Include="Resources\Shaders\Vertex\MeshShader.vert" />
@@ -299,12 +292,6 @@
     </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshEntity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InstancedMeshEntity.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QuadEntity.h">
       <Filter>Header Files</Filter>

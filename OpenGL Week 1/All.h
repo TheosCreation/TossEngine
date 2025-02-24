@@ -32,13 +32,10 @@ Mail : theo.morris@mds.ac.nz
 
 #include "Camera.h"
 #include "Framebuffer.h"
-#include "MeshEntity.h"
 #include "Entity.h"
-#include "InstancedMeshEntity.h"
 #include "QuadEntity.h"
 #include "SkyboxEntity.h"
 #include "TerrainEntity.h"
-#include "Entity.h"
 #include "EntitySystem.h"
 #include "GraphicsEntity.h"
 #include "Game.h"

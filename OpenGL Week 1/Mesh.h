@@ -42,6 +42,15 @@ public:
      */
     VertexArrayObjectPtr getVertexArrayObject();
 
+    void addInstance(Vector3 position, Vector3 scale, Vector3 rotation);
+
+    void initInstanceBuffer();
+
+    int getInstanceCount();
+
+    void clearInstances();
+
 private:
     VertexArrayObjectPtr m_vao; // The Vertex Array Object associated with this mesh.
+    std::vector<Mat4> m_instanceTransforms; //A vector of transformation matrices for each instance.
 };

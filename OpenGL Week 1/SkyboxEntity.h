@@ -11,13 +11,13 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include "MeshEntity.h"
+#include "GraphicsEntity.h"
 
 /**
  * @class SkyboxEntity
  * @brief Represents a skybox in the 3D scene, handling its creation, updating, and shader uniform data.
  */
-class SkyboxEntity : public MeshEntity
+class SkyboxEntity : public GraphicsEntity
 {
 public:
     /**
@@ -42,4 +42,9 @@ public:
     * @param data The uniform data for the pass.
     */
     void onGeometryPass(UniformData data) override;
+
+    void setMesh(MeshPtr mesh);
+
+private:
+    MeshPtr m_mesh;
 };
