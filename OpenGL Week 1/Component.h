@@ -37,6 +37,6 @@ public:
     virtual void onLateUpdate(float deltaTime) {}
 
 protected:
-	GameObject* m_gameObjectOwnerRef;
+	GameObject* m_owner;
 };
 

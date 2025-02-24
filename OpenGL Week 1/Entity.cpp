@@ -34,16 +34,16 @@ void GameObject::setId(size_t id)
 void GameObject::release()
 {
 	// Remove this entity from the EntitySystem
-	m_entitySystem->removeEntity(this);
+	m_gameObjectManager->removeEntity(this);
 }
 
-void GameObject::setEntitySystem(GameObjectManager* entitySystem)
+void GameObject::setGameObjectManager(GameObjectManager* gameObjectManager)
 {
-	// Set the EntitySystem managing this entity
-	m_entitySystem = entitySystem;
+	// Set the GameObjectManager managing this entity
+	m_gameObjectManager = gameObjectManager;
 }
 
 GameObjectManager* GameObject::getGameObjectManager()
 {
-	return m_entitySystem;
+	return m_gameObjectManager;
 }

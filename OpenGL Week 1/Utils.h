@@ -48,6 +48,7 @@ class InstancedMesh;
 class SSRQuad;
 struct ProjectSettings;
 class Sound;
+class Component;
 
 // Type definitions for common engine variables
 typedef unsigned int uint;
@@ -72,6 +73,7 @@ typedef std::shared_ptr<HeightMap> HeightMapPtr;
 typedef std::shared_ptr<SSRQuad> SSRQuadPtr;
 typedef std::unique_ptr<ProjectSettings> ProjectSettingsPtr;
 typedef std::shared_ptr<Sound> SoundPtr;
+typedef std::unique_ptr<Component> ComponentPtr;
 
 // Using declarations to simplify the code and avoid typing the full namespace each time
 using std::shared_ptr;
@@ -478,6 +480,7 @@ struct Color {
     static constexpr Vector3 Green = Vector3(0.0f, 1.0f, 0.0f);
     static constexpr Vector3 Blue = Vector3(0.0f, 0.0f, 1.0f);
     static constexpr Vector3 White = Vector3(1.0f, 1.0f, 1.0f);
+    static constexpr Vector3 Black = Vector3(0.0f, 0.0f, 0.0f);
     static constexpr Vector3 Purple = Vector3(1.0f, 0.0f, 1.0f);
 };
 

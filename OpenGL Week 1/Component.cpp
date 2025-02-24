@@ -2,10 +2,10 @@
 
 GameObject* Component::getOwner()
 {
-    return m_gameObjectOwnerRef;
+    return m_owner;
 }
 
 void Component::setOwner(GameObject* gameObject)
 {
-    m_gameObjectOwnerRef = gameObject;
+    m_owner = gameObject;
 }

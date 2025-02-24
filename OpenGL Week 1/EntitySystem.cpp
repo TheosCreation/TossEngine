@@ -16,6 +16,7 @@ Mail : theo.morris@mds.ac.nz
 #include "GraphicsEntity.h"
 #include "GraphicsEngine.h"
 #include "MeshRenderer.h"
+#include "RigidBody.h"
 
 GameObjectManager::GameObjectManager()
 {
@@ -51,7 +52,7 @@ bool GameObjectManager::createGameObjectInternal(GameObject* entity, size_t id)
 
 	// Initialize the entity
 	entity->setId(id);
-	entity->setEntitySystem(this);
+	entity->setGameObjectManager(this);
 	entity->onCreate();
 
 	return true;
@@ -264,6 +265,18 @@ void GameObjectManager::onFixedUpdate(float fixedDeltaTime)
 		for (auto&& [ptr, entity] : entities)
 		{
 			entity->onFixedUpdate(fixedDeltaTime);
+		}
+	}
+
+	for (auto&& [id, gameObjects] : m_gameObjects)
+	{
+		for (auto&& [ptr, gameObject] : gameObjects)
+		{
+			Rigidbody* rb = gameObject->getComponent<Rigidbody>();
+			if(rb)
+			{
+				rb->onFixedUpdate(fixedDeltaTime);
+			}
 		}
 	}
 }
