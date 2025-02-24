@@ -32,6 +32,8 @@ Scene::Scene(Game* game)
 
 
     m_PhysicsWorld->setIsDebugRenderingEnabled(true);
+    m_PhysicsWorld->setNbIterationsVelocitySolver(10);
+    m_PhysicsWorld->setNbIterationsPositionSolver(5);
 
     //rp3d::DebugRenderer& debugRenderer = m_PhysicsWorld->getDebugRenderer();
     //// Select the contact points and contact normals to be displayed
@@ -303,11 +305,15 @@ void Scene::onCreate()
         lightManager.createPointLight(pointLight);
     }
 
-    {
+    for (int i = 0; i < 30; ++i) {
         auto physicsSphere = m_gameObjectManager->createGameObject<GameObject>();
-        physicsSphere->m_transform.position = Vector3(0, 5, 0);
+
+        // Adjusting position based on index to avoid overlapping spheres
+        float offset = i * 8.0f; // Adjust this to control the distance between the spheres
+        physicsSphere->m_transform.position = Vector3(0, 10 + offset, 0.1f);
         physicsSphere->m_transform.scale = Vector3(3.0f);
 
+        // Mesh and shader setup
         auto meshRenderer = physicsSphere->addComponent<MeshRenderer>();
         meshRenderer->SetColor(Color::Black);
         meshRenderer->SetMesh(gameOwner->getSphereMesh());
@@ -315,14 +321,16 @@ void Scene::onCreate()
         meshRenderer->SetShadowShader(m_shadowShader);
         meshRenderer->SetGeometryShader(m_meshGeometryShader);
 
+        // Rigidbody setup with sphere collider
         auto rb = physicsSphere->addComponent<Rigidbody>();
         rb->SetSphereCollider(3.0f);
     }
 
     {
+        // Create the ground
         auto physicsCube = m_gameObjectManager->createGameObject<GameObject>();
         physicsCube->m_transform.position = Vector3(0, -5, 0);
-        physicsCube->m_transform.scale = Vector3(20.0f, 0.2f, 20.0f);
+        physicsCube->m_transform.scale = Vector3(100.0f, 0.5f, 100.0f);
 
         auto meshRenderer = physicsCube->addComponent<MeshRenderer>();
         meshRenderer->SetColor(Color::White);
@@ -331,10 +339,48 @@ void Scene::onCreate()
         meshRenderer->SetShadowShader(m_shadowShader);
         meshRenderer->SetGeometryShader(m_meshGeometryShader);
 
-
         auto rb = physicsCube->addComponent<Rigidbody>();
-        rb->SetBoxCollider(Vector3(20.0f, 0.1f, 20.0f));
+        rb->SetBoxCollider(Vector3(100.0f, 0.5f, 100.0f));
         rb->SetBodyType(BodyType::Static);
+    }
+
+    // Create four walls to hold the balls
+    {
+        // Wall dimensions
+        float wallHeight = 10.0f; // Height of the walls
+        float wallThickness = 0.2f; // Thickness of the walls
+        float areaSize = 100.0f; // Size of the area (assuming a square area)
+
+        // Wall positions
+        Vector3 wallPositions[] = {
+            Vector3(0, wallHeight / 2 - 5, areaSize / 2), // Front wall
+            Vector3(0, wallHeight / 2 - 5, -areaSize / 2), // Back wall
+            Vector3(areaSize / 2, wallHeight / 2 - 5, 0),  // Right wall
+            Vector3(-areaSize / 2, wallHeight / 2 - 5, 0)  // Left wall
+        };
+
+        // Wall scales
+        Vector3 wallScales[] = {
+            Vector3(areaSize, wallHeight, wallThickness), // Front and back walls
+            Vector3(wallThickness, wallHeight, areaSize)  // Right and left walls
+        };
+
+        for (int i = 0; i < 4; ++i) {
+            auto wall = m_gameObjectManager->createGameObject<GameObject>();
+            wall->m_transform.position = wallPositions[i];
+            wall->m_transform.scale = wallScales[i < 2 ? 0 : 1]; // Use appropriate scale for front/back vs right/left walls
+
+            auto meshRenderer = wall->addComponent<MeshRenderer>();
+            meshRenderer->SetColor(Color::Gray); // Set a different color for walls
+            meshRenderer->SetMesh(gameOwner->getCubeMesh());
+            meshRenderer->SetShader(m_solidColorMeshShader);
+            meshRenderer->SetShadowShader(m_shadowShader);
+            meshRenderer->SetGeometryShader(m_meshGeometryShader);
+
+            auto rb = wall->addComponent<Rigidbody>();
+            rb->SetBoxCollider(wall->m_transform.scale); // Collider size matches the wall scale
+            rb->SetBodyType(BodyType::Static); // Walls are static
+        }
     }
 
     //{
@@ -362,7 +408,10 @@ void Scene::onCreateLate()
 
 void Scene::onUpdate(float deltaTime)
 {
+    if(deltaTime <= 0.0f) return;
+
     m_gameObjectManager->onUpdate(deltaTime);
+
     m_elapsedSeconds += deltaTime;
 
     // Parameters for the circular path

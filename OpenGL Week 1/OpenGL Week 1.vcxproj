@@ -212,6 +212,8 @@
   <ItemGroup>
     <None Include="Resources\Meshes\sphere.mtl" />
     <None Include="Resources\Meshes\teapot.mtl" />
+    <None Include="Resources\Shaders\BlinnPhongLighting.glsl" />
+    <None Include="Resources\Shaders\BRDFlighting.glsl" />
     <None Include="Resources\Shaders\Compute\ComputeParticles.comp" />
     <None Include="Resources\Shaders\Fragment\ChromaticAberrationRenderPass.frag" />
     <None Include="Resources\Shaders\Fragment\GeometryPass.frag" />
@@ -227,7 +229,6 @@
     <None Include="Resources\Shaders\Fragment\ShadowShader.frag" />
     <None Include="Resources\Shaders\Fragment\SSRShader.frag" />
     <None Include="Resources\Shaders\Fragment\TerrainShader.frag" />
-    <None Include="Resources\Shaders\Lighting.glsl" />
     <None Include="Resources\Shaders\ShaderUtils.glsl" />
     <None Include="Resources\Shaders\Shadows.glsl" />
     <None Include="Resources\Shaders\Vertex\InstancedMesh.vert" />

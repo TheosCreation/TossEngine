@@ -242,7 +242,6 @@
     <None Include="Resources\Shaders\Vertex\ShadowShader.vert" />
     <None Include="Resources\Shaders\ShaderUtils.glsl" />
     <None Include="Resources\Shaders\Shadows.glsl" />
-    <None Include="Resources\Shaders\Lighting.glsl" />
     <None Include="Resources\Shaders\Fragment\GeometryPass.frag" />
     <None Include="Resources\Shaders\Vertex\ShadowShaderInstanced.vert" />
     <None Include="Resources\Shaders\Fragment\GeometryPassTerrian.frag" />
@@ -252,6 +251,8 @@
     <None Include="Resources\Shaders\Compute\ComputeParticles.comp" />
     <None Include="Resources\Shaders\Vertex\ParticleSystem.vert" />
     <None Include="Resources\Shaders\Fragment\ParticleSystem.frag" />
+    <None Include="Resources\Shaders\BRDFlighting.glsl" />
+    <None Include="Resources\Shaders\BlinnPhongLighting.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rect.h">
