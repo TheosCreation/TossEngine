@@ -95,7 +95,7 @@ public:
      * @brief Sets the EntitySystem that manages this entity.
      * @param entitySystem A pointer to the EntitySystem.
      */
-	void setEntitySystem(GameObjectManager* entitySystem);
+	void setGameObjectManager(GameObjectManager* gameObjectManager);
 
     /**
      * @brief Releases the entity, preparing it for destruction.
@@ -163,11 +163,10 @@ public:
     }
 
 
-
 protected:
-    std::map<std::type_index, std::unique_ptr<Component>> m_components;
+    std::map<std::type_index, ComponentPtr> m_components;
 
-	GameObjectManager* m_entitySystem = nullptr; //Pointer to the EntitySystem managing this entity.
+	GameObjectManager* m_gameObjectManager = nullptr; //Pointer to the EntitySystem managing this entity.
 
 private:
 	size_t m_id = 0; //Unique identifier for the entity.

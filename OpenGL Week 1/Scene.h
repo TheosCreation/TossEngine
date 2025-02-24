@@ -13,6 +13,7 @@ Mail : theo.morris@mds.ac.nz
 #pragma once
 #include "Utils.h"
 #include "All.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 class Game;
 
@@ -89,8 +90,14 @@ public:
      */
     virtual void onQuit();
 
+    rp3d::PhysicsWorld* GetPhysicsWorld();
+    rp3d::PhysicsCommon& GetPhysicsCommon();
+
 protected:
     UniformData uniformData = {};
+
+    rp3d::PhysicsCommon m_PhysicsCommon;  // Manages physics resources
+    rp3d::PhysicsWorld* m_PhysicsWorld;   // Scene-specific physics world
 
     ShaderPtr ssrQuadLightingShader = nullptr;
     ShaderPtr defaultFullscreenShader = nullptr;

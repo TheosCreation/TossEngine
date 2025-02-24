@@ -17,13 +17,13 @@ void Camera::getViewMatrix(Mat4& view)
 {
 	if (m_type == CameraType::Perspective)
 	{
-		m_view = glm::lookAt(m_gameObjectOwnerRef->m_transform.position, m_gameObjectOwnerRef->m_transform.position + m_gameObjectOwnerRef->m_transform.GetForward(), m_gameObjectOwnerRef->m_transform.GetUp());
+		m_view = glm::lookAt(m_owner->m_transform.position, m_owner->m_transform.position + m_owner->m_transform.GetForward(), m_owner->m_transform.GetUp());
 	}
 	else if (m_type == CameraType::Orthogonal)
 	{
 		Vector3 cameraPosition = Vector3(m_screenArea.width, -m_screenArea.height, 1.0f);
 		Vector3 targetPosition = Vector3(m_screenArea.width, -m_screenArea.height, 0.0f);
-		m_view = glm::lookAt(cameraPosition, targetPosition, m_gameObjectOwnerRef->m_transform.GetUp());
+		m_view = glm::lookAt(cameraPosition, targetPosition, m_owner->m_transform.GetUp());
 	}
 	view = m_view;
 }
@@ -75,12 +75,12 @@ void Camera::setTargetPosition(Vector3 newTargetPosition)
 
 Vector3 Camera::getPosition()
 {
-	return m_gameObjectOwnerRef->m_transform.position;
+	return m_owner->m_transform.position;
 }
 
 Vector3 Camera::getFacingDirection()
 {
-	return m_gameObjectOwnerRef->m_transform.GetForward();
+	return m_owner->m_transform.GetForward();
 }
 
 void Camera::computeProjectionMatrix()

@@ -27,7 +27,7 @@ void MeshRenderer::onShadowPass(uint index)
 
     auto& lightManager = LightManager::GetInstance();
     m_shadowShader->setMat4("VPLight", lightManager.getLightSpaceMatrix(index));
-    m_shadowShader->setMat4("modelMatrix", m_gameObjectOwnerRef->m_transform.GetMatrix());
+    m_shadowShader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
 
     if (m_mesh == nullptr) return;
 
@@ -51,7 +51,7 @@ void MeshRenderer::Render(UniformData data)
     {
         graphicsEngine.setShader(m_geometryShader);
         m_geometryShader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
-        m_geometryShader->setMat4("modelMatrix", m_gameObjectOwnerRef->m_transform.GetMatrix());
+        m_geometryShader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
         m_geometryShader->setFloat("ObjectShininess", m_shininess);
 
         if (m_texture != nullptr)
@@ -71,7 +71,7 @@ void MeshRenderer::Render(UniformData data)
     {
         graphicsEngine.setShader(m_shader);
         m_shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
-        m_shader->setMat4("modelMatrix", m_gameObjectOwnerRef->m_transform.GetMatrix());
+        m_shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
         m_shader->setVec3("CameraPos", data.cameraPosition);
         m_shader->setFloat("ObjectShininess", m_shininess);
 

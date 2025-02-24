@@ -13,8 +13,9 @@ Mail : theo.morris@mds.ac.nz
 #include "Scene.h"
 #include "SSRQuad.h"
 #include "GeometryBuffer.h"
-#include "MeshRenderer.h"
 #include "AudioEngine.h"
+#include "MeshRenderer.h"
+#include "Rigidbody.h"
 
 Scene::Scene(Game* game)
 {
@@ -23,6 +24,19 @@ Scene::Scene(Game* game)
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
     m_deferredRenderSSRQ = std::make_unique<SSRQuad>();
     m_postProcessSSRQ = std::make_unique<SSRQuad>();
+
+    // Create a physics world with default gravity
+    rp3d::PhysicsWorld::WorldSettings settings;
+    settings.gravity = rp3d::Vector3(0, -9.81f, 0);
+    m_PhysicsWorld = m_PhysicsCommon.createPhysicsWorld(settings);
+
+
+    m_PhysicsWorld->setIsDebugRenderingEnabled(true);
+
+    //rp3d::DebugRenderer& debugRenderer = m_PhysicsWorld->getDebugRenderer();
+    //// Select the contact points and contact normals to be displayed
+    //debugRenderer.setIsDebugItemDisplayed(rp3d::DebugRenderer::DebugItem::CONTACT_POINT, true);
+    //debugRenderer.setIsDebugItemDisplayed(rp3d::DebugRenderer::DebugItem::CONTACT_NORMAL, true);
 }
 
 Scene::~Scene()
@@ -110,7 +124,7 @@ void Scene::onCreate()
 
     //Creating skybox object
     m_skyBox = std::make_unique<SkyboxEntity>();
-    m_skyBox->setEntitySystem(m_gameObjectManager.get());
+    m_skyBox->setGameObjectManager(m_gameObjectManager.get());
     m_skyBox->setMesh(gameOwner->getCubeMesh());
     m_skyBox->setShader(skyboxShader);
     m_skyBox->setGeometryShader(m_skyboxGeometryShader);
@@ -289,6 +303,40 @@ void Scene::onCreate()
         lightManager.createPointLight(pointLight);
     }
 
+    {
+        auto physicsSphere = m_gameObjectManager->createGameObject<GameObject>();
+        physicsSphere->m_transform.position = Vector3(0, 5, 0);
+        physicsSphere->m_transform.scale = Vector3(3.0f);
+
+        auto meshRenderer = physicsSphere->addComponent<MeshRenderer>();
+        meshRenderer->SetColor(Color::Black);
+        meshRenderer->SetMesh(gameOwner->getSphereMesh());
+        meshRenderer->SetShader(m_solidColorMeshShader);
+        meshRenderer->SetShadowShader(m_shadowShader);
+        meshRenderer->SetGeometryShader(m_meshGeometryShader);
+
+        auto rb = physicsSphere->addComponent<Rigidbody>();
+        rb->SetSphereCollider(3.0f);
+    }
+
+    {
+        auto physicsCube = m_gameObjectManager->createGameObject<GameObject>();
+        physicsCube->m_transform.position = Vector3(0, -5, 0);
+        physicsCube->m_transform.scale = Vector3(20.0f, 0.2f, 20.0f);
+
+        auto meshRenderer = physicsCube->addComponent<MeshRenderer>();
+        meshRenderer->SetColor(Color::White);
+        meshRenderer->SetMesh(gameOwner->getCubeMesh());
+        meshRenderer->SetShader(m_solidColorMeshShader);
+        meshRenderer->SetShadowShader(m_shadowShader);
+        meshRenderer->SetGeometryShader(m_meshGeometryShader);
+
+
+        auto rb = physicsCube->addComponent<Rigidbody>();
+        rb->SetBoxCollider(Vector3(20.0f, 0.1f, 20.0f));
+        rb->SetBodyType(BodyType::Static);
+    }
+
     //{
     //    auto newGameObject = m_gameObjectManager->createGameObject<GameObject>();
     //    MeshRenderer* renderer = newGameObject->addComponent<MeshRenderer>();
@@ -341,7 +389,10 @@ void Scene::onUpdate(float deltaTime)
 
 void Scene::onFixedUpdate(float fixedDeltaTime)
 {
-    m_gameObjectManager->onFixedUpdate(fixedDeltaTime);
+    if (fixedDeltaTime <= 0.0f) return;
+
+    m_gameObjectManager->onFixedUpdate(fixedDeltaTime); 
+    m_PhysicsWorld->update(fixedDeltaTime);
 }
 
 void Scene::onLateUpdate(float deltaTime)
@@ -431,6 +482,24 @@ void Scene::onGraphicsUpdate()
 
         m_postProcessingFramebuffer->Bind();
 
+        // trying to get debug to show physics
+        //graphicsEngine.setFaceCulling(CullType::BackFace);
+        //graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
+        //graphicsEngine.setDepthFunc(DepthType::Less);
+        //graphicsEngine.setShader(shader);
+        //
+        //
+        //// Render the physics debug
+        //rp3d::DebugRenderer& debugRenderer = m_PhysicsWorld->getDebugRenderer();
+        //auto debugLines = debugRenderer.getLines();
+        //
+        //// Retrieve the instance of the graphics engine
+        //graphicsEngine.setVertexArrayObject(debugLines);
+        //
+        //// Draw the mesh to update the shadow map
+        //graphicsEngine.drawLines(debugLines->getNumIndices());
+
+
         m_gameObjectManager->onGraphicsUpdate(uniformData);
         m_skyBox->onGraphicsUpdate(uniformData);
         m_gameObjectManager->Render(uniformData);
@@ -461,4 +530,17 @@ void Scene::onQuit()
 {
     //m_entitySystem->saveEntitiesToFile("Scenes/Scene1.json");
     m_gameObjectManager->clearGameObjects();
+
+    // Destroy the physics world when the scene is deleted
+    m_PhysicsCommon.destroyPhysicsWorld(m_PhysicsWorld);
+}
+
+rp3d::PhysicsWorld* Scene::GetPhysicsWorld()
+{
+    return m_PhysicsWorld;
+}
+
+rp3d::PhysicsCommon& Scene::GetPhysicsCommon()
+{
+    return m_PhysicsCommon;
 }
