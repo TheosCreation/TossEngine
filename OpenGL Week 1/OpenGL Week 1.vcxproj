@@ -194,11 +194,9 @@
     <ClCompile Include="GraphicsEntity.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InstancedMesh.cpp" />
-    <ClCompile Include="InstancedMeshEntity.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="MeshEntity.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="QuadEntity.cpp" />
     <ClCompile Include="Resource.cpp" />
@@ -221,7 +219,6 @@
     <None Include="Resources\Shaders\Fragment\GeometryPassTerrian.frag" />
     <None Include="Resources\Shaders\Fragment\GreyScaleFullRenderPass.frag" />
     <None Include="Resources\Shaders\Fragment\GreyScaleLuminosityFullRenderPass.frag" />
-    <None Include="Resources\Shaders\Fragment\InstancedMesh.frag" />
     <None Include="Resources\Shaders\Fragment\ParticleSystem.frag" />
     <None Include="Resources\Shaders\Fragment\SSRLightingShader.frag" />
     <None Include="Resources\Shaders\Fragment\OutlineShader.frag" />
@@ -292,11 +289,9 @@
     <ClInclude Include="GraphicsEntity.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InstancedMesh.h" />
-    <ClInclude Include="InstancedMeshEntity.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="MeshEntity.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="QuadEntity.h" />
     <ClInclude Include="Utils.h" />

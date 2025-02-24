@@ -37,7 +37,15 @@ void MeshRenderer::onShadowPass(uint index)
     graphicsEngine.setVertexArrayObject(meshVBO);
 
     // Draw the mesh to update the shadow map
-    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, meshVBO->getNumIndices());
+    if (m_mesh->getInstanceCount() > 0)
+    {
+        // mesh has instances so we render instanced
+        graphicsEngine.drawIndexedTrianglesInstanced(TriangleType::TriangleList, meshVBO->getNumIndices(), m_mesh->getInstanceCount());
+    }
+    else
+    {
+        graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, meshVBO->getNumIndices());
+    }
 }
 
 void MeshRenderer::Render(UniformData data)
@@ -110,8 +118,15 @@ void MeshRenderer::Render(UniformData data)
     // Retrieve the instance of the graphics engine
     graphicsEngine.setVertexArrayObject(meshVBO);
 
-    // Draw the mesh to update the shadow map
-    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, meshVBO->getNumIndices());
+    if (m_mesh->getInstanceCount() > 0)
+    {
+        // mesh has instances so we render instanced
+        graphicsEngine.drawIndexedTrianglesInstanced(TriangleType::TriangleList, meshVBO->getNumIndices(), m_mesh->getInstanceCount());
+    }
+    else
+    {
+        graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, meshVBO->getNumIndices());
+    }
 
     graphicsEngine.setTexture2D(nullptr, 0, "");
     graphicsEngine.setTextureCubeMap(nullptr, 1, "");

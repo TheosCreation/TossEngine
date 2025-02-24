@@ -120,7 +120,6 @@ protected:
     SSRQuadPtr m_postProcessSSRQ;
 
     Game* gameOwner; /**< @brief Pointer to the owner Game instance. */
-    vector<MeshEntity*> m_lights; /**< @brief Pointers to the light objects (point and spotlights) in the scene. */
 
     Player* m_player = nullptr; //Pointer to the player entity
 

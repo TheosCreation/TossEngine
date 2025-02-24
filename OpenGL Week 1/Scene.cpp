@@ -159,22 +159,39 @@ void Scene::onCreate()
     Texture2DPtr snowTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/snow.png");
 
     MeshPtr fighterShip = resourceManager.createMeshFromFile("Resources/Meshes/Space/SM_Ship_Fighter_02.obj");
-    InstancedMeshPtr statueMesh = resourceManager.createInstancedMeshFromFile("Resources/Meshes/SM_Prop_Statue_01.obj");
 
     ShaderPtr meshShader = graphicsEngine.createShader({
             "MeshShader",
             "MeshShader"
         });
+    ShaderPtr instancedMeshShader = graphicsEngine.createShader({
+            "InstancedMesh",
+            "MeshShader"
+        });
+
     ShaderPtr terrainShader = graphicsEngine.createShader({
             "TerrainShader",
             "TerrainShader"
         });
 
-    ShaderPtr instancedMeshShader = graphicsEngine.createShader({
-            "InstancedMesh",
-            "InstancedMesh"
-        });
+    MeshPtr statueMesh = resourceManager.createMeshFromFile("Resources/Meshes/SM_Prop_Statue_01.obj");
+    float spacing = 50.0f;
+    for (int row = -4; row < 4; ++row) {
+        for (int col = -4; col < 4; ++col) {
+            // Calculate the position of the current tree based on the grid and spacing
+            Vector3 position = Vector3(col * spacing, 0, row * spacing);
 
+            if (position == Vector3(0.0f)) break;
+
+            // Generate random rotation angles
+            float angleY = randomNumber(360.0f);
+
+            // Add the tree instance with random rotations
+            statueMesh->addInstance(position, Vector3(0.2f), Vector3(0, angleY, 0));
+        }
+    }
+    //Init instance buffer
+    statueMesh->initInstanceBuffer();
 
     {
         m_ship = m_gameObjectManager->createGameObject<GameObject>();
@@ -206,37 +223,19 @@ void Scene::onCreate()
     //m_terrain->setGeometryShader(m_terrainGeometryShader);
     //
     ////Creating instanced tree obj
-    //auto statues = m_gameObjectManager->createGameObject<InstancedMeshEntity>();
-    //statues->setShininess(32.0f);
-    //statues->setTexture(ancientWorldsTexture2D);
-    //statues->setShader(instancedMeshShader);
-    //statues->setMesh(statueMesh);
-    //statues->setReflectiveMapTexture(shipReflectiveMap);
-    //statues->setShadowShader(m_shadowInstancedShader);
-    //statues->setGeometryShader(m_instancedmeshGeometryShader);
-    ////statues->setLightingShader(m_meshLightingShader);
-    //
-    //
-    ////adds instances to the instanced mine mesh
-    //float spacing = 50.0f;
-    //for (int row = -4; row < 4; ++row) {
-    //    for (int col = -4; col < 4; ++col) {
-    //        // Calculate the position of the current tree based on the grid and spacing
-    //        Vector3 position = Vector3(col * spacing, 0, row * spacing);
-    //
-    //        if (position == Vector3(0.0f)) break;
-    //
-    //        // Generate random rotation angles
-    //        float angleY = randomNumber(360.0f);
-    //
-    //        // Add the tree instance with random rotations
-    //        statueMesh->addInstance(position, Vector3(0.2f), Vector3(0, angleY, 0));
-    //    }
-    //}
-    //
-    ////Init instance buffer
-    //statueMesh->initInstanceBuffer();
+    {
+        auto statues = m_gameObjectManager->createGameObject<GameObject>();
+        auto renderer = statues->addComponent<MeshRenderer>();
+        renderer->SetShininess(32.0f);
+        renderer->SetTexture(ancientWorldsTexture2D);
+        renderer->SetShader(instancedMeshShader);
+        renderer->SetMesh(statueMesh);
+        renderer->SetReflectiveMapTexture(shipReflectiveMap);
+        renderer->SetShadowShader(m_shadowInstancedShader);
+        renderer->SetGeometryShader(m_instancedmeshGeometryShader);
+    }
 
+    
     // Create and initialize a DirectionalLight struct
     DirectionalLight directionalLight1;
     directionalLight1.Direction = Vector3(0.0f, -1.0f, -0.5f);
