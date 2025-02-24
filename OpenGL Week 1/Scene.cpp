@@ -270,7 +270,7 @@ void Scene::onCreate()
         // Create a new point light entity
         auto pointLightObject = m_gameObjectManager->createGameObject<GameObject>();
         MeshRenderer* meshRenderer = pointLightObject->addComponent<MeshRenderer>();
-        meshRenderer->SetAlpha(0.75f);
+        meshRenderer->SetAlpha(0.5f);
 
         // Randomly set color to either red or blue
         int randomColorChoice = (int)randomNumber(2.0f); // Generates 0 or 1
@@ -286,7 +286,7 @@ void Scene::onCreate()
 
         // Set mesh and shaders
         meshRenderer->SetMesh(gameOwner->getSphereMesh());
-        meshRenderer->SetShader(m_solidColorMeshShader);
+        meshRenderer->SetShader(meshShader);
         meshRenderer->SetShadowShader(m_shadowShader);
         meshRenderer->SetGeometryShader(m_meshGeometryShader);
 
@@ -316,7 +316,7 @@ void Scene::onCreate()
         auto meshRenderer = physicsSphere->addComponent<MeshRenderer>();
         meshRenderer->SetColor(Color::Black);
         meshRenderer->SetMesh(gameOwner->getSphereMesh());
-        meshRenderer->SetShader(m_solidColorMeshShader);
+        meshRenderer->SetShader(meshShader);
         meshRenderer->SetShadowShader(m_shadowShader);
         meshRenderer->SetGeometryShader(m_meshGeometryShader);
 
@@ -334,7 +334,7 @@ void Scene::onCreate()
         auto meshRenderer = physicsCube->addComponent<MeshRenderer>();
         meshRenderer->SetColor(Color::White);
         meshRenderer->SetMesh(gameOwner->getCubeMesh());
-        meshRenderer->SetShader(m_solidColorMeshShader);
+        meshRenderer->SetShader(meshShader);
         meshRenderer->SetShadowShader(m_shadowShader);
         meshRenderer->SetGeometryShader(m_meshGeometryShader);
 

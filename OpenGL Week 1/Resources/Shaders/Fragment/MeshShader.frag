@@ -9,6 +9,10 @@ in vec2 FragTexcoord;
 in vec3 FragNormal;
 
 uniform sampler2D Texture0;
+uniform bool useTexture;
+uniform vec3 uColor;
+uniform float alpha = 1.0f;
+
 uniform samplerCube Texture_Skybox;
 uniform sampler2D ReflectionMap;
 
@@ -66,13 +70,13 @@ void main()
     vec3 LightShadow = Ambient + TotalLightOutput;
 
     // Sample textures
-    vec4 ObjectTexture = texture(Texture0, FragTexcoord);
-    vec4 ReflectionTexture = texture(Texture_Skybox, ReflectDir);
-    float Reflectivity = texture(ReflectionMap, FragTexcoord).r; // Sample the red channel of the reflection map
+    vec3 Albedo = useTexture ? texture(Texture0, FragTexcoord).rgb : uColor;
+    vec3 ReflectionTexture = texture(Texture_Skybox, ReflectDir).rgb;
+    float Reflectivity = clamp(texture(ReflectionMap, FragTexcoord).r, 0.0, 1.0);
 
     // Mix object texture and reflection texture based on reflectivity
-    vec4 MixedTexture = mix(ObjectTexture, ReflectionTexture, Reflectivity);
+    vec3 MixedTexture = mix(Albedo, ReflectionTexture, Reflectivity);
 
     // Calculate the final color
-    FinalColor = vec4(LightShadow, 1.0) * MixedTexture;
+    FinalColor = vec4(LightShadow * MixedTexture, alpha);
 }
