@@ -38,9 +38,9 @@ public:
     Texture2DPtr createTexture2DFromFile(const std::string& filepath, TextureType type = TextureType::Default);
     Texture2DPtr createTexture2D(Texture2DDesc desc, string textureName = "");
     MeshPtr createMeshFromFile(const std::string& filepath);
-    InstancedMeshPtr createInstancedMeshFromFile(const std::string& filepath);
     HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
     SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath);
+    MaterialPtr createMaterial(const MaterialDesc& desc, const std::string& uniqueID);
 
     TexturePtr getSkyboxTexture();
 

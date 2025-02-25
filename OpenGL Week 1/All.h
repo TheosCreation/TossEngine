@@ -23,7 +23,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Resource.h"
 
 #include "Mesh.h"
-#include "InstancedMesh.h"
 
 #include "Texture.h"
 #include "Texture2D.h"
@@ -33,7 +32,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Camera.h"
 #include "Framebuffer.h"
 #include "Entity.h"
-#include "QuadEntity.h"
 #include "SkyboxEntity.h"
 #include "TerrainEntity.h"
 #include "EntitySystem.h"

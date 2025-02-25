@@ -116,8 +116,8 @@ protected:
     unique_ptr<SkyboxEntity> m_skyBox; /**< @brief Pointer to the skybox instance used in the scene. */
     unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the entity system managing game entities. */
     FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
-    SSRQuadPtr m_deferredRenderSSRQ;
-    SSRQuadPtr m_postProcessSSRQ;
+    GameObject* m_deferredRenderSSRQ;
+    GameObject* m_postProcessSSRQ;
 
     Game* gameOwner; /**< @brief Pointer to the owner Game instance. */
 

@@ -24,7 +24,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Scene.h"
 #include "Framebuffer.h"
 #include "GeometryBuffer.h"
-#include "SSRQuad.h"
 #include "ProjectSettings.h"
 #include "AudioEngine.h"
 

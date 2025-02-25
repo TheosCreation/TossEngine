@@ -16,7 +16,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Texture2D.h"
 #include "TextureCubeMap.h"
 #include "HeightMap.h"
-#include "Mesh.h"
+#include "Material.h"
 #include "Sound.h"
 #include "AudioEngine.h"
 #include "Game.h"
@@ -156,25 +156,6 @@ MeshPtr ResourceManager::createMeshFromFile(const std::string& filepath)
     return MeshPtr();
 }
 
-InstancedMeshPtr ResourceManager::createInstancedMeshFromFile(const std::string& filepath)
-{
-    // Check if the resource has already been loaded
-    auto it = m_mapResources.find(filepath);
-    if (it != m_mapResources.end())
-    {
-        return std::static_pointer_cast<InstancedMesh>(it->second);
-    }
-
-    InstancedMeshPtr instancedMeshPtr = std::make_shared<InstancedMesh>(filepath.c_str(), this);
-    if (instancedMeshPtr)
-    {
-        m_mapResources.emplace(filepath, instancedMeshPtr);
-        return instancedMeshPtr;
-    }
-
-    return InstancedMeshPtr();
-}
-
 HeightMapPtr ResourceManager::createHeightMap(HeightMapInfo& _buildInfo)
 {
     HeightMapDesc desc;
@@ -213,7 +194,15 @@ SoundPtr ResourceManager::createSound(const SoundDesc& desc, const std::string& 
 {
     SoundPtr soundPtr = std::make_shared<Sound>(desc, uniqueID, filepath.c_str(), this);
     AudioEngine::GetInstance().loadSound(soundPtr);
+    m_mapResources.emplace(filepath, soundPtr);
     return soundPtr;
+}
+
+MaterialPtr ResourceManager::createMaterial(const MaterialDesc& desc, const std::string& uniqueID)
+{
+    MaterialPtr materialPtr = std::make_shared<Material>(desc, uniqueID, this);
+    m_mapResources.emplace("", materialPtr);
+    return materialPtr;
 }
 
 
@@ -243,14 +232,15 @@ void ResourceManager::deleteTexture(TexturePtr texture)
 
 void ResourceManager::ClearInstancesFromMeshes()
 {
+    // this was due to scene changes and not refreshing resources may cause issues
     // Iterate over all resources in the map
-    for (auto& [key, resource] : m_mapResources)
-    {
-        // Check if the resource is of type InstancedMesh
-        InstancedMeshPtr instancedMeshPtr = std::dynamic_pointer_cast<InstancedMesh>(resource);
-        if (instancedMeshPtr)
-        {
-            instancedMeshPtr->clearInstances();
-        }
-    }
+    //for (auto& [key, resource] : m_mapResources)
+    //{
+    //    // Check if the resource is of type InstancedMesh
+    //    InstancedMeshPtr instancedMeshPtr = std::dynamic_pointer_cast<InstancedMesh>(resource);
+    //    if (instancedMeshPtr)
+    //    {
+    //        instancedMeshPtr->clearInstances();
+    //    }
+    //}
 }

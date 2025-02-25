@@ -11,19 +11,18 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "Scene.h"
-#include "SSRQuad.h"
 #include "GeometryBuffer.h"
 #include "AudioEngine.h"
 #include "MeshRenderer.h"
 #include "Rigidbody.h"
+#include "Image.h"
+#include "Material.h"
 
 Scene::Scene(Game* game)
 {
     gameOwner = game;
     m_postProcessingFramebuffer = std::make_unique<Framebuffer>(gameOwner->getWindow()->getInnerSize());
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
-    m_deferredRenderSSRQ = std::make_unique<SSRQuad>();
-    m_postProcessSSRQ = std::make_unique<SSRQuad>();
 
     // Create a physics world with default gravity
     rp3d::PhysicsWorld::WorldSettings settings;
@@ -50,7 +49,7 @@ void Scene::onCreate()
     auto& resourceManager = ResourceManager::GetInstance();
     auto& lightManager = LightManager::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
-    m_gameObjectManager->m_entityFactory->registerEntity<Player>();
+    m_gameObjectManager->m_gameObjectFactory->registerEntity<Player>();
 
     defaultFullscreenShader = graphicsEngine.createShader({
             "ScreenQuad",
@@ -62,12 +61,28 @@ void Scene::onCreate()
             "SSRLightingShader"
         });
 
-    m_deferredRenderSSRQ->onCreate();
-    m_deferredRenderSSRQ->setShader(ssrQuadLightingShader);
+    {
+        m_deferredRenderSSRQ = m_gameObjectManager->createGameObject<GameObject>();
+        Image* image = m_deferredRenderSSRQ->addComponent<Image>();
+        MaterialDesc materialDesc = { ssrQuadLightingShader };
+        MaterialPtr material = resourceManager.createMaterial(materialDesc, "");
+        image->SetMaterial(material);
+        image->SetSize({ -2.0f, 2.0f });
+    }
 
-    m_postProcessSSRQ->onCreate();
-    m_postProcessSSRQ->setShader(defaultFullscreenShader);
-    m_postProcessSSRQ->setTexture(m_postProcessingFramebuffer->RenderTexture);
+    //m_postProcessSSRQ->onCreate();
+    //m_postProcessSSRQ->setShader(defaultFullscreenShader);
+    //m_postProcessSSRQ->setTexture(m_postProcessingFramebuffer->RenderTexture);
+
+    {
+        m_postProcessSSRQ = m_gameObjectManager->createGameObject<GameObject>();
+        Image* image = m_postProcessSSRQ->addComponent<Image>();
+        MaterialDesc materialDesc = { defaultFullscreenShader };
+        MaterialPtr material = resourceManager.createMaterial(materialDesc, "");
+        image->SetMaterial(material);
+        image->SetTexture(m_postProcessingFramebuffer->RenderTexture);
+        image->SetSize({ -2.0f, 2.0f });
+    }
 
     ShaderPtr skyboxShader = graphicsEngine.createShader({
             "SkyBoxShader",
@@ -506,7 +521,11 @@ void Scene::onGraphicsUpdate()
         lightManager.applyShadows(ssrQuadLightingShader);
 
         // Render the screenspace quad using the lighting, shadow and geometry data
-        m_deferredRenderSSRQ->onGraphicsUpdate(uniformData);
+        Image* image = m_deferredRenderSSRQ->getComponent<Image>();
+        if (image)
+        {
+            image->Render(uniformData, RenderingPath::Forward);
+        }
         geometryBuffer.WriteDepth();
 
         // Render the transparent objects after
@@ -552,14 +571,22 @@ void Scene::onGraphicsUpdate()
         m_skyBox->onGraphicsUpdate(uniformData);
         m_gameObjectManager->Render(uniformData);
 
+        // Render the transparent objects after
+        m_gameObjectManager->onTransparencyPass(uniformData);
+
         m_postProcessingFramebuffer->UnBind();
 
 
         // Post processing 
         graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
         //m_postProcessingFramebuffer->PopulateShader();
-        m_postProcessSSRQ->onGraphicsUpdate(uniformData);
+        Image* image = m_postProcessSSRQ->getComponent<Image>();
+        if (image)
+        {
+            image->Render(uniformData, RenderingPath::Forward);
+        }
     }
+
 
     // ui canvas of some sort with the ui camera
 }
