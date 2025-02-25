@@ -153,12 +153,12 @@ Mat4 LightManager::getLightSpaceMatrix(uint index) const
 {
     // Validate index
     if (index < 0 || index >= m_directionalLightCount) {
-        return Mat4(); // Return identity matrix if index is out of range
+        return Mat4(); // Return idGameObject matrix if index is out of range
     }
 
     // Check if the directional light is active
     if (!DirectionalLightStatus) {
-        return Mat4(); // Return identity matrix if the light is inactive
+        return Mat4(); // Return idGameObject matrix if the light is inactive
     }
 
     // Get the directional light properties

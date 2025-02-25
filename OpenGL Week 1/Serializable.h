@@ -4,7 +4,7 @@
 class Serializable
 {
 public:
-    // Serialize the entity to JSON
+    // Serialize the GameObject to JSON
     virtual json serialize() const
     {
         return {
@@ -12,6 +12,6 @@ public:
         };
     }
 
-    // Deserialize the entity from JSON
+    // Deserialize the GameObject from JSON
     virtual void deserialize(const json& data) { }
 };

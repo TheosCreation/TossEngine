@@ -3,7 +3,7 @@
 #include "LightManager.h"
 #include "Mesh.h"
 #include "Shader.h"
-#include "Entity.h"
+#include "GameObject.h"
 #include "Texture.h"
 #include "VertexArrayObject.h"
 

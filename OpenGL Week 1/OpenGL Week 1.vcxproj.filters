@@ -81,7 +81,7 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
+    <ClCompile Include="GameObject.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
@@ -90,7 +90,7 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsEntity.cpp">
+    <ClCompile Include="GraphicsGameObject.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Resource.cpp">
@@ -102,7 +102,7 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="EntitySystem.cpp">
+    <ClCompile Include="GameObjectManager.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectRegistry.cpp">
@@ -180,9 +180,6 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="InstancedMesh.cpp">
-      <Filter>Source Files\Resource</Filter>
-    </ClCompile>
     <ClCompile Include="Texture2D.cpp">
       <Filter>Source Files\Resource</Filter>
     </ClCompile>
@@ -198,10 +195,10 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="SkyboxEntity.cpp">
+    <ClCompile Include="SkyboxGameObject.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="TerrianEntity.cpp">
+    <ClCompile Include="TerrianGameObject.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
@@ -266,10 +263,10 @@
     <ClInclude Include="Shader.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="EntitySystem.h">
+    <ClInclude Include="GameObjectManager.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.h">
+    <ClInclude Include="GameObject.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="All.h">
@@ -281,7 +278,7 @@
     <ClInclude Include="Window.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsEntity.h">
+    <ClInclude Include="GraphicsGameObject.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
@@ -296,7 +293,7 @@
     <ClInclude Include="Player.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="EntityFactory.h">
+    <ClInclude Include="GameObjectFactory.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="GameObjectRegistry.h">
@@ -359,9 +356,6 @@
     <ClInclude Include="PerlinNoise.h">
       <Filter>Header Files\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="InstancedMesh.h">
-      <Filter>Header Files\Resource</Filter>
-    </ClInclude>
     <ClInclude Include="Framebuffer.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
@@ -401,10 +395,10 @@
     <ClInclude Include="Renderer.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="SkyboxEntity.h">
+    <ClInclude Include="SkyboxGameObject.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainEntity.h">
+    <ClInclude Include="TerrainGameObject.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>

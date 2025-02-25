@@ -5,7 +5,7 @@ Auckland
 New Zealand
 (c) 2024 Media Design School
 File Name : MyPlayer.cpp
-Description : MyPlayer class is an entity that can be adjusted by the end user
+Description : MyPlayer class is an GameObject that can be adjusted by the end user
 Author : Theo Morris
 Mail : theo.morris@mds.ac.nz
 **/

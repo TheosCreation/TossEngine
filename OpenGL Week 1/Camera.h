@@ -11,7 +11,7 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include "Entity.h"
+#include "GameObject.h"
 #include "Math.h"
 #include "Rect.h"
 
