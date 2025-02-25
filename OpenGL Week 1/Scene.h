@@ -62,7 +62,7 @@ public:
     virtual void onUpdate(float deltaTime);
 
     /**
-     * @brief Called every frame to update the entity at a fixed frame rate.
+     * @brief Called every frame to update the GameObject at a fixed frame rate.
      * Can be overridden by derived classes to implement custom behavior.
      *
      * @param fixedDeltaTime The time elapsed since the last fixed update in seconds.
@@ -113,17 +113,17 @@ protected:
     ShaderPtr m_terrainGeometryShader = nullptr; /**< @brief Shader for rendering terrain geometries. */
     ShaderPtr m_computeShader = nullptr; /**< @brief Shader for compute operations. */
 
-    unique_ptr<SkyboxEntity> m_skyBox; /**< @brief Pointer to the skybox instance used in the scene. */
-    unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the entity system managing game entities. */
+    unique_ptr<SkyboxGameObject> m_skyBox; /**< @brief Pointer to the skybox instance used in the scene. */
+    unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the GameObject system managing game entities. */
     FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
     GameObject* m_deferredRenderSSRQ;
     GameObject* m_postProcessSSRQ;
 
     Game* gameOwner; /**< @brief Pointer to the owner Game instance. */
 
-    Player* m_player = nullptr; //Pointer to the player entity
+    Player* m_player = nullptr; //Pointer to the player GameObject
 
     float m_elapsedSeconds = 0;
-    GameObject* m_ship = nullptr; //Pointer to the statue entity
-    TerrainEntity* m_terrain = nullptr; //Pointer to the terrain entity
+    GameObject* m_ship = nullptr; //Pointer to the statue GameObject
+    TerrainGameObject* m_terrain = nullptr; //Pointer to the terrain GameObject
 };

@@ -11,7 +11,7 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "Camera.h"
-#include "EntitySystem.h"
+#include "GameObjectManager.h"
 
 void Camera::getViewMatrix(Mat4& view)
 {

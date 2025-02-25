@@ -15,7 +15,7 @@ Mail : theo.morris@mds.ac.nz
 #include "InputManager.h"
 #include "GraphicsEngine.h"
 #include "ResourceManager.h"
-#include "Entity.h"
+#include "GameObject.h"
 #include "LightManager.h"
 #include "Scene.h"
 #include "ShadowMap.h"
@@ -23,7 +23,7 @@ Mail : theo.morris@mds.ac.nz
 // Forward declarations of classes
 class Window;
 class GameObjectManager;
-class SkyboxEntity;
+class SkyboxGameObject;
 class GeometryBuffer;
 class Framebuffer;
 class SSRQuad;
@@ -97,7 +97,7 @@ private:
 protected:
     bool m_isRunning = true; //Indicates whether the game is running
     std::unique_ptr<Window> m_display; //Pointer to the window instance
-    //std::unique_ptr<QuadEntity> m_canvasQuad; //Pointer to the framebuffer instance
+    //std::unique_ptr<QuadGameObject> m_canvasQuad; //Pointer to the framebuffer instance
 
     float m_previousTime = 0; //The previous frame's time
     float m_previousFixedUpdateTime = 0; //The previous fixedUpdate frame time

@@ -49,7 +49,7 @@ void Scene::onCreate()
     auto& resourceManager = ResourceManager::GetInstance();
     auto& lightManager = LightManager::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
-    m_gameObjectManager->m_gameObjectFactory->registerEntity<Player>();
+    m_gameObjectManager->m_gameObjectFactory->registerGameObject<Player>();
 
     defaultFullscreenShader = graphicsEngine.createShader({
             "ScreenQuad",
@@ -140,7 +140,7 @@ void Scene::onCreate()
     //    });
 
     //Creating skybox object
-    m_skyBox = std::make_unique<SkyboxEntity>();
+    m_skyBox = std::make_unique<SkyboxGameObject>();
     m_skyBox->setGameObjectManager(m_gameObjectManager.get());
     m_skyBox->setMesh(gameOwner->getCubeMesh());
     m_skyBox->setShader(skyboxShader);
@@ -225,7 +225,7 @@ void Scene::onCreate()
     //HeightMapInfo buildInfo = { "Resources/Heightmaps/Heightmap0.raw", 256, 256, 4.0f };
     //HeightMapPtr heightmap = resourceManager.createHeightMap(buildInfo);
     //
-    //m_terrain = m_gameObjectManager->createGameObject<TerrainEntity>();
+    //m_terrain = m_gameObjectManager->createGameObject<TerrainGameObject>();
     //m_terrain->generateTerrainMesh(heightmap);
     //m_terrain->m_transform.position = Vector3(0, -20, 0);
     //m_terrain->setTexture(grassTexture);
@@ -282,7 +282,7 @@ void Scene::onCreate()
     float pointLightSpacing = 30.0f;
     // Initialize 2 point lights
     for (int i = 0; i < 4; i++) {
-        // Create a new point light entity
+        // Create a new point light GameObject
         auto pointLightObject = m_gameObjectManager->createGameObject<GameObject>();
         MeshRenderer* meshRenderer = pointLightObject->addComponent<MeshRenderer>();
         meshRenderer->SetAlpha(0.5f);
@@ -407,7 +407,7 @@ void Scene::onCreate()
     //    renderer->SetShadowShader(m_shadowShader);
     //    renderer->SetGeometryShader(m_meshGeometryShader);
     //}
-    //m_entitySystem->loadEntitiesFromFile("Scenes/Scene1.json");
+    //m_GameObjectManager->loadEntitiesFromFile("Scenes/Scene1.json");
 }
 
 void Scene::onCreateLate()
@@ -603,7 +603,7 @@ void Scene::onResize(int _width, int _height)
 
 void Scene::onQuit()
 {
-    //m_entitySystem->saveEntitiesToFile("Scenes/Scene1.json");
+    //m_GameObjectManager->saveEntitiesToFile("Scenes/Scene1.json");
     m_gameObjectManager->clearGameObjects();
 
     // Destroy the physics world when the scene is deleted

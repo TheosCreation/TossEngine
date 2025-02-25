@@ -11,7 +11,6 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "ResourceManager.h"
-#include "InstancedMesh.h"
 #include "Mesh.h"
 #include "Texture2D.h"
 #include "TextureCubeMap.h"

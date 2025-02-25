@@ -12,7 +12,7 @@ Mail : theo.morris@mds.ac.nz
 
 #pragma once
 #include "Utils.h"
-#include "GraphicsEntity.h"
+#include "GraphicsGameObject.h"
 
 /**
  * @class ParticleSystem
@@ -22,7 +22,7 @@ Mail : theo.morris@mds.ac.nz
  * position, velocity, and lifespan. It utilizes compute shaders for efficient particle
  * simulation and rendering.
  */
-class ParticleSystem : public GraphicsEntity
+class ParticleSystem : public GraphicsGameObject
 {
 public:
     /**

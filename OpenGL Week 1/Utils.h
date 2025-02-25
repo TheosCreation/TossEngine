@@ -29,7 +29,7 @@ Mail : theo.morris@mds.ac.nz
 #include <fstream>
 #include <nlohmann\json.hpp>
 
-using json = nlohmann::json; // will be using json to serialize classes and save entity objects and all
+using json = nlohmann::json; // will be using json to serialize classes and save GameObject objects and all
 
 // Forward declarations of classes
 class UniformBuffer;
@@ -89,7 +89,7 @@ struct Transform
     // Default constructor initializes position to (0,0,0), rotation to no rotation, and scale to (1,1,1)
     Transform()
         : position(Vector3(0.0f, 0.0f, 0.0f)),                  // Initial position
-        rotation(Quaternion(1.0f, 0.0f, 0.0f, 0.0f)),           // Initial rotation (identity)
+        rotation(Quaternion(1.0f, 0.0f, 0.0f, 0.0f)),           // Initial rotation (idGameObject)
         scale(Vector3(1.0f, 1.0f, 1.0f))                        // Initial scale
     {
     }

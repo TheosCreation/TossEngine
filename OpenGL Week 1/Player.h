@@ -5,7 +5,7 @@ Auckland
 New Zealand
 (c) 2024 Media Design School
 File Name : Player.h
-Description : Player class is an entity that can be adjusted by the end user
+Description : Player class is an GameObject that can be adjusted by the end user
 Author : Theo Morris
 Mail : theo.morris@mds.ac.nz
 **/
@@ -13,13 +13,13 @@ Mail : theo.morris@mds.ac.nz
 #pragma once
 #include "InputManager.h"
 #include "LightManager.h"
-#include "EntitySystem.h"
-#include "Entity.h"
+#include "GameObjectManager.h"
+#include "GameObject.h"
 #include "Camera.h"
 
 /**
  * @class Player
- * @brief An entity that can be adjusted by the end user.
+ * @brief An GameObject that can be adjusted by the end user.
  */
 class Player : public GameObject
 {
@@ -35,12 +35,12 @@ public:
     ~Player();
 
     /**
-     * @brief Called when the player entity is created.
+     * @brief Called when the player GameObject is created.
      */
     virtual void onCreate();
 
     /**
-     * @brief Called every frame to update the player entity.
+     * @brief Called every frame to update the player GameObject.
      * @param deltaTime The time elapsed since the last update.
      */
     virtual void onUpdate(float deltaTime);

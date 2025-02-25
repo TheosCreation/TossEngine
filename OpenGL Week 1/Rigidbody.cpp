@@ -1,6 +1,6 @@
 #include "Rigidbody.h"
-#include "Entity.h"
-#include "EntitySystem.h"
+#include "GameObject.h"
+#include "GameObjectManager.h"
 #include "Scene.h"
 
 Rigidbody::Rigidbody()
