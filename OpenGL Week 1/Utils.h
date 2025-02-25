@@ -489,7 +489,7 @@ struct Color {
 };
 
 // Struct representing a directional light
-struct DirectionalLight
+struct DirectionalLightData
 {
     Vector3 Direction;
     Vector3 Color;
@@ -497,7 +497,7 @@ struct DirectionalLight
 };
 
 // Struct representing a point light
-struct PointLight
+struct PointLightData
 {
     Vector3 Position;
     Vector3 Color;
@@ -511,7 +511,7 @@ struct PointLight
 };
 
 // Struct representing a spot light
-struct SpotLight
+struct SpotLightData
 {
     Vector3 Position;
     Vector3 Direction;

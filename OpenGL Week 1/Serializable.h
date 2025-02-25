@@ -8,7 +8,7 @@ public:
     virtual json serialize() const
     {
         return {
-            {"type", getClassName(typeid(*this))} // used to idetify class type
+            {"type", getClassName(typeid(*this))} // used to identify class type
         };
     }
 

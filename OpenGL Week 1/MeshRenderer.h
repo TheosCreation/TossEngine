@@ -4,12 +4,18 @@
 class MeshRenderer : public Renderer
 {
 public:
-	MeshRenderer();
-	~MeshRenderer();
+	MeshRenderer() = default;
+	~MeshRenderer() = default;
+
+    // Serialize the MeshRenderer to JSON
+    json serialize() const override;
+
+    // Deserialize the MeshRenderer from JSON
+	void deserialize(const json& data) override;
 
 	void onShadowPass(uint index);
 
-	virtual void Render(UniformData data, RenderingPath renderPath) override;
+	void Render(UniformData data, RenderingPath renderPath) override;
 
 	void SetMesh(MeshPtr mesh);
 

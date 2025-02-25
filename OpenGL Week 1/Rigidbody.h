@@ -10,11 +10,15 @@ enum class BodyType {
 
 class Rigidbody : public Component {
 public:
-    Rigidbody();
+    Rigidbody() = default;
     ~Rigidbody();
 
-    virtual void onCreate() override;
-    virtual void onFixedUpdate(float fixedDeltaTime) override;
+    json serialize() const override;
+
+    void deserialize(const json& data) override;
+
+    void onCreate() override;
+    void onFixedUpdate(float fixedDeltaTime) override;
 
     void SetBodyType(BodyType type);
     void SetMass(float mass);

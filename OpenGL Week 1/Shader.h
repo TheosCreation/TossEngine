@@ -13,26 +13,26 @@ Mail : theo.morris@mds.ac.nz
 #pragma once
 #include <glew.h>
 #include <glm.hpp>
-#include "Utils.h"
+#include "Resource.h"
 
 /**
  * @class Shader
  * @brief A wrapper class for handling shaders in OpenGL.
  */
-class Shader
+class Shader : public Resource
 {
 public:
     /**
      * @brief Constructor for the standard Shader class.
      * @param desc A description of the shader.
      */
-    Shader(const ShaderDesc& desc);
+    Shader(const ShaderDesc& desc, const string& uniqueId, ResourceManager* manager);
 
     /**
      * @brief Constructor for the compute Shader class.
      * @param computeFileName File name of the compute shader.
      */
-    Shader(const string computeFileName);
+    Shader(const string computeFileName, ResourceManager* manager);
 
     /**
      * @brief Destructor for the Shader class.

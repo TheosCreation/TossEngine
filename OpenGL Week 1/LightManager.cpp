@@ -22,19 +22,61 @@ void LightManager::Init()
     }
 }
 
-void LightManager::createPointLight(const PointLight& newPointLight)
+uint LightManager::createPointLight(const PointLightData& newPointLight)
 {
-    m_pointLights[m_pointLightCount] = newPointLight;
+    if (m_pointLightCount >= MAX_POINT_LIGHTS)
+    {
+        std::cerr << "Error: Maximum number of point lights reached!" << std::endl;
+        return -1; // Indicate failure
+    }
+
+    uint lightId = m_pointLightCount; // Assign ID based on count
+    m_pointLights[lightId] = newPointLight;
     m_pointLightCount++;
+
+    return lightId; // Return valid ID
 }
 
-void LightManager::createDirectionalLight(const DirectionalLight& newDirectionalLight)
+void LightManager::updatePointLightPosition(uint lightId, const Vector3& position)
+{
+    if (lightId >= m_pointLightCount)
+    {
+        std::cerr << "Error: Invalid PointLight ID " << lightId << "!" << std::endl;
+        return;
+    }
+
+    m_pointLights[lightId].Position = position;
+}
+
+void LightManager::updatePointLightColor(uint lightId, const Vector3& newColor)
+{
+    if (lightId >= m_pointLightCount)
+    {
+        std::cerr << "Error: Invalid PointLight ID " << lightId << "!" << std::endl;
+        return;
+    }
+
+    m_pointLights[lightId].Color = newColor;
+}
+
+void LightManager::updatePointLightRadius(uint lightId, float newRadius)
+{
+    if (lightId >= m_pointLightCount)
+    {
+        std::cerr << "Error: Invalid PointLight ID " << lightId << "!" << std::endl;
+        return;
+    }
+
+    m_pointLights[lightId].Radius = newRadius;
+}
+
+void LightManager::createDirectionalLight(const DirectionalLightData& newDirectionalLight)
 {
     m_directionalLights[m_directionalLightCount] = newDirectionalLight;
     m_directionalLightCount++;
 }
 
-void LightManager::createSpotLight(const SpotLight& newSpotLight)
+void LightManager::createSpotLight(const SpotLightData& newSpotLight)
 {
     m_spotLight = newSpotLight;
 }
@@ -162,7 +204,7 @@ Mat4 LightManager::getLightSpaceMatrix(uint index) const
     }
 
     // Get the directional light properties
-    const DirectionalLight& light = m_directionalLights[index];
+    const DirectionalLightData& light = m_directionalLights[index];
 
     // Orthographic projection for shadow mapping
     float sceneExtent = 1500.0f; // Adjust based on your scene's size
@@ -227,16 +269,16 @@ void LightManager::clearLights()
     m_pointLightCount = 0;
     for (auto& pointLight : m_pointLights)
     {
-        pointLight = PointLight(); // Reset each point light to its default state
+        pointLight = PointLightData(); // Reset each point light to its default state
     }
 
     // Reset the spot light
-    m_spotLight = SpotLight(); // Reset the spot light to its default state
+    m_spotLight = SpotLightData(); // Reset the spot light to its default state
 
     // Reset the directional lights
     m_directionalLightCount = 0;
     for (auto& dirLight : m_directionalLights)
     {
-        dirLight = DirectionalLight(); // Reset each directional light to its default state
+        dirLight = DirectionalLightData(); // Reset each directional light to its default state
     }
 }

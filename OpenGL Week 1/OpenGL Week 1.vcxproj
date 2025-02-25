@@ -124,7 +124,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;debug_reactphysics3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;reactphysics3d_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>MSVCRT.lib</IgnoreSpecificDefaultLibraries>
@@ -163,6 +163,7 @@
     <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentRegistry.cpp" />
     <ClCompile Include="Dependencies\IMGUI\imgui.cpp" />
     <ClCompile Include="Dependencies\IMGUI\imgui_demo.cpp" />
     <ClCompile Include="Dependencies\IMGUI\imgui_draw.cpp" />
@@ -171,7 +172,6 @@
     <ClCompile Include="Dependencies\IMGUI\imgui_tables.cpp" />
     <ClCompile Include="Dependencies\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
-    <ClCompile Include="GameObjectRegistry.cpp" />
     <ClCompile Include="GeometryBuffer.cpp" />
     <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="Image.cpp" />
@@ -179,10 +179,12 @@
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PerlinNoise.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
+    <ClCompile Include="Ship.cpp" />
     <ClCompile Include="SkyboxGameObject.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="TerrianGameObject.cpp" />
@@ -253,6 +255,7 @@
     <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentRegistry.h" />
     <ClInclude Include="Dependencies\IMGUI\imconfig.h" />
     <ClInclude Include="Dependencies\IMGUI\imgui.h" />
     <ClInclude Include="Dependencies\IMGUI\imgui_impl_glfw.h" />
@@ -264,7 +267,6 @@
     <ClInclude Include="Dependencies\IMGUI\imstb_truetype.h" />
     <ClInclude Include="GameObjectFactory.h" />
     <ClInclude Include="Framebuffer.h" />
-    <ClInclude Include="GameObjectRegistry.h" />
     <ClInclude Include="GeometryBuffer.h" />
     <ClInclude Include="HeightMap.h" />
     <ClInclude Include="Image.h" />
@@ -272,11 +274,13 @@
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PerlinNoise.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Serializable.h" />
     <ClInclude Include="ShadowMap.h" />
+    <ClInclude Include="Ship.h" />
     <ClInclude Include="SkyboxGameObject.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="TerrainGameObject.h" />

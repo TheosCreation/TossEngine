@@ -13,10 +13,13 @@ Mail : theo.morris@mds.ac.nz
 #include "Scene.h"
 #include "GeometryBuffer.h"
 #include "AudioEngine.h"
+#include "ComponentRegistry.h"
 #include "MeshRenderer.h"
 #include "Rigidbody.h"
 #include "Image.h"
 #include "Material.h"
+#include "Ship.h"
+#include "PointLight.h"
 
 Scene::Scene(Game* game)
 {
@@ -33,6 +36,13 @@ Scene::Scene(Game* game)
     m_PhysicsWorld->setIsDebugRenderingEnabled(true);
     m_PhysicsWorld->setNbIterationsVelocitySolver(10);
     m_PhysicsWorld->setNbIterationsPositionSolver(5);
+
+    auto& componentRegistry = ComponentRegistry::GetInstance();
+    componentRegistry.registerComponent<MeshRenderer>();
+    componentRegistry.registerComponent<Rigidbody>();
+    componentRegistry.registerComponent<Image>();
+    componentRegistry.registerComponent<PointLight>();
+    componentRegistry.registerComponent<Ship>();
 
     //rp3d::DebugRenderer& debugRenderer = m_PhysicsWorld->getDebugRenderer();
     //// Select the contact points and contact normals to be displayed
@@ -51,15 +61,19 @@ void Scene::onCreate()
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     m_gameObjectManager->m_gameObjectFactory->registerGameObject<Player>();
 
-    defaultFullscreenShader = graphicsEngine.createShader({
+    defaultFullscreenShader = resourceManager.createShader({
             "ScreenQuad",
             "QuadShader"
-        });
+        },
+        "DefaultFullscreenShader"
+    );
 
-    ssrQuadLightingShader = graphicsEngine.createShader({
+    ssrQuadLightingShader = resourceManager.createShader({
             "ScreenQuad",
             "SSRLightingShader"
-        });
+        },
+        "SSQLightingShader"
+    );
 
     {
         m_deferredRenderSSRQ = m_gameObjectManager->createGameObject<GameObject>();
@@ -84,55 +98,61 @@ void Scene::onCreate()
         image->SetSize({ -2.0f, 2.0f });
     }
 
-    ShaderPtr skyboxShader = graphicsEngine.createShader({
+    ShaderPtr skyboxShader = resourceManager.createShader({
             "SkyBoxShader",
             "SkyBoxShader"
-        });
+        },
+        "SkyBoxShader"
+    );
 
-    m_solidColorMeshShader = graphicsEngine.createShader({
+    m_solidColorMeshShader = resourceManager.createShader({
             "SolidColorMesh",
             "SolidColorMesh"
-        });
+        },
+        "SolidColorMeshShader"
+    );
 
-    m_shadowShader = graphicsEngine.createShader({
+    m_shadowShader = resourceManager.createShader({
             "ShadowShader",
             "ShadowShader"
-        });
+        },
+        "ShadowShader"
+    );
 
-    m_shadowInstancedShader = graphicsEngine.createShader({
+    m_shadowInstancedShader = resourceManager.createShader({
             "ShadowShaderInstanced",
             "ShadowShader"
-        });
-
-    m_skyboxGeometryShader = graphicsEngine.createShader({
-            "SkyBoxShader",
-            "GeometryPassSkybox"
-        });
-    m_meshGeometryShader = graphicsEngine.createShader({
+        },
+        "ShadowShaderInstancedShader"
+    );
+    m_meshGeometryShader = resourceManager.createShader({
             "MeshShader",
             "GeometryPass"
-        });
-    m_instancedmeshGeometryShader = graphicsEngine.createShader({
+        },
+        "GeometryPassMeshShader"
+    );
+    m_instancedmeshGeometryShader = resourceManager.createShader({
             "InstancedMesh",
             "GeometryPass"
-        });
+        },
+        "GeometryPassInstancedMeshShader"
+    );
 
-    m_terrainGeometryShader = graphicsEngine.createShader({
+    m_terrainGeometryShader = resourceManager.createShader({
             "TerrainShader",
             "GeometryPassTerrian"
-        });
+        },
+        "GeometryPassTerrianShader"
+    );
 
-    m_solidColorMeshShader = graphicsEngine.createShader({
-            "SolidColorMesh",
-            "SolidColorMesh"
-        });
-
-    m_particleSystemShader = graphicsEngine.createShader({
+    m_particleSystemShader = resourceManager.createShader({
             "ParticleSystem",
             "ParticleSystem"
-        });
+        },
+        "ParticleSystem"
+    );
 
-    m_computeShader = graphicsEngine.createComputeShader("ComputeParticles");
+    m_computeShader = resourceManager.createComputeShader("ComputeParticles");
 
     //m_meshLightingShader = graphicsEngine.createShader({
     //        "MeshShader",
@@ -144,7 +164,6 @@ void Scene::onCreate()
     m_skyBox->setGameObjectManager(m_gameObjectManager.get());
     m_skyBox->setMesh(gameOwner->getCubeMesh());
     m_skyBox->setShader(skyboxShader);
-    m_skyBox->setGeometryShader(m_skyboxGeometryShader);
     //m_skyBox->setLightingShader(m_meshLightingShader);
 
     // create a cube map texture and set the texture of the skybox to the cubemap texture
@@ -175,19 +194,25 @@ void Scene::onCreate()
 
     MeshPtr fighterShip = resourceManager.createMeshFromFile("Resources/Meshes/Space/SM_Ship_Fighter_02.obj");
 
-    ShaderPtr meshShader = graphicsEngine.createShader({
+    ShaderPtr meshShader = resourceManager.createShader({
             "MeshShader",
             "MeshShader"
-        });
-    ShaderPtr instancedMeshShader = graphicsEngine.createShader({
+        },
+        "MeshShader"
+    );
+    ShaderPtr instancedMeshShader = resourceManager.createShader({
             "InstancedMesh",
             "MeshShader"
-        });
+        },
+        "InstancedMeshShader"
+    );
 
-    ShaderPtr terrainShader = graphicsEngine.createShader({
+    ShaderPtr terrainShader = resourceManager.createShader({
             "TerrainShader",
             "TerrainShader"
-        });
+        },
+        "TerrainShader"
+    );
 
     MeshPtr statueMesh = resourceManager.createMeshFromFile("Resources/Meshes/SM_Prop_Statue_01.obj");
     float spacing = 50.0f;
@@ -208,20 +233,6 @@ void Scene::onCreate()
     //Init instance buffer
     statueMesh->initInstanceBuffer();
 
-    {
-        m_ship = m_gameObjectManager->createGameObject<GameObject>();
-        m_ship->m_transform.scale = Vector3(0.05f);
-        m_ship->m_transform.position = Vector3(0, 40, 0);
-        MeshRenderer* renderer = m_ship->addComponent<MeshRenderer>();
-        renderer->SetShininess(64.0f);
-        renderer->SetTexture(sciFiSpaceTexture2D);
-        renderer->SetReflectiveMapTexture(shipReflectiveMap);
-        renderer->SetMesh(fighterShip);
-        renderer->SetShader(meshShader);
-        renderer->SetShadowShader(m_shadowShader);
-        renderer->SetGeometryShader(m_meshGeometryShader);
-    }
-
     //HeightMapInfo buildInfo = { "Resources/Heightmaps/Heightmap0.raw", 256, 256, 4.0f };
     //HeightMapPtr heightmap = resourceManager.createHeightMap(buildInfo);
     //
@@ -237,36 +248,23 @@ void Scene::onCreate()
     //m_terrain->setShadowShader(m_shadowShader);
     //m_terrain->setGeometryShader(m_terrainGeometryShader);
     //
-    ////Creating instanced tree obj
-    {
-        auto statues = m_gameObjectManager->createGameObject<GameObject>();
-        auto renderer = statues->addComponent<MeshRenderer>();
-        renderer->SetShininess(32.0f);
-        renderer->SetTexture(ancientWorldsTexture2D);
-        renderer->SetShader(instancedMeshShader);
-        renderer->SetMesh(statueMesh);
-        renderer->SetReflectiveMapTexture(shipReflectiveMap);
-        renderer->SetShadowShader(m_shadowInstancedShader);
-        renderer->SetGeometryShader(m_instancedmeshGeometryShader);
-    }
-
     
     // Create and initialize a DirectionalLight struct
-    DirectionalLight directionalLight1;
+    DirectionalLightData directionalLight1;
     directionalLight1.Direction = Vector3(0.0f, -1.0f, -0.5f);
     directionalLight1.Color = Vector3(0.6f);
     directionalLight1.SpecularStrength = 0.1f;
     lightManager.createDirectionalLight(directionalLight1);
 
     // Create and initialize a DirectionalLight struct
-    DirectionalLight directionalLight2;
+    DirectionalLightData directionalLight2;
     directionalLight2.Direction = Vector3(0.0f, -1.0f, 0.5f);
     directionalLight2.Color = Vector3(0.6f);
     directionalLight2.SpecularStrength = 0.1f;
     lightManager.createDirectionalLight(directionalLight2);
 
     // Create and initialize SpotLight struct
-    SpotLight spotLight;
+    SpotLightData spotLight;
     spotLight.Position = Vector3(0.0f);
     spotLight.Direction = Vector3(0.0f, 0.0f, -1.0f);
     spotLight.Color = Color::White;
@@ -279,135 +277,128 @@ void Scene::onCreate()
     lightManager.createSpotLight(spotLight);
     lightManager.setSpotlightStatus(false);
 
-    float pointLightSpacing = 30.0f;
-    // Initialize 2 point lights
-    for (int i = 0; i < 4; i++) {
-        // Create a new point light GameObject
-        auto pointLightObject = m_gameObjectManager->createGameObject<GameObject>();
-        MeshRenderer* meshRenderer = pointLightObject->addComponent<MeshRenderer>();
-        meshRenderer->SetAlpha(0.5f);
-
-        // Randomly set color to either red or blue
-        int randomColorChoice = (int)randomNumber(2.0f); // Generates 0 or 1
-        Vector3 lightColor = (randomColorChoice == 0) ? Color::Red * 2.0f : Color::Blue * 2.0f;
-        meshRenderer->SetColor(lightColor);
-
-        // Calculate the position based on row and column, center the grid around (0,0)
-        float xPosition = i * pointLightSpacing; // Center horizontally
-        float yPosition = 15.0f; // Fixed Y position
-        float zPosition = 0;
-        pointLightObject->m_transform.position = Vector3(xPosition, yPosition, zPosition);
-        pointLightObject->m_transform.scale = Vector3(3.0f);
-
-        // Set mesh and shaders
-        meshRenderer->SetMesh(gameOwner->getSphereMesh());
-        meshRenderer->SetShader(meshShader);
-        meshRenderer->SetShadowShader(m_shadowShader);
-        meshRenderer->SetGeometryShader(m_meshGeometryShader);
-
-        // Configure point light properties
-        PointLight pointLight;
-        pointLight.Position = pointLightObject->m_transform.position;
-        pointLight.Color = lightColor;
-        pointLight.SpecularStrength = 1.0f;
-        pointLight.AttenuationConstant = 1.0f;
-        pointLight.AttenuationLinear = 0.022f;
-        pointLight.AttenuationExponent = 0.0019f;
-        pointLight.Radius = 200.0f;
-
-        // Add the point light to the light manager
-        lightManager.createPointLight(pointLight);
-    }
-
-    for (int i = 0; i < 30; ++i) {
-        auto physicsSphere = m_gameObjectManager->createGameObject<GameObject>();
-
-        // Adjusting position based on index to avoid overlapping spheres
-        float offset = i * 8.0f; // Adjust this to control the distance between the spheres
-        physicsSphere->m_transform.position = Vector3(0, 10 + offset, 0.1f);
-        physicsSphere->m_transform.scale = Vector3(3.0f);
-
-        // Mesh and shader setup
-        auto meshRenderer = physicsSphere->addComponent<MeshRenderer>();
-        meshRenderer->SetColor(Color::Black);
-        meshRenderer->SetMesh(gameOwner->getSphereMesh());
-        meshRenderer->SetShader(meshShader);
-        meshRenderer->SetShadowShader(m_shadowShader);
-        meshRenderer->SetGeometryShader(m_meshGeometryShader);
-
-        // Rigidbody setup with sphere collider
-        auto rb = physicsSphere->addComponent<Rigidbody>();
-        rb->SetSphereCollider(3.0f);
-    }
-
-    {
-        // Create the ground
-        auto physicsCube = m_gameObjectManager->createGameObject<GameObject>();
-        physicsCube->m_transform.position = Vector3(0, -5, 0);
-        physicsCube->m_transform.scale = Vector3(100.0f, 0.5f, 100.0f);
-
-        auto meshRenderer = physicsCube->addComponent<MeshRenderer>();
-        meshRenderer->SetColor(Color::White);
-        meshRenderer->SetMesh(gameOwner->getCubeMesh());
-        meshRenderer->SetShader(meshShader);
-        meshRenderer->SetShadowShader(m_shadowShader);
-        meshRenderer->SetGeometryShader(m_meshGeometryShader);
-
-        auto rb = physicsCube->addComponent<Rigidbody>();
-        rb->SetBoxCollider(Vector3(100.0f, 0.5f, 100.0f));
-        rb->SetBodyType(BodyType::Static);
-    }
-
-    // Create four walls to hold the balls
-    {
-        // Wall dimensions
-        float wallHeight = 10.0f; // Height of the walls
-        float wallThickness = 0.2f; // Thickness of the walls
-        float areaSize = 100.0f; // Size of the area (assuming a square area)
-
-        // Wall positions
-        Vector3 wallPositions[] = {
-            Vector3(0, wallHeight / 2 - 5, areaSize / 2), // Front wall
-            Vector3(0, wallHeight / 2 - 5, -areaSize / 2), // Back wall
-            Vector3(areaSize / 2, wallHeight / 2 - 5, 0),  // Right wall
-            Vector3(-areaSize / 2, wallHeight / 2 - 5, 0)  // Left wall
-        };
-
-        // Wall scales
-        Vector3 wallScales[] = {
-            Vector3(areaSize, wallHeight, wallThickness), // Front and back walls
-            Vector3(wallThickness, wallHeight, areaSize)  // Right and left walls
-        };
-
-        for (int i = 0; i < 4; ++i) {
-            auto wall = m_gameObjectManager->createGameObject<GameObject>();
-            wall->m_transform.position = wallPositions[i];
-            wall->m_transform.scale = wallScales[i < 2 ? 0 : 1]; // Use appropriate scale for front/back vs right/left walls
-
-            auto meshRenderer = wall->addComponent<MeshRenderer>();
-            meshRenderer->SetColor(Color::Gray); // Set a different color for walls
-            meshRenderer->SetMesh(gameOwner->getCubeMesh());
-            meshRenderer->SetShader(m_solidColorMeshShader);
-            meshRenderer->SetShadowShader(m_shadowShader);
-            meshRenderer->SetGeometryShader(m_meshGeometryShader);
-
-            auto rb = wall->addComponent<Rigidbody>();
-            rb->SetBoxCollider(wall->m_transform.scale); // Collider size matches the wall scale
-            rb->SetBodyType(BodyType::Static); // Walls are static
-        }
-    }
-
-    //{
-    //    auto newGameObject = m_gameObjectManager->createGameObject<GameObject>();
-    //    MeshRenderer* renderer = newGameObject->addComponent<MeshRenderer>();
-    //    renderer->SetMesh(fighterShip);
-    //    renderer->SetShader(meshShader);
-    //    renderer->SetTexture(sciFiSpaceTexture2D);
-    //    renderer->SetReflectiveMapTexture(shipReflectiveMap);
-    //    renderer->SetShadowShader(m_shadowShader);
-    //    renderer->SetGeometryShader(m_meshGeometryShader);
+    //float pointLightSpacing = 30.0f;
+    //// Initialize 2 point lights
+    //for (int i = 0; i < 4; i++) {
+    //    // Calculate the position based on row and column, center the grid around (0,0)
+    //    float xPosition = i * pointLightSpacing; // Center horizontally
+    //    float yPosition = 15.0f; // Fixed Y position
+    //    float zPosition = 0;
+    //
+    //    // Randomly set color to either red or blue
+    //    int randomColorChoice = (int)randomNumber(2.0f); // Generates 0 or 1
+    //    Vector3 lightColor = (randomColorChoice == 0) ? Color::Red * 2.0f : Color::Blue * 2.0f;
+    //
+    //    // Create a new point light GameObject
+    //    auto pointLightObject = m_gameObjectManager->createGameObject<GameObject>();
+    //    pointLightObject->m_transform.position = Vector3(xPosition, yPosition, zPosition);
+    //    pointLightObject->m_transform.scale = Vector3(3.0f);
+    //    
+    //    MeshRenderer* meshRenderer = pointLightObject->addComponent<MeshRenderer>();
+    //    meshRenderer->SetMesh(gameOwner->getSphereMesh());
+    //    meshRenderer->SetShader(meshShader);
+    //    meshRenderer->SetShadowShader(m_shadowShader);
+    //    meshRenderer->SetGeometryShader(m_meshGeometryShader);
+    //    meshRenderer->SetAlpha(0.5f);
+    //    meshRenderer->SetColor(lightColor);
+    //
+    //    PointLight* pointLight = pointLightObject->addComponent<PointLight>();
+    //    pointLight->SetColor(lightColor);
     //}
-    //m_GameObjectManager->loadEntitiesFromFile("Scenes/Scene1.json");
+    //
+    // 
+    ////Creating instanced tree obj
+    //{
+    //    auto statues = m_gameObjectManager->createGameObject<GameObject>();
+    //    auto renderer = statues->addComponent<MeshRenderer>();
+    //    renderer->SetShininess(32.0f);
+    //    renderer->SetTexture(ancientWorldsTexture2D);
+    //    renderer->SetShader(instancedMeshShader);
+    //    renderer->SetMesh(statueMesh);
+    //    renderer->SetReflectiveMapTexture(shipReflectiveMap);
+    //    renderer->SetShadowShader(m_shadowInstancedShader);
+    //    renderer->SetGeometryShader(m_instancedmeshGeometryShader);
+    //}
+    //
+    //for (int i = 0; i < 30; ++i) {
+    //    auto physicsSphere = m_gameObjectManager->createGameObject<GameObject>();
+    //
+    //    // Adjusting position based on index to avoid overlapping spheres
+    //    float offset = i * 8.0f; // Adjust this to control the distance between the spheres
+    //    physicsSphere->m_transform.position = Vector3(0, 10 + offset, 0.1f);
+    //    physicsSphere->m_transform.scale = Vector3(3.0f);
+    //
+    //    // Mesh and shader setup
+    //    auto meshRenderer = physicsSphere->addComponent<MeshRenderer>();
+    //    meshRenderer->SetColor(Color::Black);
+    //    meshRenderer->SetMesh(gameOwner->getSphereMesh());
+    //    meshRenderer->SetShader(meshShader);
+    //    meshRenderer->SetShadowShader(m_shadowShader);
+    //    meshRenderer->SetGeometryShader(m_meshGeometryShader);
+    //
+    //    // Rigidbody setup with sphere collider
+    //    auto rb = physicsSphere->addComponent<Rigidbody>();
+    //    rb->SetSphereCollider(3.0f);
+    //}
+    //
+    //{
+    //    // Create the ground
+    //    auto physicsCube = m_gameObjectManager->createGameObject<GameObject>();
+    //    physicsCube->m_transform.position = Vector3(0, -5, 0);
+    //    physicsCube->m_transform.scale = Vector3(100.0f, 0.5f, 100.0f);
+    //
+    //    auto meshRenderer = physicsCube->addComponent<MeshRenderer>();
+    //    meshRenderer->SetColor(Color::White);
+    //    meshRenderer->SetMesh(gameOwner->getCubeMesh());
+    //    meshRenderer->SetShader(meshShader);
+    //    meshRenderer->SetShadowShader(m_shadowShader);
+    //    meshRenderer->SetGeometryShader(m_meshGeometryShader);
+    //
+    //    auto rb = physicsCube->addComponent<Rigidbody>();
+    //    rb->SetBoxCollider(Vector3(100.0f, 0.5f, 100.0f));
+    //    rb->SetBodyType(BodyType::Static);
+    //}
+    //
+    //// Create four walls to hold the balls
+    //{
+    //    // Wall dimensions
+    //    float wallHeight = 10.0f; // Height of the walls
+    //    float wallThickness = 0.2f; // Thickness of the walls
+    //    float areaSize = 100.0f; // Size of the area (assuming a square area)
+    //
+    //    // Wall positions
+    //    Vector3 wallPositions[] = {
+    //        Vector3(0, wallHeight / 2 - 5, areaSize / 2), // Front wall
+    //        Vector3(0, wallHeight / 2 - 5, -areaSize / 2), // Back wall
+    //        Vector3(areaSize / 2, wallHeight / 2 - 5, 0),  // Right wall
+    //        Vector3(-areaSize / 2, wallHeight / 2 - 5, 0)  // Left wall
+    //    };
+    //
+    //    // Wall scales
+    //    Vector3 wallScales[] = {
+    //        Vector3(areaSize, wallHeight, wallThickness), // Front and back walls
+    //        Vector3(wallThickness, wallHeight, areaSize)  // Right and left walls
+    //    };
+    //
+    //    for (int i = 0; i < 4; ++i) {
+    //        auto wall = m_gameObjectManager->createGameObject<GameObject>();
+    //        wall->m_transform.position = wallPositions[i];
+    //        wall->m_transform.scale = wallScales[i < 2 ? 0 : 1]; // Use appropriate scale for front/back vs right/left walls
+    //
+    //        auto meshRenderer = wall->addComponent<MeshRenderer>();
+    //        meshRenderer->SetColor(Color::Gray); // Set a different color for walls
+    //        meshRenderer->SetMesh(gameOwner->getCubeMesh());
+    //        meshRenderer->SetShader(m_solidColorMeshShader);
+    //        meshRenderer->SetShadowShader(m_shadowShader);
+    //        meshRenderer->SetGeometryShader(m_meshGeometryShader);
+    //
+    //        auto rb = wall->addComponent<Rigidbody>();
+    //        rb->SetBoxCollider(wall->m_transform.scale); // Collider size matches the wall scale
+    //        rb->SetBodyType(BodyType::Static); // Walls are static
+    //    }
+    //}
+
+    m_gameObjectManager->loadGameObjectsFromFile("Scenes/Scene1.json");
 }
 
 void Scene::onCreateLate()
@@ -425,29 +416,6 @@ void Scene::onUpdate(float deltaTime)
     if(deltaTime <= 0.0f) return;
 
     m_gameObjectManager->onUpdate(deltaTime);
-
-    m_elapsedSeconds += deltaTime;
-
-    // Parameters for the circular path
-    float radius = 50.0f; // Radius of the circle
-    float speed = 1.0f;   // Speed of the ship's movement
-
-    // Calculate the position on the circular path
-    float angle = m_elapsedSeconds * speed; // Angle in radians
-    float x = radius * cos(angle);
-    float z = radius * sin(angle);
-
-    // Update the ship's position
-    m_ship->m_transform.position = Vector3(x, 50.0f, z);
-
-    // Make the ship face the direction it's moving by calculating the forward vector
-    glm::vec3 forward = glm::normalize(glm::vec3(-sin(angle), 0.0f, cos(angle)));
-
-    // Convert the forward vector to a rotation quaternion
-    Quaternion shipRotation = QuaternionUtils::LookAt(forward, glm::vec3(0.0f, 1.0f, 0.0f));
-
-    // Set the ship's rotation
-    m_ship->m_transform.rotation = shipRotation;
 }
 
 void Scene::onFixedUpdate(float fixedDeltaTime)
@@ -529,8 +497,8 @@ void Scene::onGraphicsUpdate()
         geometryBuffer.WriteDepth();
 
         // Render the transparent objects after
-        m_gameObjectManager->onTransparencyPass(uniformData);
         m_skyBox->onGraphicsUpdate(uniformData);
+        m_gameObjectManager->onTransparencyPass(uniformData);
 
         //cant seem to get post process to work maybe later
     }
@@ -603,7 +571,7 @@ void Scene::onResize(int _width, int _height)
 
 void Scene::onQuit()
 {
-    //m_GameObjectManager->saveEntitiesToFile("Scenes/Scene1.json");
+    m_gameObjectManager->saveGameObjectsToFile("Scenes/Scene1.json");
     m_gameObjectManager->clearGameObjects();
 
     // Destroy the physics world when the scene is deleted

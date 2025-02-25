@@ -19,6 +19,9 @@ GameObject::GameObject()
 
 GameObject::~GameObject()
 {
+	for (auto& pair : m_components) {
+		pair.second->onDestroy();
+	}
 }
 
 size_t GameObject::getId()

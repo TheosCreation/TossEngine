@@ -16,6 +16,7 @@ Mail : theo.morris@mds.ac.nz
 #include <reactphysics3d/reactphysics3d.h>
 
 class Game;
+class ComponentRegistry;
 
 /**
  * @class Scene
@@ -107,8 +108,7 @@ protected:
     ShaderPtr m_shadowShader = nullptr; /**< @brief Shader for rendering shadows. */
     ShaderPtr m_shadowInstancedShader = nullptr; /**< @brief Shader for rendering instanced shadows. */
     ShaderPtr m_meshGeometryShader = nullptr; /**< @brief Shader for rendering mesh geometries. */
-    // ShaderPtr m_meshLightingShader = nullptr; // Shader for lighting meshes (currently commented out).
-    ShaderPtr m_skyboxGeometryShader = nullptr; /**< @brief Shader for rendering skybox geometries. */
+    // ShaderPtr m_meshLightingShader = nullptr; // Shader for lighting meshes.
     ShaderPtr m_instancedmeshGeometryShader = nullptr; /**< @brief Shader for rendering instanced meshes. */
     ShaderPtr m_terrainGeometryShader = nullptr; /**< @brief Shader for rendering terrain geometries. */
     ShaderPtr m_computeShader = nullptr; /**< @brief Shader for compute operations. */
@@ -123,7 +123,5 @@ protected:
 
     Player* m_player = nullptr; //Pointer to the player GameObject
 
-    float m_elapsedSeconds = 0;
-    GameObject* m_ship = nullptr; //Pointer to the statue GameObject
     TerrainGameObject* m_terrain = nullptr; //Pointer to the terrain GameObject
 };

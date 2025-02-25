@@ -32,7 +32,7 @@ public:
      * @param path The file path to the texture.
      * @param manager Pointer to the resource manager.
      */
-    Texture(const char* path, const string& uniqueId, ResourceManager* manager);
+    Texture(const string& filePath, ResourceManager* manager);
 
     /**
      * @brief Destructor for the Texture class.

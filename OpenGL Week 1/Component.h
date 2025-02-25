@@ -3,7 +3,7 @@
 
 class GameObject;
 
-class Component : Serializable
+class Component : public Serializable
 {
 public:
 	GameObject* getOwner();
@@ -35,6 +35,8 @@ public:
      * @param deltaTime The time elapsed since the last frame.
      */
     virtual void onLateUpdate(float deltaTime) {}
+
+    virtual void onDestroy() {}
 
 protected:
 	GameObject* m_owner;

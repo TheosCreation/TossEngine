@@ -30,7 +30,7 @@ public:
      * @param path The file path to the resource.
      * @param manager Pointer to the resource manager.
      */
-    Resource(const char* path, const string& uniqueId, ResourceManager* manager);
+    Resource(const string& path, const string& uniqueId, ResourceManager* manager);
 
     /**
      * @brief Destructor for the Resource class.

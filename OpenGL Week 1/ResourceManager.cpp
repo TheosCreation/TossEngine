@@ -24,9 +24,47 @@ Mail : theo.morris@mds.ac.nz
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+ShaderPtr ResourceManager::getShader(const std::string& uniqueId)
+{
+    auto it = m_mapResources.find(uniqueId);
+    if (it != m_mapResources.end())
+        return std::static_pointer_cast<Shader>(it->second);
+    return ShaderPtr(); // Return empty if not found
+}
+
+MeshPtr ResourceManager::getMesh(const std::string& uniqueId)
+{
+    auto it = m_mapResources.find(uniqueId);
+    if (it != m_mapResources.end())
+        return std::static_pointer_cast<Mesh>(it->second);
+    return MeshPtr();
+}
+
+TexturePtr ResourceManager::getTexture(const std::string& uniqueId)
+{
+    auto it = m_mapResources.find(uniqueId);
+    if (it != m_mapResources.end())
+        return std::static_pointer_cast<Texture>(it->second);
+    return TexturePtr();
+}
+
+ShaderPtr ResourceManager::createShader(const ShaderDesc& desc, const std::string& uniqueID)
+{
+    ShaderPtr shader = std::make_shared<Shader>(desc, uniqueID, this);
+    m_mapResources.emplace(uniqueID, shader);
+    return shader;
+}
+
+ShaderPtr ResourceManager::createComputeShader(const string& computeShaderFilename)
+{
+    ShaderPtr shader = std::make_shared<Shader>(computeShaderFilename, this);
+    m_mapResources.emplace(computeShaderFilename, shader);
+    return shader;
+}
+
 TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vector<std::string>& filepaths)
 {
-
     stbi_set_flip_vertically_on_load(false);
 
     if (filepaths.size() != 6)
@@ -55,7 +93,7 @@ TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vecto
     }
 
     // Create a cubemap texture using the graphics engine.
-    TextureCubeMapPtr textureCubeMapPtr = std::make_shared<TextureCubeMap>(desc, filepaths[0].c_str(), "", this);
+    TextureCubeMapPtr textureCubeMapPtr = std::make_shared<TextureCubeMap>(desc, filepaths[0], this);
     if (!textureCubeMapPtr)
     {
         Debug::LogError("Cubemap texture not generated");
@@ -101,7 +139,7 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
     desc.numChannels = nrChannels;
 
     // Create a 2D texture using the graphics engine.
-    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, filepath.c_str(), "", this);
+    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, filepath, this);
     if (!texture2DPtr)
     {
         Debug::LogError("Texture not generated");
@@ -122,7 +160,7 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
 Texture2DPtr ResourceManager::createTexture2D(Texture2DDesc desc, string textureName)
 {
     // Create a 2D texture using the graphics engine.
-    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, "", "", this);
+    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, textureName, this);
     if (!texture2DPtr)
     {
         Debug::LogError("Texture not generated");
@@ -146,7 +184,7 @@ MeshPtr ResourceManager::createMeshFromFile(const std::string& filepath)
         return std::static_pointer_cast<Mesh>(it->second);
     }
 
-    MeshPtr meshPtr = std::make_shared<Mesh>(filepath.c_str(), this);
+    MeshPtr meshPtr = std::make_shared<Mesh>(filepath, this);
     if (meshPtr)
     {
         m_mapResources.emplace(filepath, meshPtr);
@@ -178,7 +216,7 @@ HeightMapPtr ResourceManager::createHeightMap(HeightMapInfo& _buildInfo)
     }
 
     // Create a HeightMap
-    HeightMapPtr heightMapPtr = std::make_shared<HeightMap>(desc, _buildInfo, _buildInfo.filePath.c_str(), this);
+    HeightMapPtr heightMapPtr = std::make_shared<HeightMap>(desc, _buildInfo, _buildInfo.filePath, this);
     if (!heightMapPtr) {
         Debug::LogError("Heightmap not generated");
         return HeightMapPtr();  // Return null pointer if HeightMap creation fails
@@ -191,7 +229,7 @@ HeightMapPtr ResourceManager::createHeightMap(HeightMapInfo& _buildInfo)
 
 SoundPtr ResourceManager::createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath)
 {
-    SoundPtr soundPtr = std::make_shared<Sound>(desc, uniqueID, filepath.c_str(), this);
+    SoundPtr soundPtr = std::make_shared<Sound>(desc, filepath, uniqueID, this);
     AudioEngine::GetInstance().loadSound(soundPtr);
     m_mapResources.emplace(filepath, soundPtr);
     return soundPtr;

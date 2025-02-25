@@ -33,7 +33,13 @@ public:
     ResourceManager(const ResourceManager& _copy) = delete;
     ResourceManager& operator=(const ResourceManager& _copy) = delete;
 
+    ShaderPtr getShader(const std::string& uniqueId);
+    MeshPtr getMesh(const std::string& uniqueId);
+    TexturePtr getTexture(const std::string& uniqueId);
+
     // Methods to create various resources
+    ShaderPtr createShader(const ShaderDesc& desc, const std::string& uniqueID);
+    ShaderPtr createComputeShader(const string& computeShaderFilename);
     TextureCubeMapPtr createCubeMapTextureFromFile(const std::vector<std::string>& filepaths);
     Texture2DPtr createTexture2DFromFile(const std::string& filepath, TextureType type = TextureType::Default);
     Texture2DPtr createTexture2D(Texture2DDesc desc, string textureName = "");
@@ -49,7 +55,7 @@ public:
     void ClearInstancesFromMeshes();
 
 protected:
-    std::map<std::string, ResourcePtr> m_mapResources; // Map of resources keyed by their file paths
+    std::map<std::string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
     TextureCubeMapPtr m_textureCubeMap; // Texture pointer for the skybox
 
 private:

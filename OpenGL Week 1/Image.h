@@ -4,8 +4,8 @@
 class Image : public Renderer
 {
 public:
-	Image();
-	~Image();
+	Image() = default;
+	~Image() = default;
 
 	virtual void onCreate() override;
 

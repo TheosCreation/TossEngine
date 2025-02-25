@@ -4,14 +4,6 @@
 #include "Material.h"
 #include "Shader.h"
 
-Image::Image()
-{
-}
-
-Image::~Image()
-{
-}
-
 void Image::onCreate()
 {
     updateVertices();

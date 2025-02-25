@@ -1,51 +1,48 @@
-/***
-Bachelor of Software Engineering
-Media Design School
-Auckland
-New Zealand
-(c) 2024 Media Design School
-File Name : GameObject.h
-Description : GameObject class that represents an object for OpenGl with its own update and onCreate functions.
-Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
-**/
-
 #pragma once
 #include "Utils.h"
 #include "Math.h"
 #include "Serializable.h"
+#include "ComponentRegistry.h"
 #include "Component.h"
 
 class GameObjectManager;
+
 /**
  * @class GameObject
  * @brief Represents an object for OpenGl with its own update and onCreate functions.
  */
-class GameObject : Serializable
+class GameObject : public Serializable
 {
 public:
     /**
      * @brief Constructor for the GameObject class.
      */
-	GameObject();
+    GameObject();
 
     /**
      * @brief Destructor for the GameObject class.
      */
-	virtual ~GameObject();
+    ~GameObject();
 
     Transform m_transform;
 
     // Serialize the GameObject to JSON
     virtual json serialize() const override
     {
+        json componentsJson = json::array();
+        for (const auto& pair : m_components)
+        {
+            componentsJson.push_back(pair.second->serialize());
+        }
+
         return {
             {"type", getClassName(typeid(*this))}, // Use typeid to get the class name
             {"transform", {
                 {"position", {m_transform.position.x, m_transform.position.y, m_transform.position.z}},
                 {"rotation", {m_transform.rotation.x, m_transform.rotation.y, m_transform.rotation.z, m_transform.rotation.w}},
                 {"scale", {m_transform.scale.x, m_transform.scale.y, m_transform.scale.z}}
-            }}
+            }},
+            {"components", componentsJson}
         };
     }
 
@@ -63,12 +60,28 @@ public:
             if (transformData.contains("rotation"))
             {
                 auto rot = transformData["rotation"];
-                m_transform.rotation = Quaternion(rot[0], rot[1], rot[2], rot[3]);
+                m_transform.rotation = Quaternion(rot[3], rot[0], rot[1], rot[2]);
             }
             if (transformData.contains("scale"))
             {
                 auto scl = transformData["scale"];
                 m_transform.scale = Vector3(scl[0], scl[1], scl[2]);
+            }
+        }
+
+        if (data.contains("components"))
+        {
+            for (const auto& componentData : data["components"])
+            {
+                std::string componentType = componentData["type"];
+                auto component = ComponentRegistry::GetInstance().createComponent(componentType);
+                if (component)
+                {
+                    component->setOwner(this);
+                    component->onCreate();
+                    component->deserialize(componentData);
+                    m_components[std::type_index(typeid(*component))] = std::move(component);
+                }
             }
         }
     }
@@ -89,38 +102,43 @@ public:
      * @brief Gets the GameObjectManager that manages this GameObject.
      * @return A pointer to the GameObjectManager.
      */
-	GameObjectManager* getGameObjectManager();
+    GameObjectManager* getGameObjectManager();
 
     /**
      * @brief Sets the GameObjectManager that manages this GameObject.
      * @param GameObjectManager A pointer to the GameObjectManager.
      */
-	void setGameObjectManager(GameObjectManager* gameObjectManager);
+    void setGameObjectManager(GameObjectManager* gameObjectManager);
 
     /**
      * @brief Releases the GameObject, preparing it for destruction.
      */
-	void release();
+    void release();
 
     /**
      * @brief Called when the GameObject is created.
      * Can be overridden by derived classes to perform initialization.
      */
-	virtual void onCreate() {}
+    virtual void onCreate() {}
 
     /**
      * @brief Called every frame to update the GameObject at a fixed frame rate.
      * Can be overridden by derived classes to implement custom behavior.
      * @param deltaTime The time elapsed since the last frame.
      */
-    virtual void onFixedUpdate(float fixedDeltaTime) {}
+    virtual void onFixedUpdate(float fixedDeltaTime) 
+    {
+        for (auto& pair : m_components) {
+            pair.second->onFixedUpdate(fixedDeltaTime);
+        }
+    }
 
     /**
      * @brief Called every frame to update the GameObject.
      * Can be overridden by derived classes to implement custom behavior.
      * @param deltaTime The time elapsed since the last frame.
      */
-	virtual void onUpdate(float deltaTime) 
+    virtual void onUpdate(float deltaTime)
     {
         for (auto& pair : m_components) {
             pair.second->onUpdate(deltaTime);
@@ -162,12 +180,11 @@ public:
         return nullptr;
     }
 
-
 protected:
     std::map<std::type_index, ComponentPtr> m_components;
 
-	GameObjectManager* m_gameObjectManager = nullptr; //Pointer to the GameObjectManager managing this GameObject.
+    GameObjectManager* m_gameObjectManager = nullptr; // Pointer to the GameObjectManager managing this GameObject.
 
 private:
-	size_t m_id = 0; //Unique identifier for the GameObject.
+    size_t m_id = 0; // Unique identifier for the GameObject.
 };

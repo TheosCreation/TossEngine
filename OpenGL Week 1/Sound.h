@@ -21,7 +21,7 @@ public:
      * @param reverbAmount The amount of reverb to apply (0.0 to 1.0).
      * @param filePath The path to the sound file.
      */
-    Sound(const SoundDesc& desc, const std::string& uniqueID, const char* path, ResourceManager* manager);
+    Sound(const SoundDesc& desc, const std::string& filePath, const std::string& uniqueID, ResourceManager* manager);
 
     // Getters
     bool is3D() const { return m_desc.is3D; }
