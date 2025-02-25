@@ -17,6 +17,7 @@ Mail : theo.morris@mds.ac.nz
 
 class Game;
 class ComponentRegistry;
+class Image;
 
 /**
  * @class Scene
@@ -91,6 +92,8 @@ public:
      */
     virtual void onQuit();
 
+    Player* getPlayer();
+
     rp3d::PhysicsWorld* GetPhysicsWorld();
     rp3d::PhysicsCommon& GetPhysicsCommon();
 
@@ -116,12 +119,11 @@ protected:
     unique_ptr<SkyboxGameObject> m_skyBox; /**< @brief Pointer to the skybox instance used in the scene. */
     unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the GameObject system managing game entities. */
     FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
-    GameObject* m_deferredRenderSSRQ;
-    GameObject* m_postProcessSSRQ;
+    unique_ptr<Image> m_deferredRenderSSRQ;
+    unique_ptr<Image> m_postProcessSSRQ;
 
     Game* gameOwner; /**< @brief Pointer to the owner Game instance. */
-
-    Player* m_player = nullptr; //Pointer to the player GameObject
+    Player* m_player;
 
     TerrainGameObject* m_terrain = nullptr; //Pointer to the terrain GameObject
 };

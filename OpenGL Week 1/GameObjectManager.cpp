@@ -21,12 +21,10 @@ Mail : theo.morris@mds.ac.nz
 
 GameObjectManager::GameObjectManager()
 {
-	m_gameObjectFactory = std::make_unique<GameObjectFactory>();
 }
 
 GameObjectManager::GameObjectManager(Scene* scene)
 {
-	m_gameObjectFactory = std::make_unique<GameObjectFactory>();
 	m_scene = scene;
 }
 
@@ -101,7 +99,6 @@ void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
 	}
 }
 
-
 void GameObjectManager::saveGameObjectsToFile(const std::string& filePath)
 {
 	json sceneData;
@@ -109,16 +106,6 @@ void GameObjectManager::saveGameObjectsToFile(const std::string& filePath)
 
 	for (auto& gameObject : m_gameObjects)
 	{
-		//Rigidbody* rb = GameObject->getComponent<Rigidbody>();
-		//if (rb)
-		//{
-		//	continue;
-		//}
-		Image* image = gameObject->getComponent<Image>();
-		if (image)
-		{
-			continue;
-		}
 		if (gameObject->getComponent<MeshRenderer>())
 		{
 			sceneData["gameobjects"].push_back(gameObject->serialize());

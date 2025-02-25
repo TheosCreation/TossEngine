@@ -19,6 +19,7 @@ Mail : theo.morris@mds.ac.nz
 #include "LightManager.h"
 #include "Scene.h"
 #include "ShadowMap.h"
+#include "Player.h"
 
 // Forward declarations of classes
 class Window;
@@ -26,7 +27,7 @@ class GameObjectManager;
 class SkyboxGameObject;
 class GeometryBuffer;
 class Framebuffer;
-class SSRQuad;
+class Camera;
 
 /**
  * @class Game
@@ -70,6 +71,8 @@ public:
 
     MeshPtr getSphereMesh();
 
+    bool getIsRunning();
+
     //void SetFullScreenShader(ShaderPtr _shader = nullptr, Texture2DPtr _texture = nullptr);
 
 protected:
@@ -95,7 +98,7 @@ private:
     void onUpdateInternal();
 
 protected:
-    bool m_isRunning = true; //Indicates whether the game is running
+    bool m_isRunning = false; //Indicates whether the game is running
     std::unique_ptr<Window> m_display; //Pointer to the window instance
     //std::unique_ptr<QuadGameObject> m_canvasQuad; //Pointer to the framebuffer instance
 

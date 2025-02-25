@@ -13,7 +13,6 @@ Mail : theo.morris@mds.ac.nz
 #pragma once
 #include "Utils.h"
 #include "Math.h"
-#include "GameObjectFactory.h"
 #include <map>
 #include <set>
 
@@ -108,9 +107,6 @@ public:
     vector<std::unique_ptr<GameObject>> m_gameObjects;
 
     void clearGameObjects();
-
-    //move later
-    std::unique_ptr<GameObjectFactory> m_gameObjectFactory;
 
 private:
     /**
