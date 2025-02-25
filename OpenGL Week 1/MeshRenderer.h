@@ -1,7 +1,7 @@
 #pragma once
-#include "Component.h"
+#include "Renderer.h"
 
-class MeshRenderer : public Component
+class MeshRenderer : public Renderer
 {
 public:
 	MeshRenderer();
@@ -9,7 +9,7 @@ public:
 
 	void onShadowPass(uint index);
 
-	void Render(UniformData data);
+	virtual void Render(UniformData data, RenderingPath renderPath) override;
 
 	void SetMesh(MeshPtr mesh);
 

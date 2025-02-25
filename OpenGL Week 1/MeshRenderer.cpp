@@ -48,14 +48,14 @@ void MeshRenderer::onShadowPass(uint index)
     }
 }
 
-void MeshRenderer::Render(UniformData data)
+void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
 {
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.setFaceCulling(CullType::BackFace);
     graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
     graphicsEngine.setDepthFunc(DepthType::Less);
 
-    if (graphicsEngine.getRenderingPath() == RenderingPath::Deferred && m_alpha == 1)
+    if (renderPath == RenderingPath::Deferred)
     {
         graphicsEngine.setShader(m_geometryShader);
         m_geometryShader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
@@ -77,11 +77,9 @@ void MeshRenderer::Render(UniformData data)
         {
             m_geometryShader->setTexture2D(m_reflectiveMap, 2, "ReflectionMap");
         }
-
     }
-    
 
-    if (graphicsEngine.getRenderingPath() == RenderingPath::Forward || m_alpha < 1)
+    if (renderPath == RenderingPath::Forward)
     {
         graphicsEngine.setShader(m_shader);
         m_shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);

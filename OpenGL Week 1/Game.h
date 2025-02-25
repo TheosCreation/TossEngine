@@ -18,7 +18,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Entity.h"
 #include "LightManager.h"
 #include "Scene.h"
-#include "QuadEntity.h"
 #include "ShadowMap.h"
 
 // Forward declarations of classes

@@ -20,12 +20,12 @@ Mail : theo.morris@mds.ac.nz
 
 GameObjectManager::GameObjectManager()
 {
-	m_entityFactory = std::make_unique<EntityFactory>();
+	m_gameObjectFactory = std::make_unique<EntityFactory>();
 }
 
 GameObjectManager::GameObjectManager(Scene* scene)
 {
-	m_entityFactory = std::make_unique<EntityFactory>();
+	m_gameObjectFactory = std::make_unique<EntityFactory>();
 	m_scene = scene;
 }
 
@@ -89,7 +89,7 @@ void GameObjectManager::loadEntitiesFromFile(const std::string& filePath)
 		return;
 	}
 
-	if (!m_entityFactory)
+	if (!m_gameObjectFactory)
 	{
 		std::cerr << "Error: m_entityFactory is null!" << std::endl;
 		return;
@@ -106,7 +106,7 @@ void GameObjectManager::loadEntitiesFromFile(const std::string& filePath)
 		std::string type = entityData["type"];
 		std::cout << "Trying to create entity of type: " << type << std::endl;
 
-		GameObject* entity = m_entityFactory->createEntity(type);
+		GameObject* entity = m_gameObjectFactory->createEntity(type);
 		if (entity)
 		{
 			std::cout << "Entity created successfully: " << type << std::endl;
@@ -203,6 +203,7 @@ void GameObjectManager::onShadowPass(int index)
 
 void GameObjectManager::Render(UniformData _data)
 {
+	auto& graphicsEngine = GraphicsEngine::GetInstance();
 	for (auto&& [id, gameObjects] : m_gameObjects)
 	{
 		for (auto&& [ptr, gameObject] : gameObjects)
@@ -210,7 +211,9 @@ void GameObjectManager::Render(UniformData _data)
 			MeshRenderer* renderer = gameObject->getComponent<MeshRenderer>();
 			if (renderer)
 			{
-				renderer->Render(_data);
+				if (renderer->GetAlpha() != 1.0f) continue;
+
+				renderer->Render(_data, graphicsEngine.getRenderingPath());
 			}
 		}
 	}
@@ -235,7 +238,6 @@ void GameObjectManager::onTransparencyPass(UniformData _data)
 		graphicsEntity->onGraphicsUpdate(_data);
 	}
 
-
 	for (auto&& [id, gameObjects] : m_gameObjects)
 	{
 		for (auto&& [ptr, gameObject] : gameObjects)
@@ -243,9 +245,9 @@ void GameObjectManager::onTransparencyPass(UniformData _data)
 			MeshRenderer* renderer = gameObject->getComponent<MeshRenderer>();
 			if (renderer)
 			{
-				if(renderer->GetAlpha()  == 1.0f) continue;
+				if(renderer->GetAlpha() == 1.0f) continue;
 
-				renderer->Render(_data);
+				renderer->Render(_data, RenderingPath::Forward); // we render the transparent renderers last with forward rendering
 			}
 		}
 	}

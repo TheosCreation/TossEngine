@@ -111,7 +111,7 @@ public:
     void clearGameObjects();
 
     //move later
-    std::unique_ptr<EntityFactory> m_entityFactory;
+    std::unique_ptr<EntityFactory> m_gameObjectFactory;
 
 private:
     /**

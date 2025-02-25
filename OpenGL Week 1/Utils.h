@@ -44,11 +44,10 @@ class Resource;
 class Texture;
 class HeightMap;
 class Mesh;
-class InstancedMesh;
-class SSRQuad;
 struct ProjectSettings;
 class Sound;
 class Component;
+class Material;
 
 // Type definitions for common engine variables
 typedef unsigned int uint;
@@ -68,12 +67,11 @@ typedef std::shared_ptr<ShadowMap> ShadowMapPtr;
 typedef std::unique_ptr<Framebuffer> FramebufferPtr;
 typedef std::shared_ptr<TextureCubeMap> TextureCubeMapPtr;
 typedef std::shared_ptr<Mesh> MeshPtr;
-typedef std::shared_ptr<InstancedMesh> InstancedMeshPtr;
 typedef std::shared_ptr<HeightMap> HeightMapPtr;
-typedef std::shared_ptr<SSRQuad> SSRQuadPtr;
 typedef std::unique_ptr<ProjectSettings> ProjectSettingsPtr;
 typedef std::shared_ptr<Sound> SoundPtr;
 typedef std::unique_ptr<Component> ComponentPtr;
+typedef std::shared_ptr<Material> MaterialPtr;
 
 // Using declarations to simplify the code and avoid typing the full namespace each time
 using std::shared_ptr;
@@ -310,6 +308,11 @@ struct SoundDesc
     bool isLoop = false;
     float volume = 1.0f;
     float reverbAmount = 0.0f;
+};
+
+struct MaterialDesc
+{
+    ShaderPtr shader;
 };
 
 // Enum representing camera types
