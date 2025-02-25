@@ -1,4 +1,5 @@
 #include "MeshRenderer.h"
+#include "ResourceManager.h"
 #include "GraphicsEngine.h"
 #include "LightManager.h"
 #include "Mesh.h"
@@ -7,14 +8,104 @@
 #include "Texture.h"
 #include "VertexArrayObject.h"
 
-MeshRenderer::MeshRenderer()
+json MeshRenderer::serialize() const
 {
+    json data;
+    data["type"] = getClassName(typeid(*this)); // Store the component type
+
+    // Serialize mesh (assuming MeshPtr has a unique identifier or name)
+    if (m_mesh)
+    {
+        data["mesh"] = m_mesh->getUniqueID();
+    }
+
+    // Serialize shaders
+    if (m_shader)
+    {
+        data["shader"] = m_shader->getUniqueID();
+    }
+    if (m_geometryShader)
+    {
+        data["geometryShader"] = m_geometryShader->getUniqueID();
+    }
+    if (m_shadowShader)
+    {
+        data["shadowShader"] = m_shadowShader->getUniqueID();
+    }
+
+    // Serialize textures
+    if (m_texture)
+    {
+        data["texture"] = m_texture->getUniqueID();
+    }
+    if (m_reflectiveMap)
+    {
+        data["reflectiveMap"] = m_reflectiveMap->getUniqueID();
+    }
+
+    // Serialize material properties
+    data["shininess"] = m_shininess;
+    data["alpha"] = m_alpha;
+    data["color"] = { m_color.x, m_color.y, m_color.z };
+
+    return data;
 }
 
-MeshRenderer::~MeshRenderer()
+void MeshRenderer::deserialize(const json& data)
 {
-}
+    auto& resourceManager = ResourceManager::GetInstance();
 
+    // Deserialize mesh
+    if (data.contains("mesh"))
+    {
+        std::string meshId = data["mesh"];
+        m_mesh = resourceManager.getMesh(meshId);
+    }
+
+    // Deserialize shaders
+    if (data.contains("shader"))
+    {
+        std::string shaderId = data["shader"];
+        m_shader = resourceManager.getShader(shaderId);
+    }
+    if (data.contains("geometryShader"))
+    {
+        std::string geometryId = data["geometryShader"];
+        m_geometryShader = resourceManager.getShader(geometryId);
+    }
+    if (data.contains("shadowShader"))
+    {
+        std::string shadowShaderId = data["shadowShader"];
+        m_shadowShader = resourceManager.getShader(shadowShaderId);
+    }
+
+    // Deserialize textures
+    if (data.contains("texture"))
+    {
+        std::string textureName = data["texture"];
+        m_texture = resourceManager.getTexture(textureName); // Replace with appropriate method to load texture
+    }
+    if (data.contains("reflectiveMap"))
+    {
+        std::string reflectiveMapName = data["reflectiveMap"];
+        m_reflectiveMap = resourceManager.getTexture(reflectiveMapName);
+    }
+
+    // Deserialize material properties
+    if (data.contains("shininess"))
+    {
+        m_shininess = data["shininess"];
+    }
+    if (data.contains("alpha"))
+    {
+        m_alpha = data["alpha"];
+    }
+    if (data.contains("color"))
+    {
+        auto color = data["color"];
+        m_color = Vector3(color[0], color[1], color[2]);
+    }
+}
 void MeshRenderer::onShadowPass(uint index)
 {
     if (m_shadowShader == nullptr) return;

@@ -12,20 +12,17 @@ Mail : theo.morris@mds.ac.nz
 
 #include "Shader.h"
 #include "Texture.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
 
-Shader::Shader(const ShaderDesc& desc)
+
+Shader::Shader(const ShaderDesc& desc, const string& uniqueId, ResourceManager* manager) : Resource("", uniqueId, manager)
 {
-	m_programId = glCreateProgram();
+    m_programId = glCreateProgram();
     Attach(desc.vertexShaderFileName, ShaderType::VertexShader);
     Attach(desc.fragmentShaderFileName, ShaderType::FragmentShader);
-	link();
+    link();
 }
 
-Shader::Shader(const string computeFileName)
+Shader::Shader(const string computeFileName, ResourceManager* manager) : Resource("", computeFileName, manager)
 {
     m_programId = glCreateProgram();
     Attach(computeFileName, ShaderType::ComputeShader);

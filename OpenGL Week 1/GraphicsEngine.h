@@ -42,15 +42,6 @@ public:
     VertexArrayObjectPtr createVertexArrayObject(const VertexBufferDesc& vbDesc, const IndexBufferDesc& ibDesc);
 
     /**
-     * @brief Creates a Shader program.
-     * @param desc Description of the Shader.
-     * @return A shared pointer to the created Shader.
-     */
-    ShaderPtr createShader(const ShaderDesc& desc);
-
-    ShaderPtr createComputeShader(const string& computeShaderFilename);
-
-    /**
      * @brief Clears the screen with the specified color.
      * @param color The color to clear the screen with.
      */

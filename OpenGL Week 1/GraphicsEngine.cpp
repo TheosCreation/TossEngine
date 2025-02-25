@@ -35,16 +35,6 @@ VertexArrayObjectPtr GraphicsEngine::createVertexArrayObject(const VertexBufferD
     return std::make_shared<VertexArrayObject>(vbDesc, ibDesc);
 }
 
-ShaderPtr GraphicsEngine::createShader(const ShaderDesc& desc)
-{
-    return std::make_shared<Shader>(desc);
-}
-
-ShaderPtr GraphicsEngine::createComputeShader(const string& computeShaderFilename)
-{
-    return std::make_shared<Shader>(computeShaderFilename);
-}
-
 void GraphicsEngine::clear(const glm::vec4& color, bool clearDepth, bool clearStencil)
 {
     glClearColor(color.x, color.y, color.z, color.w);

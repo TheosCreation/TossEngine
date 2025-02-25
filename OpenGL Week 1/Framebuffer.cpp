@@ -74,7 +74,7 @@ void Framebuffer::Resize(Vector2 _newWindowSize)
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
     
     // Resize the existing texture
-    RenderTexture->resize(Rect(_newWindowSize.x, _newWindowSize.y));
+    RenderTexture->resize(Rect((int)_newWindowSize.x, (int)_newWindowSize.y));
 
     // Attach the new texture to the framebuffer
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RenderTexture->getId(), 0);

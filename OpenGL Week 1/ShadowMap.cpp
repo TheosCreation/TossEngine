@@ -1,6 +1,6 @@
 #include "ShadowMap.h"
 
-ShadowMap::ShadowMap(Vector2 _resolution) : Texture("", "", nullptr)
+ShadowMap::ShadowMap(Vector2 _resolution) : Texture("", nullptr)
 {
     m_resolution = _resolution;
     // Create the framebuffer object

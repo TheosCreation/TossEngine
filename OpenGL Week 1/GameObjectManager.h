@@ -57,9 +57,8 @@ public:
     T* createGameObject()
     {
         static_assert(std::is_base_of<GameObject, T>::value, "T must derive from Game Object class");
-        auto id = typeid(T).hash_code();
         auto e = new T();
-        if (createGameObjectInternal(e, id))
+        if (createGameObjectInternal(e))
             return e;
         return nullptr;
     }
@@ -70,8 +69,8 @@ public:
      */
     void removeGameObject(GameObject* GameObject);
 
-    void loadEntitiesFromFile(const std::string& filePath);
-    void saveEntitiesToFile(const std::string& filePath);
+    void loadGameObjectsFromFile(const std::string& filePath);
+    void saveGameObjectsToFile(const std::string& filePath);
 
     /**
      * @brief Updates the GameObject system.
@@ -106,7 +105,7 @@ public:
     /**
      * @brief Map of entities categorized by their type ID.
      */
-    std::map<size_t, std::map<GameObject*, std::unique_ptr<GameObject>>> m_gameObjects;
+    vector<std::unique_ptr<GameObject>> m_gameObjects;
 
     void clearGameObjects();
 
@@ -120,7 +119,7 @@ private:
      * @param id The type ID of the GameObject.
      * @return True if the GameObject was created successfully, false otherwise.
      */
-    bool createGameObjectInternal(GameObject* gameObject, size_t id);
+    bool createGameObjectInternal(GameObject* gameObject);
     
 
     /**
@@ -131,7 +130,7 @@ private:
     /**
      * @brief Vector of all graphics entities.
      */
-    std::vector<GraphicsGameObject*> m_graphicsEntities;
+    std::vector<GraphicsGameObject*> m_graphicsObjects;
 
     /**
      * @brief Vector of all camera entities.

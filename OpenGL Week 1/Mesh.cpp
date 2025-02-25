@@ -20,7 +20,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Game.h"
 #include "GraphicsEngine.h"
 
-Mesh::Mesh(const char* path, ResourceManager* manager) : Resource(path, "", manager)
+Mesh::Mesh(const string& filePath, ResourceManager* manager) : Resource(filePath, filePath, manager)
 {
     tinyobj::attrib_t attribs;
     std::vector<tinyobj::shape_t> shapes;
@@ -28,7 +28,7 @@ Mesh::Mesh(const char* path, ResourceManager* manager) : Resource(path, "", mana
     std::string warn;
     std::string err;
     
-    auto inputfile = std::filesystem::path(path).string();
+    auto inputfile = std::filesystem::path(filePath).string();
     
     bool res = tinyobj::LoadObj(&attribs, &shapes, nullptr, &warn, &err, inputfile.c_str(), nullptr);
 

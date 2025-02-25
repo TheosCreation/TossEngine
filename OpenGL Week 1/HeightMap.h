@@ -28,7 +28,7 @@ public:
      * @param manager Resource Manager of the HeightMap texture.
      */
 
-    HeightMap(const HeightMapDesc& desc, const HeightMapInfo& buildInfo, const char* path, ResourceManager* manager);
+    HeightMap(const HeightMapDesc& desc, const HeightMapInfo& buildInfo, const string& filePath, ResourceManager* manager);
 
     uint getWidth();
     uint getDepth();

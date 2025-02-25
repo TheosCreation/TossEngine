@@ -47,19 +47,25 @@ public:
     * @brief Creates a point light and adds it to the manager.
     * @param newPointLight The point light to be added.
     */
-    void createPointLight(const PointLight& newPointLight);
+    uint createPointLight(const PointLightData& newPointLight);
+
+    void updatePointLightPosition(uint lightId, const Vector3& position);
+
+    void updatePointLightColor(uint lightId, const Vector3& newColor);
+
+    void updatePointLightRadius(uint lightId, float newRadius);
 
     /**
      * @brief Creates a directional light and adds it to the manager.
      * @param newDirectionalLight The directional light to be added.
      */
-    void createDirectionalLight(const DirectionalLight& newDirectionalLight);
+    void createDirectionalLight(const DirectionalLightData& newDirectionalLight);
 
     /**
      * @brief Creates a spotlight and adds it to the manager.
      * @param newSpotLight The spotlight to be added.
      */
-    void createSpotLight(const SpotLight& newSpotLight);
+    void createSpotLight(const SpotLightData& newSpotLight);
 
     /**
     * @brief Applies lighting information to the specified shader.
@@ -161,14 +167,14 @@ private:
     float AmbientStrength = 0.2f; //The strength of the ambient light
     Vector3 AmbientColor = Vector3(1.0f, 1.0f, 1.0f); //The color of the ambient light
     static const int MAX_POINT_LIGHTS = 25; //The maximum number of point lights
-    PointLight m_pointLights[MAX_POINT_LIGHTS] = {}; // Array of point lights
+    PointLightData m_pointLights[MAX_POINT_LIGHTS] = {}; // Array of point lights
     uint m_pointLightCount = 0; // The current count of point lights
 
     static const int MAX_DIRECTIONAL_LIGHTS = 2; // The maximum number of directional lights
-    DirectionalLight m_directionalLights[MAX_DIRECTIONAL_LIGHTS] = {}; // Array of directional lights
+    DirectionalLightData m_directionalLights[MAX_DIRECTIONAL_LIGHTS] = {}; // Array of directional lights
     uint m_directionalLightCount = 0; // The current count of directional lights
 
-    SpotLight m_spotLight; // The spotlight
+    SpotLightData m_spotLight; // The spotlight
 
     ShadowMapPtr m_shadowMapTexture[MAX_DIRECTIONAL_LIGHTS] = {}; // Array to store shadow map textures.
 

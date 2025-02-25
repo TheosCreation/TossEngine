@@ -1,0 +1,1892 @@
+{
+    "gameobjects": [
+        {
+            "components": [
+                {
+                    "alpha": 0.5,
+                    "color": [
+                        0.0,
+                        0.0,
+                        2.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "color": [
+                        0.0,
+                        0.0,
+                        2.0
+                    ],
+                    "radius": 200.0,
+                    "type": "PointLight"
+                }
+            ],
+            "transform": {
+                "position": [
+                    0.0,
+                    15.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 0.5,
+                    "color": [
+                        0.0,
+                        0.0,
+                        2.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "color": [
+                        0.0,
+                        0.0,
+                        2.0
+                    ],
+                    "radius": 200.0,
+                    "type": "PointLight"
+                }
+            ],
+            "transform": {
+                "position": [
+                    30.0,
+                    15.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 0.5,
+                    "color": [
+                        2.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "color": [
+                        2.0,
+                        0.0,
+                        0.0
+                    ],
+                    "radius": 200.0,
+                    "type": "PointLight"
+                }
+            ],
+            "transform": {
+                "position": [
+                    60.0,
+                    15.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 0.5,
+                    "color": [
+                        2.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "color": [
+                        2.0,
+                        0.0,
+                        0.0
+                    ],
+                    "radius": 200.0,
+                    "type": "PointLight"
+                }
+            ],
+            "transform": {
+                "position": [
+                    90.0,
+                    15.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        1.0,
+                        0.0,
+                        1.0
+                    ],
+                    "geometryShader": "GeometryPassInstancedMeshShader",
+                    "mesh": "Resources/Meshes/SM_Prop_Statue_01.obj",
+                    "reflectiveMap": "Resources/Textures/ReflectionMap_White.png",
+                    "shader": "InstancedMeshShader",
+                    "shadowShader": "ShadowShaderInstancedShader",
+                    "shininess": 32.0,
+                    "texture": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+                    "type": "MeshRenderer"
+                }
+            ],
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -11.765433311462402,
+                    -1.7502038478851318,
+                    -40.67091751098633
+                ],
+                "rotation": [
+                    -0.3028765022754669,
+                    -0.19479328393936157,
+                    0.6733698844909668,
+                    -0.6456736922264099
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    0.0,
+                    20.0,
+                    2.1036009788513184
+                ],
+                "rotation": [
+                    -0.037281811237335205,
+                    0.8209401369094849,
+                    0.5603467226028442,
+                    0.10333950817584991
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    29.56746482849121,
+                    -341.63641357421875,
+                    43.792972564697266
+                ],
+                "rotation": [
+                    0.3188040554523468,
+                    -0.2637642025947571,
+                    -0.8670729994773865,
+                    -0.2774471044540405
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    45.442138671875,
+                    -1.7553515434265137,
+                    -14.041526794433594
+                ],
+                "rotation": [
+                    -0.004244377836585045,
+                    0.19104745984077454,
+                    0.8410356640815735,
+                    -0.506104588508606
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -4.977537155151367,
+                    -1.7556393146514893,
+                    -46.91938018798828
+                ],
+                "rotation": [
+                    0.3796147406101227,
+                    0.39585641026496887,
+                    -0.0010578663786873221,
+                    0.8361754417419434
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -30.025571823120117,
+                    -1.7544760704040527,
+                    16.767208099365234
+                ],
+                "rotation": [
+                    -0.4349762797355652,
+                    -0.381181001663208,
+                    -0.8097133636474609,
+                    0.09930308908224106
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    39.526031494140625,
+                    -2097.14599609375,
+                    22.06795310974121
+                ],
+                "rotation": [
+                    -0.6524428129196167,
+                    0.17244793474674225,
+                    0.6307233572006226,
+                    -0.3831034004688263
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -32.91315460205078,
+                    -2097.515380859375,
+                    -28.314802169799805
+                ],
+                "rotation": [
+                    -0.2964608669281006,
+                    0.33181238174438477,
+                    -0.866756021976471,
+                    0.2252677083015442
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -6.327951908111572,
+                    -1.7586524486541748,
+                    42.742401123046875
+                ],
+                "rotation": [
+                    0.11396375298500061,
+                    0.9373279213905334,
+                    -0.22289645671844482,
+                    0.24237564206123352
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    46.119075775146484,
+                    -2096.935791015625,
+                    -37.523014068603516
+                ],
+                "rotation": [
+                    0.7048258781433105,
+                    0.27812647819519043,
+                    0.1200370192527771,
+                    -0.6414493918418884
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -24.283573150634766,
+                    -1.7515631914138794,
+                    30.817087173461914
+                ],
+                "rotation": [
+                    0.6429309844970703,
+                    -0.4818587303161621,
+                    0.3345666527748108,
+                    -0.492460161447525
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    2.445948839187622,
+                    -1.7549227476119995,
+                    37.57646179199219
+                ],
+                "rotation": [
+                    0.6674017310142517,
+                    -0.48572248220443726,
+                    0.24082492291927338,
+                    -0.5105409026145935
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    43.110557556152344,
+                    -2097.251708984375,
+                    -1.0097535848617554
+                ],
+                "rotation": [
+                    -0.17367741465568542,
+                    -0.7825065851211548,
+                    0.17847581207752228,
+                    -0.570671558380127
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -23.795879364013672,
+                    -2093.381103515625,
+                    -27.709205627441406
+                ],
+                "rotation": [
+                    0.3626420795917511,
+                    -0.2816449999809265,
+                    -0.488574355840683,
+                    0.7419312596321106
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    11.741296768188477,
+                    -2094.71923828125,
+                    35.741058349609375
+                ],
+                "rotation": [
+                    0.7960447072982788,
+                    0.42278072237968445,
+                    0.4134611487388611,
+                    0.128915473818779
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -15.65921688079834,
+                    -2096.615966796875,
+                    -21.88398551940918
+                ],
+                "rotation": [
+                    0.44790157675743103,
+                    0.41390174627304077,
+                    0.7689250707626343,
+                    0.19189542531967163
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -23.26646614074707,
+                    -2097.081298828125,
+                    20.854755401611328
+                ],
+                "rotation": [
+                    0.5583953857421875,
+                    0.5126035213470459,
+                    0.6239299178123474,
+                    -0.19011524319648743
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    25.40634536743164,
+                    -2096.084228515625,
+                    8.549890518188477
+                ],
+                "rotation": [
+                    0.485663503408432,
+                    0.14465227723121643,
+                    -0.6072638630867004,
+                    0.6119127869606018
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -33.4345588684082,
+                    -2095.207763671875,
+                    -0.463542103767395
+                ],
+                "rotation": [
+                    0.7650089263916016,
+                    0.5189358592033386,
+                    -0.07569298893213272,
+                    -0.3738149106502533
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    14.416512489318848,
+                    -1.7599951028823853,
+                    28.84567642211914
+                ],
+                "rotation": [
+                    -0.3177787661552429,
+                    -0.1618187129497528,
+                    0.7681894898414612,
+                    0.5317107439041138
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    22.9923152923584,
+                    -2091.18798828125,
+                    -30.402828216552734
+                ],
+                "rotation": [
+                    -0.12086307257413864,
+                    0.8895137310028076,
+                    -0.42307427525520325,
+                    -0.12314900755882263
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -30.365421295166016,
+                    -1.7543851137161255,
+                    -0.404757022857666
+                ],
+                "rotation": [
+                    -0.2629476487636566,
+                    -0.6124274134635925,
+                    -0.1287648230791092,
+                    0.7343097925186157
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -8.653299331665039,
+                    -2095.7392578125,
+                    -30.421110153198242
+                ],
+                "rotation": [
+                    0.03190133720636368,
+                    -0.5670252442359924,
+                    0.8079183101654053,
+                    -0.157266303896904
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    23.34882164001465,
+                    -2096.881103515625,
+                    -17.28843116760254
+                ],
+                "rotation": [
+                    -0.17654816806316376,
+                    0.016665037721395493,
+                    0.8990541100502014,
+                    0.40031835436820984
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -15.572546005249023,
+                    -2093.89501953125,
+                    23.07018280029297
+                ],
+                "rotation": [
+                    0.18369470536708832,
+                    0.39985886216163635,
+                    0.4447709918022156,
+                    -0.7800948023796082
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    14.578530311584473,
+                    -1.750612735748291,
+                    -7.855319023132324
+                ],
+                "rotation": [
+                    0.5110049247741699,
+                    0.11081893742084503,
+                    0.7179241180419922,
+                    0.4595412611961365
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -15.72146224975586,
+                    -2096.70458984375,
+                    11.53988265991211
+                ],
+                "rotation": [
+                    0.12821348011493683,
+                    -0.7618525624275208,
+                    -0.5906762480735779,
+                    -0.23290269076824188
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -9.305423736572266,
+                    -2092.44189453125,
+                    1.1862062215805054
+                ],
+                "rotation": [
+                    0.2348325252532959,
+                    0.962099015712738,
+                    0.07750125229358673,
+                    0.11494700610637665
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    6.3760247230529785,
+                    -2096.401611328125,
+                    -2.7785940170288086
+                ],
+                "rotation": [
+                    -0.4214552938938141,
+                    0.6841500997543335,
+                    -0.386225163936615,
+                    0.4529285132884979
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/sphere.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 2,
+                    "collider": {
+                        "radius": 3.0,
+                        "type": "sphere"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    0.8342435359954834,
+                    -2093.952880859375,
+                    0.27673202753067017
+                ],
+                "rotation": [
+                    -0.6672446131706238,
+                    -0.3026925027370453,
+                    0.6475204229354858,
+                    -0.20947374403476715
+                ],
+                "scale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/cube.obj",
+                    "shader": "MeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 0,
+                    "collider": {
+                        "size": [
+                            100.0,
+                            0.5,
+                            100.0
+                        ],
+                        "type": "box"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    0.0,
+                    -5.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.0
+                ],
+                "scale": [
+                    100.0,
+                    0.5,
+                    100.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/cube.obj",
+                    "shader": "SolidColorMeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 0,
+                    "collider": {
+                        "size": [
+                            100.0,
+                            10.0,
+                            0.20000000298023224
+                        ],
+                        "type": "box"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    50.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.0
+                ],
+                "scale": [
+                    100.0,
+                    10.0,
+                    0.20000000298023224
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/cube.obj",
+                    "shader": "SolidColorMeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 0,
+                    "collider": {
+                        "size": [
+                            100.0,
+                            10.0,
+                            0.20000000298023224
+                        ],
+                        "type": "box"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    -50.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.0
+                ],
+                "scale": [
+                    100.0,
+                    10.0,
+                    0.20000000298023224
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/cube.obj",
+                    "shader": "SolidColorMeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 0,
+                    "collider": {
+                        "size": [
+                            0.20000000298023224,
+                            10.0,
+                            100.0
+                        ],
+                        "type": "box"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    50.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.0
+                ],
+                "scale": [
+                    0.20000000298023224,
+                    10.0,
+                    100.0
+                ]
+            },
+            "type": "GameObject"
+        },
+        {
+            "components": [
+                {
+                    "alpha": 1.0,
+                    "color": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ],
+                    "geometryShader": "GeometryPassMeshShader",
+                    "mesh": "Resources/Meshes/cube.obj",
+                    "shader": "SolidColorMeshShader",
+                    "shadowShader": "ShadowShader",
+                    "shininess": 32.0,
+                    "type": "MeshRenderer"
+                },
+                {
+                    "bodyType": 0,
+                    "collider": {
+                        "size": [
+                            0.20000000298023224,
+                            10.0,
+                            100.0
+                        ],
+                        "type": "box"
+                    },
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "transform": {
+                "position": [
+                    -50.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.0
+                ],
+                "scale": [
+                    0.20000000298023224,
+                    10.0,
+                    100.0
+                ]
+            },
+            "type": "GameObject"
+        }
+    ]
+}

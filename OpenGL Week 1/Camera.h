@@ -18,6 +18,9 @@ Mail : theo.morris@mds.ac.nz
 class Camera : public Component
 {
 public:
+    Camera() = default;
+    ~Camera() = default;
+
     /**
      * @brief Gets the view matrix for the camera.
      * @param[out] view The view matrix to fill.
