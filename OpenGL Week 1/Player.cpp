@@ -25,7 +25,7 @@ Player::~Player()
 
 void Player::onCreate()
 {
-    m_cam = addComponent<Camera>(); // Move ownership into addComponent
+    m_cam = addComponent<Camera>();
 
     auto& resourceManager = ResourceManager::GetInstance();
     fireSound = resourceManager.createSound(SoundDesc(), "Fire", "Resources/Audio/fire.ogg");
@@ -176,13 +176,10 @@ void Player::onUpdate(float deltaTime)
         m_transform.position -= up * m_movementSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyE))
         m_transform.position += up * m_movementSpeed * deltaTime;
+
 }
 
-void Player::onFixedUpdate(float fixedDeltaTime)
+Camera* Player::getCamera()
 {
-    // do physics here
-}
-
-void Player::onLateUpdate(float deltaTime)
-{
+    return m_cam;
 }

@@ -18,6 +18,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Shader.h"
 #include "GameObjectManager.h"
 #include "GraphicsGameObject.h"
+#include "Player.h"
 #include "TextureCubeMap.h"
 #include "Camera.h"
 #include "SkyBoxGameObject.h"
@@ -92,6 +93,7 @@ void Game::onUpdateInternal()
     auto& audioEngine = AudioEngine::GetInstance();
     inputManager.onUpdate();
 
+
     // delta time
     m_currentTime = static_cast<float>(glfwGetTime());
     float deltaTime = m_currentTime - m_previousTime;
@@ -100,25 +102,29 @@ void Game::onUpdateInternal()
     // Accumulate time
     m_accumulatedTime += deltaTime;
 
-    m_currentScene->onUpdate(deltaTime);
-    audioEngine.Update();
 
-    //if (inputManager.isKeyPressed(Key::Key1))
-    //{
-    //    auto scene1 = std::make_shared<Scene1>(this);
-    //    SetScene(scene1);
-    //}
-    
-    // Perform fixed updates
-    while (m_accumulatedTime >= m_fixedTimeStep)
+    if (m_isRunning)
     {
-        float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
-        m_previousFixedUpdateTime = m_currentTime;
-        m_currentScene->onFixedUpdate(fixedDeltaTime);
-        m_accumulatedTime -= m_fixedTimeStep;
+        // Perform updates
+        while (m_accumulatedTime >= m_fixedTimeStep)
+        {
+            float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
+            m_previousFixedUpdateTime = m_currentTime;
+            m_currentScene->onFixedUpdate(fixedDeltaTime);
+            m_accumulatedTime -= m_fixedTimeStep;
+        }
+
+        m_currentScene->onUpdate(deltaTime);
+
+        m_currentScene->onLateUpdate(deltaTime);
+    }
+    else
+    {
+        m_currentScene->getPlayer()->onUpdate(deltaTime);
     }
 
-    m_currentScene->onLateUpdate(deltaTime);
+    audioEngine.Update();
+
     inputManager.onLateUpdate();
 
     double RenderTime_Begin = (double)glfwGetTime();
@@ -141,6 +147,16 @@ void Game::onUpdateInternal()
         Debug::Log("Rendering Path changed to option: " + ToString(selectedPath));
         graphicsEngine.setRenderingPath(selectedPath);
         m_projectSettings->renderingPath = selectedPath;
+    }
+    
+    if (ImGui::Button("Play"))
+    {
+        m_isRunning = true;
+    }
+
+    if (ImGui::Button("Stop"))
+    {
+        m_isRunning = false;
     }
 
     ImGui::End();
@@ -228,15 +244,8 @@ MeshPtr Game::getSphereMesh()
 {
     return m_sphereMesh;
 }
-//void Game::SetFullScreenShader(ShaderPtr _shader, Texture2DPtr _texture)
-//{
-//    if (_shader == nullptr)
-//    {
-//        m_canvasQuad->setShader(defaultQuadShader);
-//    }
-//    else
-//    {
-//        m_canvasQuad->setShader(_shader);
-//    }
-//    currentTexture1 = _texture;
-//}
+
+bool Game::getIsRunning()
+{
+    return m_isRunning;
+}

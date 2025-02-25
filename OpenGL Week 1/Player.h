@@ -45,14 +45,7 @@ public:
      */
     virtual void onUpdate(float deltaTime);
 
-    virtual void onFixedUpdate(float fixedDeltaTime);
-
-    /**
-     * @brief Called every frame after all Update functions have been called.
-     * Can be overridden by derived classes to implement custom behavior.
-     * @param deltaTime The time elapsed since the last frame.
-     */
-    virtual void onLateUpdate(float deltaTime);
+    Camera* getCamera();
 
 private:
     float m_elapsedSeconds = 0.0f; // Elapsed time in seconds

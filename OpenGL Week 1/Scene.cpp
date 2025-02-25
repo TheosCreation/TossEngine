@@ -14,6 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include "GeometryBuffer.h"
 #include "AudioEngine.h"
 #include "ComponentRegistry.h"
+#include "Player.h"
 #include "MeshRenderer.h"
 #include "Rigidbody.h"
 #include "Image.h"
@@ -26,6 +27,9 @@ Scene::Scene(Game* game)
     gameOwner = game;
     m_postProcessingFramebuffer = std::make_unique<Framebuffer>(gameOwner->getWindow()->getInnerSize());
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
+
+    m_deferredRenderSSRQ = std::make_unique<Image>(); //its a component but doesnt need update or anything really
+    m_postProcessSSRQ = std::make_unique<Image>();
 
     // Create a physics world with default gravity
     rp3d::PhysicsWorld::WorldSettings settings;
@@ -59,7 +63,10 @@ void Scene::onCreate()
     auto& resourceManager = ResourceManager::GetInstance();
     auto& lightManager = LightManager::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
-    m_gameObjectManager->m_gameObjectFactory->registerGameObject<Player>();
+    if (!gameOwner->getIsRunning())
+    {
+        m_player = m_gameObjectManager->createGameObject<Player>();
+    }
 
     defaultFullscreenShader = resourceManager.createShader({
             "ScreenQuad",
@@ -76,12 +83,10 @@ void Scene::onCreate()
     );
 
     {
-        m_deferredRenderSSRQ = m_gameObjectManager->createGameObject<GameObject>();
-        Image* image = m_deferredRenderSSRQ->addComponent<Image>();
         MaterialDesc materialDesc = { ssrQuadLightingShader };
         MaterialPtr material = resourceManager.createMaterial(materialDesc, "");
-        image->SetMaterial(material);
-        image->SetSize({ -2.0f, 2.0f });
+        m_deferredRenderSSRQ->SetMaterial(material);
+        m_deferredRenderSSRQ->SetSize({ -2.0f, 2.0f });
     }
 
     //m_postProcessSSRQ->onCreate();
@@ -89,13 +94,11 @@ void Scene::onCreate()
     //m_postProcessSSRQ->setTexture(m_postProcessingFramebuffer->RenderTexture);
 
     {
-        m_postProcessSSRQ = m_gameObjectManager->createGameObject<GameObject>();
-        Image* image = m_postProcessSSRQ->addComponent<Image>();
         MaterialDesc materialDesc = { defaultFullscreenShader };
         MaterialPtr material = resourceManager.createMaterial(materialDesc, "");
-        image->SetMaterial(material);
-        image->SetTexture(m_postProcessingFramebuffer->RenderTexture);
-        image->SetSize({ -2.0f, 2.0f });
+        m_postProcessSSRQ->SetMaterial(material);
+        m_postProcessSSRQ->SetTexture(m_postProcessingFramebuffer->RenderTexture);
+        m_postProcessSSRQ->SetSize({ -2.0f, 2.0f });
     }
 
     ShaderPtr skyboxShader = resourceManager.createShader({
@@ -177,9 +180,6 @@ void Scene::onCreate()
     TextureCubeMapPtr skyBoxTexture = resourceManager.createCubeMapTextureFromFile(skyboxCubeMapTextureFilePaths);
     m_skyBox->setTexture(skyBoxTexture);
 
-    m_player = m_gameObjectManager->createGameObject<Player>();
-    m_player->m_transform.scale = Vector3(0.0f);
-    m_player->m_transform.position = Vector3(0.0f, 20.0f, 0.0f);
 
 
 
@@ -276,7 +276,21 @@ void Scene::onCreate()
     spotLight.AttenuationExponent = 0.0007f;
     lightManager.createSpotLight(spotLight);
     lightManager.setSpotlightStatus(false);
-
+    //{
+    //    auto ship = m_gameObjectManager->createGameObject<GameObject>();
+    //    ship->m_transform.scale = Vector3(0.05f);
+    //    ship->m_transform.position = Vector3(0.0f, 50.0f, 0.0f);
+    //    auto renderer = ship->addComponent<MeshRenderer>();
+    //    renderer->SetShininess(0.0f);
+    //    renderer->SetTexture(sciFiSpaceTexture2D);
+    //    renderer->SetShader(meshShader);
+    //    renderer->SetMesh(fighterShip);
+    //    renderer->SetReflectiveMapTexture(shipReflectiveMap);
+    //    renderer->SetShadowShader(m_shadowShader);
+    //    renderer->SetGeometryShader(m_meshGeometryShader);
+    //
+    //    ship->addComponent<Ship>();
+    //}
     //float pointLightSpacing = 30.0f;
     //// Initialize 2 point lights
     //for (int i = 0; i < 4; i++) {
@@ -438,6 +452,8 @@ void Scene::onGraphicsUpdate()
 
     // Populate the uniform data struct
     uniformData.currentTime = gameOwner->GetCurrentTime();
+
+    // get the camera data from a camera in scene
     for (auto& camera : m_gameObjectManager->getCameras())
     {
         if (camera->getCameraType() == CameraType::Perspective)
@@ -454,7 +470,7 @@ void Scene::onGraphicsUpdate()
             camera->getProjectionMatrix(uniformData.uiProjectionMatrix);
         }
     }
-
+    
     // Example of Defered Rendering Pipeline
     if (graphicsEngine.getRenderingPath() == RenderingPath::Deferred)
     {
@@ -489,11 +505,7 @@ void Scene::onGraphicsUpdate()
         lightManager.applyShadows(ssrQuadLightingShader);
 
         // Render the screenspace quad using the lighting, shadow and geometry data
-        Image* image = m_deferredRenderSSRQ->getComponent<Image>();
-        if (image)
-        {
-            image->Render(uniformData, RenderingPath::Forward);
-        }
+        m_deferredRenderSSRQ->Render(uniformData, RenderingPath::Forward);
         geometryBuffer.WriteDepth();
 
         // Render the transparent objects after
@@ -548,11 +560,7 @@ void Scene::onGraphicsUpdate()
         // Post processing 
         graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
         //m_postProcessingFramebuffer->PopulateShader();
-        Image* image = m_postProcessSSRQ->getComponent<Image>();
-        if (image)
-        {
-            image->Render(uniformData, RenderingPath::Forward);
-        }
+        m_postProcessSSRQ->Render(uniformData, RenderingPath::Forward);
     }
 
 
@@ -576,6 +584,11 @@ void Scene::onQuit()
 
     // Destroy the physics world when the scene is deleted
     m_PhysicsCommon.destroyPhysicsWorld(m_PhysicsWorld);
+}
+
+Player* Scene::getPlayer()
+{
+    return m_player;
 }
 
 rp3d::PhysicsWorld* Scene::GetPhysicsWorld()
