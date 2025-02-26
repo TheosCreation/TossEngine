@@ -1,6 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <OutputPath>../CompliedScriptDLLs/</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
+    <!-- Specify where the DLL will go -->
   </PropertyGroup>
+
+  <Target Name="CopyToOutput" AfterTargets="Build">
+    <!-- Copy the DLL to the desired directory -->
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="..\CompliedScriptDLLs\" />
+
+    <!-- Copy the PDB file to the same directory if it's generated -->
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).pdb" DestinationFolder="..\CompliedScriptDLLs\"
+          Condition="Exists('$(OutputPath)$(AssemblyName).pdb')" />
+  </Target>
 </Project>
