@@ -12,6 +12,9 @@ Mail : theo.morris@mds.ac.nz
 
 #pragma once
 #include <iostream>
+#include <mono/jit/jit.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/debug-helpers.h>
 #include "InputManager.h"
 #include "GraphicsEngine.h"
 #include "ResourceManager.h"

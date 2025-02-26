@@ -39,6 +39,11 @@ Game::Game()
     m_projectSettings = std::make_unique<ProjectSettings>();
     m_projectSettings->LoadFromFile("ProjectSettings.json");
 
+    //Init Mono
+    mono_set_dirs("Dependencies/MONO/lib", "Dependencies/MONO/etc");
+    MonoDomain* domain = mono_jit_init("ChopocalypseDomain");
+    //
+
     initRandomSeed();
     m_display = std::make_unique<Window>(this);
 
