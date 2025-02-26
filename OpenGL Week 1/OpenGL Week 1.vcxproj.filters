@@ -67,6 +67,9 @@
     <Filter Include="Source Files\Audio">
       <UniqueIdentifier>{64601d83-f368-4ff7-b57a-2082e56c8b55}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts">
+      <UniqueIdentifier>{67759657-9107-44f5-a388-28c31c4d8576}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -331,6 +334,9 @@
     </None>
     <None Include="Resources\Shaders\Vertex\TerrainShader.vert">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="Scripts\Ship.cs">
+      <Filter>Scripts</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
