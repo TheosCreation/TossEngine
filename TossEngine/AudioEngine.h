@@ -31,7 +31,7 @@ void ERRCHECK_fn(FMOD_RESULT result, const char* file, int line);
  * Deals with all FMOD calls so that FMOD-specific code does not need to be used outside this class.
  * Only one AudioEngine should be constructed for an application.
  */
-class AudioEngine {
+class TOSSENGINE_API AudioEngine {
 public:
 
     /**

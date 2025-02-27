@@ -4,7 +4,11 @@
 #include "Game.h"
 #include "ProjectSettings.h"
 #include "GraphicsEngine.h"
-#include "InputManager.h"
+//#include "InputManager.h"
+#include "AudioEngine.h"
+#include "MonoIntegration.h"
+#include "EditorPlayer.h"
+#include <imgui.h>
 
 TossEditor::TossEditor()
 {
@@ -17,6 +21,8 @@ TossEditor::TossEditor()
     tossEngine.Init();
     tossEngine.CreateWindowOrChangeOwner(this, windowSize, "TossEditor");
 
+    MonoIntegration::InitializeMono();
+
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.Init(m_projectSettings);
     graphicsEngine.setViewport(windowSize);
@@ -24,7 +30,6 @@ TossEditor::TossEditor()
     graphicsEngine.setBlendFunc(BlendType::SrcAlpha, BlendType::OneMinusSrcAlpha);
     graphicsEngine.setFaceCulling(CullType::BackFace);
     graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
-    graphicsEngine.setScissorSize(Rect(200, 200, 400, 300));
     graphicsEngine.setMultiSampling(true);
 
     auto& inputManager = InputManager::GetInstance();
@@ -32,6 +37,7 @@ TossEditor::TossEditor()
     inputManager.setScreenArea(windowSize);
 
     LightManager::GetInstance().Init();
+    AudioEngine::GetInstance().Init();
 }
 
 TossEditor::~TossEditor()
@@ -41,6 +47,8 @@ TossEditor::~TossEditor()
 void TossEditor::run()
 {
     auto& tossEngine = TossEngine::GetInstance();
+    tossEngine.LoadGenericResources();
+
     onCreate();
     onCreateLate();
 
@@ -62,6 +70,9 @@ void TossEditor::onCreate()
 {
     auto scene = std::make_shared<Scene>();
     OpenScene(scene);
+
+    m_player = std::make_unique<EditorPlayer>();
+    m_player->onCreate();
 }
 
 void TossEditor::onCreateLate()
@@ -81,29 +92,39 @@ void TossEditor::onUpdateInternal()
     m_previousTime = m_currentTime;
 
     // player update
+    m_player->Update(deltaTime);
 
     inputManager.onLateUpdate();
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
+    graphicsEngine.createImGuiFrame();
     
-    //ImGui_ImplOpenGL3_NewFrame();
-    //ImGui_ImplGlfw_NewFrame();
-    //ImGui::NewFrame();
+    m_currentScene->onGraphicsUpdate(m_player->getCamera()); //Render the scene
+
+    ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
+    if (ImGui::Begin("Settings"))
+    {
+        if (ImGui::Button("Play"))
+        {
+            // Handle button click
+        }
+
+        if (ImGui::Button("Stop"))
+        {
+            // Handle button click
+        }
+        static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
+        if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
+        {
+            RenderingPath selectedPath = static_cast<RenderingPath>(Selecteditem);
+            Debug::Log("Rendering Path changed to option: " + ToString(selectedPath));
+            graphicsEngine.setRenderingPath(selectedPath);
+            m_projectSettings->renderingPath = selectedPath;
+        }
+    }
+    ImGui::End();
     
-    m_currentScene->onGraphicsUpdate(); //Render the scene
-    
-    //ImGui::Begin("Settings menu lol");
-    //ImGui::Text("These are your options");
-    
-    //static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
-    //if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
-    //{
-    //    RenderingPath selectedPath = static_cast<RenderingPath>(Selecteditem);
-    //    Debug::Log("Rendering Path changed to option: " + ToString(selectedPath));
-    //    graphicsEngine.setRenderingPath(selectedPath);
-    //    m_projectSettings->renderingPath = selectedPath;
-    //}
     
     //if (ImGui::Button("Play"))
     //{
@@ -114,11 +135,9 @@ void TossEditor::onUpdateInternal()
     //{
     //    m_isRunning = false;
     //}
+
+    graphicsEngine.renderImGuiFrame();
     
-    //ImGui::End();
-    
-    //ImGui::Render();
-    //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     
     double RenderTime_End = (double)glfwGetTime();
     
@@ -128,12 +147,17 @@ void TossEditor::onUpdateInternal()
 
 void TossEditor::onQuit()
 {
+    m_currentScene->onQuit();
+
+    MonoIntegration::ShutdownMono();
 }
 
 void TossEditor::onResize(Vector2 size)
 {
     Resizable::onResize(size);
 
+    m_player->getCamera()->setScreenArea(size);
+    m_currentScene->onResize(size);
 }
 
 void TossEditor::save()

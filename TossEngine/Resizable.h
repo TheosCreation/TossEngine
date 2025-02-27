@@ -9,4 +9,3 @@ public:
 protected:
 	Vector2 m_size = Vector2(100, 100);
 };
-

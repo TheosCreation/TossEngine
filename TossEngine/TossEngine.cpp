@@ -1,5 +1,5 @@
 #include "TossEngine.h"
-#include "Window.h"
+#include "ResourceManager.h"
 #include <glew.h>
 #include <glfw3.h>
 
@@ -15,6 +15,13 @@ void TossEngine::Init()
     }
 
     isInitilized = true;
+}
+
+void TossEngine::LoadGenericResources()
+{
+    auto& resourceManager = ResourceManager::GetInstance();
+    resourceManager.createMeshFromFile("Resources/Meshes/sphere.obj");
+    resourceManager.createMeshFromFile("Resources/Meshes/cube.obj");
 }
 
 void TossEngine::CreateWindowOrChangeOwner(Resizable* owner, Vector2 size, const string& windowName)

@@ -5,7 +5,7 @@
 #include <string>
 #include "Component.h"
 
-class ComponentRegistry
+class TOSSENGINE_API ComponentRegistry
 {
 public:
 
@@ -33,8 +33,8 @@ public:
         static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
         std::string typeName = getClassName(typeid(T));  // Ensure consistent type name usage
 
-        m_componentCreators[typeName] = []() -> std::unique_ptr<Component> {
-            return std::make_unique<T>();
+        m_componentCreators[typeName] = []() -> Component* {
+            return new T(); // Directly allocate memory for T
             };
     }
 
@@ -43,7 +43,7 @@ public:
      * @param typeName The name of the component type to create.
      * @return A unique pointer to the created component, or nullptr if the type is not registered.
      */
-    std::unique_ptr<Component> createComponent(const std::string& typeName)
+    Component* createComponent(const std::string& typeName)
     {
         auto it = m_componentCreators.find(typeName);
         if (it != m_componentCreators.end())
@@ -65,7 +65,8 @@ public:
 
 private:
     // Map of component type names to their creation functions
-    std::unordered_map<std::string, std::function<std::unique_ptr<Component>()>> m_componentCreators;
+    std::unordered_map<std::string, std::function<Component* ()>> m_componentCreators;
+
 
     /**
      * @brief Constructor for the ComponentRegistry class.

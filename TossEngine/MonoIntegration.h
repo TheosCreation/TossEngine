@@ -1,15 +1,13 @@
 #pragma once
+#include "Utils.h"
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/class.h>
 #include <mono/metadata/object.h>
-#include <iostream>
-#include <string>
-#include <filesystem>
 
 class Component;
 
-class MonoIntegration {
+class TOSSENGINE_API MonoIntegration {
 public:
     static MonoDomain* monoDomain;
     static MonoAssembly* monoAssembly;

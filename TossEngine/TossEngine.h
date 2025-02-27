@@ -1,13 +1,11 @@
 #pragma once
 #include "Utils.h"
-
-class Resizable;
-class Window;
+#include "Window.h"
 
 class TOSSENGINE_API TossEngine
 {
 public:
-    static TossEngine& GetInstance()
+    static TossEngine& GetInstance() 
     {
         static TossEngine instance;
         return instance;
@@ -18,6 +16,7 @@ public:
     TossEngine& operator=(const TossEngine& other) = delete;
 
     void Init();
+    void LoadGenericResources();
     void CreateWindowOrChangeOwner(Resizable* owner, Vector2 size, const string& windowName);
     Window* GetWindow();
     void PollEvents();
@@ -26,7 +25,7 @@ public:
 
 private:
     bool isInitilized = false;
-    std::unique_ptr<Window> m_window;
+    std::unique_ptr<Window> m_window = nullptr;
 
     /**
      * @brief Private constructor to prevent external instantiation.

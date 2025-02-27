@@ -12,6 +12,7 @@ Mail : theo.morris@mds.ac.nz
 
 #pragma once
 #include <iostream>
+#include "Resizable.h"
 #include "InputManager.h"
 #include "GraphicsEngine.h"
 #include "ResourceManager.h"
@@ -55,18 +56,9 @@ public:
     /**
      * @brief Quits the game.
      */
-    void quit();
     void onResize(Vector2 size) override;
 
     void SetScene(shared_ptr<Scene> _scene);
-
-    float GetCurrentTime();
-
-    MeshPtr getCubeMesh();
-
-    MeshPtr getSphereMesh();
-
-    bool getIsRunning();
 
     //void SetFullScreenShader(ShaderPtr _shader = nullptr, Texture2DPtr _texture = nullptr);
 
@@ -93,7 +85,6 @@ private:
     void onUpdateInternal();
 
 protected:
-    bool m_isRunning = false; //Indicates whether the game is running
     //std::unique_ptr<QuadGameObject> m_canvasQuad; //Pointer to the framebuffer instance
 
     float m_previousTime = 0; //The previous frame's time
@@ -103,11 +94,6 @@ protected:
     float m_accumulatedTime = 0; //The current frame's time
     float m_scale = 0; //The scale factor for time
 
-    //collection of useful meshes
-    MeshPtr m_cubeMesh;
-    MeshPtr m_sphereMesh;
-
     shared_ptr<Scene> m_currentScene;
-
     //ProjectSettingsPtr m_projectSettings;
 };
