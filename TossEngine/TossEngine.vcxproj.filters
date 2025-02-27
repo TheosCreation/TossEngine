@@ -18,9 +18,6 @@
     <Filter Include="Header Files\Game">
       <UniqueIdentifier>{079a653e-a495-465c-acbd-028df419095c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Input">
-      <UniqueIdentifier>{03e4f6ac-eab3-4a0d-b7cb-fbd7af6c03be}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Resource">
       <UniqueIdentifier>{15ec77d1-fa92-4cd9-8bc6-da32c1bcfc65}</UniqueIdentifier>
     </Filter>
@@ -66,6 +63,9 @@
     </Filter>
     <Filter Include="Source Files\Audio">
       <UniqueIdentifier>{64601d83-f368-4ff7-b57a-2082e56c8b55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ImGui\Input">
+      <UniqueIdentifier>{03e4f6ac-eab3-4a0d-b7cb-fbd7af6c03be}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +209,12 @@
     </ClCompile>
     <ClCompile Include="..\Dependencies\IMGUI\imgui.cpp">
       <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoIntegration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Resizable.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -359,7 +365,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h">
-      <Filter>Header Files\Input</Filter>
+      <Filter>Header Files\ImGui\Input</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Header Files\Graphics</Filter>
@@ -492,6 +498,12 @@
     </ClInclude>
     <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_glfw.h">
       <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoIntegration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resizable.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

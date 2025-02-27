@@ -20,6 +20,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Scene.h"
 #include "ShadowMap.h"
 #include "Player.h"
+#include "MonoIntegration.h"
 
 // Forward declarations of classes
 class Window;
@@ -33,7 +34,7 @@ class Camera;
  * @class Game
  * @brief Controls the order in which the graphics engine and internal systems performs tasks.
  */
-class __declspec(dllexport) Game
+class TOSSENGINE_API Game : public Resizable
 {
 public:
     /**
@@ -55,7 +56,7 @@ public:
      * @brief Quits the game.
      */
     void quit();
-    void onResize(int _width, int _height);
+    void onResize(Vector2 size) override;
 
     void SetScene(shared_ptr<Scene> _scene);
 

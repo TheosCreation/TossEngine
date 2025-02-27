@@ -12,6 +12,7 @@ Mail : theo.morris@mds.ac.nz
 
 #pragma once
 #include "Utils.h"
+#include "Resizable.h"
 
 class Texture2D;
 
@@ -19,7 +20,7 @@ class Texture2D;
  * @class Framebuffer
  * @brief A class representing a framebuffer used for rendering operations.
  */
-class Framebuffer
+class Framebuffer : public Resizable
 {
 public: 
 	/**
@@ -37,7 +38,7 @@ public:
 	 * @brief Resizes the framebuffer to the new specified window size.
 	 * @param _newWindowSize The new size for the framebuffer.
 	 */
-	void Resize(Vector2 _newWindowSize);
+	void onResize(Vector2 size) override;
 
 	/**
 	 * @brief Binds the framebuffer for rendering.
@@ -55,6 +56,5 @@ public:
 private:
 	uint FBO; // Frame Buffer Object identifier.
 	uint RBO; // Render Buffer Object identifier.
-	Vector2 m_size = Vector2(0); // Current size of the framebuffer.
 };
 

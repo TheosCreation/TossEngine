@@ -66,36 +66,36 @@ Framebuffer::~Framebuffer()
     glDeleteRenderbuffers(1, &RBO);
 }
 
-void Framebuffer::Resize(Vector2 _newWindowSize)
+void Framebuffer::onResize(Vector2 size)
 {
-    m_size = _newWindowSize;
-
+    Resizable::onResize(size);
+    
     // Bind the framebuffer to update its attachments
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-    
+
     // Resize the existing texture
-    RenderTexture->resize(Rect((int)_newWindowSize.x, (int)_newWindowSize.y));
+    RenderTexture->resize(Rect((int)size.x, (int)size.y));
 
     // Attach the new texture to the framebuffer
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RenderTexture->getId(), 0);
-    
+
     // Delete the existing renderbuffer
     glDeleteRenderbuffers(1, &RBO);
-    
+
     // Generate and bind a new renderbuffer for depth and stencil with the updated size
     glGenRenderbuffers(1, &RBO);
     glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (int)_newWindowSize.x, (int)_newWindowSize.y);
-    
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (int)size.x, (int)size.y);
+
     // Attach the new renderbuffer to the framebuffer
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-    
+
     // Check if the framebuffer is complete
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
         std::cerr << "Framebuffer resize failed: Framebuffer is not complete!" << std::endl;
     }
-    
+
     // Unbind texture, framebuffer, and renderbuffer
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

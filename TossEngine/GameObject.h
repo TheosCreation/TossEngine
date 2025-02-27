@@ -180,6 +180,8 @@ public:
         return nullptr;
     }
 
+    Component* addCSharpComponent(const std::string& typeName);
+
 protected:
     std::map<std::type_index, ComponentPtr> m_components;
 
