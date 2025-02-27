@@ -12,10 +12,12 @@ Mail : theo.morris@mds.ac.nz
 
 #include "Window.h"
 #include "Utils.h"
-#include "Game.h"
 
-Window::Window(Game* game) : gameOwner(game)
+Window::Window(Resizable* owner, Vector2 size, const string& windowName)
 {
+    m_size = size;
+    resizableOwner = owner;
+    m_windowName = windowName;
     // Set GLFW window hints
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -28,7 +30,7 @@ Window::Window(Game* game) : gameOwner(game)
     glfwWindowHint(GLFW_SAMPLES, 4);
 
     // Create a GLFW window
-    m_windowPtr = glfwCreateWindow(m_size.width, m_size.height, "TheoCreates | OpenGL 3D Game", nullptr, nullptr);
+    m_windowPtr = glfwCreateWindow(m_size.x, m_size.y, windowName.c_str(), nullptr, nullptr);
     if (!m_windowPtr)
     {
         Debug::LogError("GLFW failed to initialize properly. Terminating program.");
@@ -57,7 +59,7 @@ Window::Window(Game* game) : gameOwner(game)
             Window* display = static_cast<Window*>(glfwGetWindowUserPointer(window));
             if (display)
             {
-                display->onResize(width, height);
+                display->onResize(Vector2(width, height));
             }
         });
 
@@ -106,13 +108,12 @@ void Window::present()
     glfwSwapBuffers(m_windowPtr);
 }
 
-void Window::onResize(int _width, int _height)
+void Window::onResize(Vector2 size)
 {
-    Debug::Log("Window resized to: " + ToString(_width) + "x" + ToString(_height));
-    m_size.width = _width;
-    m_size.height = _height;
+    Resizable::onResize(size);
+    Debug::Log("Window resized to: " + ToString(size.x) + "x" + ToString(size.y));
 
-    gameOwner->onResize(_width, _height);
+    resizableOwner->onResize(size);
 }
 
 bool Window::shouldClose()

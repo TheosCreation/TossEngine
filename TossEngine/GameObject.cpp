@@ -40,6 +40,17 @@ void GameObject::release()
 	m_gameObjectManager->removeGameObject(this);
 }
 
+Component* GameObject::addCSharpComponent(const std::string& typeName)
+{
+	Component* nativeComponent = MonoIntegration::CreateCSharpComponent(typeName.c_str());
+	if (nativeComponent)
+	{
+		nativeComponent->setOwner(this);
+		m_components[std::type_index(typeid(*nativeComponent))] = std::unique_ptr<Component>(nativeComponent);
+	}
+	return nativeComponent;
+}
+
 void GameObject::setGameObjectManager(GameObjectManager* gameObjectManager)
 {
 	// Set the GameObjectManager managing this GameObject
