@@ -157,6 +157,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Dependencies\GLFW\glfw3.h" />
+    <ClInclude Include="..\Dependencies\GLFW\glfw3native.h" />
     <ClInclude Include="..\Dependencies\IMGUI\imconfig.h" />
     <ClInclude Include="..\Dependencies\IMGUI\imgui.h" />
     <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_glfw.h" />
