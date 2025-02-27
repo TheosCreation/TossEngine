@@ -23,7 +23,7 @@ class Image;
  * @class Scene
  * @brief Base class representing a game scene, providing essential methods for rendering and updating the game logic.
  */
-class Scene
+class Scene : public Resizable
 {
 public:
     /**
@@ -84,7 +84,7 @@ public:
      * @param _width The new width of the window.
      * @param _height The new height of the window.
      */
-    virtual void onResize(int _width, int _height);
+    void onResize(Vector2 size) override;
 
     /**
      * @brief Called when the game is quitting.

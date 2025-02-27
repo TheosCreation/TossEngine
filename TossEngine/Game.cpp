@@ -37,12 +37,14 @@ Game::Game()
         Debug::LogError("GLFW failed to initialize properly. Terminating program.");
         return;
     }
+    MonoIntegration::InitializeMono();
+
     m_projectSettings = std::make_unique<ProjectSettings>();
     m_projectSettings->LoadFromFile("ProjectSettings.json");
 
     //
     initRandomSeed();
-    m_display = std::make_unique<Window>(this);
+    m_display = std::make_unique<Window>(this, Vector2(800, 800), "TossEngine | Game");
 
     Vector2 windowSize = m_display->getInnerSize();
     GeometryBuffer::GetInstance().Init(windowSize);
@@ -69,6 +71,7 @@ Game::Game()
 
 Game::~Game()
 {
+    MonoIntegration::ShutdownMono();
 }
 
 void Game::onCreate()
@@ -204,11 +207,13 @@ void Game::quit()
     m_projectSettings->SaveToFile("ProjectSettings.json");
 }
 
-void Game::onResize(int _width, int _height)
+void Game::onResize(Vector2 size)
 {
-    GraphicsEngine::GetInstance().setViewport(Vector2(_width, _height));
-    m_currentScene->onResize(_width, _height);
-    GeometryBuffer::GetInstance().Resize(Vector2(_width, _height));
+    Resizable::onResize(size);
+
+    GraphicsEngine::GetInstance().setViewport(Vector2(size.x, size.y));
+    m_currentScene->onResize(size);
+    GeometryBuffer::GetInstance().Resize(size);
 }
 
 void Game::SetScene(shared_ptr<Scene> _scene)

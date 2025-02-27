@@ -18,20 +18,19 @@ Mail : theo.morris@mds.ac.nz
 #include <glew.h>
 #include <glfw3.h>
 #include "Utils.h"
-
-class Game;
+#include "Resizable.h"
 
 /**
  * @class Window
  * @brief A wrapper for a GLFWwindow to display the rendering from the graphics engine.
  */
-class Window
+class TOSSENGINE_API Window : public Resizable
 {
 public:
     /**
      * @brief Constructor for the Window class.
      */
-    Window(Game* _game);
+    Window(Resizable* owner, Vector2 size, const string& windowName);
 
     /**
      * @brief Destructor for the Window class.
@@ -61,7 +60,7 @@ public:
      */
     void present();
 
-    void onResize(int _width, int _height);
+    void onResize(Vector2 size) override;
 
     /**
      * @brief Checks if the window should close.
@@ -73,6 +72,6 @@ private:
     GLFWwindow* m_windowPtr;        // Pointer to the GLFWwindow.
     void* m_context = nullptr;      // Pointer to the OpenGL context.
     bool vsync = false;             // Flag for vertical synchronization.
-    Rect m_size = Rect(800, 800);   // The size of the window.
-    Game* gameOwner = nullptr;      // The Game Owner of the window.
+    Resizable* resizableOwner = nullptr;      // The Owner of the window
+    string m_windowName = "";      //
 };

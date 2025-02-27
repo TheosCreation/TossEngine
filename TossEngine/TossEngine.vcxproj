@@ -149,8 +149,8 @@
       </Command>
     </CustomBuildStep>
     <PostBuildEvent>
-      <Command>xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor"
-xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MONO/Scripts"</Command>
+      <Command>xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)TossEditor"
+xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)Dependencies/MONO/Scripts"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
@@ -191,8 +191,8 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
       </Command>
     </CustomBuildStep>
     <PostBuildEvent>
-      <Command>xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor"
-xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MONO/Scripts"</Command>
+      <Command>xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)TossEditor"
+xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)Dependencies/MONO/Scripts"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
@@ -218,10 +218,12 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="MonoIntegration.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Resizable.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
@@ -311,10 +313,12 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
     <ClInclude Include="Image.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="MonoIntegration.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Resizable.h" />
     <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Serializable.h" />
