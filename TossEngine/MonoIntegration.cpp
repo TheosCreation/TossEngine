@@ -34,25 +34,25 @@ void MonoIntegration::InitializeMono()
     std::cout << "Mono initialized successfully" << "\n";
 }
 
-Component* MonoIntegration::CreateCSharpComponent(const std::string& className)
-{
-    MonoClass* monoClass = mono_class_from_name(monoImage, "Scripts", className.c_str());
-    if (!monoClass)
-    {
-        std::cerr << "C# Component type '" << className << "' not found!\n";
-        return nullptr;
-    }
-
-    // Create a new instance of the C# class
-    MonoObject* csharpObject = mono_object_new(monoDomain, monoClass);
-    mono_runtime_object_init(csharpObject);
-
-    // Wrap it into a C++ Component
-    Component* component = new Component();
-    component->SetMonoObject(csharpObject); // Hypothetical function to link C++ and C# object
-
-    return component;
-}
+//Component* MonoIntegration::CreateCSharpComponent(const std::string& className)
+//{
+//    MonoClass* monoClass = mono_class_from_name(monoImage, "Scripts", className.c_str());
+//    if (!monoClass)
+//    {
+//        std::cerr << "C# Component type '" << className << "' not found!\n";
+//        return nullptr;
+//    }
+//
+//    // Create a new instance of the C# class
+//    MonoObject* csharpObject = mono_object_new(monoDomain, monoClass);
+//    mono_runtime_object_init(csharpObject);
+//
+//    // Wrap it into a C++ Component
+//    Component* component = new Component();
+//    component->SetMonoObject(csharpObject); // Hypothetical function to link C++ and C# object
+//
+//    return component;
+//}
 
 void MonoIntegration::ShutdownMono()
 {

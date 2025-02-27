@@ -27,6 +27,7 @@ Mail : theo.morris@mds.ac.nz
 #include "GeometryBuffer.h"
 #include "ProjectSettings.h"
 #include "AudioEngine.h"
+#include <imgui.h>
 
 Game::Game(ProjectSettingsPtr& projectSettings)
 {
@@ -61,17 +62,10 @@ Game::Game(ProjectSettingsPtr& projectSettings)
 
 Game::~Game()
 {
-    MonoIntegration::ShutdownMono();
 }
 
 void Game::onCreate()
 {
-    auto& resourceManager = ResourceManager::GetInstance();
-    m_sphereMesh = resourceManager.createMeshFromFile("Resources/Meshes/sphere.obj");
-    m_cubeMesh = resourceManager.createMeshFromFile("Resources/Meshes/cube.obj");
-
-    auto& graphicsEngine = GraphicsEngine::GetInstance();
-
     auto scene = std::make_shared<Scene>();
     SetScene(scene);
 }
@@ -97,26 +91,18 @@ void Game::onUpdateInternal()
     // Accumulate time
     m_accumulatedTime += deltaTime;
 
-
-    if (m_isRunning)
+    // Perform updates
+    while (m_accumulatedTime >= m_fixedTimeStep)
     {
-        // Perform updates
-        while (m_accumulatedTime >= m_fixedTimeStep)
-        {
-            float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
-            m_previousFixedUpdateTime = m_currentTime;
-            m_currentScene->onFixedUpdate(fixedDeltaTime);
-            m_accumulatedTime -= m_fixedTimeStep;
-        }
-
-        m_currentScene->onUpdate(deltaTime);
-
-        m_currentScene->onLateUpdate(deltaTime);
+        float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
+        m_previousFixedUpdateTime = m_currentTime;
+        m_currentScene->onFixedUpdate(fixedDeltaTime);
+        m_accumulatedTime -= m_fixedTimeStep;
     }
-    else
-    {
-        m_currentScene->getPlayer()->onUpdate(deltaTime);
-    }
+
+    m_currentScene->onUpdate(deltaTime);
+
+    m_currentScene->onLateUpdate(deltaTime);
 
     audioEngine.Update();
 
@@ -144,10 +130,10 @@ void Game::onUpdateInternal()
     //    m_projectSettings->renderingPath = selectedPath;
     //}
     
-    //if (ImGui::Button("Play"))
-    //{
-    //    m_isRunning = true;
-    //}
+    if (ImGui::Button("Play"))
+    {
+       // m_isRunning = true;
+    }
     //
     //if (ImGui::Button("Stop"))
     //{
@@ -168,7 +154,8 @@ void Game::onUpdateInternal()
 void Game::onQuit()
 {
     m_currentScene->onQuit();
-    quit();
+
+    MonoIntegration::ShutdownMono();
 }
 
 void Game::run()
@@ -186,13 +173,6 @@ void Game::run()
     }
 
     onQuit();
-}
-
-void Game::quit()
-{
-    //ImGui_ImplOpenGL3_Shutdown();
-    //ImGui_ImplGlfw_Shutdown();
-    //ImGui::DestroyContext();
 }
 
 void Game::onResize(Vector2 size)
@@ -218,24 +198,4 @@ void Game::SetScene(shared_ptr<Scene> _scene)
     m_currentScene = std::move(_scene);
     m_currentScene->onCreate();
     m_currentScene->onCreateLate();
-}
-
-float Game::GetCurrentTime()
-{
-    return m_currentTime;
-}
-
-MeshPtr Game::getCubeMesh()
-{
-    return m_cubeMesh;
-}
-
-MeshPtr Game::getSphereMesh()
-{
-    return m_sphereMesh;
-}
-
-bool Game::getIsRunning()
-{
-    return m_isRunning;
 }

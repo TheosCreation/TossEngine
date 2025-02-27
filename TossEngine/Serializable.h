@@ -1,7 +1,7 @@
 #pragma once
 #include "Utils.h"
 
-class TOSSENGINE_API Serializable
+class Serializable
 {
 public:
     // Serialize the GameObject to JSON

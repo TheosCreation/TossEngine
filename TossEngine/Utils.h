@@ -30,7 +30,12 @@ Mail : theo.morris@mds.ac.nz
 #include <filesystem>
 #include <nlohmann\json.hpp>
 
-#define TOSSENGINE_API __declspec(dllexport)
+#ifdef TOSSENGINE_EXPORTS
+#define TOSSENGINE_API __declspec(dllexport)  // When compiling the DLL
+#else
+#define TOSSENGINE_API __declspec(dllimport)  // When using the DLL
+#endif
+
 
 using json = nlohmann::json; // will be using json to serialize classes and save GameObject objects and all
 
@@ -73,7 +78,6 @@ typedef std::shared_ptr<Mesh> MeshPtr;
 typedef std::shared_ptr<HeightMap> HeightMapPtr;
 typedef std::unique_ptr<ProjectSettings> ProjectSettingsPtr;
 typedef std::shared_ptr<Sound> SoundPtr;
-typedef std::unique_ptr<Component> ComponentPtr;
 typedef std::shared_ptr<Material> MaterialPtr;
 
 // Using declarations to simplify the code and avoid typing the full namespace each time

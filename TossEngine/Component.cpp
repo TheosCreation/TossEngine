@@ -10,12 +10,12 @@ void Component::setOwner(GameObject* gameObject)
     m_owner = gameObject;
 }
 
-TOSSENGINE_API void SetCSharpComponentCallbacks(Component* component, OnCreateCallback onCreate, OnUpdateCallback onUpdate, OnFixedUpdateCallback onFixedUpdate, OnDestroyCallback onDestroy)
-{
-    if (component) {
-        component->onCreateCallback = onCreate;
-        component->onUpdateCallback = onUpdate;
-        component->onFixedUpdateCallback = onFixedUpdate;
-        component->onDestroyCallback = onDestroy;
-    }
-}
+//TOSSENGINE_API void SetCSharpComponentCallbacks(Component* component, OnCreateCallback onCreate, OnUpdateCallback onUpdate, OnFixedUpdateCallback onFixedUpdate, OnDestroyCallback onDestroy)
+//{
+//    if (component) {
+//        component->onCreateCallback = onCreate;
+//        component->onUpdateCallback = onUpdate;
+//        component->onFixedUpdateCallback = onFixedUpdate;
+//        component->onDestroyCallback = onDestroy;
+//    }
+//}

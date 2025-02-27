@@ -18,6 +18,7 @@ Mail : theo.morris@mds.ac.nz
 class Game;
 class ComponentRegistry;
 class Image;
+class Camera;
 
 /**
  * @class Scene
@@ -54,7 +55,7 @@ public:
      * @brief Updates the graphics rendering mode.
      * Default rendering mode is deferred rendering.
      */
-    virtual void onGraphicsUpdate();
+    virtual void onGraphicsUpdate(Camera* cameraToRenderOverride = nullptr);
 
     /**
      * @brief Called every frame to update the game logic.

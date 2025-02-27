@@ -4,6 +4,7 @@
 class Game;
 class Window;
 class Scene;
+class EditorPlayer;
 
 class TossEditor : public Resizable
 {
@@ -37,9 +38,10 @@ protected:
     void onQuit();
 
 private:
-	ProjectSettingsPtr m_projectSettings;
-	shared_ptr<Scene> m_currentScene;
-	Game* game;
+	ProjectSettingsPtr m_projectSettings = nullptr;
+	shared_ptr<Scene> m_currentScene = nullptr;
+	Game* game = nullptr;
+    unique_ptr<EditorPlayer> m_player = nullptr;
 
     float m_currentTime = 0.0f;
     float m_previousTime = 0.0f;

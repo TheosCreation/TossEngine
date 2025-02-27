@@ -3,6 +3,8 @@
 #include "Math.h"
 #include "ResourceManager.h"
 
+struct ImGuiContext;
+
 /**
  * @class GraphicsEngine
  * @brief Contains all the render functionality of OpenGL.
@@ -46,6 +48,9 @@ public:
      * @param color The color to clear the screen with.
      */
     void clear(const glm::vec4& color, bool clearDepth = true, bool clearStencil = true);
+    void createImGuiFrame();
+    ImGuiContext* getImGuiContext();
+    void renderImGuiFrame();
 
     /**
      * @brief Sets the face culling mode.

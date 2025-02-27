@@ -25,7 +25,8 @@ Mail : theo.morris@mds.ac.nz
 
 Scene::Scene()
 {
-    auto& tossEngine = TossEngine::GetInstance();
+    auto& tossEngine = TossEngine::GetInstance(); 
+
     m_postProcessingFramebuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
 
@@ -322,7 +323,7 @@ void Scene::onCreate()
     //Creating instanced tree obj
     {
         auto statues = m_gameObjectManager->createGameObject<GameObject>();
-        statues->addCSharpComponent("Ship");
+        //statues->addCSharpComponent("Ship");
         auto renderer = statues->addComponent<MeshRenderer>();
         renderer->SetShininess(32.0f);
         renderer->SetTexture(ancientWorldsTexture2D);
@@ -445,7 +446,7 @@ void Scene::onLateUpdate(float deltaTime)
     m_gameObjectManager->onLateUpdate(deltaTime);
 }
 
-void Scene::onGraphicsUpdate()
+void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
 {
     auto& tossEngine = TossEngine::GetInstance();
     auto& lightManager = LightManager::GetInstance();
@@ -454,21 +455,32 @@ void Scene::onGraphicsUpdate()
     // Populate the uniform data struct
     uniformData.currentTime = tossEngine.GetCurrentTime();
 
-    // get the camera data from a camera in scene
-    for (auto& camera : m_gameObjectManager->getCameras())
+    if (cameraToRenderOverride != nullptr)
     {
-        if (camera->getCameraType() == CameraType::Perspective)
+        cameraToRenderOverride->getViewMatrix(uniformData.viewMatrix);
+        cameraToRenderOverride->getProjectionMatrix(uniformData.projectionMatrix);
+        uniformData.cameraPosition = cameraToRenderOverride->getPosition();
+        lightManager.setSpotlightPosition(uniformData.cameraPosition);
+        lightManager.setSpotlightDirection(cameraToRenderOverride->getFacingDirection());
+    }
+    else
+    {
+        // get the camera data from a camera in scene
+        for (auto& camera : m_gameObjectManager->getCameras())
         {
-            camera->getViewMatrix(uniformData.viewMatrix);
-            camera->getProjectionMatrix(uniformData.projectionMatrix);
-            uniformData.cameraPosition = camera->getPosition();
-            lightManager.setSpotlightPosition(uniformData.cameraPosition);
-            lightManager.setSpotlightDirection(camera->getFacingDirection());
-        }
-        else
-        {
-            camera->getViewMatrix(uniformData.uiViewMatrix);
-            camera->getProjectionMatrix(uniformData.uiProjectionMatrix);
+            if (camera->getCameraType() == CameraType::Perspective)
+            {
+                camera->getViewMatrix(uniformData.viewMatrix);
+                camera->getProjectionMatrix(uniformData.projectionMatrix);
+                uniformData.cameraPosition = camera->getPosition();
+                lightManager.setSpotlightPosition(uniformData.cameraPosition);
+                lightManager.setSpotlightDirection(camera->getFacingDirection());
+            }
+            else
+            {
+                camera->getViewMatrix(uniformData.uiViewMatrix);
+                camera->getProjectionMatrix(uniformData.uiProjectionMatrix);
+            }
         }
     }
     
@@ -587,11 +599,6 @@ void Scene::onQuit()
 
     // Destroy the physics world when the scene is deleted
     m_PhysicsCommon.destroyPhysicsWorld(m_PhysicsWorld);
-}
-
-Player* Scene::getPlayer()
-{
-    return m_player;
 }
 
 rp3d::PhysicsWorld* Scene::GetPhysicsWorld()

@@ -11,11 +11,13 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include "GameObject.h"
+#include "Component.h"
 #include "Math.h"
 #include "Rect.h"
 
-class Camera : public Component
+class GameObject;
+
+class TOSSENGINE_API Camera : public Component
 {
 public:
     Camera() = default;
