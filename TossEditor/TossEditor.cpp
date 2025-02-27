@@ -1,6 +1,6 @@
 #include "TossEditor.h"
-#include <Window.h>
-#include <Game.h>
+#include "Window.h"
+#include "Game.h"
 
 TossEditor::TossEditor()
 {
