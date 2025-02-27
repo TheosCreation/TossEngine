@@ -11,9 +11,8 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "Game.h"
-#include <glew.h>
-#include <glfw3.h>
 #include <filesystem>
+#include "TossEngine.h"
 #include "Window.h"
 #include "VertexArrayObject.h"
 #include "Shader.h"
@@ -29,28 +28,20 @@ Mail : theo.morris@mds.ac.nz
 #include "ProjectSettings.h"
 #include "AudioEngine.h"
 
-Game::Game()
+Game::Game(ProjectSettingsPtr& projectSettings)
 {
-    //init GLFW ver 4.6
-    if (!glfwInit())
-    {
-        Debug::LogError("GLFW failed to initialize properly. Terminating program.");
-        return;
-    }
+    auto& tossEngine = TossEngine::GetInstance();
+    tossEngine.Init();
+    Vector2 windowSize = Vector2(800, 800);
+    tossEngine.CreateWindowOrChangeOwner(this, windowSize, "TossEditor");
+
     MonoIntegration::InitializeMono();
 
-    m_projectSettings = std::make_unique<ProjectSettings>();
-    m_projectSettings->LoadFromFile("ProjectSettings.json");
-
-    //
     initRandomSeed();
-    m_display = std::make_unique<Window>(this, Vector2(800, 800), "TossEngine | Game");
-
-    Vector2 windowSize = m_display->getInnerSize();
     GeometryBuffer::GetInstance().Init(windowSize);
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
-    graphicsEngine.Init(m_projectSettings);
+    graphicsEngine.Init(projectSettings);
     graphicsEngine.setViewport(windowSize);
     graphicsEngine.setDepthFunc(DepthType::Less);
     graphicsEngine.setBlendFunc(BlendType::SrcAlpha, BlendType::OneMinusSrcAlpha);
@@ -60,8 +51,7 @@ Game::Game()
     graphicsEngine.setMultiSampling(true);
 
     auto& inputManager = InputManager::GetInstance();
-    //inputManager.Init(m_projectSettings);
-    inputManager.setGameWindow(m_display->getWindow());
+    inputManager.Init(projectSettings);
     inputManager.setScreenArea(windowSize);
 
     LightManager::GetInstance().Init();
@@ -82,7 +72,7 @@ void Game::onCreate()
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
 
-    auto scene = std::make_shared<Scene>(this);
+    auto scene = std::make_shared<Scene>();
     SetScene(scene);
 }
 
@@ -93,14 +83,14 @@ void Game::onCreateLate()
 
 void Game::onUpdateInternal()
 {
+    auto& tossEngine = TossEngine::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     auto& inputManager = InputManager::GetInstance();
     auto& audioEngine = AudioEngine::GetInstance();
     inputManager.onUpdate();
 
-
     // delta time
-    m_currentTime = static_cast<float>(glfwGetTime());
+    m_currentTime = tossEngine.GetCurrentTime();
     float deltaTime = m_currentTime - m_previousTime;
     m_previousTime = m_currentTime;
 
@@ -136,43 +126,43 @@ void Game::onUpdateInternal()
 
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
     
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+    //ImGui_ImplOpenGL3_NewFrame();
+    //ImGui_ImplGlfw_NewFrame();
+    //ImGui::NewFrame();
 
     m_currentScene->onGraphicsUpdate(); //Render the scene
 
-    ImGui::Begin("Settings menu lol");
-    ImGui::Text("These are your options");
+    //ImGui::Begin("Settings menu lol");
+    //ImGui::Text("These are your options");
 
-    static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
-    if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
-    {
-        RenderingPath selectedPath = static_cast<RenderingPath>(Selecteditem);
-        Debug::Log("Rendering Path changed to option: " + ToString(selectedPath));
-        graphicsEngine.setRenderingPath(selectedPath);
-        m_projectSettings->renderingPath = selectedPath;
-    }
+    //static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
+    //if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
+    //{
+    //    RenderingPath selectedPath = static_cast<RenderingPath>(Selecteditem);
+    //    Debug::Log("Rendering Path changed to option: " + ToString(selectedPath));
+    //    graphicsEngine.setRenderingPath(selectedPath);
+    //    m_projectSettings->renderingPath = selectedPath;
+    //}
     
-    if (ImGui::Button("Play"))
-    {
-        m_isRunning = true;
-    }
-
-    if (ImGui::Button("Stop"))
-    {
-        m_isRunning = false;
-    }
-
-    ImGui::End();
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    //if (ImGui::Button("Play"))
+    //{
+    //    m_isRunning = true;
+    //}
+    //
+    //if (ImGui::Button("Stop"))
+    //{
+    //    m_isRunning = false;
+    //}
+    //
+    //ImGui::End();
+    //
+    //ImGui::Render();
+    //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     double RenderTime_End = (double)glfwGetTime();
 
     // Render to window
-    m_display->present();
+    tossEngine.GetWindow()->present();
 }
 
 void Game::onQuit()
@@ -186,10 +176,12 @@ void Game::run()
 	onCreate();
 	onCreateLate();
 
+    auto& tossEngine = TossEngine::GetInstance();
     //run funcs while window open
-    while (m_display->shouldClose() == false)
+    while (tossEngine.GetWindow()->shouldClose() == false)
     {
-        glfwPollEvents();
+        auto& tossEngine = TossEngine::GetInstance();
+        tossEngine.PollEvents();
         onUpdateInternal();
     }
 
@@ -198,13 +190,9 @@ void Game::run()
 
 void Game::quit()
 {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    m_display.release();
-
-    m_projectSettings->SaveToFile("ProjectSettings.json");
+    //ImGui_ImplOpenGL3_Shutdown();
+    //ImGui_ImplGlfw_Shutdown();
+    //ImGui::DestroyContext();
 }
 
 void Game::onResize(Vector2 size)
@@ -230,11 +218,6 @@ void Game::SetScene(shared_ptr<Scene> _scene)
     m_currentScene = std::move(_scene);
     m_currentScene->onCreate();
     m_currentScene->onCreateLate();
-}
-
-Window* Game::getWindow()
-{
-    return m_display.get();
 }
 
 float Game::GetCurrentTime()

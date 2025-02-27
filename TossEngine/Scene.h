@@ -23,7 +23,7 @@ class Image;
  * @class Scene
  * @brief Base class representing a game scene, providing essential methods for rendering and updating the game logic.
  */
-class Scene : public Resizable
+class TOSSENGINE_API Scene : public Resizable
 {
 public:
     /**
@@ -31,7 +31,7 @@ public:
      *
      * @param game A pointer to the Game instance, allowing access to game-wide functionalities.
      */
-    Scene(Game* game);
+    Scene();
 
     /**
      * @brief Destructor for the Scene class.
@@ -122,7 +122,6 @@ protected:
     unique_ptr<Image> m_deferredRenderSSRQ;
     unique_ptr<Image> m_postProcessSSRQ;
 
-    Game* gameOwner; /**< @brief Pointer to the owner Game instance. */
     Player* m_player;
 
     TerrainGameObject* m_terrain = nullptr; //Pointer to the terrain GameObject

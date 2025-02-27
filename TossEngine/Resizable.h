@@ -1,7 +1,7 @@
 #pragma once
 #include "Utils.h"
 
-class Resizable
+class TOSSENGINE_API Resizable
 {
 public:
 	virtual void onResize(Vector2 size);

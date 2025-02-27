@@ -7,7 +7,7 @@
  * @class GraphicsEngine
  * @brief Contains all the render functionality of OpenGL.
  */
-class GraphicsEngine
+class TOSSENGINE_API GraphicsEngine
 {
 public:
     /**
@@ -143,6 +143,7 @@ public:
     void drawIndexedTrianglesInstanced(const TriangleType& triangleType, uint indicesCount, int instanceCount);
 
 private:
+    bool isInitilized = false;
     ShaderPtr currentShader = nullptr;
     RenderingPath m_renderingPath;
 

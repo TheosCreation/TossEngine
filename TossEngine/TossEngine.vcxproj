@@ -80,6 +80,8 @@
     </CustomBuildAfterTargets>
     <CustomBuildBeforeTargets>
     </CustomBuildBeforeTargets>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(IncludePath)</IncludePath>
@@ -90,6 +92,8 @@
     </CustomBuildAfterTargets>
     <CustomBuildBeforeTargets>
     </CustomBuildBeforeTargets>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -218,10 +222,12 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="MonoIntegration.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Resizable.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
@@ -244,7 +250,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture2D.cpp" />
-    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="TossEngine.cpp" />
     <ClCompile Include="VertexArrayObject.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -311,10 +317,12 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
     <ClInclude Include="Image.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="MonoIntegration.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Resizable.h" />
     <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Serializable.h" />
@@ -335,6 +343,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="TossEngine.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Resource.h" />

@@ -11,12 +11,16 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "Window.h"
-#include "Utils.h"
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include <glew.h>
+#include <glfw3.h>
 
 Window::Window(Resizable* owner, Vector2 size, const string& windowName)
 {
     m_size = size;
-    resizableOwner = owner;
+    m_resizableOwner = owner;
     m_windowName = windowName;
     // Set GLFW window hints
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -66,7 +70,6 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName)
     // Show the window
     glfwShowWindow(m_windowPtr);
 
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -77,11 +80,16 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName)
 
 Window::~Window()
 {
+    // Cleanup ImGui
+    ImGui_ImplOpenGL3_Shutdown();  // Cleanup OpenGL bindings
+    ImGui_ImplGlfw_Shutdown();     // Cleanup GLFW bindings
+    ImGui::DestroyContext();       // Destroy ImGui context
+
     glfwMakeContextCurrent(nullptr);
     // Destroy the GLFW window
     glfwDestroyWindow(m_windowPtr);
     // Terminate GLFW
-    glfwTerminate();
+    //glfwTerminate();
 }
 
 Vector2 Window::getInnerSize()
@@ -94,6 +102,20 @@ Vector2 Window::getInnerSize()
 GLFWwindow* Window::getWindow()
 {
     return m_windowPtr;
+}
+
+void Window::setWindowName(const string& windowName)
+{
+    m_windowName = windowName;
+
+    if (m_windowPtr) {
+        glfwSetWindowTitle(m_windowPtr, windowName.c_str()); // Update GLFW window title
+    }
+}
+
+void Window::setOwner(Resizable* newOwner)
+{
+    m_resizableOwner = newOwner;
 }
 
 void Window::makeCurrentContext(bool vsync)
@@ -113,7 +135,7 @@ void Window::onResize(Vector2 size)
     Resizable::onResize(size);
     Debug::Log("Window resized to: " + ToString(size.x) + "x" + ToString(size.y));
 
-    resizableOwner->onResize(size);
+    m_resizableOwner->onResize(size);
 }
 
 bool Window::shouldClose()

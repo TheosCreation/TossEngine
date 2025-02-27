@@ -21,7 +21,7 @@ Mail : theo.morris@mds.ac.nz
  * @class LightManager
  * @brief Handles lighting and passing into shaders.
  */
-class LightManager
+class TOSSENGINE_API LightManager
 {
 public:
     /**

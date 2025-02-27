@@ -21,11 +21,12 @@ Mail : theo.morris@mds.ac.nz
 #include "Material.h"
 #include "Ship.h"
 #include "PointLight.h"
+#include "TossEngine.h"
 
-Scene::Scene(Game* game)
+Scene::Scene()
 {
-    gameOwner = game;
-    m_postProcessingFramebuffer = std::make_unique<Framebuffer>(gameOwner->getWindow()->getInnerSize());
+    auto& tossEngine = TossEngine::GetInstance();
+    m_postProcessingFramebuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
 
     m_deferredRenderSSRQ = std::make_unique<Image>(); //its a component but doesnt need update or anything really
@@ -63,10 +64,7 @@ void Scene::onCreate()
     auto& resourceManager = ResourceManager::GetInstance();
     auto& lightManager = LightManager::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
-    if (!gameOwner->getIsRunning())
-    {
-        m_player = m_gameObjectManager->createGameObject<Player>();
-    }
+    m_player = m_gameObjectManager->createGameObject<Player>(); //move this elsewhere
 
     defaultFullscreenShader = resourceManager.createShader({
             "ScreenQuad",
@@ -165,7 +163,7 @@ void Scene::onCreate()
     //Creating skybox object
     m_skyBox = std::make_unique<SkyboxGameObject>();
     m_skyBox->setGameObjectManager(m_gameObjectManager.get());
-    m_skyBox->setMesh(gameOwner->getCubeMesh());
+    m_skyBox->setMesh(resourceManager.getMesh("Resources/Meshes/cube.obj"));
     m_skyBox->setShader(skyboxShader);
     //m_skyBox->setLightingShader(m_meshLightingShader);
 
@@ -309,7 +307,7 @@ void Scene::onCreate()
         pointLightObject->m_transform.scale = Vector3(3.0f);
         
         MeshRenderer* meshRenderer = pointLightObject->addComponent<MeshRenderer>();
-        meshRenderer->SetMesh(gameOwner->getSphereMesh());
+        meshRenderer->SetMesh(resourceManager.getMesh("Resources/Meshes/sphere.obj"));
         meshRenderer->SetShader(meshShader);
         meshRenderer->SetShadowShader(m_shadowShader);
         meshRenderer->SetGeometryShader(m_meshGeometryShader);
@@ -346,7 +344,7 @@ void Scene::onCreate()
         // Mesh and shader setup
         auto meshRenderer = physicsSphere->addComponent<MeshRenderer>();
         meshRenderer->SetColor(Color::Black);
-        meshRenderer->SetMesh(gameOwner->getSphereMesh());
+        meshRenderer->SetMesh(resourceManager.getMesh("Resources/Meshes/sphere.obj"));
         meshRenderer->SetShader(meshShader);
         meshRenderer->SetShadowShader(m_shadowShader);
         meshRenderer->SetGeometryShader(m_meshGeometryShader);
@@ -364,7 +362,7 @@ void Scene::onCreate()
     
         auto meshRenderer = physicsCube->addComponent<MeshRenderer>();
         meshRenderer->SetColor(Color::White);
-        meshRenderer->SetMesh(gameOwner->getCubeMesh());
+        meshRenderer->SetMesh(resourceManager.getMesh("Resources/Meshes/cube.obj"));
         meshRenderer->SetShader(meshShader);
         meshRenderer->SetShadowShader(m_shadowShader);
         meshRenderer->SetGeometryShader(m_meshGeometryShader);
@@ -402,7 +400,7 @@ void Scene::onCreate()
     
             auto meshRenderer = wall->addComponent<MeshRenderer>();
             meshRenderer->SetColor(Color::Gray); // Set a different color for walls
-            meshRenderer->SetMesh(gameOwner->getCubeMesh());
+            meshRenderer->SetMesh(resourceManager.getMesh("Resources/Meshes/cube.obj"));
             meshRenderer->SetShader(m_solidColorMeshShader);
             meshRenderer->SetShadowShader(m_shadowShader);
             meshRenderer->SetGeometryShader(m_meshGeometryShader);
@@ -418,10 +416,11 @@ void Scene::onCreate()
 
 void Scene::onCreateLate()
 {
+    auto& tossEngine = TossEngine::GetInstance();
     for (auto& camera : m_gameObjectManager->getCameras())
     {
         // Set the screen area for all cameras
-        camera->setScreenArea(gameOwner->getWindow()->getInnerSize());
+        camera->setScreenArea(tossEngine.GetWindow()->getInnerSize());
     }
 }
 
@@ -448,11 +447,12 @@ void Scene::onLateUpdate(float deltaTime)
 
 void Scene::onGraphicsUpdate()
 {
+    auto& tossEngine = TossEngine::GetInstance();
     auto& lightManager = LightManager::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
 
     // Populate the uniform data struct
-    uniformData.currentTime = gameOwner->GetCurrentTime();
+    uniformData.currentTime = tossEngine.GetCurrentTime();
 
     // get the camera data from a camera in scene
     for (auto& camera : m_gameObjectManager->getCameras())
@@ -490,7 +490,7 @@ void Scene::onGraphicsUpdate()
             m_gameObjectManager->onShadowPass(i); // Render shadow maps
             lightManager.UnBindShadowMap(i);
         }
-        graphicsEngine.setViewport(gameOwner->getWindow()->getInnerSize());
+        graphicsEngine.setViewport(tossEngine.GetWindow()->getInnerSize());
 
 
         graphicsEngine.setShader(ssrQuadLightingShader);
@@ -526,7 +526,7 @@ void Scene::onGraphicsUpdate()
             m_gameObjectManager->onShadowPass(i);
             lightManager.UnBindShadowMap(i);
         }
-        graphicsEngine.setViewport(gameOwner->getWindow()->getInnerSize());
+        graphicsEngine.setViewport(tossEngine.GetWindow()->getInnerSize());
 
         m_postProcessingFramebuffer->Bind();
 

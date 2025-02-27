@@ -19,7 +19,7 @@ Mail : theo.morris@mds.ac.nz
  * @class ResourceManager
  * @brief Manages the resources created with the Resource class.
  */
-class ResourceManager
+class TOSSENGINE_API ResourceManager
 {
 public:
     // Singleton access method

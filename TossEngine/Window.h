@@ -12,13 +12,10 @@ Mail : theo.morris@mds.ac.nz
 
 #pragma once
 #include <memory>
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-#include <glew.h>
-#include <glfw3.h>
 #include "Utils.h"
 #include "Resizable.h"
+
+struct GLFWwindow;
 
 /**
  * @class Window
@@ -48,6 +45,8 @@ public:
      * @return A pointer to the GLFWwindow.
      */
     GLFWwindow* getWindow();
+    void setWindowName(const string& windowName);
+    void setOwner(Resizable* newOwner);
 
     /**
      * @brief Makes the window the current OpenGL context.
@@ -72,6 +71,6 @@ private:
     GLFWwindow* m_windowPtr;        // Pointer to the GLFWwindow.
     void* m_context = nullptr;      // Pointer to the OpenGL context.
     bool vsync = false;             // Flag for vertical synchronization.
-    Resizable* resizableOwner = nullptr;      // The Owner of the window
+    Resizable* m_resizableOwner = nullptr;      // The Owner of the window
     string m_windowName = "";      //
 };
