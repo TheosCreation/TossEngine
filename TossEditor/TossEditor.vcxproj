@@ -74,13 +74,13 @@
     <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(SolutionDir)Dependencies/TOSSENGINE;$(SolutionDir)TossEngine/</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/FMOD/Lib;$(SolutionDir)/Dependencies/REACTPHYSICS3D/Lib;$(SolutionDir)/Dependencies/MONO/lib;$(SolutionDir)/Dependencies/TOSSENGINE;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)</OutDir>
-    <IncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(SolutionDir)TossEngine/</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(SolutionDir)Dependencies/TOSSENGINE;$(SolutionDir)TossEngine/</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/FMOD/Lib;$(SolutionDir)/Dependencies/REACTPHYSICS3D/Lib;$(SolutionDir)/Dependencies/MONO/lib;$(SolutionDir)/Dependencies/TOSSENGINE;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)</OutDir>
-    <IncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(SolutionDir)TossEngine/</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -151,6 +151,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TossEditor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TossEngine\TossEngine.vcxproj">
+      <Project>{0fbf6fbe-001b-470b-a304-4e11123675c0}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
