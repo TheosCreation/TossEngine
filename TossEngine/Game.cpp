@@ -34,9 +34,9 @@ Game::Game(ProjectSettingsPtr& projectSettings)
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
     Vector2 windowSize = Vector2(800, 800);
-    tossEngine.CreateWindowOrChangeOwner(this, windowSize, "TossEditor");
+    tossEngine.CreateWindowOrChangeOwner(this, windowSize, "Game");
 
-    MonoIntegration::InitializeMono();
+    //MonoIntegration::InitializeMono();
 
     initRandomSeed();
     GeometryBuffer::GetInstance().Init(windowSize);
@@ -66,8 +66,8 @@ Game::~Game()
 
 void Game::onCreate()
 {
-    auto scene = std::make_shared<Scene>();
-    SetScene(scene);
+    //auto scene = std::make_shared<Scene>();
+    //SetScene(scene);
 }
 
 void Game::onCreateLate()
@@ -130,10 +130,10 @@ void Game::onUpdateInternal()
     //    m_projectSettings->renderingPath = selectedPath;
     //}
     
-    if (ImGui::Button("Play"))
-    {
-       // m_isRunning = true;
-    }
+    //if (ImGui::Button("Play"))
+    //{
+    //   // m_isRunning = true;
+    //}
     //
     //if (ImGui::Button("Stop"))
     //{
@@ -180,7 +180,10 @@ void Game::onResize(Vector2 size)
     Resizable::onResize(size);
 
     GraphicsEngine::GetInstance().setViewport(Vector2(size.x, size.y));
-    m_currentScene->onResize(size);
+    if (m_currentScene != nullptr)
+    {
+        m_currentScene->onResize(size);
+    }
     GeometryBuffer::GetInstance().Resize(size);
 }
 

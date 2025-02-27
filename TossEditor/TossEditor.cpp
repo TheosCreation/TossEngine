@@ -59,8 +59,6 @@ void TossEditor::run()
         onUpdateInternal();
     }
 
-    game = new Game(m_projectSettings);
-    game->run();
     
     onQuit();
     tossEngine.CleanUp();
@@ -108,6 +106,9 @@ void TossEditor::onUpdateInternal()
         if (ImGui::Button("Play"))
         {
             // Handle button click
+            game = new Game(m_projectSettings);
+            game->SetScene(m_currentScene);
+            game->run();
         }
 
         if (ImGui::Button("Stop"))

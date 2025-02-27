@@ -31,10 +31,14 @@ std::map<MouseButton, bool> InputManager::previousMouseStates;
 
 void InputManager::Init(ProjectSettingsPtr& projectSettings)
 {
+	if (isInitilized) return;
+
 	WindowPtr = TossEngine::GetInstance().GetWindow()->getWindow();
 	glfwSetScrollCallback(WindowPtr, scroll_callback); // Set the scroll callback function
 	glfwSetKeyCallback(WindowPtr, key_callback);       // Set the key callback function
 	glfwSetMouseButtonCallback(WindowPtr, mouse_button_callback); // Set the mouse button callback function
+
+	isInitilized = true;
 }
 
 bool InputManager::isKeyDown(Key key)

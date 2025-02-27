@@ -141,6 +141,8 @@ private:
      */
     ~InputManager() = default;
 
+    bool isInitilized = false;
+
     /**
      * @brief Static callback functions for handling input events.
      */
