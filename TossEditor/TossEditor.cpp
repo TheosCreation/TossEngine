@@ -87,14 +87,14 @@ void TossEditor::onUpdateInternal()
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
     
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+    //ImGui_ImplOpenGL3_NewFrame();
+    //ImGui_ImplGlfw_NewFrame();
+    //ImGui::NewFrame();
     
     m_currentScene->onGraphicsUpdate(); //Render the scene
     
-    ImGui::Begin("Settings menu lol");
-    ImGui::Text("These are your options");
+    //ImGui::Begin("Settings menu lol");
+    //ImGui::Text("These are your options");
     
     //static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
     //if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
@@ -115,10 +115,10 @@ void TossEditor::onUpdateInternal()
     //    m_isRunning = false;
     //}
     
-    ImGui::End();
+    //ImGui::End();
     
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    //ImGui::Render();
+    //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     
     double RenderTime_End = (double)glfwGetTime();
     
