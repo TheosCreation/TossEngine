@@ -40,7 +40,7 @@ public:
     /**
      * @brief Constructor for the Game class.
      */
-    Game();
+    Game(ProjectSettingsPtr& projectSettings);
 
     /**
      * @brief Destructor for the Game class.
@@ -59,12 +59,6 @@ public:
     void onResize(Vector2 size) override;
 
     void SetScene(shared_ptr<Scene> _scene);
-
-    /**
-     * @brief Gets the Window instance.
-     * @return A pointer to the Window instance.
-     */
-    Window* getWindow();
 
     float GetCurrentTime();
 
@@ -100,7 +94,6 @@ private:
 
 protected:
     bool m_isRunning = false; //Indicates whether the game is running
-    std::unique_ptr<Window> m_display; //Pointer to the window instance
     //std::unique_ptr<QuadGameObject> m_canvasQuad; //Pointer to the framebuffer instance
 
     float m_previousTime = 0; //The previous frame's time
@@ -116,5 +109,5 @@ protected:
 
     shared_ptr<Scene> m_currentScene;
 
-    ProjectSettingsPtr m_projectSettings;
+    //ProjectSettingsPtr m_projectSettings;
 };

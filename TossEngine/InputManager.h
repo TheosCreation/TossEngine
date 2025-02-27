@@ -10,7 +10,7 @@
  * @class InputManager
  * @brief Handles inputs from the player/user of the program.
  */
-class InputManager
+class TOSSENGINE_API InputManager
 {
 public:
     /**
@@ -32,6 +32,8 @@ public:
      * @brief Deleted assignment operator to prevent assignment.
      */
     void operator=(const InputManager&) = delete;
+
+    void Init(ProjectSettingsPtr& projectSettings);
 
     /**
      * @brief Sets the game window for input handling.

@@ -11,6 +11,13 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "InputManager.h"
+#include "Window.h"
+#include "TossEngine.h"
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include <glew.h>
+#include <glfw3.h>
 
 double InputManager::scrollX = 0.0;
 double InputManager::scrollY = 0.0;
@@ -22,13 +29,12 @@ std::map<Key, bool> InputManager::previousKeyStates;
 std::map<MouseButton, bool> InputManager::currentMouseStates;
 std::map<MouseButton, bool> InputManager::previousMouseStates;
 
-void InputManager::setGameWindow(GLFWwindow* window)
+void InputManager::Init(ProjectSettingsPtr& projectSettings)
 {
-	WindowPtr = window; 
-	glfwSetScrollCallback(window, scroll_callback); // Set the scroll callback function
-	glfwSetKeyCallback(window, key_callback);       // Set the key callback function
-	glfwSetMouseButtonCallback(window, mouse_button_callback); // Set the mouse button callback function
-	//glfwSetCursorPosCallback(window, cursor_position_callback); // Set the cursor position callback function
+	WindowPtr = TossEngine::GetInstance().GetWindow()->getWindow();
+	glfwSetScrollCallback(WindowPtr, scroll_callback); // Set the scroll callback function
+	glfwSetKeyCallback(WindowPtr, key_callback);       // Set the key callback function
+	glfwSetMouseButtonCallback(WindowPtr, mouse_button_callback); // Set the mouse button callback function
 }
 
 bool InputManager::isKeyDown(Key key)

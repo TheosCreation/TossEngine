@@ -22,7 +22,10 @@ Mail : theo.morris@mds.ac.nz
 
 void GraphicsEngine::Init(ProjectSettingsPtr& projectSettings)
 {
+    if (isInitilized) return;
+
     m_renderingPath = projectSettings->renderingPath;
+    isInitilized = true;
 }
 
 VertexArrayObjectPtr GraphicsEngine::createVertexArrayObject(const VertexBufferDesc& vbDesc)

@@ -2,7 +2,7 @@
 #include "Utils.h"
 
 // Structure representing the project settings that the user can configue and save
-struct ProjectSettings
+struct TOSSENGINE_API ProjectSettings
 {
     RenderingPath renderingPath = RenderingPath::Deferred;
 
