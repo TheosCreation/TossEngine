@@ -1,19 +1,11 @@
 #pragma once
 #include "Serializable.h"
+#include "MonoIntegration.h"
 
-// Add the callback delegates for C#
-extern "C" {
-    typedef void (*OnCreateCallback)();
-    typedef void (*OnUpdateCallback)(float);
-    typedef void (*OnFixedUpdateCallback)(float);
-    typedef void (*OnDestroyCallback)();
-
-    // Set callbacks for each lifecycle method
-    TOSSENGINE_API void SetOnCreateCallback(Component* component, OnCreateCallback callback);
-    TOSSENGINE_API void SetOnUpdateCallback(Component* component, OnUpdateCallback callback);
-    TOSSENGINE_API void SetOnFixedUpdateCallback(Component* component, OnFixedUpdateCallback callback);
-    TOSSENGINE_API void SetOnDestroyCallback(Component* component, OnDestroyCallback callback);
-}
+typedef void (*OnCreateCallback)();
+typedef void (*OnUpdateCallback)(float);
+typedef void (*OnFixedUpdateCallback)(float);
+typedef void (*OnDestroyCallback)();
 
 class GameObject;
 
@@ -56,6 +48,10 @@ public:
      */
     virtual void onLateUpdate(float deltaTime) {}
 
+    void SetMonoObject(MonoObject* obj) {
+        monoObject = obj;
+    }
+
     // Callbacks from C#
     OnCreateCallback onCreateCallback;
     OnUpdateCallback onUpdateCallback;
@@ -64,21 +60,14 @@ public:
 
 protected:
 	GameObject* m_owner = nullptr;
+    MonoObject* monoObject = nullptr;
 };
 
-// Set callbacks implementation
-extern "C" TOSSENGINE_API void SetOnCreateCallback(Component* component, OnCreateCallback callback) {
-    component->onCreateCallback = callback;
-}
-
-extern "C" TOSSENGINE_API void SetOnUpdateCallback(Component* component, OnUpdateCallback callback) {
-    component->onUpdateCallback = callback;
-}
-
-extern "C" TOSSENGINE_API void SetOnFixedUpdateCallback(Component* component, OnFixedUpdateCallback callback) {
-    component->onFixedUpdateCallback = callback;
-}
-
-extern "C" TOSSENGINE_API void SetOnDestroyCallback(Component* component, OnDestroyCallback callback) {
-    component->onDestroyCallback = callback;
+// Add the callback delegates for C#
+extern "C" {
+    TOSSENGINE_API void SetCSharpComponentCallbacks(Component* component,
+        OnCreateCallback onCreate,
+        OnUpdateCallback onUpdate,
+        OnFixedUpdateCallback onFixedUpdate,
+        OnDestroyCallback onDestroy);
 }

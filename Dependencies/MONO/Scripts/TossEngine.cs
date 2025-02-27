@@ -1,94 +1,48 @@
-﻿// In a C# script file
+﻿using System;
 using System.Runtime.InteropServices;
-using System;
 
 namespace TossEngine
 {
-    // GameObject class
-    public class GameObject
+    public class TossEngine
     {
-        private IntPtr m_nativePtr; // Pointer to the C++ GameObject
+        private const string DLL_NAME = "TossEngine.dll";
 
-        public GameObject()
-        {
-            //m_nativePtr = GameObject_Create();
-        }
-        
-        public void AddComponent(Component component)
-        {
-            //GameObject_AddComponent(m_nativePtr, component.NativePtr);
-        }
+        // Define delegate types for C++ function pointers
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void OnCreateCallback();
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void OnUpdateCallback(float deltaTime);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void OnFixedUpdateCallback(float deltaTime);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void OnDestroyCallback();
 
-        //[DllImport("TossEngine.dll")]
-        //private static extern IntPtr GameObject_Create();
-        //
-        //[DllImport("TossEngine.dll")]
-        //private static extern void GameObject_AddComponent(IntPtr gameObject, IntPtr component);
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetCSharpComponentCallbacks(IntPtr component,
+            OnCreateCallback onCreate,
+            OnUpdateCallback onUpdate,
+            OnFixedUpdateCallback onFixedUpdate,
+            OnDestroyCallback onDestroy);
     }
 
-    // Base Component class
     public class Component
     {
-        public IntPtr NativePtr { get; private set; }
+        public IntPtr nativeComponent;
 
-        public Component()
+        // Store delegate instances to prevent GC collection
+        private static readonly TossEngine.OnCreateCallback _onCreate = OnCreate;
+        private static readonly TossEngine.OnUpdateCallback _onUpdate = OnUpdate;
+        private static readonly TossEngine.OnFixedUpdateCallback _onFixedUpdate = OnFixedUpdate;
+        private static readonly TossEngine.OnDestroyCallback _onDestroy = OnDestroy;
+
+        public Component(string typeName)
         {
-            NativePtr = CreateComponent();
+            TossEngine.SetCSharpComponentCallbacks(nativeComponent, _onCreate, _onUpdate, _onFixedUpdate, _onDestroy);
         }
 
-        public void Destroy()
-        {
-            if (NativePtr != IntPtr.Zero)
-            {
-                DestroyComponent(NativePtr);
-                NativePtr = IntPtr.Zero;
-            }
-        }
-
-        // Override these methods in C# to implement specific behavior
-        public virtual void OnCreate()
-        {
-            Console.WriteLine("C# Component Created");
-        }
-
-        public virtual void OnUpdate(float deltaTime)
-        {
-            Console.WriteLine("C# Component Updated, DeltaTime: " + deltaTime);
-        }
-
-        public virtual void OnFixedUpdate(float fixedDeltaTime)
-        {
-            Console.WriteLine("C# Component FixedUpdate, FixedDeltaTime: " + fixedDeltaTime);
-        }
-
-        public virtual void OnDestroy()
-        {
-            Console.WriteLine("C# Component Destroyed");
-        }
-
-        [DllImport("TossEngine.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr CreateComponent();
-
-        [DllImport("TossEngine.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void DestroyComponent(IntPtr component);
-
-        // Add function pointers to hook C# methods (to be invoked by C++)
-        [DllImport("TossEngine.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SetOnCreateCallback(IntPtr component, OnCreateCallback callback);
-
-        [DllImport("TossEngine.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SetOnUpdateCallback(IntPtr component, OnUpdateCallback callback);
-
-        [DllImport("TossEngine.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SetOnFixedUpdateCallback(IntPtr component, OnFixedUpdateCallback callback);
-
-        [DllImport("TossEngine.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SetOnDestroyCallback(IntPtr component, OnDestroyCallback callback);
-
-        // Define the delegates for the callbacks
-        public delegate void OnCreateCallback();
-        public delegate void OnUpdateCallback(float deltaTime);
-        public delegate void OnFixedUpdateCallback(float fixedDeltaTime);
-        public delegate void OnDestroyCallback();
+        private static void OnCreate() { Console.WriteLine("C# Component Created!"); }
+        private static void OnUpdate(float dt) { Console.WriteLine($"C# Update {dt}"); }
+        private static void OnFixedUpdate(float dt) { Console.WriteLine($"C# FixedUpdate {dt}"); }
+        private static void OnDestroy() { Console.WriteLine("C# Component Destroyed!"); }
     }
 }
