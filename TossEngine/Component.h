@@ -12,6 +12,7 @@ class GameObject;
 class TOSSENGINE_API Component : public Serializable
 {
 public:
+
 	GameObject* getOwner();
 	void setOwner(GameObject* gameObject);
 

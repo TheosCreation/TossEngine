@@ -58,7 +58,12 @@ public:
      */
     void onResize(Vector2 size) override;
 
-    void SetScene(shared_ptr<Scene> _scene);
+    void SetScene(shared_ptr<Scene> _scene, bool skipCreate = false);
+
+    void onUpdate(float deltaTime);
+    void onLateUpdate(float deltaTime);
+    void onFixedUpdate(float fixedDeltaTime);
+    void onGraphicsUpdate();
 
     //void SetFullScreenShader(ShaderPtr _shader = nullptr, Texture2DPtr _texture = nullptr);
 
@@ -79,6 +84,8 @@ protected:
     virtual void onQuit();
 
 private:
+
+
     /**
      * @brief Internal function to update the game.
      */

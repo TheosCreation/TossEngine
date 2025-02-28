@@ -18,6 +18,8 @@ public:
      */
     GameObject();
 
+    GameObject(const GameObject& other); //Copy Constructor
+
     /**
      * @brief Destructor for the GameObject class.
      */

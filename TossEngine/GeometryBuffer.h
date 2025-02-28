@@ -19,7 +19,7 @@ class Shader;
  * @class GeometryBuffer
  * @brief A class representing a geometry buffer used for rendering.
  */
-class GeometryBuffer
+class TOSSENGINE_API GeometryBuffer
 {
 public:
 	/**
@@ -79,6 +79,8 @@ private:
 	 * @brief Private destructor for the GeometryBuffer class.
 	 */
 	~GeometryBuffer() = default;
+
+	bool isInitilized = false;
 
 	Vector2 m_size = Vector2(0.0f); // Stores the size of the geometry buffer.
 	uint FBO = 0; // Frame Buffer Object identifier.

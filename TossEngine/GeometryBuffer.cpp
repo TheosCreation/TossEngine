@@ -15,6 +15,8 @@ Mail : theo.morris@mds.ac.nz
 
 void GeometryBuffer::Init(Vector2 _windowSize)
 {
+	if (isInitilized) return;
+
 	m_size = _windowSize;
 
 	glGenFramebuffers(1, &FBO);
@@ -80,6 +82,8 @@ void GeometryBuffer::Init(Vector2 _windowSize)
 	// Unbindings
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	isInitilized = true;
 }
 
 void GeometryBuffer::Bind()
@@ -125,6 +129,7 @@ void GeometryBuffer::Resize(Vector2 _windowSize)
 	glDeleteTextures(1, &Texture_Depth);
 	glDeleteTextures(1, &Texture_Reflectivity);
 
+	isInitilized = false;
 	// Reinitialize the framebuffer and textures
 	Init(_windowSize);
 }

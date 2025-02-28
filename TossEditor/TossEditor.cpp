@@ -8,6 +8,7 @@
 #include "AudioEngine.h"
 #include "MonoIntegration.h"
 #include "EditorPlayer.h"
+#include "GeometryBuffer.h"
 #include <imgui.h>
 
 TossEditor::TossEditor()
@@ -19,9 +20,10 @@ TossEditor::TossEditor()
 
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
-    tossEngine.CreateWindowOrChangeOwner(this, windowSize, "TossEditor");
+    tossEngine.TryCreateWindow(this, windowSize, "TossEditor");
 
     MonoIntegration::InitializeMono();
+    GeometryBuffer::GetInstance().Init(windowSize);
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.Init(m_projectSettings);
@@ -81,39 +83,73 @@ void TossEditor::onUpdateInternal()
 {
     auto& tossEngine = TossEngine::GetInstance();
 
-    auto& inputManager = InputManager::GetInstance();
-    inputManager.onUpdate();
 
     // delta time
     m_currentTime = tossEngine.GetCurrentTime();
     float deltaTime = m_currentTime - m_previousTime;
     m_previousTime = m_currentTime;
 
-    // player update
-    m_player->Update(deltaTime);
 
-    inputManager.onLateUpdate();
+    // Accumulate time
+    m_accumulatedTime += deltaTime;
+
+    if (m_game != nullptr)
+    {
+        while (m_accumulatedTime >= m_fixedTimeStep)
+        {
+            float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
+            m_previousFixedUpdateTime = m_currentTime;
+            m_game->onFixedUpdate(fixedDeltaTime);
+            m_accumulatedTime -= m_fixedTimeStep;
+        }
+        
+        m_game->onUpdate(deltaTime);
+        m_game->onLateUpdate(deltaTime);
+    }
+    else
+    {
+        auto& inputManager = InputManager::GetInstance();
+        inputManager.onUpdate();
+
+        // player update
+        m_player->Update(deltaTime);
+
+        inputManager.onLateUpdate();
+    }
+
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
     graphicsEngine.createImGuiFrame();
-    
-    m_currentScene->onGraphicsUpdate(m_player->getCamera()); //Render the scene
+    if (m_game != nullptr)
+    {
+        m_game->onGraphicsUpdate();
+    }
+    else
+    {
+        m_currentScene->onGraphicsUpdate(m_player->getCamera()); //Render the scene
+    }
 
     ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
     if (ImGui::Begin("Settings"))
     {
         if (ImGui::Button("Play"))
         {
-            // Handle button click
-            game = new Game(m_projectSettings);
-            game->SetScene(m_currentScene);
-            game->run();
+            if (!m_game) 
+            {
+                //auto copiedScene = std::make_shared<Scene>(*m_currentScene);
+                m_game = new Game(m_projectSettings);
+                m_game->SetScene(m_currentScene, true);
+            }
         }
 
         if (ImGui::Button("Stop"))
         {
-            // Handle button click
+            if (m_game)
+            {
+                delete m_game;  // Clean up memory
+                m_game = nullptr;
+            }
         }
         static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
         if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
@@ -125,17 +161,6 @@ void TossEditor::onUpdateInternal()
         }
     }
     ImGui::End();
-    
-    
-    //if (ImGui::Button("Play"))
-    //{
-    //    m_isRunning = true;
-    //}
-    //
-    //if (ImGui::Button("Stop"))
-    //{
-    //    m_isRunning = false;
-    //}
 
     graphicsEngine.renderImGuiFrame();
     
@@ -148,7 +173,10 @@ void TossEditor::onUpdateInternal()
 
 void TossEditor::onQuit()
 {
-    m_currentScene->onQuit();
+    if (m_currentScene)
+    {
+        m_currentScene->onQuit();
+    }
 
     MonoIntegration::ShutdownMono();
 }
@@ -158,7 +186,13 @@ void TossEditor::onResize(Vector2 size)
     Resizable::onResize(size);
 
     m_player->getCamera()->setScreenArea(size);
-    m_currentScene->onResize(size);
+
+    if (m_currentScene)
+    {
+        m_currentScene->onResize(size);
+    }
+
+    GeometryBuffer::GetInstance().Resize(size);
 }
 
 void TossEditor::save()

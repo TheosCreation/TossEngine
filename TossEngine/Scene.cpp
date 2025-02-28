@@ -56,12 +56,51 @@ Scene::Scene()
     //debugRenderer.setIsDebugItemDisplayed(rp3d::DebugRenderer::DebugItem::CONTACT_NORMAL, true);
 }
 
+Scene::Scene(const Scene& other)
+{
+    auto& tossEngine = TossEngine::GetInstance();
+
+    // Copy post-processing framebuffer
+    m_postProcessingFramebuffer = std::make_unique<Framebuffer>(*other.m_postProcessingFramebuffer);
+
+    // Copy GameObjectManager (requires a proper copy constructor or Clone() function)
+     
+    //m_gameObjectManager = std::make_unique<GameObjectManager>(this);
+    m_gameObjectManager = std::make_unique<GameObjectManager>(*other.m_gameObjectManager);
+
+    // Copy images (assuming Image has a proper copy constructor)
+    m_deferredRenderSSRQ = std::make_unique<Image>();
+    m_postProcessSSRQ = std::make_unique<Image>();
+
+    // Copy physics world (ReactPhysics3D does NOT support cloning physics worlds directly)
+    rp3d::PhysicsWorld::WorldSettings settings;
+    settings.gravity = other.m_PhysicsWorld->getGravity();
+    m_PhysicsWorld = m_PhysicsCommon.createPhysicsWorld(settings);
+
+    // Copy physics debug settings
+    m_PhysicsWorld->setIsDebugRenderingEnabled(other.m_PhysicsWorld->getIsDebugRenderingEnabled());
+    m_PhysicsWorld->setNbIterationsVelocitySolver(other.m_PhysicsWorld->getNbIterationsVelocitySolver());
+    m_PhysicsWorld->setNbIterationsPositionSolver(other.m_PhysicsWorld->getNbIterationsPositionSolver());
+
+    // Copy registered components (assuming ComponentRegistry handles duplicates properly)
+    auto& componentRegistry = ComponentRegistry::GetInstance();
+    componentRegistry.registerComponent<MeshRenderer>();
+    componentRegistry.registerComponent<Rigidbody>();
+    componentRegistry.registerComponent<Image>();
+    componentRegistry.registerComponent<PointLight>();
+    componentRegistry.registerComponent<Ship>();
+
+    // You may also need to manually copy game objects inside GameObjectManager.
+}
+
 Scene::~Scene()
 {
 }
 
 void Scene::onCreate()
 {
+    if (m_initilized) return;
+
     auto& resourceManager = ResourceManager::GetInstance();
     auto& lightManager = LightManager::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
@@ -417,12 +456,16 @@ void Scene::onCreate()
 
 void Scene::onCreateLate()
 {
+    if (m_initilized) return;
+
     auto& tossEngine = TossEngine::GetInstance();
     for (auto& camera : m_gameObjectManager->getCameras())
     {
         // Set the screen area for all cameras
         camera->setScreenArea(tossEngine.GetWindow()->getInnerSize());
     }
+
+    m_initilized = true;
 }
 
 
