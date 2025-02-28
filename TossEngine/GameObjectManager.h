@@ -40,6 +40,8 @@ public:
      */
     GameObjectManager(Scene* scene);
 
+    GameObjectManager(const GameObjectManager& other);
+
     /**
      * @brief Destructor for the GameObjectManager class.
      */

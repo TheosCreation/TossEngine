@@ -19,6 +19,25 @@ GameObject::GameObject()
 {
 }
 
+GameObject::GameObject(const GameObject& other)
+{
+    m_transform = other.m_transform;
+    m_id = other.m_id;
+    m_gameObjectManager = other.m_gameObjectManager;
+
+    // Deep copy all components
+    for (const auto& pair : other.m_components)
+    {
+        // Clone the component and add it to the new GameObject
+        //Component* clonedComponent = pair.second->Clone();
+        //if (clonedComponent)
+        //{
+        //    clonedComponent->setOwner(this); // Set the owner of the cloned component
+        //    m_components.emplace(pair.first, clonedComponent); // Add the cloned component to the map
+        //}
+    }
+}
+
 GameObject::~GameObject()
 {
 	for (auto& pair : m_components) {

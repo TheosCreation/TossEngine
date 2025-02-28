@@ -34,6 +34,8 @@ public:
      */
     Scene();
 
+    Scene(const Scene& other); //Copy Constructor
+
     /**
      * @brief Destructor for the Scene class.
      */
@@ -93,12 +95,11 @@ public:
      */
     virtual void onQuit();
 
-    Player* getPlayer();
-
     rp3d::PhysicsWorld* GetPhysicsWorld();
     rp3d::PhysicsCommon& GetPhysicsCommon();
 
 protected:
+    bool m_initilized = false;
     UniformData uniformData = {};
 
     rp3d::PhysicsCommon m_PhysicsCommon;  // Manages physics resources

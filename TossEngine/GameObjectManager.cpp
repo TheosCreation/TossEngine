@@ -28,6 +28,33 @@ GameObjectManager::GameObjectManager(Scene* scene)
 	m_scene = scene;
 }
 
+GameObjectManager::GameObjectManager(const GameObjectManager& other)
+{
+	m_scene = other.m_scene; // Assuming the scene should be shared
+	
+	// Deep copy of GameObjects
+	for (const auto& obj : other.m_gameObjects)
+	{
+		//std::unique_ptr<GameObject> clonedObj = std::make_unique<GameObject>(obj);
+		//m_gameObjects.push_back(clonedObj);
+	
+		//// If it's a GraphicsGameObject, add to graphics objects list
+		//if (auto* graphicsObj = dynamic_cast<GraphicsGameObject*>(clonedObj))
+		//{
+		//	m_graphicsObjects.push_back(graphicsObj);
+		//}
+		//
+		//// If it's a Camera, add to camera list
+		//if (auto* camera = dynamic_cast<Camera*>(clonedObj))
+		//{
+		//	m_cameras.push_back(camera);
+		//}
+	}
+	
+	// Copy the entities set (no deep copy needed since these objects are managed in m_gameObjects)
+	m_entitiesToDestroy = other.m_entitiesToDestroy;
+}
+
 GameObjectManager::~GameObjectManager()
 {
 }

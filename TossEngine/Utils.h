@@ -87,7 +87,7 @@ using std::vector;
 using std::string;
 
 // Structure representing the transformation of an object in 3D space
-struct Transform
+struct TOSSENGINE_API Transform
 {
     Vector3 position;       // Position of the object in world space (x, y, z)
     Quaternion rotation;    // Rotation of the object in world space represented as a quaternion

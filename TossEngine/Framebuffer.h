@@ -29,6 +29,8 @@ public:
 	 */
 	Framebuffer(Vector2 _windowSize);
 
+	Framebuffer(const Framebuffer& other);
+
 	/**
 	 * @brief Destructor for the Framebuffer class.
 	 */

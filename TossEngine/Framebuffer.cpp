@@ -60,6 +60,43 @@ Framebuffer::Framebuffer(Vector2 _windowSize)
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
+Framebuffer::Framebuffer(const Framebuffer& other)
+{
+    m_size = other.m_size;
+
+    // Generate and bind a new framebuffer
+    glGenFramebuffers(1, &FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+    // Create a new texture for the framebuffer
+    Texture2DDesc textureDesc;
+    textureDesc.textureSize = { (int)m_size.x, (int)m_size.y };
+    textureDesc.numChannels = 4;
+    RenderTexture = ResourceManager::GetInstance().createTexture2D(textureDesc);
+
+    // Attach the new texture to the framebuffer
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RenderTexture->getId(), 0);
+
+    // Generate and bind a new renderbuffer
+    glGenRenderbuffers(1, &RBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (int)m_size.x, (int)m_size.y);
+
+    // Attach the renderbuffer to the framebuffer
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+
+    // Check if the new framebuffer is complete
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        std::cerr << "Copied Framebuffer is not complete!" << std::endl;
+    }
+
+    // Unbind framebuffer and renderbuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+}
+
+
 Framebuffer::~Framebuffer()
 {
     glDeleteFramebuffers(1, &FBO);

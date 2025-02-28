@@ -17,7 +17,7 @@ public:
 
     void Init();
     void LoadGenericResources();
-    void CreateWindowOrChangeOwner(Resizable* owner, Vector2 size, const string& windowName);
+    void TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName);
     Window* GetWindow();
     void PollEvents();
     void CleanUp();
