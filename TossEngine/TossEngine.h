@@ -22,6 +22,7 @@ public:
     void PollEvents();
     void CleanUp();
     float GetCurrentTime();
+    string openFileDialog(const std::string& filter);
 
 private:
     bool isInitilized = false;

@@ -68,9 +68,6 @@ void TossEditor::run()
 
 void TossEditor::onCreate()
 {
-    auto scene = std::make_shared<Scene>();
-    OpenScene(scene);
-
     m_player = std::make_unique<EditorPlayer>();
     m_player->onCreate();
 }
@@ -127,7 +124,10 @@ void TossEditor::onUpdateInternal()
     }
     else
     {
-        m_currentScene->onGraphicsUpdate(m_player->getCamera()); //Render the scene
+        if (m_currentScene)
+        {
+            m_currentScene->onGraphicsUpdate(m_player->getCamera()); //Render the scene
+        }
     }
 
     ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
@@ -135,7 +135,7 @@ void TossEditor::onUpdateInternal()
     {
         if (ImGui::Button("Play"))
         {
-            if (!m_game) 
+            if (!m_game && m_currentScene) 
             {
                 m_game = new Game(m_projectSettings);
                 m_game->SetScene(m_currentScene, true);
@@ -150,6 +150,18 @@ void TossEditor::onUpdateInternal()
                 m_game = nullptr;
             }
         }
+
+        if (ImGui::Button("LoadScene"))
+        {
+            string filePath = tossEngine.openFileDialog("*.json");
+
+            if (!filePath.empty()) // If a file was selected
+            {
+                auto scene = std::make_shared<Scene>(filePath);
+                OpenScene(scene);
+            }
+        }
+
         static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
         if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
         {
@@ -197,6 +209,10 @@ void TossEditor::onResize(Vector2 size)
 void TossEditor::save()
 {
     m_projectSettings->SaveToFile("ProjectSettings.json");
+    if (m_currentScene)
+    {
+        //m_currentScene->Save
+    }
 }
 
 void TossEditor::OpenScene(shared_ptr<Scene> _scene)
