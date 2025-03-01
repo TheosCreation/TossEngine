@@ -1,0 +1,71 @@
+{
+    "cubemaps": {
+        "Resources/Textures/RedEclipse/Right.png": [
+            "Resources/Textures/RedEclipse/Right.png",
+            "Resources/Textures/RedEclipse/Left.png",
+            "Resources/Textures/RedEclipse/Top.png",
+            "Resources/Textures/RedEclipse/Bottom.png",
+            "Resources/Textures/RedEclipse/Back.png",
+            "Resources/Textures/RedEclipse/Front.png"
+        ]
+    },
+    "materials": {
+        "DeferredSSRQMaterial": "SSQLightingShader",
+        "PostProcessSSRQMaterial": "DefaultFullscreenShader",
+        "SkyboxMatrial": "SkyBoxShader"
+    },
+    "shaders": {
+        "DefaultFullscreenShader": {
+            "fragmentShader": "QuadShader",
+            "vertexShader": "ScreenQuad"
+        },
+        "GeometryPassInstancedMeshShader": {
+            "fragmentShader": "GeometryPass",
+            "vertexShader": "InstancedMesh"
+        },
+        "GeometryPassMeshShader": {
+            "fragmentShader": "GeometryPass",
+            "vertexShader": "MeshShader"
+        },
+        "GeometryPassTerrianShader": {
+            "fragmentShader": "GeometryPassTerrian",
+            "vertexShader": "TerrainShader"
+        },
+        "InstancedMeshShader": {
+            "fragmentShader": "MeshShader",
+            "vertexShader": "InstancedMesh"
+        },
+        "MeshShader": {
+            "fragmentShader": "MeshShader",
+            "vertexShader": "MeshShader"
+        },
+        "ParticleSystem": {
+            "fragmentShader": "ParticleSystem",
+            "vertexShader": "ParticleSystem"
+        },
+        "SSQLightingShader": {
+            "fragmentShader": "SSRLightingShader",
+            "vertexShader": "ScreenQuad"
+        },
+        "ShadowShader": {
+            "fragmentShader": "ShadowShader",
+            "vertexShader": "ShadowShader"
+        },
+        "ShadowShaderInstancedShader": {
+            "fragmentShader": "ShadowShader",
+            "vertexShader": "ShadowShaderInstanced"
+        },
+        "SkyBoxShader": {
+            "fragmentShader": "SkyBoxShader",
+            "vertexShader": "SkyBoxShader"
+        },
+        "SolidColorMeshShader": {
+            "fragmentShader": "SolidColorMesh",
+            "vertexShader": "SolidColorMesh"
+        },
+        "TerrainShader": {
+            "fragmentShader": "TerrainShader",
+            "vertexShader": "TerrainShader"
+        }
+    }
+}

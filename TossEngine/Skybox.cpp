@@ -45,7 +45,7 @@ void Skybox::deserialize(const json& data)
     if (data.contains("texture"))
     {
         std::string textureName = data["texture"];
-        m_texture = resourceManager.getTexture(textureName);
+        m_texture = resourceManager.getCubemapTexture(textureName);
     } 
     
     // Deserialize material
@@ -92,6 +92,11 @@ void Skybox::Render(UniformData data, RenderingPath renderPath)
 
     // Unbind the skybox texture
     graphicsEngine.setTextureCubeMap(nullptr, 0, "");
+}
+
+TexturePtr Skybox::getTexture()
+{
+    return m_texture;
 }
 
 void Skybox::setTexture(TexturePtr texture)

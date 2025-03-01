@@ -30,6 +30,11 @@ ShaderPtr ResourceManager::getShader(const std::string& uniqueId)
     auto it = m_mapResources.find(uniqueId);
     if (it != m_mapResources.end())
         return std::static_pointer_cast<Shader>(it->second);
+
+    auto it2 = shaderDescriptions.find(uniqueId);
+    if (it2 != shaderDescriptions.end())
+        return createShader(it2->second, uniqueId);
+
     return ShaderPtr(); // Return empty if not found
 }
 
@@ -38,7 +43,19 @@ MeshPtr ResourceManager::getMesh(const std::string& uniqueId)
     auto it = m_mapResources.find(uniqueId);
     if (it != m_mapResources.end())
         return std::static_pointer_cast<Mesh>(it->second);
-    return MeshPtr();
+
+    return createMeshFromFile(uniqueId);
+}
+
+TextureCubeMapPtr ResourceManager::getCubemapTexture(const std::string& uniqueId)
+{
+    auto it = m_mapResources.find(uniqueId);
+    if (it != m_mapResources.end())
+        return std::static_pointer_cast<TextureCubeMap>(it->second);
+
+    auto it2 = cubemapTextureFilePaths.find(uniqueId);
+    if (it2 != cubemapTextureFilePaths.end())
+        return createCubeMapTextureFromFile(it2->second);
 }
 
 TexturePtr ResourceManager::getTexture(const std::string& uniqueId)
@@ -46,7 +63,8 @@ TexturePtr ResourceManager::getTexture(const std::string& uniqueId)
     auto it = m_mapResources.find(uniqueId);
     if (it != m_mapResources.end())
         return std::static_pointer_cast<Texture>(it->second);
-    return TexturePtr();
+
+    return createTexture2DFromFile(uniqueId);
 }
 
 MaterialPtr ResourceManager::getMaterial(const std::string& uniqueId)
@@ -54,6 +72,11 @@ MaterialPtr ResourceManager::getMaterial(const std::string& uniqueId)
     auto it = m_mapResources.find(uniqueId);
     if (it != m_mapResources.end())
         return std::static_pointer_cast<Material>(it->second);
+
+    auto it2 = materialDescriptions.find(uniqueId);
+    if (it2 != materialDescriptions.end())
+        return createMaterial(it2->second, uniqueId);
+
     return MaterialPtr();
 }
 
@@ -61,6 +84,10 @@ ShaderPtr ResourceManager::createShader(const ShaderDesc& desc, const std::strin
 {
     ShaderPtr shader = std::make_shared<Shader>(desc, uniqueID, this);
     m_mapResources.emplace(uniqueID, shader);
+    if (shaderDescriptions.find(uniqueID) == shaderDescriptions.end())
+    {
+        shaderDescriptions.emplace(uniqueID, desc);
+    }
     return shader;
 }
 
@@ -68,6 +95,7 @@ ShaderPtr ResourceManager::createComputeShader(const string& computeShaderFilena
 {
     ShaderPtr shader = std::make_shared<Shader>(computeShaderFilename, this);
     m_mapResources.emplace(computeShaderFilename, shader);
+
     return shader;
 }
 
@@ -115,7 +143,11 @@ TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vecto
 
     if (textureCubeMapPtr)
     {
-        m_textureCubeMap = textureCubeMapPtr;
+        m_mapResources.emplace(filepaths[0], textureCubeMapPtr);
+        if (cubemapTextureFilePaths.find(filepaths[0]) == cubemapTextureFilePaths.end())
+        {
+            cubemapTextureFilePaths.emplace(filepaths[0], filepaths);
+        }
         return textureCubeMapPtr;
     }
 
@@ -243,17 +275,13 @@ SoundPtr ResourceManager::createSound(const SoundDesc& desc, const std::string& 
     return soundPtr;
 }
 
-MaterialPtr ResourceManager::createMaterial(const MaterialDesc& desc, const std::string& uniqueID)
+MaterialPtr ResourceManager::createMaterial(const string& shaderId, const std::string& uniqueID)
 {
-    MaterialPtr materialPtr = std::make_shared<Material>(desc, uniqueID, this);
+    ShaderPtr shader = getShader(shaderId);
+    MaterialPtr materialPtr = std::make_shared<Material>(MaterialDesc{ shader }, uniqueID, this);
+    materialDescriptions.emplace(uniqueID, shaderId);
     m_mapResources.emplace(uniqueID, materialPtr);
     return materialPtr;
-}
-
-
-TexturePtr ResourceManager::getSkyboxTexture()
-{
-    return m_textureCubeMap;
 }
 
 void ResourceManager::deleteTexture(TexturePtr texture)
@@ -274,6 +302,88 @@ void ResourceManager::deleteTexture(TexturePtr texture)
         }
     }
 }
+
+void ResourceManager::saveResourcesDescs(const std::string& filepath)
+{
+    json data;
+
+    // Serialize shader descriptions properly
+    for (auto& [key, shaderDesc] : shaderDescriptions)
+    {
+        data["shaders"][key] = {
+            {"vertexShader", shaderDesc.vertexShaderFileName},
+            {"fragmentShader", shaderDesc.fragmentShaderFileName}
+        };
+    }
+
+    // Serialize material descriptions correctly
+    for (auto& [key, shaderId] : materialDescriptions)
+    {
+        data["materials"][key] = shaderId;
+    }
+
+    // Serialize cubemap file paths
+    for (auto& [key, cubemapFilePaths] : cubemapTextureFilePaths)
+    {
+        data["cubemaps"][key] = cubemapFilePaths; // Store the full vector
+    }
+
+    // Write to file
+    std::ofstream file(filepath);
+    if (!file.is_open())
+    {
+        std::cerr << "Failed to open file for writing: " << filepath << std::endl;
+        return;
+    }
+
+    file << data.dump(4); // Pretty-print JSON with 4-space indentation
+    file.close();
+}
+
+void ResourceManager::loadResourceDesc(const std::string& filepath)
+{
+    std::ifstream file(filepath);
+    if (!file.is_open())
+    {
+        std::cerr << "Failed to open file for reading: " << filepath << std::endl;
+        return;
+    }
+
+    json data;
+    file >> data;
+    file.close();
+
+    // Deserialize shaders
+    if (data.contains("shaders"))
+    {
+        for (auto& [key, value] : data["shaders"].items())
+        {
+            ShaderDesc shaderDesc;
+            shaderDesc.vertexShaderFileName = value["vertexShader"].get<std::string>();
+            shaderDesc.fragmentShaderFileName = value["fragmentShader"].get<std::string>();
+            shaderDescriptions[key] = shaderDesc;
+        }
+    }
+
+    // Deserialize materials
+    if (data.contains("materials"))
+    {
+        for (auto& [key, value] : data["materials"].items())
+        {
+            materialDescriptions[key] = value.get<std::string>();
+        }
+    }
+
+    // Deserialize cubemap file paths
+    if (data.contains("cubemaps"))
+    {
+        for (auto& [key, value] : data["cubemaps"].items())
+        {
+            cubemapTextureFilePaths[key] = value.get<std::vector<std::string>>();
+        }
+    }
+}
+
 
 void ResourceManager::ClearInstancesFromMeshes()
 {

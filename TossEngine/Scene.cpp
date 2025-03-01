@@ -111,6 +111,8 @@ void Scene::onCreate()
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     m_player = m_gameObjectManager->createGameObject<Player>(); //move this elsewhere
 
+    resourceManager.loadResourceDesc("Resources/Resources.json");
+
     defaultFullscreenShader = resourceManager.createShader({
             "ScreenQuad",
             "QuadShader"
@@ -126,8 +128,7 @@ void Scene::onCreate()
     );
 
     {
-        MaterialDesc materialDesc = { ssrQuadLightingShader };
-        MaterialPtr material = resourceManager.createMaterial(materialDesc, "");
+        MaterialPtr material = resourceManager.createMaterial("SSQLightingShader", "DeferredSSRQMaterial");
         m_deferredRenderSSRQ->SetMaterial(material);
         m_deferredRenderSSRQ->SetSize({ -2.0f, 2.0f });
     }
@@ -137,68 +138,67 @@ void Scene::onCreate()
     //m_postProcessSSRQ->setTexture(m_postProcessingFramebuffer->RenderTexture);
 
     {
-        MaterialDesc materialDesc = { defaultFullscreenShader };
-        MaterialPtr material = resourceManager.createMaterial(materialDesc, "");
+        MaterialPtr material = resourceManager.createMaterial("DefaultFullscreenShader", "PostProcessSSRQMaterial");
         m_postProcessSSRQ->SetMaterial(material);
         m_postProcessSSRQ->SetTexture(m_postProcessingFramebuffer->RenderTexture);
         m_postProcessSSRQ->SetSize({ -2.0f, 2.0f });
     }
 
-    ShaderPtr skyboxShader = resourceManager.createShader({
-            "SkyBoxShader",
-            "SkyBoxShader"
-        },
-        "SkyBoxShader"
-    );
+    //ShaderPtr skyboxShader = resourceManager.createShader({
+    //        "SkyBoxShader",
+    //        "SkyBoxShader"
+    //    },
+    //    "SkyBoxShader"
+    //);
 
-    m_solidColorMeshShader = resourceManager.createShader({
-            "SolidColorMesh",
-            "SolidColorMesh"
-        },
-        "SolidColorMeshShader"
-    );
+    //m_solidColorMeshShader = resourceManager.createShader({
+    //        "SolidColorMesh",
+    //        "SolidColorMesh"
+    //    },
+    //    "SolidColorMeshShader"
+    //);
 
-    m_shadowShader = resourceManager.createShader({
-            "ShadowShader",
-            "ShadowShader"
-        },
-        "ShadowShader"
-    );
+    //m_shadowShader = resourceManager.createShader({
+    //        "ShadowShader",
+    //        "ShadowShader"
+    //    },
+    //    "ShadowShader"
+    //);
+    //
+    //m_shadowInstancedShader = resourceManager.createShader({
+    //        "ShadowShaderInstanced",
+    //        "ShadowShader"
+    //    },
+    //    "ShadowShaderInstancedShader"
+    //);
+    //m_meshGeometryShader = resourceManager.createShader({
+    //        "MeshShader",
+    //        "GeometryPass"
+    //    },
+    //    "GeometryPassMeshShader"
+    //);
+    //m_instancedmeshGeometryShader = resourceManager.createShader({
+    //        "InstancedMesh",
+    //        "GeometryPass"
+    //    },
+    //    "GeometryPassInstancedMeshShader"
+    //);
 
-    m_shadowInstancedShader = resourceManager.createShader({
-            "ShadowShaderInstanced",
-            "ShadowShader"
-        },
-        "ShadowShaderInstancedShader"
-    );
-    m_meshGeometryShader = resourceManager.createShader({
-            "MeshShader",
-            "GeometryPass"
-        },
-        "GeometryPassMeshShader"
-    );
-    m_instancedmeshGeometryShader = resourceManager.createShader({
-            "InstancedMesh",
-            "GeometryPass"
-        },
-        "GeometryPassInstancedMeshShader"
-    );
+    //m_terrainGeometryShader = resourceManager.createShader({
+    //        "TerrainShader",
+    //        "GeometryPassTerrian"
+    //    },
+    //    "GeometryPassTerrianShader"
+    //);
 
-    m_terrainGeometryShader = resourceManager.createShader({
-            "TerrainShader",
-            "GeometryPassTerrian"
-        },
-        "GeometryPassTerrianShader"
-    );
+    //m_particleSystemShader = resourceManager.createShader({
+    //        "ParticleSystem",
+    //        "ParticleSystem"
+    //    },
+    //    "ParticleSystem"
+    //);
 
-    m_particleSystemShader = resourceManager.createShader({
-            "ParticleSystem",
-            "ParticleSystem"
-        },
-        "ParticleSystem"
-    );
-
-    m_computeShader = resourceManager.createComputeShader("ComputeParticles");
+    //m_computeShader = resourceManager.createComputeShader("ComputeParticles");
 
     //m_meshLightingShader = graphicsEngine.createShader({
     //        "MeshShader",
@@ -206,45 +206,46 @@ void Scene::onCreate()
     //    });
 
     // create a cube map texture and set the texture of the skybox to the cubemap texture
-    std::vector<std::string> skyboxCubeMapTextureFilePaths;
-    skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Right.png");
-    skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Left.png");
-    skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Top.png");
-    skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Bottom.png");
-    skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Back.png");
-    skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Front.png");
-    TextureCubeMapPtr skyBoxTexture = resourceManager.createCubeMapTextureFromFile(skyboxCubeMapTextureFilePaths);
+    //std::vector<std::string> skyboxCubeMapTextureFilePaths;
+    //skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Right.png");
+    //skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Left.png");
+    //skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Top.png");
+    //skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Bottom.png");
+    //skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Back.png");
+    //skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Front.png");
+    //TextureCubeMapPtr skyBoxTexture = resourceManager.createCubeMapTextureFromFile(skyboxCubeMapTextureFilePaths);
+    
 
-    Texture2DPtr heightMapTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Heightmap0.jpg");
-    Texture2DPtr shipReflectiveMap = resourceManager.createTexture2DFromFile("Resources/Textures/ReflectionMap_White.png");
-    Texture2DPtr sciFiSpaceTexture2D = resourceManager.createTexture2DFromFile("Resources/Textures/PolygonSciFiSpace_Texture_01_A.png");
-    Texture2DPtr ancientWorldsTexture2D = resourceManager.createTexture2DFromFile("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
-    Texture2DPtr grassTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/stone.png");
-    Texture2DPtr dirtTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/dirt.png");
-    Texture2DPtr stoneTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/stone.png");
-    Texture2DPtr snowTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/snow.png");
+    //Texture2DPtr heightMapTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Heightmap0.jpg");
+    //Texture2DPtr shipReflectiveMap = resourceManager.createTexture2DFromFile("Resources/Textures/ReflectionMap_White.png");
+    //Texture2DPtr sciFiSpaceTexture2D = resourceManager.createTexture2DFromFile("Resources/Textures/PolygonSciFiSpace_Texture_01_A.png");
+    //Texture2DPtr ancientWorldsTexture2D = resourceManager.createTexture2DFromFile("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
+    //Texture2DPtr grassTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/stone.png");
+    //Texture2DPtr dirtTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/dirt.png");
+    //Texture2DPtr stoneTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/stone.png");
+    //Texture2DPtr snowTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/snow.png");
 
-    MeshPtr fighterShip = resourceManager.createMeshFromFile("Resources/Meshes/Space/SM_Ship_Fighter_02.obj");
+    //MeshPtr fighterShip = resourceManager.createMeshFromFile("Resources/Meshes/Space/SM_Ship_Fighter_02.obj");
 
-    ShaderPtr meshShader = resourceManager.createShader({
-            "MeshShader",
-            "MeshShader"
-        },
-        "MeshShader"
-    );
-    ShaderPtr instancedMeshShader = resourceManager.createShader({
-            "InstancedMesh",
-            "MeshShader"
-        },
-        "InstancedMeshShader"
-    );
+    //ShaderPtr meshShader = resourceManager.createShader({
+    //        "MeshShader",
+    //        "MeshShader"
+    //    },
+    //    "MeshShader"
+    //);
+    //ShaderPtr instancedMeshShader = resourceManager.createShader({
+    //        "InstancedMesh",
+    //        "MeshShader"
+    //    },
+    //    "InstancedMeshShader"
+    //);
 
-    ShaderPtr terrainShader = resourceManager.createShader({
-            "TerrainShader",
-            "TerrainShader"
-        },
-        "TerrainShader"
-    );
+    //ShaderPtr terrainShader = resourceManager.createShader({
+    //        "TerrainShader",
+    //        "TerrainShader"
+    //    },
+    //    "TerrainShader"
+    //);
 
     MeshPtr statueMesh = resourceManager.createMeshFromFile("Resources/Meshes/SM_Prop_Statue_01.obj");
     float spacing = 50.0f;
@@ -252,12 +253,12 @@ void Scene::onCreate()
         for (int col = -4; col < 4; ++col) {
             // Calculate the position of the current tree based on the grid and spacing
             Vector3 position = Vector3(col * spacing, 0, row * spacing);
-
+    
             if (position == Vector3(0.0f)) break;
-
+    
             // Generate random rotation angles
             float angleY = randomNumber(360.0f);
-
+    
             // Add the tree instance with random rotations
             statueMesh->addInstance(position, Vector3(0.2f), Vector3(0, angleY, 0));
         }
@@ -265,7 +266,7 @@ void Scene::onCreate()
     //Init instance buffer
     statueMesh->initInstanceBuffer();
 
-    MaterialPtr skyboxMaterial = resourceManager.createMaterial(MaterialDesc{ skyboxShader }, "SkyboxMatrial");
+    //MaterialPtr skyboxMaterial = resourceManager.createMaterial("SkyBoxShader", "SkyboxMatrial");
 
     //HeightMapInfo buildInfo = { "Resources/Heightmaps/Heightmap0.raw", 256, 256, 4.0f };
     //HeightMapPtr heightmap = resourceManager.createHeightMap(buildInfo);
@@ -326,7 +327,7 @@ void Scene::onCreate()
    //    auto renderer = ship->addComponent<MeshRenderer>();
    //    renderer->SetShininess(0.0f);
    //    renderer->SetTexture(sciFiSpaceTexture2D);
-   //    renderer->SetShader(meshShader);
+   //    renderer->SetShader(resourceManager.getShader("MeshShader"));
    //    renderer->SetMesh(fighterShip);
    //    renderer->SetReflectiveMapTexture(shipReflectiveMap);
    //    renderer->SetShadowShader(m_shadowShader);
@@ -364,7 +365,7 @@ void Scene::onCreate()
    //}
    //
    // 
-   ////Creating instanced tree obj
+   //Creating instanced tree obj
    //{
    //    auto statues = m_gameObjectManager->createGameObject<GameObject>();
    //    //statues->addCSharpComponent("Ship");
@@ -390,7 +391,7 @@ void Scene::onCreate()
    //    auto meshRenderer = physicsSphere->addComponent<MeshRenderer>();
    //    meshRenderer->SetColor(Color::Black);
    //    meshRenderer->SetMesh(resourceManager.getMesh("Resources/Meshes/sphere.obj"));
-   //    meshRenderer->SetShader(meshShader);
+   //    meshRenderer->SetShader(resourceManager.getShader("MeshShader"));
    //    meshRenderer->SetShadowShader(m_shadowShader);
    //    meshRenderer->SetGeometryShader(m_meshGeometryShader);
    //
@@ -408,7 +409,7 @@ void Scene::onCreate()
    //    auto meshRenderer = physicsCube->addComponent<MeshRenderer>();
    //    meshRenderer->SetColor(Color::White);
    //    meshRenderer->SetMesh(resourceManager.getMesh("Resources/Meshes/cube.obj"));
-   //    meshRenderer->SetShader(meshShader);
+   //    meshRenderer->SetShader(resourceManager.getShader("MeshShader"));
    //    meshRenderer->SetShadowShader(m_shadowShader);
    //    meshRenderer->SetGeometryShader(m_meshGeometryShader);
    //
@@ -446,7 +447,7 @@ void Scene::onCreate()
    //        auto meshRenderer = wall->addComponent<MeshRenderer>();
    //        meshRenderer->SetColor(Color::Gray); // Set a different color for walls
    //        meshRenderer->SetMesh(resourceManager.getMesh("Resources/Meshes/cube.obj"));
-   //        meshRenderer->SetShader(m_solidColorMeshShader);
+   //        meshRenderer->SetShader(resourceManager.getShader("SolidColorMeshShader"));
    //        meshRenderer->SetShadowShader(m_shadowShader);
    //        meshRenderer->SetGeometryShader(m_meshGeometryShader);
    //
@@ -648,6 +649,7 @@ void Scene::onQuit()
 void Scene::Save()
 {
     m_gameObjectManager->saveGameObjectsToFile(m_filePath);
+    ResourceManager::GetInstance().saveResourcesDescs("Resources/Resources.json");
     Debug::Log("Scene saved to file path: " + m_filePath);
 }
 

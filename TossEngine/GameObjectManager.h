@@ -94,6 +94,8 @@ public:
      * @return A vector of pointers to the camera entities.
      */
     std::vector<Camera*> getCameras() const;
+    
+    TexturePtr getSkyBoxTexture();
 
     /**
      * @brief Map of entities categorized by their type ID.

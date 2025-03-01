@@ -33,6 +33,7 @@ public:
 
     void Render(UniformData data, RenderingPath renderPath) override;
 
+    TexturePtr getTexture();
     void setTexture(TexturePtr texture);
     void setMesh(MeshPtr mesh);
 
