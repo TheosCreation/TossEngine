@@ -35,6 +35,7 @@ public:
 
     ShaderPtr getShader(const std::string& uniqueId);
     MeshPtr getMesh(const std::string& uniqueId);
+    TextureCubeMapPtr getCubemapTexture(const std::string& uniqueId);
     TexturePtr getTexture(const std::string& uniqueId);
     MaterialPtr getMaterial(const std::string& uniqueId);
 
@@ -47,17 +48,19 @@ public:
     MeshPtr createMeshFromFile(const std::string& filepath);
     HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
     SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath);
-    MaterialPtr createMaterial(const MaterialDesc& desc, const std::string& uniqueID);
-
-    TexturePtr getSkyboxTexture();
+    MaterialPtr createMaterial(const string& shaderId, const std::string& uniqueID);
 
     void deleteTexture(TexturePtr texture);
-
+    void saveResourcesDescs(const std::string& filepath);
+    void loadResourceDesc(const std::string& filepath);
     void ClearInstancesFromMeshes();
 
 protected:
     std::map<std::string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
-    TextureCubeMapPtr m_textureCubeMap; // Texture pointer for the skybox
+
+    std::unordered_map<std::string, ShaderDesc> shaderDescriptions;
+    std::unordered_map<std::string, vector<std::string>> cubemapTextureFilePaths;
+    std::unordered_map<std::string, std::string> materialDescriptions;
 
 private:
     ResourceManager() = default;

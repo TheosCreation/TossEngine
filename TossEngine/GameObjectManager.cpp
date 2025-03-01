@@ -224,6 +224,17 @@ std::vector<Camera*> GameObjectManager::getCameras() const
 	return cameras;
 }
 
+TexturePtr GameObjectManager::getSkyBoxTexture()
+{
+	for (auto& gameObject : m_gameObjects)
+	{
+		if (Skybox* skybox = gameObject->getComponent<Skybox>())
+		{
+			return skybox->getTexture();
+		}
+	}
+}
+
 void GameObjectManager::clearGameObjects()
 {
 	// Clear the entities in the map

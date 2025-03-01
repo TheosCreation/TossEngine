@@ -5,6 +5,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "GameObject.h"
+#include "GameObjectManager.h"
 #include "Texture.h"
 #include "VertexArrayObject.h"
 
@@ -192,7 +193,7 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
             m_shader->setFloat("alpha", m_alpha);
         }
 
-        auto skyboxTexture = ResourceManager::GetInstance().getSkyboxTexture();
+        auto skyboxTexture = m_owner->getGameObjectManager()->getSkyBoxTexture();
         if (skyboxTexture)
         {
             graphicsEngine.setTextureCubeMap(skyboxTexture, 1, "Texture_Skybox");
