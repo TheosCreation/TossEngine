@@ -67,8 +67,8 @@ Scene::Scene(const Scene& other)
 
     // Copy GameObjectManager (requires a proper copy constructor or Clone() function)
      
-    //m_gameObjectManager = std::make_unique<GameObjectManager>(this);
-    m_gameObjectManager = std::make_unique<GameObjectManager>(*other.m_gameObjectManager);
+    m_gameObjectManager = std::make_unique<GameObjectManager>(this);
+    //m_gameObjectManager = std::make_unique<GameObjectManager>(*other.m_gameObjectManager);
 
     // Copy images (assuming Image has a proper copy constructor)
     m_deferredRenderSSRQ = std::make_unique<Image>();

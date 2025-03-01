@@ -397,3 +397,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+Dependencies/MONO/Scripts/TossEngine.dll
+Dependencies/TOSSENGINE/TossEngine.dll
+TossEditor/TossEditor.exe
+TossEditor/TossEngine.dll
