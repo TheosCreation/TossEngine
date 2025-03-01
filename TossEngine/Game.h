@@ -26,7 +26,6 @@ Mail : theo.morris@mds.ac.nz
 // Forward declarations of classes
 class Window;
 class GameObjectManager;
-class SkyboxGameObject;
 class GeometryBuffer;
 class Framebuffer;
 class Camera;

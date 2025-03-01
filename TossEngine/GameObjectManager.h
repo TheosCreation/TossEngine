@@ -18,7 +18,6 @@ Mail : theo.morris@mds.ac.nz
 
 // Forward declarations of classes
 class GameObject;
-class GraphicsGameObject;
 class Camera;
 class Scene;
 
@@ -82,20 +81,13 @@ public:
     void onLateUpdate(float deltaTime);
     void onShadowPass(int index);
     void Render(UniformData _data);
-    void onGeometryPass(UniformData _data);
     void onTransparencyPass(UniformData _data);
-    void onGraphicsUpdate(UniformData _data);
+    void onSkyboxPass(UniformData _data);
 
     /**
      * @brief Called every frame to update the GameObject system at a fixed frame rate.
      */
     void onFixedUpdate(float fixedDeltaTime);
-
-    /**
-     * @brief Gets all graphics entities.
-     * @return A vector of pointers to the graphics entities.
-     */
-    std::vector<GraphicsGameObject*> getGraphicsEntities() const;
 
     /**
      * @brief Gets all camera entities.
@@ -126,14 +118,9 @@ private:
     std::set<GameObject*> m_entitiesToDestroy;
 
     /**
-     * @brief Vector of all graphics entities.
-     */
-    std::vector<GraphicsGameObject*> m_graphicsObjects;
-
-    /**
      * @brief Vector of all camera entities.
      */
-    std::vector<Camera*> m_cameras;
+    //std::vector<Camera*> m_cameras;
 
     /**
      * @brief Pointer to the scene instance.

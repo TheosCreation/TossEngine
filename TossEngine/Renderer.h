@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "Material.h"
 
 class Renderer : public Component
 {

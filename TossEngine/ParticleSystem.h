@@ -11,8 +11,7 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include "Utils.h"
-#include "GraphicsGameObject.h"
+#include "Renderer.h"
 
 /**
  * @class ParticleSystem
@@ -22,7 +21,7 @@ Mail : theo.morris@mds.ac.nz
  * position, velocity, and lifespan. It utilizes compute shaders for efficient particle
  * simulation and rendering.
  */
-class ParticleSystem : public GraphicsGameObject
+class ParticleSystem : public Renderer
 {
 public:
     /**
@@ -42,7 +41,7 @@ public:
      * @brief Renders the particles using the specified uniform data.
      * @param data The uniform data to set for the shader during rendering.
      */
-    void onGraphicsUpdate(UniformData data) override;
+    void Render(UniformData data, RenderingPath renderPath) override;
 
     /**
      * @brief Sets the origin point for the particle emitter.
