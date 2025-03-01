@@ -88,7 +88,7 @@ void ParticleSystem::onUpdate(float deltaTime)
 	}
 }
 
-void ParticleSystem::onGraphicsUpdate(UniformData data)
+void ParticleSystem::Render(UniformData data, RenderingPath renderPath)
 {
 	if (!isPlaying) return; // If not playing, skip updating and rendering
 
@@ -107,7 +107,7 @@ void ParticleSystem::onGraphicsUpdate(UniformData data)
 	m_computeShader->setInt("SeedY", seedY);
 	m_computeShader->setInt("SeedZ", seedZ);
 	m_computeShader->setVec4("VelocityLifeChange", VelocityLifeChange);
-	m_computeShader->setVec3("EmitterOrigin", EmitterOrigin); 
+	m_computeShader->setVec3("EmitterOrigin", EmitterOrigin);
 
 	// Pass a uniform to control whether new particles should be emitted
 	m_computeShader->setBool("EmitNewParticles", isEmitting);
@@ -123,9 +123,10 @@ void ParticleSystem::onGraphicsUpdate(UniformData data)
 	// Wait for the compute shader completion and sync all threads
 	glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
+	auto shader = m_material->GetShader();
 	// Standard rendering pass: render all particles
-	graphicsEngine.setShader(m_shader);
-	m_shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
+	graphicsEngine.setShader(shader);
+	shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
 	graphicsEngine.setVertexArrayObject(VAO); // Bind vertex buffer to graphics pipeline
 	graphicsEngine.drawTriangles(TriangleType::Points, NumParticles, 0); // Draw the particles
 

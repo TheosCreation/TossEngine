@@ -11,6 +11,7 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
+#include "Utils.h"
 #include "Math.h"
 #include "Rect.h"
 
@@ -32,9 +33,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Camera.h"
 #include "Framebuffer.h"
 #include "GameObject.h"
-#include "SkyboxGameObject.h"
-#include "TerrainGameObject.h"
 #include "GameObjectManager.h"
-#include "GraphicsGameObject.h"
 #include "Game.h"
+#include "Renderer.h"
 #include "Player.h"

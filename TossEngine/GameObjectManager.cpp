@@ -13,11 +13,11 @@ Mail : theo.morris@mds.ac.nz
 #include "GameObjectManager.h"
 #include "GameObject.h"
 #include "Camera.h"
-#include "GraphicsGameObject.h"
 #include "GraphicsEngine.h"
 #include "MeshRenderer.h"
 #include "RigidBody.h"
 #include "Image.h"
+#include "Skybox.h"
 
 GameObjectManager::GameObjectManager()
 {
@@ -37,18 +37,6 @@ GameObjectManager::GameObjectManager(const GameObjectManager& other)
 	{
 		//std::unique_ptr<GameObject> clonedObj = std::make_unique<GameObject>(obj);
 		//m_gameObjects.push_back(clonedObj);
-	
-		//// If it's a GraphicsGameObject, add to graphics objects list
-		//if (auto* graphicsObj = dynamic_cast<GraphicsGameObject*>(clonedObj))
-		//{
-		//	m_graphicsObjects.push_back(graphicsObj);
-		//}
-		//
-		//// If it's a Camera, add to camera list
-		//if (auto* camera = dynamic_cast<Camera*>(clonedObj))
-		//{
-		//	m_cameras.push_back(camera);
-		//}
 	}
 	
 	// Copy the entities set (no deep copy needed since these objects are managed in m_gameObjects)
@@ -67,12 +55,6 @@ Scene* GameObjectManager::getScene()
 bool GameObjectManager::createGameObjectInternal(GameObject* gameObject)
 {
 	auto ptr = std::unique_ptr<GameObject>(gameObject);
-
-	// Check if the GameObject is of type GraphicsGameObject
-	if (dynamic_cast<GraphicsGameObject*>(gameObject)) {
-		m_graphicsObjects.push_back(static_cast<GraphicsGameObject*>(gameObject));
-	}
-
 	ptr->setGameObjectManager(this);
 	ptr->onCreate();
 
@@ -153,13 +135,6 @@ void GameObjectManager::saveGameObjectsToFile(const std::string& filePath)
 
 void GameObjectManager::onUpdate(float deltaTime)
 {
-	//for (auto e : m_entitiesToDestroy)
-	//{
-	//	m_gameObjects[e->getId()].erase(e);
-	//}
-	m_entitiesToDestroy.clear();
-
-
 	for (auto& gameObject : m_gameObjects)
 	{
 		gameObject->onUpdate(deltaTime);
@@ -177,11 +152,6 @@ void GameObjectManager::onLateUpdate(float deltaTime)
 
 void GameObjectManager::onShadowPass(int index)
 {
-	//for (auto& graphicsGameObject : m_graphicsEntities)
-	//{
-	//	graphicsGameObject->onShadowPass(index);
-	//}
-
 	for (auto& gameObject : m_gameObjects)
 	{
 		MeshRenderer* renderer = gameObject->getComponent<MeshRenderer>();
@@ -199,54 +169,37 @@ void GameObjectManager::Render(UniformData _data)
 	auto& graphicsEngine = GraphicsEngine::GetInstance();
 	for (auto& gameObject : m_gameObjects)
 	{
-		MeshRenderer* renderer = gameObject->getComponent<MeshRenderer>();
-		if (renderer)
+		if (auto meshRenderer = gameObject->getComponent<MeshRenderer>())
 		{
-			if (renderer->GetAlpha() != 1.0f) continue;
+			if (meshRenderer->GetAlpha() != 1.0f) continue;
 
-			renderer->Render(_data, graphicsEngine.getRenderingPath());
+			meshRenderer->Render(_data, graphicsEngine.getRenderingPath());
 		}
-	}
-}
-
-void GameObjectManager::onGeometryPass(UniformData _data)
-{
-	for (auto& graphicsGameObject : m_graphicsObjects)
-	{
-		if (graphicsGameObject->getTransparency() < 1.0f) continue; // if the renderer is transparent we skip it
-
-		graphicsGameObject->onGeometryPass(_data);
 	}
 }
 
 void GameObjectManager::onTransparencyPass(UniformData _data)
 {
-	for (auto& graphicsGameObject : m_graphicsObjects)
-	{
-		if (graphicsGameObject->getTransparency() == 1.0f) continue; // if the renderer is opaque we skip it
-
-		graphicsGameObject->onGraphicsUpdate(_data);
-	}
-
 	for (auto& gameObject : m_gameObjects)
 	{
-		MeshRenderer* renderer = gameObject->getComponent<MeshRenderer>();
-		if (renderer)
+		if (auto meshRenderer = gameObject->getComponent<MeshRenderer>())
 		{
-			if(renderer->GetAlpha() == 1.0f) continue;
+			if(meshRenderer->GetAlpha() == 1.0f) continue;
 
-			renderer->Render(_data, RenderingPath::Forward); // we render the transparent renderers last with forward rendering
+			meshRenderer->Render(_data, RenderingPath::Forward); // we render the transparent renderers last with forward rendering
 		}
 
 	}
 }
 
-void GameObjectManager::onGraphicsUpdate(UniformData _data)
+void GameObjectManager::onSkyboxPass(UniformData _data)
 {
-	for (auto& graphicsGameObject : m_graphicsObjects)
+	for (auto& gameObject : m_gameObjects)
 	{
-		// Apply other uniform data to the shader
-		graphicsGameObject->onGraphicsUpdate(_data);
+		if (auto skybox = gameObject->getComponent<Skybox>())
+		{
+			skybox->Render(_data, RenderingPath::Forward);
+		}
 	}
 }
 
@@ -256,11 +209,6 @@ void GameObjectManager::onFixedUpdate(float fixedDeltaTime)
 	{
 		gameObject->onFixedUpdate(fixedDeltaTime); 
 	}
-}
-
-std::vector<GraphicsGameObject*> GameObjectManager::getGraphicsEntities() const
-{
-	return m_graphicsObjects;
 }
 
 std::vector<Camera*> GameObjectManager::getCameras() const
@@ -283,12 +231,6 @@ void GameObjectManager::clearGameObjects()
 {
 	// Clear the entities in the map
 	m_gameObjects.clear();
-
-	// Clear the graphics entities vector
-	m_graphicsObjects.clear();
-
-	// Clear the cameras vector
-	m_cameras.clear();
 
 	m_entitiesToDestroy.clear();
 }

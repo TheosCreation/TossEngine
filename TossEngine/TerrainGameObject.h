@@ -1,21 +1,21 @@
 #pragma once
 
-#include "GraphicsGameObject.h"
+//#include "GraphicsGameObject.h"
 #include "HeightMap.h"
 
-class TerrainGameObject : public GraphicsGameObject
+class TerrainGameObject //: public GraphicsGameObject
 {
 public:
     /**
      * @brief Called when the quad GameObject is created.
      */
-    virtual void onCreate() override;
+   // virtual void onCreate() override;
 
     /**
      * @brief Sets the uniform data for the shader.
      * @param data The uniform data to set.
      */
-    virtual void setUniformData(UniformData data) override;
+    //virtual void setUniformData(UniformData data) override;
 
     /**
      * @brief Sets the shader for the quad GameObject.
@@ -33,19 +33,19 @@ public:
      * @brief Called every frame to update the graphics.
      * @param data The uniform data to set.
      */
-    void onGraphicsUpdate(UniformData data) override;
+    //void onGraphicsUpdate(UniformData data) override;
 
     /**
      * @brief Called during the geometry pass.
      * @param data The uniform data for the pass.
      */
-    void onGeometryPass(UniformData data) override;
+    //void onGeometryPass(UniformData data) override;
 
     /**
      * @brief Called during the shadow pass.
      * @param index The index of the shadow map or light source.
      */
-    void onShadowPass(uint index) override;
+    //void onShadowPass(uint index) override;
 
 protected:
     /**

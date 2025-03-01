@@ -131,121 +131,111 @@ void TerrainGameObject::generateTerrainMesh(HeightMapPtr _heightMap)
     delete[] indicesList;
 }
 
-void TerrainGameObject::onCreate()
-{
-    // Override function for handling terrain GameObject creation
-}
-
-void TerrainGameObject::setUniformData(UniformData data)
-{
-    // Override function for setting uniform data for the shader
-}
-
 void TerrainGameObject::setShader(const ShaderPtr& shader)
 {
-    m_shader = shader; // Set the shader used by the terrain GameObject
+    //m_shader = shader; // Set the shader used by the terrain GameObject
 }
-
-void TerrainGameObject::onGraphicsUpdate(UniformData data)
-{
-    // Call base class update
-    GraphicsGameObject::onGraphicsUpdate(data);
-
-    // Set uniform matrices for shader
-    m_shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
-    m_shader->setMat4("modelMatrix", m_transform.GetMatrix());
-
-    // Get graphics engine instance
-    auto& graphicsEngine = GraphicsEngine::GetInstance();
-    graphicsEngine.setFaceCulling(CullType::None);
-    graphicsEngine.setWindingOrder(WindingOrder::ClockWise);
-    LightManager::GetInstance().applyLighting(m_shader);
-
-    // Bind textures if available
-    if (m_texture != nullptr)
-        graphicsEngine.setTexture2D(m_texture, 0, "Texture0");
-
-    if (m_texture1 != nullptr)
-        graphicsEngine.setTexture2D(m_texture1, 1, "Texture1");
-
-    if (m_texture2 != nullptr)
-        graphicsEngine.setTexture2D(m_texture2, 2, "Texture2");
-
-    if (m_texture3 != nullptr)
-        graphicsEngine.setTexture2D(m_texture3, 3, "Texture3");
-
-    if (m_heightMap != nullptr)
-        graphicsEngine.setTexture2D(m_heightMap, 4, "HeightMap");
-
-    // Apply shadows and draw the mesh
-    auto& lightManager = LightManager::GetInstance();
-    lightManager.applyShadows(m_shader);
-    graphicsEngine.setVertexArrayObject(m_mesh);
-    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_mesh->getNumIndices());
-
-    // Unbind textures
-    for (int i = 0; i <= 5; ++i)
-        graphicsEngine.setTexture2D(nullptr, i, "");
-}
-
-void TerrainGameObject::onGeometryPass(UniformData data)
-{
-    // Perform geometry pass setup
-    auto& graphicsEngine = GraphicsEngine::GetInstance();
-    graphicsEngine.setFaceCulling(CullType::None);
-    graphicsEngine.setWindingOrder(WindingOrder::ClockWise);
-    graphicsEngine.setDepthFunc(DepthType::Less);
-    graphicsEngine.setShader(m_geometryShader);
-
-    // Set shader matrices
-    m_geometryShader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
-    m_geometryShader->setMat4("modelMatrix", m_transform.GetMatrix());
-
-    // Bind textures for geometry pass
-    if (m_texture != nullptr)
-        graphicsEngine.setTexture2D(m_texture, 0, "Texture0");
-
-    if (m_texture1 != nullptr)
-        graphicsEngine.setTexture2D(m_texture1, 1, "Texture1");
-
-    if (m_texture2 != nullptr)
-        graphicsEngine.setTexture2D(m_texture2, 2, "Texture2");
-
-    if (m_texture3 != nullptr)
-        graphicsEngine.setTexture2D(m_texture3, 3, "Texture3");
-
-    if (m_heightMap != nullptr)
-        graphicsEngine.setTexture2D(m_heightMap, 4, "HeightMap");
-
-    // Draw the terrain mesh
-    graphicsEngine.setVertexArrayObject(m_mesh);
-    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_mesh->getNumIndices());
-
-    // Unbind textures after rendering
-    for (int i = 0; i <= 5; ++i)
-        graphicsEngine.setTexture2D(nullptr, i, "");
-}
-
-void TerrainGameObject::onShadowPass(uint index)
-{
-    GraphicsGameObject::onShadowPass(index);
-
-    // Perform shadow pass setup
-    auto& graphicsEngine = GraphicsEngine::GetInstance();
-    graphicsEngine.setFaceCulling(CullType::None);
-    graphicsEngine.setWindingOrder(WindingOrder::ClockWise);
-
-    // Set shader matrices
-    auto& lightManager = LightManager::GetInstance();
-    m_shadowShader->setMat4("VPLight", lightManager.getLightSpaceMatrix(index));
-    m_shadowShader->setMat4("modelMatrix", m_transform.GetMatrix());
-
-    if (m_mesh == nullptr) return;
-
-    // Draw the mesh to update the shadow map
-    graphicsEngine.setVertexArrayObject(m_mesh);
-    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_mesh->getNumIndices());
-}
+//
+//void TerrainGameObject::onGraphicsUpdate(UniformData data)
+//{
+//    // Call base class update
+//    GraphicsGameObject::onGraphicsUpdate(data);
+//
+//    // Set uniform matrices for shader
+//    m_shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
+//    m_shader->setMat4("modelMatrix", m_transform.GetMatrix());
+//
+//    // Get graphics engine instance
+//    auto& graphicsEngine = GraphicsEngine::GetInstance();
+//    graphicsEngine.setFaceCulling(CullType::None);
+//    graphicsEngine.setWindingOrder(WindingOrder::ClockWise);
+//    LightManager::GetInstance().applyLighting(m_shader);
+//
+//    // Bind textures if available
+//    if (m_texture != nullptr)
+//        graphicsEngine.setTexture2D(m_texture, 0, "Texture0");
+//
+//    if (m_texture1 != nullptr)
+//        graphicsEngine.setTexture2D(m_texture1, 1, "Texture1");
+//
+//    if (m_texture2 != nullptr)
+//        graphicsEngine.setTexture2D(m_texture2, 2, "Texture2");
+//
+//    if (m_texture3 != nullptr)
+//        graphicsEngine.setTexture2D(m_texture3, 3, "Texture3");
+//
+//    if (m_heightMap != nullptr)
+//        graphicsEngine.setTexture2D(m_heightMap, 4, "HeightMap");
+//
+//    // Apply shadows and draw the mesh
+//    auto& lightManager = LightManager::GetInstance();
+//    lightManager.applyShadows(m_shader);
+//    graphicsEngine.setVertexArrayObject(m_mesh);
+//    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_mesh->getNumIndices());
+//
+//    // Unbind textures
+//    for (int i = 0; i <= 5; ++i)
+//        graphicsEngine.setTexture2D(nullptr, i, "");
+//}
+//
+//void TerrainGameObject::onGeometryPass(UniformData data)
+//{
+//    // Perform geometry pass setup
+//    auto& graphicsEngine = GraphicsEngine::GetInstance();
+//    graphicsEngine.setFaceCulling(CullType::None);
+//    graphicsEngine.setWindingOrder(WindingOrder::ClockWise);
+//    graphicsEngine.setDepthFunc(DepthType::Less);
+//    graphicsEngine.setShader(m_geometryShader);
+//
+//    // Set shader matrices
+//    m_geometryShader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
+//    m_geometryShader->setMat4("modelMatrix", m_transform.GetMatrix());
+//
+//    // Bind textures for geometry pass
+//    if (m_texture != nullptr)
+//        graphicsEngine.setTexture2D(m_texture, 0, "Texture0");
+//
+//    if (m_texture1 != nullptr)
+//        graphicsEngine.setTexture2D(m_texture1, 1, "Texture1");
+//
+//    if (m_texture2 != nullptr)
+//        graphicsEngine.setTexture2D(m_texture2, 2, "Texture2");
+//
+//    if (m_texture3 != nullptr)
+//        graphicsEngine.setTexture2D(m_texture3, 3, "Texture3");
+//
+//    if (m_heightMap != nullptr)
+//        graphicsEngine.setTexture2D(m_heightMap, 4, "HeightMap");
+//
+//    // Draw the terrain mesh
+//    graphicsEngine.setVertexArrayObject(m_mesh);
+//    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_mesh->getNumIndices());
+//
+//    // Unbind textures after rendering
+//    for (int i = 0; i <= 5; ++i)
+//        graphicsEngine.setTexture2D(nullptr, i, "");
+//}
+//
+//void TerrainGameObject::onShadowPass(uint index)
+//{
+//    GraphicsGameObject::onShadowPass(index);
+//
+//    // Perform shadow pass setup
+//    auto& graphicsEngine = GraphicsEngine::GetInstance();
+//    graphicsEngine.setFaceCulling(CullType::None);
+//    graphicsEngine.setWindingOrder(WindingOrder::ClockWise);
+//
+//    // Set shader matrices
+//    auto& lightManager = LightManager::GetInstance();
+//    m_shadowShader->setMat4("VPLight", lightManager.getLightSpaceMatrix(index));
+//    m_shadowShader->setMat4("modelMatrix", m_transform.GetMatrix());
+//
+//    if (m_mesh == nullptr) return;
+//
+//    // Draw the mesh to update the shadow map
+//    graphicsEngine.setVertexArrayObject(m_mesh);
+//    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_mesh->getNumIndices());
+//}
 
 void TerrainGameObject::smoothHeightMap(std::vector<float>& heightData, uint width, uint depth)
 {

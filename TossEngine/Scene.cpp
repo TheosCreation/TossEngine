@@ -22,6 +22,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Ship.h"
 #include "PointLight.h"
 #include "TossEngine.h"
+#include "Skybox.h"
 
 Scene::Scene()
 {
@@ -45,6 +46,7 @@ Scene::Scene()
 
     auto& componentRegistry = ComponentRegistry::GetInstance();
     componentRegistry.registerComponent<MeshRenderer>();
+    componentRegistry.registerComponent<Skybox>();
     componentRegistry.registerComponent<Rigidbody>();
     componentRegistry.registerComponent<Image>();
     componentRegistry.registerComponent<PointLight>();
@@ -200,13 +202,6 @@ void Scene::onCreate()
     //        "MeshLightingShader"
     //    });
 
-    //Creating skybox object
-    m_skyBox = std::make_unique<SkyboxGameObject>();
-    m_skyBox->setGameObjectManager(m_gameObjectManager.get());
-    m_skyBox->setMesh(resourceManager.getMesh("Resources/Meshes/cube.obj"));
-    m_skyBox->setShader(skyboxShader);
-    //m_skyBox->setLightingShader(m_meshLightingShader);
-
     // create a cube map texture and set the texture of the skybox to the cubemap texture
     std::vector<std::string> skyboxCubeMapTextureFilePaths;
     skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Right.png");
@@ -216,10 +211,16 @@ void Scene::onCreate()
     skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Back.png");
     skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Front.png");
     TextureCubeMapPtr skyBoxTexture = resourceManager.createCubeMapTextureFromFile(skyboxCubeMapTextureFilePaths);
-    m_skyBox->setTexture(skyBoxTexture);
 
-
-
+    //Creating skybox object
+    {
+        MaterialPtr skyboxMaterial = resourceManager.createMaterial(MaterialDesc{ skyboxShader }, "SkyboxMatrial");
+        auto skyboxObject = m_gameObjectManager->createGameObject<GameObject>();
+        auto skybox = skyboxObject->addComponent<Skybox>();
+        skybox->setMesh(resourceManager.getMesh("Resources/Meshes/cube.obj"));
+        skybox->setTexture(skyBoxTexture);
+        skybox->SetMaterial(skyboxMaterial);
+    }
 
     Texture2DPtr heightMapTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Heightmap0.jpg");
     Texture2DPtr shipReflectiveMap = resourceManager.createTexture2DFromFile("Resources/Textures/ReflectionMap_White.png");
@@ -533,7 +534,6 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         //Geometry Pass
         auto& geometryBuffer = GeometryBuffer::GetInstance();
         geometryBuffer.Bind();
-        m_gameObjectManager->onGeometryPass(uniformData); // Render opaque objects
         m_gameObjectManager->Render(uniformData);
         geometryBuffer.UnBind();
 
@@ -565,8 +565,8 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         geometryBuffer.WriteDepth();
 
         // Render the transparent objects after
-        m_skyBox->onGraphicsUpdate(uniformData);
         m_gameObjectManager->onTransparencyPass(uniformData);
+        m_gameObjectManager->onSkyboxPass(uniformData);
 
         //cant seem to get post process to work maybe later
     }
@@ -601,14 +601,12 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         //
         //// Draw the mesh to update the shadow map
         //graphicsEngine.drawLines(debugLines->getNumIndices());
-
-
-        m_gameObjectManager->onGraphicsUpdate(uniformData);
-        m_skyBox->onGraphicsUpdate(uniformData);
+        
         m_gameObjectManager->Render(uniformData);
 
         // Render the transparent objects after
         m_gameObjectManager->onTransparencyPass(uniformData);
+        m_gameObjectManager->onSkyboxPass(uniformData);
 
         m_postProcessingFramebuffer->UnBind();
 

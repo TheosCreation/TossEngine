@@ -84,9 +84,6 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsGameObject.cpp">
-      <Filter>Source Files\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Resource.cpp">
       <Filter>Source Files\Resource</Filter>
     </ClCompile>
@@ -162,9 +159,6 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="SkyboxGameObject.cpp">
-      <Filter>Source Files\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="TerrianGameObject.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
@@ -211,6 +205,9 @@
       <Filter>ImGui</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\BlinnPhongLighting.glsl">
@@ -365,9 +362,6 @@
     <ClInclude Include="Window.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsGameObject.h">
-      <Filter>Header Files\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Header Files\Resource</Filter>
     </ClInclude>
@@ -449,9 +443,6 @@
     <ClInclude Include="Renderer.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="SkyboxGameObject.h">
-      <Filter>Header Files\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="TerrainGameObject.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
@@ -502,6 +493,9 @@
     </ClInclude>
     <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_opengl3.h">
       <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

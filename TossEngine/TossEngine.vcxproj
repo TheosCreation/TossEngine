@@ -232,7 +232,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Ship.cpp" />
-    <ClCompile Include="SkyboxGameObject.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="TerrianGameObject.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -241,7 +241,6 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
     <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
-    <ClCompile Include="GraphicsGameObject.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -328,7 +327,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
     <ClInclude Include="Serializable.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Ship.h" />
-    <ClInclude Include="SkyboxGameObject.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="TerrainGameObject.h" />
     <ClInclude Include="Texture.h" />
@@ -337,7 +336,6 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
     <ClInclude Include="GameObjectManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GraphicsEngine.h" />
-    <ClInclude Include="GraphicsGameObject.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="Math.h" />

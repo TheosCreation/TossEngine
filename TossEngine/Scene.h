@@ -11,7 +11,6 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include "Utils.h"
 #include "All.h"
 #include <reactphysics3d/reactphysics3d.h>
 
@@ -118,13 +117,10 @@ protected:
     ShaderPtr m_terrainGeometryShader = nullptr; /**< @brief Shader for rendering terrain geometries. */
     ShaderPtr m_computeShader = nullptr; /**< @brief Shader for compute operations. */
 
-    unique_ptr<SkyboxGameObject> m_skyBox; /**< @brief Pointer to the skybox instance used in the scene. */
     unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the GameObject system managing game entities. */
     FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
     unique_ptr<Image> m_deferredRenderSSRQ;
     unique_ptr<Image> m_postProcessSSRQ;
 
     Player* m_player;
-
-    TerrainGameObject* m_terrain = nullptr; //Pointer to the terrain GameObject
 };
