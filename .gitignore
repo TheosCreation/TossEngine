@@ -401,3 +401,9 @@ Dependencies/MONO/Scripts/TossEngine.dll
 Dependencies/TOSSENGINE/TossEngine.dll
 TossEditor/TossEditor.exe
 TossEditor/TossEngine.dll
+Dependencies/MONO/Scripts/TossEngine.lib
+Dependencies/MONO/Scripts/TossEngine.exp
+Dependencies/TOSSENGINE/TossEngine.exp
+Dependencies/TOSSENGINE/TossEngine.lib
+TossEditor/TossEngine.exp
+TossEditor/TossEngine.lib

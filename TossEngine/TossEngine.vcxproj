@@ -72,7 +72,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(SolutionDir)Dependencies/tinyfiledialogs;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/FMOD/Lib;$(SolutionDir)/Dependencies/REACTPHYSICS3D/Lib;$(SolutionDir)/Dependencies/MONO/lib;$(LibraryPath)
 </LibraryPath>
     <OutDir>$(SolutionDir)Dependencies/TOSSENGINE</OutDir>
@@ -84,7 +84,7 @@
     <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(SolutionDir)Dependencies/tinyfiledialogs;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/FMOD/Lib;$(SolutionDir)/Dependencies/REACTPHYSICS3D/Lib;$(SolutionDir)/Dependencies/MONO/lib;$(LibraryPath)
 </LibraryPath>
     <OutDir>$(SolutionDir)Dependencies/TOSSENGINE</OutDir>
@@ -134,6 +134,7 @@
       <FunctionLevelLinking>
       </FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -173,6 +174,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>
       </MultiProcessorCompilation>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -211,6 +213,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/Dependencies/MO
     <ClCompile Include="..\Dependencies\IMGUI\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\Dependencies\IMGUI\imgui_tables.cpp" />
     <ClCompile Include="..\Dependencies\IMGUI\imgui_widgets.cpp" />
+    <ClCompile Include="..\Dependencies\tinyfiledialogs\tinyfiledialogs.c" />
     <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />

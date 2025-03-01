@@ -2,6 +2,7 @@
 #include "ResourceManager.h"
 #include <glew.h>
 #include <glfw3.h>
+#include "tinyfiledialogs.h"
 
 void TossEngine::Init()
 {
@@ -51,4 +52,12 @@ void TossEngine::CleanUp()
 float TossEngine::GetCurrentTime()
 {
     return static_cast<float>(glfwGetTime());
+}
+
+std::string TossEngine::openFileDialog(const std::string& filter)
+{
+    const char* filterArray[] = { filter.c_str() };
+    const char* filePath = tinyfd_openFileDialog("Select File", "", 1, filterArray, "Select a File", 0);
+
+    return filePath ? std::string(filePath) : "";
 }

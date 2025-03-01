@@ -271,13 +271,13 @@ void ResourceManager::ClearInstancesFromMeshes()
 {
     // this was due to scene changes and not refreshing resources may cause issues
     // Iterate over all resources in the map
-    //for (auto& [key, resource] : m_mapResources)
-    //{
-    //    // Check if the resource is of type InstancedMesh
-    //    InstancedMeshPtr instancedMeshPtr = std::dynamic_pointer_cast<InstancedMesh>(resource);
-    //    if (instancedMeshPtr)
-    //    {
-    //        instancedMeshPtr->clearInstances();
-    //    }
-    //}
+    for (auto& [key, resource] : m_mapResources)
+    {
+        // Check if the resource is of type Mesh
+        MeshPtr meshPtr = std::dynamic_pointer_cast<Mesh>(resource);
+        if (meshPtr)
+        {
+            meshPtr->clearInstances();
+        }
+    }
 }

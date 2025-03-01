@@ -31,7 +31,7 @@ public:
      *
      * @param game A pointer to the Game instance, allowing access to game-wide functionalities.
      */
-    Scene();
+    Scene(const string& filePath);
 
     Scene(const Scene& other); //Copy Constructor
 
@@ -99,6 +99,7 @@ public:
 
 protected:
     bool m_initilized = false;
+    string m_filePath = "";
     UniformData uniformData = {};
 
     rp3d::PhysicsCommon m_PhysicsCommon;  // Manages physics resources

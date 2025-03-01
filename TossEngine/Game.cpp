@@ -63,7 +63,7 @@ Game::~Game()
 
 void Game::onCreate()
 {
-    //auto scene = std::make_shared<Scene>();
+    //auto scene = std::make_shared<Scene>("Scenes/Scene1.json");
     //SetScene(scene);
 }
 

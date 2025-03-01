@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(SolutionDir)Dependencies/TOSSENGINE;$(SolutionDir)TossEngine/</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(SolutionDir)Dependencies/TOSSENGINE;$(SolutionDir)TossEngine/;$(SolutionDir)Dependencies/tinyfiledialogs</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/FMOD/Lib;$(SolutionDir)/Dependencies/REACTPHYSICS3D/Lib;$(SolutionDir)/Dependencies/TOSSENGINE;$(SolutionDir)/Dependencies/MONO/lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(SolutionDir)Dependencies/TOSSENGINE;$(SolutionDir)TossEngine/</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/MONO/include;$(SolutionDir)Dependencies/TOSSENGINE;$(SolutionDir)TossEngine/;$(SolutionDir)Dependencies/tinyfiledialogs</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/FMOD/Lib;$(SolutionDir)/Dependencies/REACTPHYSICS3D/Lib;$(SolutionDir)/Dependencies/TOSSENGINE;$(SolutionDir)/Dependencies/MONO/lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)</OutDir>
   </PropertyGroup>
