@@ -161,6 +161,11 @@ void TossEditor::onUpdateInternal()
                 OpenScene(scene);
             }
         }
+        
+        if (ImGui::Button("Save"))
+        {
+            Save();
+        }
 
         static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
         if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
@@ -206,12 +211,12 @@ void TossEditor::onResize(Vector2 size)
     GeometryBuffer::GetInstance().Resize(size);
 }
 
-void TossEditor::save()
+void TossEditor::Save()
 {
     m_projectSettings->SaveToFile("ProjectSettings.json");
     if (m_currentScene)
     {
-        //m_currentScene->Save
+        m_currentScene->Save();
     }
 }
 

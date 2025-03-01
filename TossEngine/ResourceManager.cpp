@@ -49,6 +49,14 @@ TexturePtr ResourceManager::getTexture(const std::string& uniqueId)
     return TexturePtr();
 }
 
+MaterialPtr ResourceManager::getMaterial(const std::string& uniqueId)
+{
+    auto it = m_mapResources.find(uniqueId);
+    if (it != m_mapResources.end())
+        return std::static_pointer_cast<Material>(it->second);
+    return MaterialPtr();
+}
+
 ShaderPtr ResourceManager::createShader(const ShaderDesc& desc, const std::string& uniqueID)
 {
     ShaderPtr shader = std::make_shared<Shader>(desc, uniqueID, this);
@@ -238,7 +246,7 @@ SoundPtr ResourceManager::createSound(const SoundDesc& desc, const std::string& 
 MaterialPtr ResourceManager::createMaterial(const MaterialDesc& desc, const std::string& uniqueID)
 {
     MaterialPtr materialPtr = std::make_shared<Material>(desc, uniqueID, this);
-    m_mapResources.emplace("", materialPtr);
+    m_mapResources.emplace(uniqueID, materialPtr);
     return materialPtr;
 }
 

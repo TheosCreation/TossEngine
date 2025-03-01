@@ -115,10 +115,7 @@ void GameObjectManager::saveGameObjectsToFile(const std::string& filePath)
 
 	for (auto& gameObject : m_gameObjects)
 	{
-		if (gameObject->getComponent<MeshRenderer>())
-		{
-			sceneData["gameobjects"].push_back(gameObject->serialize());
-		}
+		sceneData["gameobjects"].push_back(gameObject->serialize());
 	}
 
 	std::ofstream file(filePath);

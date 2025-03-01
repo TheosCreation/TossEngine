@@ -36,6 +36,7 @@ public:
     ShaderPtr getShader(const std::string& uniqueId);
     MeshPtr getMesh(const std::string& uniqueId);
     TexturePtr getTexture(const std::string& uniqueId);
+    MaterialPtr getMaterial(const std::string& uniqueId);
 
     // Methods to create various resources
     ShaderPtr createShader(const ShaderDesc& desc, const std::string& uniqueID);
