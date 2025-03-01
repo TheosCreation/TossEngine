@@ -5,6 +5,57 @@
 #include "Game.h"
 #include "Material.h"
 
+json Skybox::serialize() const
+{
+    json data;
+    data["type"] = getClassName(typeid(*this)); // Store the component type
+
+    // Serialize mesh
+    if (m_mesh)
+    {
+        data["mesh"] = m_mesh->getUniqueID();
+    }
+
+    // Serialize textures
+    if (m_texture)
+    {
+        data["texture"] = m_texture->getUniqueID();
+    }
+
+    if (m_material)
+    {
+        data["material"] = m_material->getUniqueID();
+    }
+
+    return data;
+}
+
+void Skybox::deserialize(const json& data)
+{
+    auto& resourceManager = ResourceManager::GetInstance();
+
+    // Deserialize mesh
+    if (data.contains("mesh"))
+    {
+        std::string meshId = data["mesh"];
+        m_mesh = resourceManager.getMesh(meshId);
+    }
+
+    // Deserialize textures
+    if (data.contains("texture"))
+    {
+        std::string textureName = data["texture"];
+        m_texture = resourceManager.getTexture(textureName);
+    } 
+    
+    // Deserialize material
+    if (data.contains("material"))
+    {
+        std::string materialName = data["material"];
+        m_material = resourceManager.getMaterial(materialName);
+    }
+}
+
 void Skybox::onCreate()
 {
     // This method can be used for initialization tasks when the skybox GameObject is created.

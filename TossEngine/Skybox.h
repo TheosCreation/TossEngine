@@ -20,6 +20,12 @@ Mail : theo.morris@mds.ac.nz
 class Skybox : public Renderer
 {
 public:
+    // Serialize the MeshRenderer to JSON
+    json serialize() const override;
+
+    // Deserialize the MeshRenderer from JSON
+    void deserialize(const json& data) override;
+
     /**
      * @brief Called when the GameObject is created.
      */

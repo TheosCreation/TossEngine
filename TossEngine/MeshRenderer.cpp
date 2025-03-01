@@ -13,7 +13,7 @@ json MeshRenderer::serialize() const
     json data;
     data["type"] = getClassName(typeid(*this)); // Store the component type
 
-    // Serialize mesh (assuming MeshPtr has a unique identifier or name)
+    // Serialize mesh
     if (m_mesh)
     {
         data["mesh"] = m_mesh->getUniqueID();

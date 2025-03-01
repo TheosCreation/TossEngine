@@ -16,7 +16,7 @@ public:
 
 	void onResize(Vector2 size) override;
 	
-	void save();
+	void Save();
 
     void OpenScene(shared_ptr<Scene> _scene);
 
