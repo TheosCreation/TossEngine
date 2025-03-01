@@ -137,7 +137,6 @@ void TossEditor::onUpdateInternal()
         {
             if (!m_game) 
             {
-                //auto copiedScene = std::make_shared<Scene>(*m_currentScene);
                 m_game = new Game(m_projectSettings);
                 m_game->SetScene(m_currentScene, true);
             }
