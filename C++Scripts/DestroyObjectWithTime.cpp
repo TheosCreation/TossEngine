@@ -1,6 +1,6 @@
 #include "DestroyObjectWithTime.h"
 
-void DestroyObjectWithTime::onCreate()
+void DestroyObjectWithTime::onStart()
 {
 	Debug::Log("Destroy object called detroyobjectwithtime script");
 }
@@ -11,7 +11,8 @@ void DestroyObjectWithTime::onUpdate(float deltaTime)
 	if (elapsedTime > lifeTime)
 	{
 		elapsedTime = -100;
-		Debug::Log("Destoyed object");
-		//m_owner->getGameObjectManager()->removeGameObject(m_owner);
+		Debug::Log("Destroyed object");
+		Destroy(m_owner);
+		//
 	}
 }

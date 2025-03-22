@@ -28,19 +28,17 @@ GameObjectManager::GameObjectManager(Scene* scene)
 	m_scene = scene;
 }
 
-GameObjectManager::GameObjectManager(const GameObjectManager& other)
+GameObjectManager::GameObjectManager(Scene* scene, const GameObjectManager& other)
 {
-	m_scene = other.m_scene; // Assuming the scene should be shared
+	m_scene = scene;
 	
 	// Deep copy of GameObjects
 	for (const auto& obj : other.m_gameObjects)
 	{
-		//std::unique_ptr<GameObject> clonedObj = std::make_unique<GameObject>(obj);
-		//m_gameObjects.push_back(clonedObj);
+		//createGameObjectInternal(obj.get());
 	}
 	
-	// Copy the entities set (no deep copy needed since these objects are managed in m_gameObjects)
-	m_entitiesToDestroy = other.m_entitiesToDestroy;
+	m_gameObjectsToDestroy = other.m_gameObjectsToDestroy;
 }
 
 GameObjectManager::~GameObjectManager()
@@ -66,7 +64,7 @@ bool GameObjectManager::createGameObjectInternal(GameObject* gameObject)
 
 void GameObjectManager::removeGameObject(GameObject* GameObject)
 {
-	m_entitiesToDestroy.emplace(GameObject);
+	m_gameObjectsToDestroy.emplace(GameObject);
 }
 
 void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
@@ -148,6 +146,21 @@ void GameObjectManager::onLateStart()
 
 void GameObjectManager::onUpdate(float deltaTime)
 {
+	for(auto & gameObject : m_gameObjectsToDestroy)
+	{
+		// Remove from the active gameObjects list (dereferencing the unique_ptr to get the raw pointer)
+		auto it = std::find_if(m_gameObjects.begin(), m_gameObjects.end(),
+			[&gameObject](const std::unique_ptr<GameObject>& obj) {
+				return obj.get() == gameObject;  // Compare raw pointers
+			});
+		if (it != m_gameObjects.end())
+		{
+			m_gameObjects.erase(it);  // Remove the gameObject from the active list
+		}
+	}
+
+	m_gameObjectsToDestroy.clear();
+
 	for (auto& gameObject : m_gameObjects)
 	{
 		gameObject->onUpdate(deltaTime);
@@ -156,7 +169,6 @@ void GameObjectManager::onUpdate(float deltaTime)
 
 void GameObjectManager::onLateUpdate(float deltaTime)
 {
-
 	for (auto& gameObject : m_gameObjects)
 	{
 		gameObject->onLateUpdate(deltaTime);
@@ -256,5 +268,5 @@ void GameObjectManager::clearGameObjects()
 	// Clear the entities in the map
 	m_gameObjects.clear();
 
-	m_entitiesToDestroy.clear();
+	m_gameObjectsToDestroy.clear();
 }
