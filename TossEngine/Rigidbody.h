@@ -31,3 +31,5 @@ private:
     rp3d::Collider* m_Collider = nullptr;
     BodyType m_BodyType = BodyType::Dynamic; // Default to Dynamic
 };
+
+REGISTER_COMPONENT(Rigidbody);

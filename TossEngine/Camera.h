@@ -103,3 +103,4 @@ private:
     Rect m_screenArea;                   //The screen area of the camera.
 };
 
+REGISTER_COMPONENT(Camera);

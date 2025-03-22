@@ -7,7 +7,7 @@ public:
 	DestroyObjectWithTime() = default;
 	~DestroyObjectWithTime() = default;
 
-	void onCreate() override;
+	void onStart() override;
 	void onUpdate(float deltaTime) override;
 protected:
 	float lifeTime = 5.0f;

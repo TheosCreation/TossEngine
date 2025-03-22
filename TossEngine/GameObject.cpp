@@ -29,7 +29,7 @@ GameObject::GameObject(const GameObject& other)
     for (const auto& pair : other.m_components)
     {
         // Clone the component and add it to the new GameObject
-        //Component* clonedComponent = pair.second->Clone();
+        //Component* clonedComponent = new Component(*pair.second);
         //if (clonedComponent)
         //{
         //    clonedComponent->setOwner(this); // Set the owner of the cloned component
@@ -123,10 +123,16 @@ void GameObject::onCreate()
 
 void GameObject::onStart()
 {
+    for (auto& pair : m_components) {
+        pair.second->onStart();
+    }
 }
 
 void GameObject::onLateStart()
 {
+    for (auto& pair : m_components) {
+        pair.second->onLateStart();
+    }
 }
 
 void GameObject::onFixedUpdate(float fixedDeltaTime)
