@@ -50,15 +50,6 @@ Scene::Scene(const string& filePath)
     m_PhysicsWorld->setNbIterationsVelocitySolver(10);
     m_PhysicsWorld->setNbIterationsPositionSolver(5);
 
-    auto& componentRegistry = ComponentRegistry::GetInstance();
-    componentRegistry.registerComponent<MeshRenderer>();
-    componentRegistry.registerComponent<Skybox>();
-    componentRegistry.registerComponent<Rigidbody>();
-    componentRegistry.registerComponent<Image>();
-    componentRegistry.registerComponent<PointLight>();
-    componentRegistry.registerComponent<Ship>();
-    componentRegistry.registerComponent<Camera>();
-
     //rp3d::DebugRenderer& debugRenderer = m_PhysicsWorld->getDebugRenderer();
     //// Select the contact points and contact normals to be displayed
     //debugRenderer.setIsDebugItemDisplayed(rp3d::DebugRenderer::DebugItem::CONTACT_POINT, true);
@@ -90,16 +81,6 @@ Scene::Scene(const Scene& other)
     m_PhysicsWorld->setIsDebugRenderingEnabled(other.m_PhysicsWorld->getIsDebugRenderingEnabled());
     m_PhysicsWorld->setNbIterationsVelocitySolver(other.m_PhysicsWorld->getNbIterationsVelocitySolver());
     m_PhysicsWorld->setNbIterationsPositionSolver(other.m_PhysicsWorld->getNbIterationsPositionSolver());
-
-    // Copy registered components (assuming ComponentRegistry handles duplicates properly)
-    auto& componentRegistry = ComponentRegistry::GetInstance();
-    componentRegistry.registerComponent<MeshRenderer>();
-    componentRegistry.registerComponent<Skybox>();
-    componentRegistry.registerComponent<Rigidbody>();
-    componentRegistry.registerComponent<Image>();
-    componentRegistry.registerComponent<PointLight>();
-    componentRegistry.registerComponent<Ship>();
-    componentRegistry.registerComponent<Camera>();
 
     // You may also need to manually copy game objects inside GameObjectManager.
 }

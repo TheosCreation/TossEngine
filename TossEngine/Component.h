@@ -1,5 +1,6 @@
 #pragma once
 #include "Serializable.h"
+#include "ComponentRegistry.h"
 
 class GameObject;
 
@@ -45,3 +46,9 @@ public:
 protected:
 	GameObject* m_owner = nullptr;
 };
+
+#define REGISTER_COMPONENT(T) \
+    static bool _registered_##T = []() { \
+        ComponentRegistry::GetInstance().registerComponent<T>(); \
+        return true; \
+    }()

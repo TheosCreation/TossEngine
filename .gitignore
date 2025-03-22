@@ -409,3 +409,9 @@ TossEditor/TossEngine.exp
 TossEditor/TossEngine.lib
 C++Scripts/OutputDLL
 TossEngine/C++Scripts.dll
+Dependencies/TOSSENGINE
+TossEditor/C++Scripts.dll
+C++Scripts/TossEngine.lib
+C++Scripts/TossEngine.exp
+C++Scripts/TossEngine.dll
+C++Scripts/C++Scripts.dll

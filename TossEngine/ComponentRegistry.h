@@ -32,9 +32,11 @@ public:
     {
         static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
         std::string typeName = getClassName(typeid(T));  // Ensure consistent type name usage
+        if (m_componentCreators.find(typeName) != m_componentCreators.end()) {
+            return; // If the type is already registered, return early.
+        }
 
         Debug::Log("Registering component type: " + typeName);
-
         m_componentCreators[typeName] = []() -> Component* {
             return new T(); // Directly allocate memory for T
             };
@@ -80,9 +82,3 @@ private:
      */
     ~ComponentRegistry() = default;
 };
-
-#define REGISTER_COMPONENT(T) \
-    static bool _registered_##T = []() { \
-        ComponentRegistry::GetInstance().registerComponent<T>(); \
-        return true; \
-    }()
