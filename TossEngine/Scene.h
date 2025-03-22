@@ -108,6 +108,7 @@ public:
     virtual void onQuit();
 
     void Save();
+    string GetFilePath();
 
     rp3d::PhysicsWorld* GetPhysicsWorld();
     rp3d::PhysicsCommon& GetPhysicsCommon();

@@ -136,8 +136,9 @@ void TossEditor::onUpdateInternal()
         {
             if (!m_game && m_currentScene) 
             {
+                auto scene = std::make_shared<Scene>(m_currentScene->GetFilePath());
                 m_game = new Game(m_projectSettings);
-                m_game->SetScene(m_currentScene, true);
+                m_game->SetScene(scene);
             }
         }
 

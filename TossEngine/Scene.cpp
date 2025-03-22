@@ -70,12 +70,12 @@ Scene::Scene(const Scene& other)
     auto& tossEngine = TossEngine::GetInstance();
 
     // Copy post-processing framebuffer
-    m_postProcessingFramebuffer = std::make_unique<Framebuffer>(*other.m_postProcessingFramebuffer);
+    m_postProcessingFramebuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
 
     // Copy GameObjectManager (requires a proper copy constructor or Clone() function)
      
-    m_gameObjectManager = std::make_unique<GameObjectManager>(this);
-    //m_gameObjectManager = std::make_unique<GameObjectManager>(*other.m_gameObjectManager);
+    //m_gameObjectManager = std::make_unique<GameObjectManager>(this);
+    m_gameObjectManager = std::make_unique<GameObjectManager>(*other.m_gameObjectManager);
 
     // Copy images (assuming Image has a proper copy constructor)
     m_deferredRenderSSRQ = std::make_unique<Image>();
@@ -665,6 +665,11 @@ void Scene::Save()
     m_gameObjectManager->saveGameObjectsToFile(m_filePath);
     ResourceManager::GetInstance().saveResourcesDescs("Resources/Resources.json");
     Debug::Log("Scene saved to file path: " + m_filePath);
+}
+
+string Scene::GetFilePath()
+{
+    return m_filePath;
 }
 
 rp3d::PhysicsWorld* Scene::GetPhysicsWorld()
