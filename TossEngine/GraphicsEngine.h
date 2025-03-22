@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include "Math.h"
 #include "ResourceManager.h"
+#include "VertexArrayObject.h"
 
 struct ImGuiContext;
 

@@ -1,11 +1,5 @@
 #pragma once
 #include "Serializable.h"
-//#include "MonoIntegration.h"
-
-//typedef void (*OnCreateCallback)();
-//typedef void (*OnUpdateCallback)(float);
-//typedef void (*OnFixedUpdateCallback)(float);
-//typedef void (*OnDestroyCallback)();
 
 class GameObject;
 
@@ -49,26 +43,6 @@ public:
      */
     virtual void onLateUpdate(float deltaTime) {}
 
-    //void SetMonoObject(MonoObject* obj) {
-    //    monoObject = obj;
-    //}
-
-    // Callbacks from C#
-    //OnCreateCallback onCreateCallback;
-    //OnUpdateCallback onUpdateCallback;
-    //OnFixedUpdateCallback onFixedUpdateCallback;
-    //OnDestroyCallback onDestroyCallback;
-
 protected:
 	GameObject* m_owner = nullptr;
-    //MonoObject* monoObject = nullptr;
 };
-
-// Add the callback delegates for C#
-//extern "C" {
-//    TOSSENGINE_API void SetCSharpComponentCallbacks(Component* component,
-//        OnCreateCallback onCreate,
-//        OnUpdateCallback onUpdate,
-//        OnFixedUpdateCallback onFixedUpdate,
-//        OnDestroyCallback onDestroy);
-//}
