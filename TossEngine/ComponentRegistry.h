@@ -78,3 +78,9 @@ private:
      */
     ~ComponentRegistry() = default;
 };
+
+#define REGISTER_COMPONENT(T) \
+    static bool _registered_##T = []() { \
+        ComponentRegistry::GetInstance().registerComponent<T>(); \
+        return true; \
+    }()

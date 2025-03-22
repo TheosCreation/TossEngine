@@ -12,7 +12,7 @@ Mail : theo.morris@mds.ac.nz
 
 #pragma once
 #include <iostream>
-#include "Resizable.h"
+#include "All.h"
 #include "InputManager.h"
 #include "GraphicsEngine.h"
 #include "ResourceManager.h"
