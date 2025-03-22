@@ -158,6 +158,9 @@ void Game::SetScene(shared_ptr<Scene> _scene, bool skipCreate)
         m_currentScene->onCreate();
         m_currentScene->onCreateLate();
     }
+
+    m_currentScene->onCreate();
+    m_currentScene->onCreateLate();
 }
 void Game::onUpdate(float deltaTime)
 {

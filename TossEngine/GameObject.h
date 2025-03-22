@@ -69,6 +69,16 @@ public:
     virtual void onCreate();
 
     /**
+     * @brief Called when the game is started right before the first update frame.
+     */
+    virtual void onStart();
+
+    /**
+     * @brief Called right after start.
+     */
+    virtual void onLateStart();
+
+    /**
      * @brief Called every frame to update the GameObject at a fixed frame rate.
      * Can be overridden by derived classes to implement custom behavior.
      * @param deltaTime The time elapsed since the last frame.
@@ -103,6 +113,8 @@ public:
 
         return static_cast<Component*>(m_components[typeIndex]);
     }
+
+    Component* addComponent(string componentType, const json& data = nullptr);
 
     template <typename Component>
     Component* getComponent()

@@ -21,13 +21,17 @@ void TossEngine::Init()
 
 void TossEngine::LoadScripts()
 {
-    HMODULE scriptsDll = LoadLibrary(L"Scripts.dll");
+    HMODULE scriptsDll = LoadLibrary(L"C++Scripts.dll");
     if (scriptsDll) {
         typedef void (*RegisterComponentsFunc)();
         RegisterComponentsFunc registerFunc = (RegisterComponentsFunc)GetProcAddress(scriptsDll, "RegisterComponents");
         if (registerFunc) {
             registerFunc();
         }
+    }
+    else
+    {
+        Debug::Log("No Scripts dll found");
     }
 }
 

@@ -57,6 +57,7 @@ Scene::Scene(const string& filePath)
     componentRegistry.registerComponent<Image>();
     componentRegistry.registerComponent<PointLight>();
     componentRegistry.registerComponent<Ship>();
+    componentRegistry.registerComponent<Camera>();
 
     //rp3d::DebugRenderer& debugRenderer = m_PhysicsWorld->getDebugRenderer();
     //// Select the contact points and contact normals to be displayed
@@ -98,6 +99,7 @@ Scene::Scene(const Scene& other)
     componentRegistry.registerComponent<Image>();
     componentRegistry.registerComponent<PointLight>();
     componentRegistry.registerComponent<Ship>();
+    componentRegistry.registerComponent<Camera>();
 
     // You may also need to manually copy game objects inside GameObjectManager.
 }
@@ -108,13 +110,11 @@ Scene::~Scene()
 
 void Scene::onCreate()
 {
-    if (m_initilized) return;
-
-    auto& resourceManager = ResourceManager::GetInstance();
     auto& lightManager = LightManager::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     m_player = m_gameObjectManager->createGameObject<Player>(); //move this elsewhere
 
+    auto& resourceManager = ResourceManager::GetInstance();
     resourceManager.loadResourceDesc("Resources/Resources.json");
 
     defaultFullscreenShader = resourceManager.createShader({
@@ -221,22 +221,22 @@ void Scene::onCreate()
     
 
     //Texture2DPtr heightMapTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Heightmap0.jpg");
-    //Texture2DPtr shipReflectiveMap = resourceManager.createTexture2DFromFile("Resources/Textures/ReflectionMap_White.png");
-    //Texture2DPtr sciFiSpaceTexture2D = resourceManager.createTexture2DFromFile("Resources/Textures/PolygonSciFiSpace_Texture_01_A.png");
+    Texture2DPtr shipReflectiveMap = resourceManager.createTexture2DFromFile("Resources/Textures/ReflectionMap_White.png");
+    Texture2DPtr sciFiSpaceTexture2D = resourceManager.createTexture2DFromFile("Resources/Textures/PolygonSciFiSpace_Texture_01_A.png");
     //Texture2DPtr ancientWorldsTexture2D = resourceManager.createTexture2DFromFile("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
     //Texture2DPtr grassTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/stone.png");
     //Texture2DPtr dirtTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/dirt.png");
     //Texture2DPtr stoneTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/stone.png");
     //Texture2DPtr snowTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/snow.png");
 
-    //MeshPtr fighterShip = resourceManager.createMeshFromFile("Resources/Meshes/Space/SM_Ship_Fighter_02.obj");
+    MeshPtr fighterShip = resourceManager.createMeshFromFile("Resources/Meshes/Space/SM_Ship_Fighter_02.obj");
 
-    //ShaderPtr meshShader = resourceManager.createShader({
-    //        "MeshShader",
-    //        "MeshShader"
-    //    },
-    //    "MeshShader"
-    //);
+    ShaderPtr meshShader = resourceManager.createShader({
+            "MeshShader",
+            "MeshShader"
+        },
+        "MeshShader"
+    );
     //ShaderPtr instancedMeshShader = resourceManager.createShader({
     //        "InstancedMesh",
     //        "MeshShader"
@@ -325,19 +325,20 @@ void Scene::onCreate()
    //    skybox->SetMaterial(skyboxMaterial);
    //}
    //{
-   //    auto ship = m_gameObjectManager->createGameObject<GameObject>();
-   //    ship->m_transform.scale = Vector3(0.05f);
-   //    ship->m_transform.position = Vector3(0.0f, 50.0f, 0.0f);
-   //    auto renderer = ship->addComponent<MeshRenderer>();
-   //    renderer->SetShininess(0.0f);
-   //    renderer->SetTexture(sciFiSpaceTexture2D);
-   //    renderer->SetShader(resourceManager.getShader("MeshShader"));
-   //    renderer->SetMesh(fighterShip);
-   //    renderer->SetReflectiveMapTexture(shipReflectiveMap);
-   //    renderer->SetShadowShader(m_shadowShader);
-   //    renderer->SetGeometryShader(m_meshGeometryShader);
-   //
-   //    ship->addComponent<Ship>();
+       auto ship = m_gameObjectManager->createGameObject<GameObject>();
+       ship->m_transform.scale = Vector3(0.05f);
+       ship->m_transform.position = Vector3(0.0f, 50.0f, 0.0f);
+       auto renderer = ship->addComponent<MeshRenderer>();
+       renderer->SetShininess(0.0f);
+       renderer->SetTexture(sciFiSpaceTexture2D);
+       renderer->SetShader(resourceManager.getShader("MeshShader"));
+       renderer->SetMesh(fighterShip);
+       renderer->SetReflectiveMapTexture(shipReflectiveMap);
+       renderer->SetShadowShader(m_shadowShader);
+       renderer->SetGeometryShader(m_meshGeometryShader);
+   
+     ship->addComponent<Ship>();
+     ship->addComponent("DestroyObjectWithTime");
    //}
    //float pointLightSpacing = 30.0f;
    //// Initialize 2 point lights
@@ -462,6 +463,16 @@ void Scene::onCreate()
    //}
 
     m_gameObjectManager->loadGameObjectsFromFile(m_filePath);
+}
+
+void Scene::onStart()
+{
+    m_gameObjectManager->onStart();
+}
+
+void Scene::onLateStart()
+{
+    m_gameObjectManager->onLateStart();
 }
 
 void Scene::onCreateLate()

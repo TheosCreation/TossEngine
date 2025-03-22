@@ -32,6 +32,7 @@ Mail : theo.morris@mds.ac.nz
 #include "HeightMap.h"
 #include "Image.h"
 
+#include "GameObjectManager.h"
 #include "GameObject.h"
 
 #include "ComponentRegistry.h"
