@@ -39,7 +39,7 @@ public:
      */
     GameObjectManager(Scene* scene);
 
-    GameObjectManager(Scene* scene, const GameObjectManager& other);
+    GameObjectManager(const GameObjectManager& other);
 
     /**
      * @brief Destructor for the GameObjectManager class.

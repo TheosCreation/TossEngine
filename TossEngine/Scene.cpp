@@ -63,8 +63,7 @@ Scene::Scene(const Scene& other)
     // Copy post-processing framebuffer
     m_postProcessingFramebuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
-    //m_gameObjectManager = std::make_unique<GameObjectManager>(this, *other.m_gameObjectManager);
-    
+
     // Copy images (assuming Image has a proper copy constructor)
     m_deferredRenderSSRQ = std::make_unique<Image>();
     m_postProcessSSRQ = std::make_unique<Image>();
@@ -78,6 +77,8 @@ Scene::Scene(const Scene& other)
     m_PhysicsWorld->setIsDebugRenderingEnabled(other.m_PhysicsWorld->getIsDebugRenderingEnabled());
     m_PhysicsWorld->setNbIterationsVelocitySolver(other.m_PhysicsWorld->getNbIterationsVelocitySolver());
     m_PhysicsWorld->setNbIterationsPositionSolver(other.m_PhysicsWorld->getNbIterationsPositionSolver());
+
+    // You may also need to manually copy game objects inside GameObjectManager.
 }
 
 Scene::~Scene()
