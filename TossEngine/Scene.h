@@ -44,10 +44,20 @@ public:
     ~Scene();
 
     /**
-     * @brief Called when the game is created.
+     * @brief Called when the scene is created.
      * Use this method to initialize resources such as textures, meshes, and shaders.
      */
     virtual void onCreate();
+
+    /**
+     * @brief Called when the game is started right before the first update frame.
+     */
+    virtual void onStart(); 
+    
+    /**
+     * @brief Called right after start.
+     */
+    virtual void onLateStart();
 
     /**
      * @brief Called after onCreate when the game is created.

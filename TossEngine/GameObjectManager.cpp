@@ -129,6 +129,22 @@ void GameObjectManager::saveGameObjectsToFile(const std::string& filePath)
 	file.close();
 }
 
+void GameObjectManager::onStart()
+{
+	for (auto& gameObject : m_gameObjects)
+	{
+		gameObject->onStart();
+	}
+}
+
+void GameObjectManager::onLateStart()
+{
+	for (auto& gameObject : m_gameObjects)
+	{
+		gameObject->onLateStart();
+	}
+}
+
 
 void GameObjectManager::onUpdate(float deltaTime)
 {

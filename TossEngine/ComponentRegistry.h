@@ -33,6 +33,8 @@ public:
         static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
         std::string typeName = getClassName(typeid(T));  // Ensure consistent type name usage
 
+        Debug::Log("Registering component type: " + typeName);
+
         m_componentCreators[typeName] = []() -> Component* {
             return new T(); // Directly allocate memory for T
             };
