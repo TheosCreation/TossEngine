@@ -11,8 +11,16 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include "All.h"
+#include "Utils.h"
+#include "Resizable.h"
 #include <reactphysics3d/reactphysics3d.h>
+
+class Game;
+class ComponentRegistry;
+class GameObjectManager;
+class Image;
+class Camera;
+class Player;
 
 /**
  * @class Scene
@@ -120,5 +128,6 @@ protected:
     unique_ptr<Image> m_deferredRenderSSRQ;
     unique_ptr<Image> m_postProcessSSRQ;
 
-    Player* m_player = nullptr;
+    Player* m_player;
+
 };

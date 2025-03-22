@@ -77,7 +77,7 @@ void Game::onUpdateInternal()
     auto& tossEngine = TossEngine::GetInstance();
 
     // delta time
-    m_currentTime = tossEngine.GetCurrentTime();
+    m_currentTime = tossEngine.GetTime();
     float deltaTime = m_currentTime - m_previousTime;
     m_previousTime = m_currentTime;
 
