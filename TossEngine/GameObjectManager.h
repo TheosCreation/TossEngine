@@ -120,7 +120,7 @@ private:
     /**
      * @brief Set of entities scheduled for destruction.
      */
-    std::set<GameObject*> m_entitiesToDestroy;
+    std::set<GameObject*> m_gameObjectsToDestroy;
 
     /**
      * @brief Vector of all camera entities.
