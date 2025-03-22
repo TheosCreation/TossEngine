@@ -13,6 +13,5 @@ void DestroyObjectWithTime::onUpdate(float deltaTime)
 		elapsedTime = -100;
 		Debug::Log("Destroyed object");
 		Destroy(m_owner);
-		//
 	}
 }
