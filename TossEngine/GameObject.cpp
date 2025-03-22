@@ -123,10 +123,16 @@ void GameObject::onCreate()
 
 void GameObject::onStart()
 {
+    for (auto& pair : m_components) {
+        pair.second->onStart();
+    }
 }
 
 void GameObject::onLateStart()
 {
+    for (auto& pair : m_components) {
+        pair.second->onLateStart();
+    }
 }
 
 void GameObject::onFixedUpdate(float fixedDeltaTime)

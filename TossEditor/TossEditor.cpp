@@ -22,7 +22,6 @@ TossEditor::TossEditor()
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, windowSize, "TossEditor");
 
-    MonoIntegration::InitializeMono();
     GeometryBuffer::GetInstance().Init(windowSize);
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
@@ -193,8 +192,6 @@ void TossEditor::onQuit()
     {
         m_currentScene->onQuit();
     }
-
-    MonoIntegration::ShutdownMono();
 }
 
 void TossEditor::onResize(Vector2 size)

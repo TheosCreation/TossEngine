@@ -6,6 +6,7 @@ class GameObject;
 class TOSSENGINE_API Component : public Serializable
 {
 public:
+    //Component(const Component& other);
 
 	GameObject* getOwner();
 	void setOwner(GameObject* gameObject);
@@ -15,27 +16,25 @@ public:
      * Can be overridden by derived classes to perform initialization.
      */
     virtual void onCreate() {
-        //if (onCreateCallback) {
-        //    onCreateCallback();  // Call the C# override
-        //}
     }
+
+    virtual void onStart() {
+    }
+
+    virtual void onLateStart() {
+    }
+
     virtual void onUpdate(float deltaTime) {
-        //if (onUpdateCallback) {
-        //    onUpdateCallback(deltaTime);  // Call the C# override
-        //}
     }
 
     virtual void onFixedUpdate(float fixedDeltaTime) {
-        //if (onFixedUpdateCallback) {
-        //    onFixedUpdateCallback(fixedDeltaTime);  // Call the C# override
-        //}
     }
 
     virtual void onDestroy() {
-        //if (onDestroyCallback) {
-        //    onDestroyCallback();  // Call the C# override
-        //}
     }
+
+    void Destroy(GameObject* objectToDestroy);
+
     /**
      * @brief Called every frame after all Update functions have been called.
      * Can be overridden by derived classes to implement custom behavior.

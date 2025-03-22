@@ -327,7 +327,7 @@ void Scene::onCreate()
    //{
        auto ship = m_gameObjectManager->createGameObject<GameObject>();
        ship->m_transform.scale = Vector3(0.05f);
-       ship->m_transform.position = Vector3(0.0f, 50.0f, 0.0f);
+       ship->m_transform.position = Vector3(0.0f, 20.0f, 0.0f);
        auto renderer = ship->addComponent<MeshRenderer>();
        renderer->SetShininess(0.0f);
        renderer->SetTexture(sciFiSpaceTexture2D);
@@ -337,7 +337,6 @@ void Scene::onCreate()
        renderer->SetShadowShader(m_shadowShader);
        renderer->SetGeometryShader(m_meshGeometryShader);
    
-     ship->addComponent<Ship>();
      ship->addComponent("DestroyObjectWithTime");
    //}
    //float pointLightSpacing = 30.0f;
