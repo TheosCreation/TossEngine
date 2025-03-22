@@ -1,6 +1,5 @@
 #pragma once
-#include "Utils.h"
-#include "Window.h"
+#include "All.h"
 
 class TOSSENGINE_API TossEngine
 {

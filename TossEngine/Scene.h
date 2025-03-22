@@ -14,11 +14,6 @@ Mail : theo.morris@mds.ac.nz
 #include "All.h"
 #include <reactphysics3d/reactphysics3d.h>
 
-class Game;
-class ComponentRegistry;
-class Image;
-class Camera;
-
 /**
  * @class Scene
  * @brief Base class representing a game scene, providing essential methods for rendering and updating the game logic.
@@ -125,5 +120,5 @@ protected:
     unique_ptr<Image> m_deferredRenderSSRQ;
     unique_ptr<Image> m_postProcessSSRQ;
 
-    Player* m_player;
+    Player* m_player = nullptr;
 };
