@@ -11,6 +11,8 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "Scene.h"
+#include "GameObjectManager.h"
+#include "GraphicsEngine.h"
 #include "GeometryBuffer.h"
 #include "AudioEngine.h"
 #include "ComponentRegistry.h"
@@ -23,6 +25,8 @@ Mail : theo.morris@mds.ac.nz
 #include "PointLight.h"
 #include "TossEngine.h"
 #include "Skybox.h"
+#include "Camera.h"
+#include "Framebuffer.h"
 
 Scene::Scene(const string& filePath)
 {
@@ -502,7 +506,7 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
     auto& graphicsEngine = GraphicsEngine::GetInstance();
 
     // Populate the uniform data struct
-    uniformData.currentTime = tossEngine.GetCurrentTime();
+    uniformData.currentTime = tossEngine.GetTime();
 
     if (cameraToRenderOverride != nullptr)
     {

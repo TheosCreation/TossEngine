@@ -1,6 +1,8 @@
 #pragma once
+#include "TossEngine.h"
 
-class CustomComponent
+class CustomComponent : Component
 {
+	//
 };
 
