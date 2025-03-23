@@ -2,6 +2,7 @@
 #include "ResourceManager.h"
 #include <glew.h>
 #include <glfw3.h>
+#include <windows.h>
 #include "tinyfiledialogs.h"
 
 void TossEngine::Init()
@@ -14,8 +15,24 @@ void TossEngine::Init()
         Debug::LogError("GLFW failed to initialize properly. Terminating program.");
         return;
     }
-
+    LoadScripts();
     isInitilized = true;
+}
+
+void TossEngine::LoadScripts()
+{
+    HMODULE scriptsDll = LoadLibrary(L"C++Scripts.dll");
+    if (scriptsDll) {
+        typedef void (*RegisterComponentsFunc)();
+        RegisterComponentsFunc registerFunc = (RegisterComponentsFunc)GetProcAddress(scriptsDll, "RegisterComponents");
+        if (registerFunc) {
+            registerFunc();
+        }
+    }
+    else
+    {
+        Debug::Log("No Scripts dll found");
+    }
 }
 
 void TossEngine::LoadGenericResources()
@@ -59,7 +76,7 @@ void TossEngine::CleanUp()
     glfwTerminate();
 }
 
-float TossEngine::GetCurrentTime()
+float TossEngine::GetTime()
 {
     return static_cast<float>(glfwGetTime());
 }

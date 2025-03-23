@@ -4,13 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TossEngine", "TossEngine\TossEngine.vcxproj", "{0FBF6FBE-001B-470B-A304-4E11123675C0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scripts", "Dependencies\MONO\Scripts\Scripts.csproj", "{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{71D94A3B-E2A4-4D01-956F-25140D135D80} = {71D94A3B-E2A4-4D01-956F-25140D135D80}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TossEditor", "TossEditor\TossEditor.vcxproj", "{43241BDF-7CE9-4E61-BEC5-4C1A61EDC146}"
-	ProjectSection(ProjectDependencies) = postProject
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F} = {026BAE44-0F71-4EF6-857E-DDCD54CAE71F}
-	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "C++Scripts", "C++Scripts\C++Scripts.vcxproj", "{71D94A3B-E2A4-4D01-956F-25140D135D80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,18 +34,6 @@ Global
 		{0FBF6FBE-001B-470B-A304-4E11123675C0}.Release|x64.Build.0 = Release|x64
 		{0FBF6FBE-001B-470B-A304-4E11123675C0}.Release|x86.ActiveCfg = Release|Win32
 		{0FBF6FBE-001B-470B-A304-4E11123675C0}.Release|x86.Build.0 = Release|Win32
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Debug|x64.Build.0 = Debug|Any CPU
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Debug|x86.Build.0 = Debug|Any CPU
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Release|x64.ActiveCfg = Release|Any CPU
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Release|x64.Build.0 = Release|Any CPU
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Release|x86.ActiveCfg = Release|Any CPU
-		{026BAE44-0F71-4EF6-857E-DDCD54CAE71F}.Release|x86.Build.0 = Release|Any CPU
 		{43241BDF-7CE9-4E61-BEC5-4C1A61EDC146}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{43241BDF-7CE9-4E61-BEC5-4C1A61EDC146}.Debug|Any CPU.Build.0 = Debug|x64
 		{43241BDF-7CE9-4E61-BEC5-4C1A61EDC146}.Debug|x64.ActiveCfg = Debug|x64
@@ -58,6 +46,18 @@ Global
 		{43241BDF-7CE9-4E61-BEC5-4C1A61EDC146}.Release|x64.Build.0 = Release|x64
 		{43241BDF-7CE9-4E61-BEC5-4C1A61EDC146}.Release|x86.ActiveCfg = Release|Win32
 		{43241BDF-7CE9-4E61-BEC5-4C1A61EDC146}.Release|x86.Build.0 = Release|Win32
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Debug|Any CPU.Build.0 = Debug|x64
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Debug|x64.ActiveCfg = Debug|x64
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Debug|x64.Build.0 = Debug|x64
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Debug|x86.ActiveCfg = Debug|Win32
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Debug|x86.Build.0 = Debug|Win32
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Release|Any CPU.ActiveCfg = Release|x64
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Release|Any CPU.Build.0 = Release|x64
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Release|x64.ActiveCfg = Release|x64
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Release|x64.Build.0 = Release|x64
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Release|x86.ActiveCfg = Release|Win32
+		{71D94A3B-E2A4-4D01-956F-25140D135D80}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

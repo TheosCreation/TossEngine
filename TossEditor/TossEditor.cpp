@@ -22,7 +22,6 @@ TossEditor::TossEditor()
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, windowSize, "TossEditor");
 
-    MonoIntegration::InitializeMono();
     GeometryBuffer::GetInstance().Init(windowSize);
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
@@ -87,7 +86,7 @@ void TossEditor::onUpdateInternal()
 
 
     // delta time
-    m_currentTime = tossEngine.GetCurrentTime();
+    m_currentTime = tossEngine.GetTime();
     float deltaTime = m_currentTime - m_previousTime;
     m_previousTime = m_currentTime;
 
@@ -164,6 +163,8 @@ void TossEditor::onUpdateInternal()
             if (!m_game && m_currentScene)
             {
                 m_game = new Game(m_projectSettings);
+
+                //std::shared_ptr<Scene> copiedScene = std::make_shared<Scene>(*m_currentScene);
                 m_game->SetScene(m_currentScene, true);
             }
         }
@@ -226,8 +227,6 @@ void TossEditor::onQuit()
     {
         m_currentScene->onQuit();
     }
-
-    MonoIntegration::ShutdownMono();
 }
 
 void TossEditor::onResize(Vector2 size)

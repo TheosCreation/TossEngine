@@ -51,3 +51,4 @@ private:
 	Vector3 m_color = Color::Purple;
 };
 
+REGISTER_COMPONENT(MeshRenderer);

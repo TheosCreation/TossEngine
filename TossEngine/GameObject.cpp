@@ -29,7 +29,7 @@ GameObject::GameObject(const GameObject& other)
     for (const auto& pair : other.m_components)
     {
         // Clone the component and add it to the new GameObject
-        //Component* clonedComponent = pair.second->Clone();
+        //Component* clonedComponent = new Component(*pair.second);
         //if (clonedComponent)
         //{
         //    clonedComponent->setOwner(this); // Set the owner of the cloned component
@@ -96,14 +96,7 @@ void GameObject::deserialize(const json& data)
         for (const auto& componentData : data["components"])
         {
             std::string componentType = componentData["type"];
-            auto component = ComponentRegistry::GetInstance().createComponent(componentType);
-            if (component)
-            {
-                component->setOwner(this);
-                component->onCreate();
-                component->deserialize(componentData); 
-                m_components.emplace(std::type_index(typeid(*component)), component);
-            }
+            addComponent(componentType, componentData);
         }
     }
 }
@@ -128,6 +121,20 @@ void GameObject::onCreate()
 {
 }
 
+void GameObject::onStart()
+{
+    for (auto& pair : m_components) {
+        pair.second->onStart();
+    }
+}
+
+void GameObject::onLateStart()
+{
+    for (auto& pair : m_components) {
+        pair.second->onLateStart();
+    }
+}
+
 void GameObject::onFixedUpdate(float fixedDeltaTime)
 {
     for (auto& pair : m_components) {
@@ -146,16 +153,26 @@ void GameObject::onLateUpdate(float deltaTime)
 {
 }
 
-//Component* GameObject::addCSharpComponent(const std::string& typeName)
-//{
-//	Component* nativeComponent = MonoIntegration::CreateCSharpComponent(typeName.c_str());
-//	if (nativeComponent)
-//	{
-//		nativeComponent->setOwner(this);
-//		m_components[std::type_index(typeid(*nativeComponent))] = std::unique_ptr<Component>(nativeComponent);
-//	}
-//	return nativeComponent;
-//}
+Component* GameObject::addComponent(string componentType, const json& data)
+{
+    auto component = ComponentRegistry::GetInstance().createComponent(componentType);
+    if (component)
+    {
+        component->setOwner(this);
+        component->onCreate();
+        if (data != nullptr)
+        {
+            component->deserialize(data);
+        }
+        m_components.emplace(std::type_index(typeid(*component)), component);
+        return component;
+    }
+    else
+    {
+        Debug::LogError("Error adding component of type: " + componentType + " to gameobject: " + ToString(this->m_id));
+    }
+    return nullptr;
+}
 
 void GameObject::setGameObjectManager(GameObjectManager* gameObjectManager)
 {

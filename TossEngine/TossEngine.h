@@ -1,6 +1,5 @@
 #pragma once
-#include "Utils.h"
-#include "Window.h"
+#include "All.h"
 
 class TOSSENGINE_API TossEngine
 {
@@ -16,12 +15,13 @@ public:
     TossEngine& operator=(const TossEngine& other) = delete;
 
     void Init();
+    void LoadScripts();
     void LoadGenericResources();
     void TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName);
     Window* GetWindow();
     void PollEvents();
     void CleanUp();
-    float GetCurrentTime();
+    float GetTime();
     string openFileDialog(const std::string& filter);
 
     bool IsDebugMode();

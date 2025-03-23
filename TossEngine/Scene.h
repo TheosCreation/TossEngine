@@ -11,13 +11,16 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include "All.h"
+#include "Utils.h"
+#include "Resizable.h"
 #include <reactphysics3d/reactphysics3d.h>
 
 class Game;
 class ComponentRegistry;
+class GameObjectManager;
 class Image;
 class Camera;
+class Player;
 
 /**
  * @class Scene
@@ -41,10 +44,20 @@ public:
     ~Scene();
 
     /**
-     * @brief Called when the game is created.
+     * @brief Called when the scene is created.
      * Use this method to initialize resources such as textures, meshes, and shaders.
      */
     virtual void onCreate();
+
+    /**
+     * @brief Called when the game is started right before the first update frame.
+     */
+    virtual void onStart(); 
+    
+    /**
+     * @brief Called right after start.
+     */
+    virtual void onLateStart();
 
     /**
      * @brief Called after onCreate when the game is created.
@@ -126,4 +139,5 @@ protected:
     unique_ptr<Image> m_postProcessSSRQ;
 
     Player* m_player;
+
 };

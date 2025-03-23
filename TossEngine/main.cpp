@@ -5,7 +5,7 @@ Auckland
 New Zealand
 (c) 2024 Media Design School
 File Name : main.cpp
-Description : The entry point of the application
+Description : The entry point of the library
 Author : Theo Morris
 Mail : theo.morris@mds.ac.nz
 **/

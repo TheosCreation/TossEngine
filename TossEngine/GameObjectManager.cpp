@@ -40,7 +40,7 @@ GameObjectManager::GameObjectManager(const GameObjectManager& other)
 	}
 	
 	// Copy the entities set (no deep copy needed since these objects are managed in m_gameObjects)
-	m_entitiesToDestroy = other.m_entitiesToDestroy;
+	m_gameObjectsToDestroy = other.m_gameObjectsToDestroy;
 }
 
 GameObjectManager::~GameObjectManager()
@@ -66,7 +66,7 @@ bool GameObjectManager::createGameObjectInternal(GameObject* gameObject)
 
 void GameObjectManager::removeGameObject(GameObject* GameObject)
 {
-	m_entitiesToDestroy.emplace(GameObject);
+	m_gameObjectsToDestroy.emplace(GameObject);
 }
 
 void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
@@ -129,9 +129,40 @@ void GameObjectManager::saveGameObjectsToFile(const std::string& filePath)
 	file.close();
 }
 
+void GameObjectManager::onStart()
+{
+	for (auto& gameObject : m_gameObjects)
+	{
+		gameObject->onStart();
+	}
+}
+
+void GameObjectManager::onLateStart()
+{
+	for (auto& gameObject : m_gameObjects)
+	{
+		gameObject->onLateStart();
+	}
+}
+
 
 void GameObjectManager::onUpdate(float deltaTime)
 {
+	for(auto & gameObject : m_gameObjectsToDestroy)
+	{
+		// Remove from the active gameObjects list (dereferencing the unique_ptr to get the raw pointer)
+		auto it = std::find_if(m_gameObjects.begin(), m_gameObjects.end(),
+			[&gameObject](const std::unique_ptr<GameObject>& obj) {
+				return obj.get() == gameObject;  // Compare raw pointers
+			});
+		if (it != m_gameObjects.end())
+		{
+			m_gameObjects.erase(it);  // Remove the gameObject from the active list
+		}
+	}
+
+	m_gameObjectsToDestroy.clear();
+
 	for (auto& gameObject : m_gameObjects)
 	{
 		gameObject->onUpdate(deltaTime);
@@ -140,7 +171,6 @@ void GameObjectManager::onUpdate(float deltaTime)
 
 void GameObjectManager::onLateUpdate(float deltaTime)
 {
-
 	for (auto& gameObject : m_gameObjects)
 	{
 		gameObject->onLateUpdate(deltaTime);
@@ -240,5 +270,5 @@ void GameObjectManager::clearGameObjects()
 	// Clear the entities in the map
 	m_gameObjects.clear();
 
-	m_entitiesToDestroy.clear();
+	m_gameObjectsToDestroy.clear();
 }

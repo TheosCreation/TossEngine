@@ -72,6 +72,9 @@ public:
     void loadGameObjectsFromFile(const std::string& filePath);
     void saveGameObjectsToFile(const std::string& filePath);
 
+    void onStart();
+    void onLateStart();
+
     /**
      * @brief Updates the GameObject system.
      * @param deltaTime The time elapsed since the last update.
@@ -117,7 +120,7 @@ private:
     /**
      * @brief Set of entities scheduled for destruction.
      */
-    std::set<GameObject*> m_entitiesToDestroy;
+    std::set<GameObject*> m_gameObjectsToDestroy;
 
     /**
      * @brief Vector of all camera entities.

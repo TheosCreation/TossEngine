@@ -11,4 +11,3 @@ public:
 protected:
 	MaterialPtr m_material;
 };
-
