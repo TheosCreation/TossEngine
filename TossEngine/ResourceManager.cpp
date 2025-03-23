@@ -269,6 +269,14 @@ HeightMapPtr ResourceManager::createHeightMap(HeightMapInfo& _buildInfo)
 
 SoundPtr ResourceManager::createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath)
 {
+    auto it = m_mapResources.find(filepath);
+    if (it != m_mapResources.end())
+    {
+        SoundPtr sound = std::static_pointer_cast<Sound>(it->second);
+        AudioEngine::GetInstance().loadSound(sound);
+        return sound;
+    }
+
     SoundPtr soundPtr = std::make_shared<Sound>(desc, filepath, uniqueID, this);
     AudioEngine::GetInstance().loadSound(soundPtr);
     m_mapResources.emplace(filepath, soundPtr);

@@ -64,9 +64,12 @@ void GraphicsEngine::clear(const glm::vec4& color, bool clearDepth, bool clearSt
 
 void GraphicsEngine::createImGuiFrame()
 {
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+    ImGui::NewFrame(); 
 }
 
 // Inside your GraphicsEngine class

@@ -3,6 +3,7 @@
 #include "GameObject.h"
 
 class Camera;
+class TossEditor;
 
 class EditorPlayer : public GameObject
 {
@@ -10,7 +11,7 @@ public:
     /**
      * @brief Constructor for the Player class.
      */
-    EditorPlayer();
+    EditorPlayer(TossEditor* editor);
 
     /**
      * @brief Destructor for the Player class.
@@ -28,6 +29,7 @@ public:
     Camera* getCamera();
 
 private:
+    TossEditor* Editor = nullptr;
     float m_elapsedSeconds = 0.0f; // Elapsed time in seconds
 
     float m_minSpeed = 1.0f; // 

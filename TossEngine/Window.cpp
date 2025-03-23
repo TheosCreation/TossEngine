@@ -130,6 +130,13 @@ void Window::present()
     glfwSwapBuffers(m_windowPtr);
 }
 
+void Window::close()
+{
+    if(m_windowPtr) {
+        glfwSetWindowShouldClose(m_windowPtr, GLFW_TRUE);
+    }
+}
+
 void Window::onResize(Vector2 size)
 {
     Resizable::onResize(size);

@@ -68,12 +68,17 @@ void TossEditor::run()
 
 void TossEditor::onCreate()
 {
-    m_player = std::make_unique<EditorPlayer>();
+    m_player = std::make_unique<EditorPlayer>(this);
     m_player->onCreate();
 }
 
 void TossEditor::onCreateLate()
 {
+}
+
+void TossEditor::Exit()
+{
+    TossEngine::GetInstance().GetWindow()->close();
 }
 
 void TossEditor::onUpdateInternal()
@@ -118,6 +123,8 @@ void TossEditor::onUpdateInternal()
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
     graphicsEngine.createImGuiFrame();
+
+
     if (m_game != nullptr)
     {
         m_game->onGraphicsUpdate();
@@ -130,18 +137,37 @@ void TossEditor::onUpdateInternal()
         }
     }
 
-    ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
-    if (ImGui::Begin("Settings"))
+    ImGui::SetCurrentContext(graphicsEngine.getImGuiContext()); 
+    if (ImGui::BeginMainMenuBar())
     {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("Open", "CTRL+0")) 
+            { 
+                OpenSceneViaFileSystem();
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Save", "CTRL+S"))
+            {
+                Save();
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Exit", "ESC"))
+            {
+                Exit();
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::SameLine(0, 200);
         if (ImGui::Button("Play"))
         {
-            if (!m_game && m_currentScene) 
+            if (!m_game && m_currentScene)
             {
                 m_game = new Game(m_projectSettings);
                 m_game->SetScene(m_currentScene, true);
             }
         }
-
+        ImGui::SameLine();
         if (ImGui::Button("Stop"))
         {
             if (m_game)
@@ -150,23 +176,30 @@ void TossEditor::onUpdateInternal()
                 m_game = nullptr;
             }
         }
+        ImGui::EndMainMenuBar();
+    }
 
-        if (ImGui::Button("LoadScene"))
+    ImGui::Begin("Main DockSpace", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking);
+    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+    ImGui::End();
+
+    
+    if (ImGui::Begin("Settings"))
+    {
+        static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
+        if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
         {
-            string filePath = tossEngine.openFileDialog("*.json");
-
-            if (!filePath.empty()) // If a file was selected
-            {
-                auto scene = std::make_shared<Scene>(filePath);
-                OpenScene(scene);
-            }
+            RenderingPath selectedPath = static_cast<RenderingPath>(Selecteditem);
+            Debug::Log("Rendering Path changed to option: " + ToString(selectedPath));
+            graphicsEngine.setRenderingPath(selectedPath);
+            m_projectSettings->renderingPath = selectedPath;
         }
-        
-        if (ImGui::Button("Save"))
-        {
-            Save();
-        }
+    }
 
+    ImGui::End();
+    if (ImGui::Begin("Settings2"))
+    {
         static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
         if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
         {
@@ -217,6 +250,17 @@ void TossEditor::Save()
     if (m_currentScene)
     {
         m_currentScene->Save();
+    }
+}
+
+void TossEditor::OpenSceneViaFileSystem()
+{
+    string filePath = TossEngine::GetInstance().openFileDialog("*.json");
+
+    if (!filePath.empty()) // If a file was selected
+    {
+        auto scene = std::make_shared<Scene>(filePath);
+        OpenScene(scene);
     }
 }
 

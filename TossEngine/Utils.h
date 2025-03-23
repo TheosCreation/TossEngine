@@ -610,7 +610,6 @@ public:
     static void LogWarning(const string& message) {
         PrintMessage(message, "Warning");
     }
-
 private:
     // Helper methods to format and print messages
     static void PrintMessage(const string& message, const string& type) {

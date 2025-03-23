@@ -14,6 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include "AudioEngine.h"
 #include "ResourceManager.h"
 #include <algorithm>
+#include "TossEngine.h"
 
 Player::Player()
 {
@@ -29,6 +30,8 @@ void Player::onCreate()
 
     auto& resourceManager = ResourceManager::GetInstance();
     fireSound = resourceManager.createSound(SoundDesc(), "Fire", "Resources/Audio/fire.ogg");
+    auto& inputManager = InputManager::GetInstance();
+    inputManager.enablePlayMode(m_playMode);
     //m_uiCamera = std::make_unique<Camera>();
     //addComponent<Camera>(m_uiCamera.get());
     //m_uiCamera->setCameraType(CameraType::Orthogonal);
@@ -38,19 +41,17 @@ void Player::onUpdate(float deltaTime)
 {
     auto& inputManager = InputManager::GetInstance();
     auto& audioEngine = AudioEngine::GetInstance();
+    auto& tossEngine = TossEngine::GetInstance();
     if (inputManager.isKeyPressed(Key::Key1))
     {
         audioEngine.playSound(fireSound);
     }
-    if (!inputManager.isMouseDown(MouseButtonRight))
+    if (tossEngine.IsDebugMode() && inputManager.isKeyPressed(KeyF1))
     {
-        m_playMode = false;
+        m_playMode = !m_playMode;
         inputManager.enablePlayMode(m_playMode);
-        return;
     }
-
-    m_playMode = true;
-    inputManager.enablePlayMode(m_playMode);
+    if (!m_playMode) return;
 
 
     auto& lightManager = LightManager::GetInstance();

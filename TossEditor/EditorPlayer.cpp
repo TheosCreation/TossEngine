@@ -1,12 +1,13 @@
 #include "EditorPlayer.h"
 #include "Camera.h"
 #include "InputManager.h"
+#include "TossEditor.h"
 #include "TossEngine.h"
 #include "Window.h"
 
-EditorPlayer::EditorPlayer()
+EditorPlayer::EditorPlayer(TossEditor* editor)
 {
-
+    Editor = editor;
 }
 
 EditorPlayer::~EditorPlayer()
@@ -18,18 +19,33 @@ void EditorPlayer::onCreate()
     auto& tossEngine = TossEngine::GetInstance();
     m_cam = addComponent<Camera>();
     m_cam->setScreenArea(tossEngine.GetWindow()->getInnerSize());
+    tossEngine.SetDebugMode(true);
 }
 
 void EditorPlayer::Update(float deltaTime)
 {
-    auto& inputManager = InputManager::GetInstance();
+    auto& inputManager = InputManager::GetInstance(); 
+
+    if (inputManager.isKeyDown(KeyLeftControl) && inputManager.isKeyPressed(KeyO))
+    {
+        Editor->OpenSceneViaFileSystem();
+    }
+    if (inputManager.isKeyDown(KeyLeftControl) && inputManager.isKeyPressed(KeyS))
+    {
+        Editor->Save();
+    }
+    if (inputManager.isKeyPressed(KeyEscape))
+    {
+        Editor->Exit();
+    }
+
     if (!inputManager.isMouseDown(MouseButtonRight))
     {
         m_playMode = false;
         inputManager.enablePlayMode(m_playMode);
         return;
     }
-
+    
     m_playMode = true;
     inputManager.enablePlayMode(m_playMode);
 

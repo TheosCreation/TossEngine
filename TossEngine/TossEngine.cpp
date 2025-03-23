@@ -34,6 +34,16 @@ void TossEngine::TryCreateWindow(Resizable* owner, Vector2 size, const string& w
     }
 }
 
+bool TossEngine::IsDebugMode()
+{
+    return isDebugMode;
+}
+
+void TossEngine::SetDebugMode(bool enabled)
+{
+    isDebugMode = enabled;
+}
+
 Window* TossEngine::GetWindow()
 {
     return m_window.get();

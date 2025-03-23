@@ -24,8 +24,12 @@ public:
     float GetCurrentTime();
     string openFileDialog(const std::string& filter);
 
+    bool IsDebugMode();
+    void SetDebugMode(bool enabled);
+
 private:
     bool isInitilized = false;
+    bool isDebugMode = false;
     std::unique_ptr<Window> m_window = nullptr;
 
     /**

@@ -58,6 +58,7 @@ public:
      * @brief Presents the rendered content to the window.
      */
     void present();
+    void close();
 
     void onResize(Vector2 size) override;
 
