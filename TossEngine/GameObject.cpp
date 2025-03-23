@@ -29,7 +29,7 @@ GameObject::GameObject(const GameObject& other)
     for (const auto& pair : other.m_components)
     {
         // Clone the component and add it to the new GameObject
-        //Component* clonedComponent = new Component(*pair.second);
+        //Component* clonedComponent = pair.second->Clone();
         //if (clonedComponent)
         //{
         //    clonedComponent->setOwner(this); // Set the owner of the cloned component

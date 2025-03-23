@@ -41,5 +41,3 @@ private:
     MeshPtr m_mesh;
     TexturePtr m_texture;
 };
-
-REGISTER_COMPONENT(Skybox);

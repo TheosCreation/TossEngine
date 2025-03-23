@@ -14,4 +14,3 @@ private:
     float m_speed = 1.0f;   // Speed of the ship's movement
 };
 
-REGISTER_COMPONENT(Ship);

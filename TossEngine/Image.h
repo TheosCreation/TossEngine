@@ -23,4 +23,3 @@ private:
 	TexturePtr m_texture;
 };
 
-REGISTER_COMPONENT(Image);
