@@ -31,12 +31,10 @@ GameObjectManager::GameObjectManager(Scene* scene)
 GameObjectManager::GameObjectManager(const GameObjectManager& other)
 {
 	m_scene = other.m_scene; // Assuming the scene should be shared
-	
-	// Deep copy of GameObjects
-	for (const auto& obj : other.m_gameObjects)
+
+	for (const auto& pair : other.m_gameObjects)
 	{
-		//std::unique_ptr<GameObject> clonedObj = std::make_unique<GameObject>(obj);
-		//m_gameObjects.push_back(clonedObj);
+		//pair.second
 	}
 	
 	// Copy the entities set (no deep copy needed since these objects are managed in m_gameObjects)
@@ -54,19 +52,22 @@ Scene* GameObjectManager::getScene()
 
 bool GameObjectManager::createGameObjectInternal(GameObject* gameObject)
 {
-	auto ptr = std::unique_ptr<GameObject>(gameObject);
-	ptr->setGameObjectManager(this);
-	ptr->onCreate();
+	if (!gameObject)
+		return false;
 
-	// Add the GameObject to the internal map
-	m_gameObjects.push_back(std::move(ptr));
+	size_t newId = m_nextAvailableId++;
+	gameObject->setId(newId);
+	gameObject->setGameObjectManager(this);
+	gameObject->onCreate();
+
+	m_gameObjects[newId] = std::move(gameObject);
 
 	return true;
 }
 
 void GameObjectManager::removeGameObject(GameObject* GameObject)
 {
-	m_gameObjectsToDestroy.emplace(GameObject);
+	m_gameObjectsToDestroy.push_back(GameObject->getId());
 }
 
 void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
@@ -97,14 +98,17 @@ void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
 
 	for (const auto& gameObjectData : sceneData["gameobjects"])
 	{
-		auto gameObject = std::make_unique<GameObject>();
+		auto gameObject = new GameObject();
 		// Initialize the GameObject
-		gameObject->setId(0);
 		gameObject->setGameObjectManager(this);
 		gameObject->onCreate();
 		gameObject->deserialize(gameObjectData);  // Loads data into the object
 
-		m_gameObjects.push_back(std::move(gameObject));
+		size_t id = gameObject->getId();
+		if (id == 0) id = m_nextAvailableId++;
+
+		gameObject->setId(id);
+		m_gameObjects[id] = std::move(gameObject);
 	}
 }
 
@@ -113,9 +117,9 @@ void GameObjectManager::saveGameObjectsToFile(const std::string& filePath)
 	json sceneData;
 	sceneData["gameobjects"] = json::array();
 
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		sceneData["gameobjects"].push_back(gameObject->serialize());
+		sceneData["gameobjects"].push_back(pair.second->serialize());
 	}
 
 	std::ofstream file(filePath);
@@ -131,57 +135,48 @@ void GameObjectManager::saveGameObjectsToFile(const std::string& filePath)
 
 void GameObjectManager::onStart()
 {
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		gameObject->onStart();
+		pair.second->onStart();
 	}
 }
 
 void GameObjectManager::onLateStart()
 {
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		gameObject->onLateStart();
+		pair.second->onLateStart();
 	}
 }
 
 
 void GameObjectManager::onUpdate(float deltaTime)
 {
-	for(auto & gameObject : m_gameObjectsToDestroy)
+	for (size_t gameObjectId : m_gameObjectsToDestroy)
 	{
-		// Remove from the active gameObjects list (dereferencing the unique_ptr to get the raw pointer)
-		auto it = std::find_if(m_gameObjects.begin(), m_gameObjects.end(),
-			[&gameObject](const std::unique_ptr<GameObject>& obj) {
-				return obj.get() == gameObject;  // Compare raw pointers
-			});
-		if (it != m_gameObjects.end())
-		{
-			m_gameObjects.erase(it);  // Remove the gameObject from the active list
-		}
+		m_gameObjects.erase(gameObjectId);  // Directly erase by ID
 	}
-
 	m_gameObjectsToDestroy.clear();
 
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		gameObject->onUpdate(deltaTime);
+		pair.second->onUpdate(deltaTime);
 	}
 }
 
 void GameObjectManager::onLateUpdate(float deltaTime)
 {
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		gameObject->onLateUpdate(deltaTime);
+		pair.second->onLateUpdate(deltaTime);
 	}
 }
 
 void GameObjectManager::onShadowPass(int index)
 {
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		MeshRenderer* renderer = gameObject->getComponent<MeshRenderer>();
+		MeshRenderer* renderer = pair.second->getComponent<MeshRenderer>();
 		if (renderer)
 		{
 			if (renderer->GetAlpha() < 1.0f) continue; // if the renderer is transparent we skip it
@@ -194,9 +189,9 @@ void GameObjectManager::onShadowPass(int index)
 void GameObjectManager::Render(UniformData _data)
 {
 	auto& graphicsEngine = GraphicsEngine::GetInstance();
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		if (auto meshRenderer = gameObject->getComponent<MeshRenderer>())
+		if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
 		{
 			if (meshRenderer->GetAlpha() != 1.0f) continue;
 
@@ -207,23 +202,22 @@ void GameObjectManager::Render(UniformData _data)
 
 void GameObjectManager::onTransparencyPass(UniformData _data)
 {
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		if (auto meshRenderer = gameObject->getComponent<MeshRenderer>())
+		if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
 		{
-			if(meshRenderer->GetAlpha() == 1.0f) continue;
+			if (meshRenderer->GetAlpha() == 1.0f) continue;
 
 			meshRenderer->Render(_data, RenderingPath::Forward); // we render the transparent renderers last with forward rendering
 		}
-
 	}
 }
 
 void GameObjectManager::onSkyboxPass(UniformData _data)
 {
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		if (auto skybox = gameObject->getComponent<Skybox>())
+		if (auto skybox = pair.second->getComponent<Skybox>())
 		{
 			skybox->Render(_data, RenderingPath::Forward);
 		}
@@ -232,9 +226,9 @@ void GameObjectManager::onSkyboxPass(UniformData _data)
 
 void GameObjectManager::onFixedUpdate(float fixedDeltaTime)
 {
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		gameObject->onFixedUpdate(fixedDeltaTime); 
+		pair.second->onFixedUpdate(fixedDeltaTime);
 	}
 }
 
@@ -243,9 +237,9 @@ std::vector<Camera*> GameObjectManager::getCameras() const
 	std::vector<Camera*> cameras;
 
 	// Iterate over all game objects and check if they have a Camera component
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		Camera* camera = gameObject->getComponent<Camera>();
+		Camera* camera = pair.second->getComponent<Camera>();
 		if (camera) {
 			cameras.push_back(camera);
 		}
@@ -256,9 +250,9 @@ std::vector<Camera*> GameObjectManager::getCameras() const
 
 TexturePtr GameObjectManager::getSkyBoxTexture()
 {
-	for (auto& gameObject : m_gameObjects)
+	for (const auto& pair : m_gameObjects)
 	{
-		if (Skybox* skybox = gameObject->getComponent<Skybox>())
+		if (Skybox* skybox = pair.second->getComponent<Skybox>())
 		{
 			return skybox->getTexture();
 		}

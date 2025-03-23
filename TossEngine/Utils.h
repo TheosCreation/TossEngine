@@ -57,6 +57,7 @@ class Sound;
 class Component;
 class Material;
 class Scene;
+class GameObject;
 
 // Type definitions for common engine variables
 typedef unsigned int uint;
@@ -91,84 +92,120 @@ using std::string;
 // Structure representing the transformation of an object in 3D space
 struct TOSSENGINE_API Transform
 {
-    Vector3 position;       // Position of the object in world space (x, y, z)
-    Quaternion rotation;    // Rotation of the object in world space represented as a quaternion
-    Vector3 scale;          // Scale of the object in world space (x, y, z)
+    Vector3 position;         // World position
+    Quaternion rotation;      // World rotation
+    Vector3 scale;            // World scale
 
-    // Default constructor initializes position to (0,0,0), rotation to no rotation, and scale to (1,1,1)
-    Transform()
-        : position(Vector3(0.0f, 0.0f, 0.0f)),                  // Initial position
-        rotation(Quaternion(1.0f, 0.0f, 0.0f, 0.0f)),           // Initial rotation (idGameObject)
-        scale(Vector3(1.0f, 1.0f, 1.0f))                        // Initial scale
+    Vector3 localPosition;    // Local position relative to parent
+    Quaternion localRotation; // Local rotation relative to parent
+    Vector3 localScale;       // Local scale relative to parent
+
+    Transform* parent;                // Pointer to parent transform (nullptr if root)
+    std::vector<Transform*> children; // List of pointers to child transforms
+
+    GameObject* gameObject;   // Pointer to the GameObject this Transform is attached to
+
+    // Constructor initializes defaults and attaches GameObject
+    Transform(GameObject* attachedGameObject)
+        : position(Vector3(0.0f, 0.0f, 0.0f)),
+        rotation(Quaternion(1.0f, 0.0f, 0.0f, 0.0f)),
+        scale(Vector3(1.0f, 1.0f, 1.0f)),
+        localPosition(Vector3(0.0f, 0.0f, 0.0f)),
+        localRotation(Quaternion(1.0f, 0.0f, 0.0f, 0.0f)),
+        localScale(Vector3(1.0f, 1.0f, 1.0f)),
+        parent(nullptr),
+        gameObject(attachedGameObject)
     {
     }
 
-    // Returns the transformation matrix that combines translation, rotation, and scale
     Mat4 GetMatrix() const
     {
-        // Create a translation matrix from the position
         Mat4 translationMatrix = glm::translate(Mat4(1.0f), position);
-        // Create a rotation matrix from the quaternion
         Mat4 rotationMatrix = glm::toMat4(rotation);
-        // Create a scale matrix from the scale vector
         Mat4 scaleMatrix = glm::scale(Mat4(1.0f), scale);
 
-        // Combine the translation, rotation, and scale matrices
         return translationMatrix * rotationMatrix * scaleMatrix;
     }
+    
+    void UpdateWorldTransform()
+    {
+        if (parent)
+        {
+            position = parent->position + (parent->rotation * (parent->scale * localPosition));
+            rotation = glm::normalize(parent->rotation * localRotation);
+            scale = parent->scale * localScale;
+        }
 
-    // Sets a new position for the object
+        // Recursively update children
+        for (Transform* child : children)
+        {
+            child->UpdateWorldTransform();
+        }
+    }
+
     void SetPosition(const Vector3& newPosition)
     {
         position = newPosition;
     }
 
-    // Sets a new rotation for the object
     void SetRotation(const Quaternion& newRotation)
     {
         rotation = newRotation;
     }
 
-    // Sets a new scale for the object
     void SetScale(const Vector3& newScale)
     {
         scale = newScale;
     }
 
-    // Translates the object by a given vector
     void Translate(const Vector3& translation)
     {
-        position += translation; // Update position by adding translation vector
+        position += translation;
     }
 
-    // Rotates the object by a given quaternion
     void Rotate(const Quaternion& deltaRotation)
     {
-        rotation = glm::normalize(deltaRotation * rotation); // Update rotation and normalize it
+        rotation = glm::normalize(deltaRotation * rotation);
     }
 
-    // Scales the object by a given scale factor
     void Scale(const Vector3& scaleFactor)
     {
-        scale *= scaleFactor; // Update scale by multiplying with scale factor
+        scale *= scaleFactor;
     }
 
-    // Returns the forward direction of the object based on its rotation
     Vector3 GetForward() const
     {
-        return rotation * Vector3(0.0f, 0.0f, -1.0f); // Forward direction is along the z-axis
+        return rotation * Vector3(0.0f, 0.0f, -1.0f);
     }
 
-    // Returns the right direction of the object based on its rotation
     Vector3 GetRight() const
     {
-        return rotation * Vector3(1.0f, 0.0f, 0.0f); // Right direction is along the x-axis
+        return rotation * Vector3(1.0f, 0.0f, 0.0f);
     }
 
-    // Returns the up direction of the object based on its rotation
     Vector3 GetUp() const
     {
-        return rotation * Vector3(0.0f, 1.0f, 0.0f); // Up direction is along the y-axis
+        return rotation * Vector3(0.0f, 1.0f, 0.0f);
+    }
+
+    void SetParent(Transform* newParent)
+    {
+        if (parent)
+        {
+            parent->RemoveChild(this);
+        }
+
+        parent = newParent;
+        if (parent)
+        {
+            parent->children.push_back(this);
+        }
+    }
+
+private:
+    void RemoveChild(Transform* child)
+    {
+        children.erase(std::remove(children.begin(), children.end(), child), children.end());
     }
 };
 

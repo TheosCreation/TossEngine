@@ -102,7 +102,9 @@ void TossEditor::onUpdateInternal()
             m_game->onFixedUpdate(fixedDeltaTime);
             m_accumulatedTime -= m_fixedTimeStep;
         }
-        
+
+        // player update
+        m_player->Update(deltaTime);
         m_game->onUpdate(deltaTime);
         m_game->onLateUpdate(deltaTime);
     }
@@ -137,17 +139,19 @@ void TossEditor::onUpdateInternal()
     ImGui::SetNextWindowViewport(viewport->ID);
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoInputs;
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoInputs;
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("Main DockSpace_BelowMenu", nullptr, window_flags);
+    ImGui::Begin("DockSpace", nullptr, window_flags);
     ImGui::PopStyleVar(3);
     
     ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
     const ImGuiWindowClass* window_class = nullptr;
     
-    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace_BelowMenu");
+    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
     ImGui::End();
 

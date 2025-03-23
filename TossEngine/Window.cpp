@@ -142,6 +142,7 @@ void Window::onResize(Vector2 size)
     Resizable::onResize(size);
     Debug::Log("Window resized to: " + ToString(size.x) + "x" + ToString(size.y));
 
+    if (glm::length(size) <= 10.0f) return;
     m_resizableOwner->onResize(size);
 }
 

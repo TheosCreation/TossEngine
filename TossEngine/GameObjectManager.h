@@ -101,13 +101,16 @@ public:
     TexturePtr getSkyBoxTexture();
 
     /**
-     * @brief Map of entities categorized by their type ID.
-     */
-    vector<std::unique_ptr<GameObject>> m_gameObjects;
+    * @brief Map of game objects categorized by type ID.
+    */
+    std::unordered_map<size_t, GameObject*> m_gameObjects;
+
 
     void clearGameObjects();
 
 private:
+    size_t m_nextAvailableId = 1;
+
     /**
      * @brief Internal function to create an GameObject.
      * @param GameObject Pointer to the GameObject to create.
@@ -120,7 +123,7 @@ private:
     /**
      * @brief Set of entities scheduled for destruction.
      */
-    std::set<GameObject*> m_gameObjectsToDestroy;
+    std::vector<size_t> m_gameObjectsToDestroy;
 
     /**
      * @brief Vector of all camera entities.

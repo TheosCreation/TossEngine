@@ -15,11 +15,11 @@ Mail : theo.morris@mds.ac.nz
 #include "ComponentRegistry.h"
 #include "Component.h"
 
-GameObject::GameObject()
+GameObject::GameObject() : m_transform(this)
 {
 }
 
-GameObject::GameObject(const GameObject& other)
+GameObject::GameObject(const GameObject& other) : m_transform(this)
 {
     m_transform = other.m_transform;
     m_id = other.m_id;
@@ -57,13 +57,17 @@ json GameObject::serialize() const
     {
         componentsJson.push_back(pair.second->serialize());
     }
-
     return {
         {"type", getClassName(typeid(*this))}, // Use typeid to get the class name
+        {"id", m_id},
         {"transform", {
             {"position", {m_transform.position.x, m_transform.position.y, m_transform.position.z}},
             {"rotation", {m_transform.rotation.x, m_transform.rotation.y, m_transform.rotation.z, m_transform.rotation.w}},
-            {"scale", {m_transform.scale.x, m_transform.scale.y, m_transform.scale.z}}
+            {"scale", {m_transform.scale.x, m_transform.scale.y, m_transform.scale.z}},
+            {"localPosition", {m_transform.localPosition.x, m_transform.localPosition.y, m_transform.localPosition.z}},
+            {"localRotation", {m_transform.localRotation.x, m_transform.localRotation.y, m_transform.localRotation.z, m_transform.localRotation.w}},
+            {"localScale", {m_transform.localScale.x, m_transform.localScale.y, m_transform.localScale.z}},
+            {"parent", m_transform.parent ? m_transform.parent->gameObject->getId() : 0 }
         }},
         {"components", componentsJson}
     };
@@ -74,6 +78,10 @@ void GameObject::deserialize(const json& data)
     if (data.contains("transform"))
     {
         auto transformData = data["transform"];
+        if (transformData.contains("id"))
+        {
+            m_id = (size_t)transformData["id"];
+        }
         if (transformData.contains("position"))
         {
             auto pos = transformData["position"];
@@ -89,7 +97,43 @@ void GameObject::deserialize(const json& data)
             auto scl = transformData["scale"];
             m_transform.scale = Vector3(scl[0], scl[1], scl[2]);
         }
+        if (transformData.contains("localPosition"))
+        {
+            auto pos = transformData["localPosition"];
+            m_transform.localPosition = Vector3(pos[0], pos[1], pos[2]);
+        }
+        if (transformData.contains("localRotation"))
+        {
+            auto rot = transformData["localRotation"];
+            m_transform.localRotation = Quaternion(rot[3], rot[0], rot[1], rot[2]);
+        }
+        if (transformData.contains("localScale"))
+        {
+            auto scl = transformData["localScale"];
+            m_transform.localScale = Vector3(scl[0], scl[1], scl[2]);
+        }
+        if (transformData.contains("parent") && transformData["parent"] != 0)
+        {
+            size_t parentID = transformData["parent"].get<size_t>();
+        
+            auto& gameObjects = getGameObjectManager()->m_gameObjects;
+            auto it = gameObjects.find(parentID);
+            if (it != gameObjects.end())
+            {
+                // Set the parent transform safely
+                m_transform.SetParent(&it->second->m_transform);
+                Debug::Log("Parent Set");
+            }
+            else
+            {
+                // Handle the case where parentID is invalid/not found
+                m_transform.SetParent(nullptr);
+            }
+        }
     }
+
+    m_transform.UpdateWorldTransform();
+    //m_transform.SetParent();
 
     if (data.contains("components"))
     {
@@ -144,6 +188,8 @@ void GameObject::onFixedUpdate(float fixedDeltaTime)
 
 void GameObject::onUpdate(float deltaTime)
 {
+    m_transform.UpdateWorldTransform();
+
     for (auto& pair : m_components) {
         pair.second->onUpdate(deltaTime);
     }
