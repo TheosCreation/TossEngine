@@ -18,6 +18,7 @@ Mail : theo.morris@mds.ac.nz
 #include <imgui_impl_opengl3.h>
 #include <glew.h>
 #include <glfw3.h>
+#include <imgui_internal.h>
 
 double InputManager::scrollX = 0.0;
 double InputManager::scrollY = 0.0;
@@ -179,7 +180,18 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
 	{
 		ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 		currentMouseStates[translatedButton] = false;
-		return;
+		
+		if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+		{
+			ImGuiWindow* hoveredWindow = ImGui::GetCurrentContext()->HoveredWindow;
+
+			if (string(hoveredWindow->Name) != "Scene" &&
+				std::string(hoveredWindow->Name) != "Game")
+			{
+				//printf("Hovered Window: %s\n", hoveredWindow->Name);
+				return;
+			}
+		}
 	}
 
 	if (action == GLFW_PRESS && !currentMouseStates[translatedButton]) {

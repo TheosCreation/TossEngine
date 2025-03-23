@@ -122,6 +122,64 @@ void Scene::onCreate()
     auto& resourceManager = ResourceManager::GetInstance();
     resourceManager.loadResourceDesc("Resources/Resources.json");
 
+    ssrQuadLightingShader = resourceManager.getShader("SSQLightingShader");
+    m_deferredRenderSSRQ->SetMaterial(resourceManager.getMaterial("DeferredSSRQMaterial"));
+    m_deferredRenderSSRQ->SetSize({ -2.0f, 2.0f });
+
+    m_postProcessSSRQ->SetMaterial(resourceManager.getMaterial("PostProcessSSRQMaterial"));
+    m_postProcessSSRQ->SetTexture(m_postProcessingFramebuffer->RenderTexture);
+    m_postProcessSSRQ->SetSize({ -2.0f, 2.0f });
+
+
+    // Create and initialize a DirectionalLight struct
+    DirectionalLightData directionalLight1;
+    directionalLight1.Direction = Vector3(0.0f, -1.0f, -0.5f);
+    directionalLight1.Color = Vector3(0.6f);
+    directionalLight1.SpecularStrength = 0.1f;
+    m_lightManager->createDirectionalLight(directionalLight1);
+
+    // Create and initialize a DirectionalLight struct
+    DirectionalLightData directionalLight2;
+    directionalLight2.Direction = Vector3(0.0f, -1.0f, 0.5f);
+    directionalLight2.Color = Vector3(0.6f);
+    directionalLight2.SpecularStrength = 0.1f;
+    m_lightManager->createDirectionalLight(directionalLight2);
+
+    // Create and initialize SpotLight struct
+    SpotLightData spotLight;
+    spotLight.Position = Vector3(0.0f);
+    spotLight.Direction = Vector3(0.0f, 0.0f, -1.0f);
+    spotLight.Color = Color::White;
+    spotLight.SpecularStrength = 1.0f;
+    spotLight.CutOff = glm::cos(glm::radians(25.0f));
+    spotLight.OuterCutOff = glm::cos(glm::radians(35.0f));
+    spotLight.AttenuationConstant = 1.0f;
+    spotLight.AttenuationLinear = 0.014f;
+    spotLight.AttenuationExponent = 0.0007f;
+    m_lightManager->createSpotLight(spotLight);
+    m_lightManager->setSpotlightStatus(false);
+
+
+    MeshPtr statueMesh = resourceManager.createMeshFromFile("Resources/Meshes/SM_Prop_Statue_01.obj");
+    float spacing = 50.0f;
+    for (int row = -4; row < 4; ++row) {
+        for (int col = -4; col < 4; ++col) {
+            // Calculate the position of the current tree based on the grid and spacing
+            Vector3 position = Vector3(col * spacing, 0, row * spacing);
+
+            if (position == Vector3(0.0f)) break;
+
+            // Generate random rotation angles
+            float angleY = randomNumber(360.0f);
+
+            // Add the tree instance with random rotations
+            statueMesh->addInstance(position, Vector3(0.2f), Vector3(0, angleY, 0));
+        }
+    }
+    //Init instance buffer
+    statueMesh->initInstanceBuffer();
+
+
     //defaultFullscreenShader = resourceManager.createShader({
     //        "ScreenQuad",
     //        "QuadShader"
@@ -136,23 +194,9 @@ void Scene::onCreate()
     //    "SSQLightingShader"
     //);
 
-    {
-        MaterialPtr material = resourceManager.createMaterial("SSQLightingShader", "DeferredSSRQMaterial");
-        m_deferredRenderSSRQ->SetMaterial(material);
-        m_deferredRenderSSRQ->SetSize({ -2.0f, 2.0f });
-    }
-
     //m_postProcessSSRQ->onCreate();
     //m_postProcessSSRQ->setShader(defaultFullscreenShader);
     //m_postProcessSSRQ->setTexture(m_postProcessingFramebuffer->RenderTexture);
-
-    {
-        MaterialPtr material = resourceManager.createMaterial("DefaultFullscreenShader", "PostProcessSSRQMaterial");
-        m_postProcessSSRQ->SetMaterial(material);
-        m_postProcessSSRQ->SetTexture(m_postProcessingFramebuffer->RenderTexture);
-        m_postProcessSSRQ->SetSize({ -2.0f, 2.0f });
-    }
-
     //ShaderPtr skyboxShader = resourceManager.createShader({
     //        "SkyBoxShader",
     //        "SkyBoxShader"
@@ -226,22 +270,16 @@ void Scene::onCreate()
     
 
     //Texture2DPtr heightMapTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Heightmap0.jpg");
-    Texture2DPtr shipReflectiveMap = resourceManager.createTexture2DFromFile("Resources/Textures/ReflectionMap_White.png");
-    Texture2DPtr sciFiSpaceTexture2D = resourceManager.createTexture2DFromFile("Resources/Textures/PolygonSciFiSpace_Texture_01_A.png");
+    //Texture2DPtr shipReflectiveMap = resourceManager.createTexture2DFromFile("Resources/Textures/ReflectionMap_White.png");
+    //Texture2DPtr sciFiSpaceTexture2D = resourceManager.createTexture2DFromFile("Resources/Textures/PolygonSciFiSpace_Texture_01_A.png");
     //Texture2DPtr ancientWorldsTexture2D = resourceManager.createTexture2DFromFile("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
     //Texture2DPtr grassTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/stone.png");
     //Texture2DPtr dirtTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/dirt.png");
     //Texture2DPtr stoneTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/stone.png");
     //Texture2DPtr snowTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Terrain/snow.png");
 
-    MeshPtr fighterShip = resourceManager.createMeshFromFile("Resources/Meshes/Space/SM_Ship_Fighter_02.obj");
+    //MeshPtr fighterShip = resourceManager.createMeshFromFile("Resources/Meshes/Space/SM_Ship_Fighter_02.obj");
 
-    ShaderPtr meshShader = resourceManager.createShader({
-            "MeshShader",
-            "MeshShader"
-        },
-        "MeshShader"
-    );
     //ShaderPtr instancedMeshShader = resourceManager.createShader({
     //        "InstancedMesh",
     //        "MeshShader"
@@ -255,26 +293,6 @@ void Scene::onCreate()
     //    },
     //    "TerrainShader"
     //);
-
-    MeshPtr statueMesh = resourceManager.createMeshFromFile("Resources/Meshes/SM_Prop_Statue_01.obj");
-    float spacing = 50.0f;
-    for (int row = -4; row < 4; ++row) {
-        for (int col = -4; col < 4; ++col) {
-            // Calculate the position of the current tree based on the grid and spacing
-            Vector3 position = Vector3(col * spacing, 0, row * spacing);
-    
-            if (position == Vector3(0.0f)) break;
-    
-            // Generate random rotation angles
-            float angleY = randomNumber(360.0f);
-    
-            // Add the tree instance with random rotations
-            statueMesh->addInstance(position, Vector3(0.2f), Vector3(0, angleY, 0));
-        }
-    }
-    //Init instance buffer
-    statueMesh->initInstanceBuffer();
-
     //MaterialPtr skyboxMaterial = resourceManager.createMaterial("SkyBoxShader", "SkyboxMatrial");
 
     //HeightMapInfo buildInfo = { "Resources/Heightmaps/Heightmap0.raw", 256, 256, 4.0f };
@@ -293,34 +311,6 @@ void Scene::onCreate()
     //m_terrain->setGeometryShader(m_terrainGeometryShader);
     //
     
-    // Create and initialize a DirectionalLight struct
-    DirectionalLightData directionalLight1;
-    directionalLight1.Direction = Vector3(0.0f, -1.0f, -0.5f);
-    directionalLight1.Color = Vector3(0.6f);
-    directionalLight1.SpecularStrength = 0.1f;
-    m_lightManager->createDirectionalLight(directionalLight1);
-
-    // Create and initialize a DirectionalLight struct
-    DirectionalLightData directionalLight2;
-    directionalLight2.Direction = Vector3(0.0f, -1.0f, 0.5f);
-    directionalLight2.Color = Vector3(0.6f);
-    directionalLight2.SpecularStrength = 0.1f;
-    m_lightManager->createDirectionalLight(directionalLight2);
-
-    // Create and initialize SpotLight struct
-    SpotLightData spotLight;
-    spotLight.Position = Vector3(0.0f);
-    spotLight.Direction = Vector3(0.0f, 0.0f, -1.0f);
-    spotLight.Color = Color::White;
-    spotLight.SpecularStrength = 1.0f;
-    spotLight.CutOff = glm::cos(glm::radians(25.0f));
-    spotLight.OuterCutOff = glm::cos(glm::radians(35.0f));
-    spotLight.AttenuationConstant = 1.0f;
-    spotLight.AttenuationLinear = 0.014f;
-    spotLight.AttenuationExponent = 0.0007f;
-    m_lightManager->createSpotLight(spotLight);
-    m_lightManager->setSpotlightStatus(false);
-
     //Creating skybox object
    //{
    //    auto skyboxObject = m_gameObjectManager->createGameObject<GameObject>();
@@ -330,19 +320,19 @@ void Scene::onCreate()
    //    skybox->SetMaterial(skyboxMaterial);
    //}
    //{
-       auto ship = m_gameObjectManager->createGameObject<GameObject>();
-       ship->m_transform.scale = Vector3(0.05f);
-       ship->m_transform.position = Vector3(0.0f, 20.0f, 0.0f);
-       auto renderer = ship->addComponent<MeshRenderer>();
-       renderer->SetShininess(0.0f);
-       renderer->SetTexture(sciFiSpaceTexture2D);
-       renderer->SetShader(resourceManager.getShader("MeshShader"));
-       renderer->SetMesh(fighterShip);
-       renderer->SetReflectiveMapTexture(shipReflectiveMap);
-       renderer->SetShadowShader(resourceManager.getShader("ShadowShader"));
-       renderer->SetGeometryShader(resourceManager.getShader("GeometryPassMeshShader"));
-   
-     ship->addComponent("DestroyObjectWithTime");
+   //    auto ship = m_gameObjectManager->createGameObject<GameObject>();
+   //    ship->m_transform.scale = Vector3(0.05f);
+   //    ship->m_transform.position = Vector3(0.0f, 20.0f, 0.0f);
+   //    auto renderer = ship->addComponent<MeshRenderer>();
+   //    renderer->SetShininess(0.0f);
+   //    renderer->SetTexture(sciFiSpaceTexture2D);
+   //    renderer->SetShader(resourceManager.getShader("MeshShader"));
+   //    renderer->SetMesh(fighterShip);
+   //    renderer->SetReflectiveMapTexture(shipReflectiveMap);
+   //    renderer->SetShadowShader(resourceManager.getShader("ShadowShader"));
+   //    renderer->SetGeometryShader(resourceManager.getShader("GeometryPassMeshShader"));
+   //
+   //  ship->addComponent("DestroyObjectWithTime");
    //}
    //float pointLightSpacing = 30.0f;
    //// Initialize 2 point lights
@@ -558,6 +548,7 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         auto& geometryBuffer = GeometryBuffer::GetInstance();
         geometryBuffer.Bind();
         m_gameObjectManager->Render(uniformData);
+        geometryBuffer.WriteDepth();
         geometryBuffer.UnBind();
 
 
@@ -582,17 +573,19 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         // Apply shadows
         m_lightManager->applyShadows(ssrQuadLightingShader);
 
-        //m_postProcessingFramebuffer->Bind();
         // Render the screenspace quad using the lighting, shadow and geometry data
         m_deferredRenderSSRQ->Render(uniformData, RenderingPath::Forward);
-        geometryBuffer.WriteDepth();
+
+        m_postProcessingFramebuffer->Bind();
 
         // Render the transparent objects after
         m_gameObjectManager->onTransparencyPass(uniformData);
         m_gameObjectManager->onSkyboxPass(uniformData);
 
-        //m_postProcessingFramebuffer->UnBind();
-        //cant seem to get post process to work maybe later
+        m_postProcessingFramebuffer->UnBind();
+
+        graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
+        m_postProcessSSRQ->Render(uniformData, RenderingPath::Forward);
     }
     
     // Example of Forward Rendering Pipeline
@@ -690,4 +683,18 @@ rp3d::PhysicsWorld* Scene::GetPhysicsWorld()
 rp3d::PhysicsCommon& Scene::GetPhysicsCommon()
 {
     return m_PhysicsCommon;
+}
+
+Vector2 Scene::getFrameBufferSize()
+{
+    return Vector2(m_postProcessingFramebuffer->RenderTexture->getWidth(), m_postProcessingFramebuffer->RenderTexture->getHeight());
+}
+
+ImTextureID Scene::getRenderTexture()
+{
+    if (m_postProcessingFramebuffer->RenderTexture)
+    {
+        return (ImTextureID)m_postProcessingFramebuffer->RenderTexture->getId();
+    }
+    return ImTextureID();
 }

@@ -121,27 +121,42 @@ void TossEditor::onUpdateInternal()
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
     graphicsEngine.createImGuiFrame();
+    ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
 
+    float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    
+    ImVec2 dockPos = viewport->Pos;
+    dockPos.y += menuBarHeight;  // Offset by the menu bar height
+    
+    ImVec2 dockSize = viewport->Size;
+    dockSize.y -= menuBarHeight; // Reduce the height accordingly
+    
+    ImGui::SetNextWindowPos(dockPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(dockSize, ImGuiCond_Always);
+    ImGui::SetNextWindowViewport(viewport->ID);
 
-    if (m_game != nullptr)
-    {
-        m_game->onGraphicsUpdate();
-    }
-    else
-    {
-        if (m_currentScene)
-        {
-            m_currentScene->onGraphicsUpdate(m_player->getCamera()); //Render the scene
-        }
-    }
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoInputs;
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("Main DockSpace_BelowMenu", nullptr, window_flags);
+    ImGui::PopStyleVar(3);
+    
+    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+    const ImGuiWindowClass* window_class = nullptr;
+    
+    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace_BelowMenu");
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
+    ImGui::End();
 
-    ImGui::SetCurrentContext(graphicsEngine.getImGuiContext()); 
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("Open", "CTRL+0")) 
-            { 
+            if (ImGui::MenuItem("Open", "CTRL+0"))
+            {
                 OpenSceneViaFileSystem();
             }
             ImGui::Separator();
@@ -178,34 +193,60 @@ void TossEditor::onUpdateInternal()
         ImGui::EndMainMenuBar();
     }
 
-    //float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
-    //ImGuiViewport* viewport = ImGui::GetMainViewport();
-    //
-    //ImVec2 dockPos = viewport->Pos;
-    //dockPos.y += menuBarHeight;  // Offset by the menu bar height
-    //
-    //ImVec2 dockSize = viewport->Size;
-    //dockSize.y -= menuBarHeight; // Reduce the height accordingly
-    //
-    //ImGui::SetNextWindowPos(dockPos, ImGuiCond_Always);
-    //ImGui::SetNextWindowSize(dockSize, ImGuiCond_Always);
-    //ImGui::SetNextWindowViewport(viewport->ID);
-    //
-    //ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-    //    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
-    //ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    //ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    //ImGui::Begin("Main DockSpace_BelowMenu", nullptr, window_flags);
-    //ImGui::PopStyleVar(3);
-    //
-    //ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-    //const ImGuiWindowClass* window_class = nullptr;
-    //
-    //ImGuiID dockspace_id = ImGui::GetID("MyDockSpace_BelowMenu");
-    //ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
-    //ImGui::End();
+    
+    ImGui::Begin("Game", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    {
+        // Get the available size for the Scene window.
+        ImVec2 availSize = ImGui::GetContentRegionAvail();
 
+        // Convert to your Vector2 type (assuming Vector2 takes width and height).
+        Vector2 newSize(availSize.x, availSize.y);
+        if (m_game != nullptr)
+        {
+            // Resize the scene's framebuffer to match the current window size.
+            m_game->getScene()->onResize(newSize);
+
+            // Now update the scene rendering with the current camera.
+            m_game->onGraphicsUpdate();
+
+            // Get the updated texture after rendering.
+            ImTextureID sceneTexture = m_game->getScene()->getRenderTexture();
+
+            // Display the rendered scene scaled to the available region.
+            ImGui::Image(sceneTexture, availSize,
+                ImVec2{ 0.f, 1.f },  // UV0
+                ImVec2{ 1.f, 0.f }   // UV1 (flipped vertically if needed)
+            );
+        }
+    }
+    ImGui::End();
+
+    ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    {
+        // Get the available size for the Scene window.
+        ImVec2 availSize = ImGui::GetContentRegionAvail();
+
+        // Convert to your Vector2 type (assuming Vector2 takes width and height).
+        Vector2 newSize(availSize.x, availSize.y);
+        if (m_currentScene)
+        {
+            // Resize the scene's framebuffer to match the current window size.
+            m_currentScene->onResize(newSize);
+
+            // Now update the scene rendering with the current camera.
+            m_currentScene->onGraphicsUpdate(m_player->getCamera());
+
+            // Get the updated texture after rendering.
+            ImTextureID sceneTexture = m_currentScene->getRenderTexture();
+
+            // Display the rendered scene scaled to the available region.
+            ImGui::Image(sceneTexture, availSize,
+                ImVec2{ 0.f, 1.f },  // UV0
+                ImVec2{ 1.f, 0.f }   // UV1 (flipped vertically if needed)
+            );
+        }
+    }
+    ImGui::End();
     
     if (ImGui::Begin("Settings"))
     {

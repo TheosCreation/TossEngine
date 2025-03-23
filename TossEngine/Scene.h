@@ -14,6 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Utils.h"
 #include "Resizable.h"
 #include <reactphysics3d/reactphysics3d.h>
+#include <imgui.h>
 
 class Game;
 class ComponentRegistry;
@@ -115,6 +116,9 @@ public:
 
     rp3d::PhysicsWorld* GetPhysicsWorld();
     rp3d::PhysicsCommon& GetPhysicsCommon();
+
+    Vector2 getFrameBufferSize();
+    ImTextureID getRenderTexture();
 
 protected:
     bool m_initilized = false;

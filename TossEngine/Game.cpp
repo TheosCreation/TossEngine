@@ -136,7 +136,7 @@ void Game::onResize(Vector2 size)
     GeometryBuffer::GetInstance().Resize(size);
 }
 
-void Game::SetScene(shared_ptr<Scene> _scene, bool skipCreate)
+void Game::SetScene(ScenePtr _scene, bool skipCreate)
 {
     // if there is a current scene, call onQuit
     if (m_currentScene != nullptr)
@@ -155,6 +155,12 @@ void Game::SetScene(shared_ptr<Scene> _scene, bool skipCreate)
     m_currentScene->onStart();
     m_currentScene->onLateStart();
 }
+
+ScenePtr Game::getScene()
+{
+    return m_currentScene;
+}
+
 void Game::onUpdate(float deltaTime)
 {
     auto& inputManager = InputManager::GetInstance();

@@ -56,6 +56,7 @@ struct ProjectSettings;
 class Sound;
 class Component;
 class Material;
+class Scene;
 
 // Type definitions for common engine variables
 typedef unsigned int uint;
@@ -79,6 +80,7 @@ typedef std::shared_ptr<HeightMap> HeightMapPtr;
 typedef std::unique_ptr<ProjectSettings> ProjectSettingsPtr;
 typedef std::shared_ptr<Sound> SoundPtr;
 typedef std::shared_ptr<Material> MaterialPtr;
+typedef std::shared_ptr<Scene> ScenePtr;
 
 // Using declarations to simplify the code and avoid typing the full namespace each time
 using std::shared_ptr;
