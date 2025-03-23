@@ -8,6 +8,8 @@
 
 void AudioEngine::Init()
 {
+    if (m_initilized) return;
+
     ERRCHECK(FMOD::Studio::System::create(&studioSystem));
     ERRCHECK(studioSystem->getCoreSystem(&lowLevelSystem));
     ERRCHECK(lowLevelSystem->setSoftwareFormat(AUDIO_SAMPLE_RATE, FMOD_SPEAKERMODE_STEREO, 0));
@@ -15,6 +17,8 @@ void AudioEngine::Init()
     ERRCHECK(studioSystem->initialize(MAX_AUDIO_CHANNELS, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, 0));
     ERRCHECK(lowLevelSystem->getMasterChannelGroup(&mastergroup));
     initReverb();
+
+    m_initilized = true;
 }
 
 void AudioEngine::deactivate() {

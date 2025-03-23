@@ -34,8 +34,6 @@ Game::Game(ProjectSettingsPtr& projectSettings)
     Vector2 windowSize = Vector2(800, 800);
     tossEngine.TryCreateWindow(this, windowSize, "Game");
 
-    //MonoIntegration::InitializeMono();
-
     initRandomSeed();
     GeometryBuffer::GetInstance().Init(windowSize);
 
@@ -53,7 +51,6 @@ Game::Game(ProjectSettingsPtr& projectSettings)
     inputManager.Init(projectSettings);
     inputManager.setScreenArea(windowSize);
 
-    LightManager::GetInstance().Init();
     AudioEngine::GetInstance().Init();
 }
 
@@ -108,8 +105,6 @@ void Game::onUpdateInternal()
 void Game::onQuit()
 {
     m_currentScene->onQuit();
-
-    MonoIntegration::ShutdownMono();
 }
 
 void Game::run()
@@ -147,8 +142,6 @@ void Game::SetScene(shared_ptr<Scene> _scene, bool skipCreate)
     if (m_currentScene != nullptr)
     {
         m_currentScene->onQuit();
-        LightManager::GetInstance().reset();
-        ResourceManager::GetInstance().ClearInstancesFromMeshes();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
     // set the current scene to the new scene

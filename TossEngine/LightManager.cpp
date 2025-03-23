@@ -14,7 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Shader.h"
 #include "ShadowMap.h"
 
-void LightManager::Init()
+LightManager::LightManager()
 {
     for (int i = 0; i < MAX_DIRECTIONAL_LIGHTS; i++)
     {

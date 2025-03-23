@@ -184,3 +184,8 @@ GameObjectManager* GameObject::getGameObjectManager()
 {
 	return m_gameObjectManager;
 }
+
+LightManager* GameObject::getLightManager()
+{
+    return m_gameObjectManager->getScene()->getLightManager();
+}

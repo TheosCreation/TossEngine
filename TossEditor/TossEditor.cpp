@@ -22,7 +22,6 @@ TossEditor::TossEditor()
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, windowSize, "TossEditor");
 
-    GeometryBuffer::GetInstance().Init(windowSize);
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.Init(m_projectSettings);
@@ -37,7 +36,7 @@ TossEditor::TossEditor()
     inputManager.Init(m_projectSettings);
     inputManager.setScreenArea(windowSize);
 
-    LightManager::GetInstance().Init();
+    GeometryBuffer::GetInstance().Init(windowSize);
     AudioEngine::GetInstance().Init();
 }
 
@@ -179,10 +178,33 @@ void TossEditor::onUpdateInternal()
         ImGui::EndMainMenuBar();
     }
 
-    ImGui::Begin("Main DockSpace", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking);
-    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
-    ImGui::End();
+    //float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
+    //ImGuiViewport* viewport = ImGui::GetMainViewport();
+    //
+    //ImVec2 dockPos = viewport->Pos;
+    //dockPos.y += menuBarHeight;  // Offset by the menu bar height
+    //
+    //ImVec2 dockSize = viewport->Size;
+    //dockSize.y -= menuBarHeight; // Reduce the height accordingly
+    //
+    //ImGui::SetNextWindowPos(dockPos, ImGuiCond_Always);
+    //ImGui::SetNextWindowSize(dockSize, ImGuiCond_Always);
+    //ImGui::SetNextWindowViewport(viewport->ID);
+    //
+    //ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+    //    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
+    //ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    //ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    //ImGui::Begin("Main DockSpace_BelowMenu", nullptr, window_flags);
+    //ImGui::PopStyleVar(3);
+    //
+    //ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+    //const ImGuiWindowClass* window_class = nullptr;
+    //
+    //ImGuiID dockspace_id = ImGui::GetID("MyDockSpace_BelowMenu");
+    //ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
+    //ImGui::End();
 
     
     if (ImGui::Begin("Settings"))
@@ -198,16 +220,16 @@ void TossEditor::onUpdateInternal()
     }
 
     ImGui::End();
-    if (ImGui::Begin("Settings2"))
+    if (ImGui::Begin("Inspector"))
     {
-        static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
-        if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
-        {
-            RenderingPath selectedPath = static_cast<RenderingPath>(Selecteditem);
-            Debug::Log("Rendering Path changed to option: " + ToString(selectedPath));
-            graphicsEngine.setRenderingPath(selectedPath);
-            m_projectSettings->renderingPath = selectedPath;
-        }
+    }
+    ImGui::End();
+    if (ImGui::Begin("Hierarchy"))
+    {
+    }
+    ImGui::End();
+    if (ImGui::Begin("Assets"))
+    {
     }
     ImGui::End();
 
@@ -268,8 +290,6 @@ void TossEditor::OpenScene(shared_ptr<Scene> _scene)
     if (m_currentScene != nullptr)
     {
         m_currentScene->onQuit();
-        LightManager::GetInstance().reset();
-        ResourceManager::GetInstance().ClearInstancesFromMeshes();
     }
     // set the current scene to the new scene
     m_currentScene = std::move(_scene);

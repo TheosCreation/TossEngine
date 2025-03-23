@@ -117,8 +117,7 @@ void MeshRenderer::onShadowPass(uint index)
     graphicsEngine.setDepthFunc(DepthType::Less);
     graphicsEngine.setShader(m_shadowShader);
 
-    auto& lightManager = LightManager::GetInstance();
-    m_shadowShader->setMat4("VPLight", lightManager.getLightSpaceMatrix(index));
+    m_shadowShader->setMat4("VPLight", m_owner->getLightManager()->getLightSpaceMatrix(index));
     m_shadowShader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
 
     if (m_mesh == nullptr) return;
@@ -179,7 +178,7 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
         m_shader->setVec3("CameraPos", data.cameraPosition);
         m_shader->setFloat("ObjectShininess", m_shininess);
 
-        LightManager::GetInstance().applyLighting(m_shader);
+        m_owner->getLightManager()->applyLighting(m_shader);
 
         if (m_texture != nullptr)
         {
@@ -204,8 +203,7 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
             graphicsEngine.setTexture2D(m_reflectiveMap, 2, "ReflectionMap");
         }
 
-        auto& lightManager = LightManager::GetInstance();
-        lightManager.applyShadows(m_shader);
+        m_owner->getLightManager()->applyShadows(m_shader);
     }
 
     // Bind the vertex array object for the mesh

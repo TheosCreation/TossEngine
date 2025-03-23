@@ -3,8 +3,7 @@
 #include "Math.h"
 #include "Serializable.h"
 #include "Component.h"
-
-class GameObjectManager;
+#include "GameObjectManager.h"
 
 /**
  * @class GameObject
@@ -50,6 +49,7 @@ public:
      * @return A pointer to the GameObjectManager.
      */
     GameObjectManager* getGameObjectManager();
+    LightManager* getLightManager();
 
     /**
      * @brief Sets the GameObjectManager that manages this GameObject.

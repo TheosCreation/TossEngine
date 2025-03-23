@@ -34,6 +34,7 @@ Scene::Scene(const string& filePath)
 
     auto& tossEngine = TossEngine::GetInstance(); 
 
+    m_lightManager = std::make_unique<LightManager>();
     m_postProcessingFramebuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
 
@@ -59,6 +60,8 @@ Scene::Scene(const string& filePath)
     componentRegistry.registerComponent<Ship>();
     componentRegistry.registerComponent<Camera>();
 
+    ResourceManager::GetInstance().ClearInstancesFromMeshes();
+
     //rp3d::DebugRenderer& debugRenderer = m_PhysicsWorld->getDebugRenderer();
     //// Select the contact points and contact normals to be displayed
     //debugRenderer.setIsDebugItemDisplayed(rp3d::DebugRenderer::DebugItem::CONTACT_POINT, true);
@@ -69,7 +72,8 @@ Scene::Scene(const Scene& other)
 {
     auto& tossEngine = TossEngine::GetInstance();
 
-    // Copy post-processing framebuffer
+
+    m_lightManager = std::make_unique<LightManager>();
     m_postProcessingFramebuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
 
     // Copy GameObjectManager (requires a proper copy constructor or Clone() function)
@@ -101,6 +105,8 @@ Scene::Scene(const Scene& other)
     componentRegistry.registerComponent<Ship>();
     componentRegistry.registerComponent<Camera>();
 
+    ResourceManager::GetInstance().ClearInstancesFromMeshes();
+
     // You may also need to manually copy game objects inside GameObjectManager.
 }
 
@@ -110,26 +116,25 @@ Scene::~Scene()
 
 void Scene::onCreate()
 {
-    auto& lightManager = LightManager::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     m_player = m_gameObjectManager->createGameObject<Player>(); //move this elsewhere
 
     auto& resourceManager = ResourceManager::GetInstance();
     resourceManager.loadResourceDesc("Resources/Resources.json");
 
-    defaultFullscreenShader = resourceManager.createShader({
-            "ScreenQuad",
-            "QuadShader"
-        },
-        "DefaultFullscreenShader"
-    );
-
-    ssrQuadLightingShader = resourceManager.createShader({
-            "ScreenQuad",
-            "SSRLightingShader"
-        },
-        "SSQLightingShader"
-    );
+    //defaultFullscreenShader = resourceManager.createShader({
+    //        "ScreenQuad",
+    //        "QuadShader"
+    //    },
+    //    "DefaultFullscreenShader"
+    //);
+    //
+    //ssrQuadLightingShader = resourceManager.createShader({
+    //        "ScreenQuad",
+    //        "SSRLightingShader"
+    //    },
+    //    "SSQLightingShader"
+    //);
 
     {
         MaterialPtr material = resourceManager.createMaterial("SSQLightingShader", "DeferredSSRQMaterial");
@@ -293,14 +298,14 @@ void Scene::onCreate()
     directionalLight1.Direction = Vector3(0.0f, -1.0f, -0.5f);
     directionalLight1.Color = Vector3(0.6f);
     directionalLight1.SpecularStrength = 0.1f;
-    lightManager.createDirectionalLight(directionalLight1);
+    m_lightManager->createDirectionalLight(directionalLight1);
 
     // Create and initialize a DirectionalLight struct
     DirectionalLightData directionalLight2;
     directionalLight2.Direction = Vector3(0.0f, -1.0f, 0.5f);
     directionalLight2.Color = Vector3(0.6f);
     directionalLight2.SpecularStrength = 0.1f;
-    lightManager.createDirectionalLight(directionalLight2);
+    m_lightManager->createDirectionalLight(directionalLight2);
 
     // Create and initialize SpotLight struct
     SpotLightData spotLight;
@@ -313,8 +318,8 @@ void Scene::onCreate()
     spotLight.AttenuationConstant = 1.0f;
     spotLight.AttenuationLinear = 0.014f;
     spotLight.AttenuationExponent = 0.0007f;
-    lightManager.createSpotLight(spotLight);
-    lightManager.setSpotlightStatus(false);
+    m_lightManager->createSpotLight(spotLight);
+    m_lightManager->setSpotlightStatus(false);
 
     //Creating skybox object
    //{
@@ -334,8 +339,8 @@ void Scene::onCreate()
        renderer->SetShader(resourceManager.getShader("MeshShader"));
        renderer->SetMesh(fighterShip);
        renderer->SetReflectiveMapTexture(shipReflectiveMap);
-       renderer->SetShadowShader(m_shadowShader);
-       renderer->SetGeometryShader(m_meshGeometryShader);
+       renderer->SetShadowShader(resourceManager.getShader("ShadowShader"));
+       renderer->SetGeometryShader(resourceManager.getShader("GeometryPassMeshShader"));
    
      ship->addComponent("DestroyObjectWithTime");
    //}
@@ -512,7 +517,6 @@ void Scene::onLateUpdate(float deltaTime)
 void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
 {
     auto& tossEngine = TossEngine::GetInstance();
-    auto& lightManager = LightManager::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
 
     // Populate the uniform data struct
@@ -523,8 +527,8 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         cameraToRenderOverride->getViewMatrix(uniformData.viewMatrix);
         cameraToRenderOverride->getProjectionMatrix(uniformData.projectionMatrix);
         uniformData.cameraPosition = cameraToRenderOverride->getPosition();
-        lightManager.setSpotlightPosition(uniformData.cameraPosition);
-        lightManager.setSpotlightDirection(cameraToRenderOverride->getFacingDirection());
+        m_lightManager->setSpotlightPosition(uniformData.cameraPosition);
+        m_lightManager->setSpotlightDirection(cameraToRenderOverride->getFacingDirection());
     }
     else
     {
@@ -536,8 +540,8 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
                 camera->getViewMatrix(uniformData.viewMatrix);
                 camera->getProjectionMatrix(uniformData.projectionMatrix);
                 uniformData.cameraPosition = camera->getPosition();
-                lightManager.setSpotlightPosition(uniformData.cameraPosition);
-                lightManager.setSpotlightDirection(camera->getFacingDirection());
+                m_lightManager->setSpotlightPosition(uniformData.cameraPosition);
+                m_lightManager->setSpotlightDirection(camera->getFacingDirection());
             }
             else
             {
@@ -558,11 +562,11 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
 
 
         // Shadow Pass: Render shadows for directional lights
-        for (uint i = 0; i < lightManager.getDirectionalLightCount(); i++)
+        for (uint i = 0; i < m_lightManager->getDirectionalLightCount(); i++)
         {
-            lightManager.BindShadowMap(i);
+            m_lightManager->BindShadowMap(i);
             m_gameObjectManager->onShadowPass(i); // Render shadow maps
-            lightManager.UnBindShadowMap(i);
+            m_lightManager->UnBindShadowMap(i);
         }
         graphicsEngine.setViewport(tossEngine.GetWindow()->getInnerSize());
 
@@ -573,12 +577,12 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         GeometryBuffer::GetInstance().PopulateShader(ssrQuadLightingShader);
 
         // Apply lighting settings using the LightManager
-        LightManager::GetInstance().applyLighting(ssrQuadLightingShader);
+        m_lightManager->applyLighting(ssrQuadLightingShader);
 
         // Apply shadows
-        auto& lightManager = LightManager::GetInstance();
-        lightManager.applyShadows(ssrQuadLightingShader);
+        m_lightManager->applyShadows(ssrQuadLightingShader);
 
+        //m_postProcessingFramebuffer->Bind();
         // Render the screenspace quad using the lighting, shadow and geometry data
         m_deferredRenderSSRQ->Render(uniformData, RenderingPath::Forward);
         geometryBuffer.WriteDepth();
@@ -587,18 +591,19 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         m_gameObjectManager->onTransparencyPass(uniformData);
         m_gameObjectManager->onSkyboxPass(uniformData);
 
+        //m_postProcessingFramebuffer->UnBind();
         //cant seem to get post process to work maybe later
     }
     
     // Example of Forward Rendering Pipeline
     if (graphicsEngine.getRenderingPath() == RenderingPath::Forward)
     {
-        for (uint i = 0; i < lightManager.getDirectionalLightCount(); i++)
+        for (uint i = 0; i < m_lightManager->getDirectionalLightCount(); i++)
         {
             //Shadow Pass
-            lightManager.BindShadowMap(i);
+            m_lightManager->BindShadowMap(i);
             m_gameObjectManager->onShadowPass(i);
-            lightManager.UnBindShadowMap(i);
+            m_lightManager->UnBindShadowMap(i);
         }
         graphicsEngine.setViewport(tossEngine.GetWindow()->getInnerSize());
 
@@ -650,6 +655,11 @@ void Scene::onResize(Vector2 size)
     }
     // resize the post processing frame buffer 
     m_postProcessingFramebuffer->onResize(size);
+}
+
+LightManager* Scene::getLightManager()
+{
+    return m_lightManager.get();
 }
 
 void Scene::onQuit()

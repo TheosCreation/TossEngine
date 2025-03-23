@@ -51,10 +51,8 @@ void Player::onUpdate(float deltaTime)
         m_playMode = !m_playMode;
         inputManager.enablePlayMode(m_playMode);
     }
+
     if (!m_playMode) return;
-
-
-    auto& lightManager = LightManager::GetInstance();
 
     float sensitivity = 0.1f;  // Sensitivity factor for mouse movement
     m_yaw -= inputManager.getMouseXAxis() * sensitivity;

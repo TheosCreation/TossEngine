@@ -247,6 +247,7 @@ private:
 
     // flag tracking if the Audio Engin is muted
     bool muted = false;
+    bool m_initilized = false;
 
     /*
      * Map which caches FMOD Low-Level sounds

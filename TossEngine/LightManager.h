@@ -24,24 +24,8 @@ Mail : theo.morris@mds.ac.nz
 class TOSSENGINE_API LightManager
 {
 public:
-    /**
-     * @brief Static method to get the singleton instance of the LightManager class.
-     * @return The singleton instance of the LightManager.
-     */
-    static LightManager& GetInstance()
-    {
-        static LightManager instance;
-        return instance;
-    }
-
-    // Delete copy constructor and assignment operator to prevent copying.
-    LightManager(const LightManager&) = delete;
-    LightManager& operator=(const LightManager&) = delete;
-    
-    /**
-    * @brief Initilizes the lightmanager on program start only and creates the shadowmaps
-    */
-    void Init();
+    LightManager();
+    ~LightManager() = default;
 
     /**
     * @brief Creates a point light and adds it to the manager.
@@ -154,15 +138,6 @@ public:
 protected:
 
 private:
-    /**
-     * @brief Private constructor for the LightManager class.
-     */
-    LightManager() = default;
-
-    /**
-     * @brief Private destructor for the LightManager class.
-     */
-    ~LightManager() = default;
 
     float AmbientStrength = 0.2f; //The strength of the ambient light
     Vector3 AmbientColor = Vector3(1.0f, 1.0f, 1.0f); //The color of the ambient light

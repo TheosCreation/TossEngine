@@ -21,6 +21,7 @@ class GameObjectManager;
 class Image;
 class Camera;
 class Player;
+class LightManager;
 
 /**
  * @class Scene
@@ -101,6 +102,8 @@ public:
      */
     void onResize(Vector2 size) override;
 
+    LightManager* getLightManager();
+
     /**
      * @brief Called when the game is quitting.
      * Use this method to clean up resources or perform necessary finalization tasks.
@@ -138,6 +141,8 @@ protected:
     FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
     unique_ptr<Image> m_deferredRenderSSRQ;
     unique_ptr<Image> m_postProcessSSRQ;
+
+    unique_ptr<LightManager> m_lightManager = nullptr;
 
     Player* m_player;
 

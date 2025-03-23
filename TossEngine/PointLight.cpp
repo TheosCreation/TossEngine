@@ -25,8 +25,8 @@ void PointLight::deserialize(const json& data)
         m_radius = data["radius"];
     }
 
-    LightManager::GetInstance().updatePointLightColor(m_lightId, m_color);
-    LightManager::GetInstance().updatePointLightRadius(m_lightId, m_radius);
+    m_owner->getLightManager()->updatePointLightColor(m_lightId, m_color);
+    m_owner->getLightManager()->updatePointLightRadius(m_lightId, m_radius);
 }
 
 void PointLight::onCreate()
@@ -42,7 +42,7 @@ void PointLight::onCreate()
     pointLight.Radius = m_radius;
 
     // Add the point light to the light manager
-    m_lightId = LightManager::GetInstance().createPointLight(pointLight);
+    m_lightId = m_owner->getLightManager()->createPointLight(pointLight);
 }
 
 void PointLight::onUpdate(float deltaTime)
@@ -50,18 +50,18 @@ void PointLight::onUpdate(float deltaTime)
     // Ensure the light updates its position if the owner moves
     if (m_owner)
     {
-        LightManager::GetInstance().updatePointLightPosition(m_lightId, m_owner->m_transform.position);
+        m_owner->getLightManager()->updatePointLightPosition(m_lightId, m_owner->m_transform.position);
     }
 }
 
 void PointLight::SetColor(Vector3 color)
 {
     m_color = color;
-    LightManager::GetInstance().updatePointLightColor(m_lightId, m_color);
+    m_owner->getLightManager()->updatePointLightColor(m_lightId, m_color);
 }
 
 void PointLight::SetRadius(float radius)
 {
     m_radius = radius;
-    LightManager::GetInstance().updatePointLightRadius(m_lightId, m_radius);
+    m_owner->getLightManager()->updatePointLightRadius(m_lightId, m_radius);
 }
