@@ -11,6 +11,11 @@ GameObject* Component::getOwner()
     return m_owner;
 }
 
+string Component::getName()
+{
+    return getClassName(typeid(*this));
+}
+
 void Component::setOwner(GameObject* gameObject)
 {
     m_owner = gameObject;

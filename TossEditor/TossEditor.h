@@ -46,7 +46,10 @@ private:
 	ProjectSettingsPtr m_projectSettings = nullptr;
 	shared_ptr<Scene> m_currentScene = nullptr;
 	Game* m_game = nullptr;
-    GameObject* selectedGameObject = nullptr;
+    GameObject* selectedGameObject = nullptr; 
+    GameObject* renamingGameObject = nullptr;
+    char renameBuffer[256] = "";
+
     unique_ptr<EditorPlayer> m_player = nullptr;
 
     float m_currentTime = 0.0f;

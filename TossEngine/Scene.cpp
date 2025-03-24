@@ -117,7 +117,6 @@ Scene::~Scene()
 void Scene::onCreate()
 {
     auto& graphicsEngine = GraphicsEngine::GetInstance();
-    m_player = m_gameObjectManager->createGameObject<Player>(); //move this elsewhere
 
     auto& resourceManager = ResourceManager::GetInstance();
     resourceManager.loadResourceDesc("Resources/Resources.json");

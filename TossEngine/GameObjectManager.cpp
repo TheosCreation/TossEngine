@@ -11,7 +11,6 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "GameObjectManager.h"
-#include "GameObject.h"
 #include "Camera.h"
 #include "GraphicsEngine.h"
 #include "MeshRenderer.h"

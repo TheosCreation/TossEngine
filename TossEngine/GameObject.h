@@ -24,7 +24,7 @@ public:
      */
     ~GameObject();
 
-    string name = "a";
+    string name = "GameObject";
     Transform m_transform;
 
     // Serialize the GameObject to JSON
@@ -134,7 +134,9 @@ public:
         return nullptr;
     }
 
-    //Component* addCSharpComponent(const std::string& typeName);
+    std::map<std::type_index, Component*>& getAllComponents() {
+        return m_components;
+    }
 
 protected:
     std::map<std::type_index, Component*> m_components;

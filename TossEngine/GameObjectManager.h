@@ -14,18 +14,18 @@ Mail : theo.morris@mds.ac.nz
 #include "Utils.h"
 #include "Math.h"
 #include "Scene.h"
+#include "GameObject.h"
 #include <map>
 #include <set>
 
 // Forward declarations of classes
-class GameObject;
 class Camera;
 
 /**
  * @class GameObjectManager
  * @brief A container and controller of the entities for the scene.
  */
-class GameObjectManager
+class TOSSENGINE_API GameObjectManager
 {
 public:
     /**

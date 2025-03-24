@@ -9,6 +9,7 @@ public:
     //Component(const Component& other);
 
 	GameObject* getOwner();
+	string getName();
 	void setOwner(GameObject* gameObject);
 
     /**

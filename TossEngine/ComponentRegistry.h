@@ -43,6 +43,8 @@ public:
             };
     }
 
+    std::vector<std::string> getRegisteredComponentNames() const;
+
     /**
      * @brief Creates a component by its type name.
      * @param typeName The name of the component type to create.
@@ -89,3 +91,4 @@ private:
         ComponentRegistry::GetInstance().registerComponent<T>(); \
         return true; \
     }()
+
