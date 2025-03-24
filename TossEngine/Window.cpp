@@ -29,7 +29,7 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 
     //Specify whether to create a forward-compatible context
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     glfwWindowHint(GLFW_SAMPLES, 4);
 

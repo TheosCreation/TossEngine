@@ -152,3 +152,12 @@ void Framebuffer::UnBind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
+void Framebuffer::WriteDepth()
+{
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+    glBlitFramebuffer(
+        0, 0, (int)m_size.x, (int)m_size.y, 0, 0, (int)m_size.x, (int)m_size.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST
+    );
+}

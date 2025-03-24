@@ -577,16 +577,18 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         // Apply shadows
         m_lightManager->applyShadows(ssrQuadLightingShader);
 
-        // Render the screenspace quad using the lighting, shadow and geometry data
-        m_deferredRenderSSRQ->Render(uniformData, RenderingPath::Forward);
 
         m_postProcessingFramebuffer->Bind();
+        // Render the screenspace quad using the lighting, shadow and geometry data
+        m_deferredRenderSSRQ->Render(uniformData, RenderingPath::Forward);
+        m_postProcessingFramebuffer->WriteDepth();
 
         // Render the transparent objects after
         m_gameObjectManager->onTransparencyPass(uniformData);
         m_gameObjectManager->onSkyboxPass(uniformData);
 
         m_postProcessingFramebuffer->UnBind();
+
 
         graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
         m_postProcessSSRQ->Render(uniformData, RenderingPath::Forward);

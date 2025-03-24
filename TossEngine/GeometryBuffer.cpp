@@ -100,11 +100,11 @@ void GeometryBuffer::UnBind()
 
 void GeometryBuffer::WriteDepth()
 {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);  // Source framebuffer
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);    // Default framebuffer as destination
-	glBlitFramebuffer(0, 0, (int)m_size.x, (int)m_size.y,    // Source dimensions
-					  0, 0, (int)m_size.x, (int)m_size.y,    // Destination dimensions
-					  GL_DEPTH_BUFFER_BIT, GL_NEAREST);  // Mask and filter
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+	glBlitFramebuffer(
+		0, 0, (int)m_size.x, (int)m_size.y, 0, 0, (int)m_size.x, (int)m_size.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST
+	);
 }
 
 void GeometryBuffer::PopulateShader(ShaderPtr _shader)
