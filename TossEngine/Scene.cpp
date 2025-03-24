@@ -36,6 +36,7 @@ Scene::Scene(const string& filePath)
 
     m_lightManager = std::make_unique<LightManager>();
     m_postProcessingFramebuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+    m_windowFrameBuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
 
     m_SSRQ = std::make_unique<Image>();
@@ -75,12 +76,14 @@ Scene::Scene(const Scene& other)
 
     m_lightManager = std::make_unique<LightManager>();
     m_postProcessingFramebuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+    m_windowFrameBuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
 
     // Copy GameObjectManager (requires a proper copy constructor or Clone() function)
      
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
     //m_gameObjectManager = std::make_unique<GameObjectManager>(*other.m_gameObjectManager);
     m_SSRQ = std::make_unique<Image>();
+    m_SSRQ->SetSize({ -2.0f, 2.0f });
 
     // Copy physics world (ReactPhysics3D does NOT support cloning physics worlds directly)
     rp3d::PhysicsWorld::WorldSettings settings;
@@ -118,13 +121,8 @@ void Scene::onCreate()
     auto& resourceManager = ResourceManager::GetInstance();
     resourceManager.loadResourceDesc("Resources/Resources.json");
 
-    ssrQuadLightingShader = resourceManager.getShader("SSQLightingShader");
-    m_deferredRenderSSRQ->SetMaterial(resourceManager.getMaterial("DeferredSSRQMaterial"));
-    m_deferredRenderSSRQ->SetSize({ -2.0f, 2.0f });
-
-    m_postProcessSSRQ->SetMaterial(resourceManager.getMaterial("PostProcessSSRQMaterial"));
-    m_postProcessSSRQ->SetTexture(m_postProcessingFramebuffer->RenderTexture);
-    m_postProcessSSRQ->SetSize({ -2.0f, 2.0f });
+    m_deferredSSRQMaterial = resourceManager.getMaterial("DeferredSSRQMaterial");
+    m_postProcessSSRQMaterial = resourceManager.getMaterial("PostProcessSSRQMaterial");
 
 
     // Create and initialize a DirectionalLight struct
@@ -550,7 +548,6 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         auto& geometryBuffer = GeometryBuffer::GetInstance();
         geometryBuffer.Bind();
         m_gameObjectManager->Render(uniformData);
-        geometryBuffer.WriteDepth();
         geometryBuffer.UnBind();
 
 
@@ -563,23 +560,25 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         }
         graphicsEngine.setViewport(tossEngine.GetWindow()->getInnerSize());
 
-        ShaderPtr shader = m_deferredSSRQMaterial->GetShader();
-        graphicsEngine.setShader(shader);
         // Lighting Pass: Apply lighting using G-buffer data
         // Populate the shader with geometry buffer information for the lighting pass
+        ShaderPtr shader = m_deferredSSRQMaterial->GetShader();
+        graphicsEngine.setShader(shader);
         GeometryBuffer::GetInstance().PopulateShader(shader);
 
         // Apply lighting settings using the LightManager
-        m_lightManager->applyLighting(ssrQuadLightingShader);
+        m_lightManager->applyLighting(shader);
 
         // Apply shadows
-        m_lightManager->applyShadows(ssrQuadLightingShader);
-
+        m_lightManager->applyShadows(shader);
 
         m_postProcessingFramebuffer->Bind();
+
         // Render the screenspace quad using the lighting, shadow and geometry data
-        m_deferredRenderSSRQ->Render(uniformData, RenderingPath::Forward);
-        m_postProcessingFramebuffer->WriteDepth();
+        m_SSRQ->SetMaterial(m_deferredSSRQMaterial);
+        m_SSRQ->Render(uniformData, RenderingPath::Forward);
+
+        geometryBuffer.WriteDepth(m_postProcessingFramebuffer->getId());
 
         // Render the transparent objects after
         m_gameObjectManager->onTransparencyPass(uniformData);
@@ -587,13 +586,15 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
 
         m_postProcessingFramebuffer->UnBind();
 
-        //graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
+        graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
 
-
+        m_windowFrameBuffer->Bind();
         // Post processing 
-        //m_postProcessingFramebuffer->PopulateShader(m_postProcessSSRQMaterial->GetShader());
-        //m_SSRQ->SetMaterial(m_postProcessSSRQMaterial);
-        //m_SSRQ->Render(uniformData, RenderingPath::Forward);
+        m_postProcessingFramebuffer->PopulateShader(m_postProcessSSRQMaterial->GetShader());
+        m_SSRQ->SetMaterial(m_postProcessSSRQMaterial);
+        m_SSRQ->Render(uniformData, RenderingPath::Forward);
+
+        m_windowFrameBuffer->UnBind();
     }
     
     // Example of Forward Rendering Pipeline
@@ -634,13 +635,16 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         m_gameObjectManager->onSkyboxPass(uniformData);
 
         m_postProcessingFramebuffer->UnBind();
+
         graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
 
-
+        m_windowFrameBuffer->Bind();
         // Post processing 
         m_postProcessingFramebuffer->PopulateShader(m_postProcessSSRQMaterial->GetShader());
         m_SSRQ->SetMaterial(m_postProcessSSRQMaterial);
         m_SSRQ->Render(uniformData, RenderingPath::Forward);
+
+        m_windowFrameBuffer->UnBind();
     }
 
 
@@ -650,6 +654,7 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
 void Scene::onResize(Vector2 size)
 {
     Resizable::onResize(size);
+    GeometryBuffer::GetInstance().Resize(size);
 
     for (auto camera : m_gameObjectManager->getCameras())
     {
@@ -657,6 +662,7 @@ void Scene::onResize(Vector2 size)
     }
     // resize the post processing frame buffer 
     m_postProcessingFramebuffer->onResize(size);
+    m_windowFrameBuffer->onResize(size);
 }
 
 LightManager* Scene::getLightManager()
@@ -701,14 +707,14 @@ rp3d::PhysicsCommon& Scene::GetPhysicsCommon()
 
 Vector2 Scene::getFrameBufferSize()
 {
-    return Vector2(m_postProcessingFramebuffer->RenderTexture->getWidth(), m_postProcessingFramebuffer->RenderTexture->getHeight());
+    return Vector2(m_windowFrameBuffer->RenderTexture->getWidth(), m_windowFrameBuffer->RenderTexture->getHeight());
 }
 
 ImTextureID Scene::getRenderTexture()
 {
-    if (m_postProcessingFramebuffer->RenderTexture)
+    if (m_windowFrameBuffer->RenderTexture)
     {
-        return (ImTextureID)m_postProcessingFramebuffer->RenderTexture->getId();
+        return (ImTextureID)m_windowFrameBuffer->RenderTexture->getId();
     }
     return ImTextureID();
 }

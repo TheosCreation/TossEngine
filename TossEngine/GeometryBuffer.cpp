@@ -98,10 +98,10 @@ void GeometryBuffer::UnBind()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GeometryBuffer::WriteDepth()
+void GeometryBuffer::WriteDepth(uint writeBuffer)
 {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, writeBuffer); // write to default framebuffer if FBO is not passed in
 	glBlitFramebuffer(
 		0, 0, (int)m_size.x, (int)m_size.y, 0, 0, (int)m_size.x, (int)m_size.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST
 	);

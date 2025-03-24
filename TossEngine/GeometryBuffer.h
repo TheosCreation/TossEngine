@@ -55,7 +55,7 @@ public:
 	/**
 	 * @brief Writes depth information to the geometry buffer.
 	 */
-	void WriteDepth();
+	void WriteDepth(uint writeBuffer = 0);
 
 	/**
 	* @brief Populates the specified shader with uniform data related to the geometry buffer.

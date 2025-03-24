@@ -130,8 +130,6 @@ protected:
     rp3d::PhysicsCommon m_PhysicsCommon;  // Manages physics resources
     rp3d::PhysicsWorld* m_PhysicsWorld;   // Scene-specific physics world
 
-    ShaderPtr ssrQuadLightingShader = nullptr;
-    ShaderPtr defaultFullscreenShader = nullptr;
     MaterialPtr m_deferredSSRQMaterial = nullptr;
     MaterialPtr m_postProcessSSRQMaterial = nullptr;
 
@@ -147,6 +145,7 @@ protected:
 
     unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the GameObject system managing game entities. */
     FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
+    FramebufferPtr m_windowFrameBuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
     unique_ptr<Image> m_SSRQ;
 
     unique_ptr<LightManager> m_lightManager = nullptr;

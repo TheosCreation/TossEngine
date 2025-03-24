@@ -167,3 +167,8 @@ void Framebuffer::PopulateShader(ShaderPtr shader)
 {
     shader->setTexture2D(RenderTexture, 0, "Texture0");
 }
+
+uint Framebuffer::getId()
+{
+    return FBO;
+}
