@@ -132,6 +132,8 @@ protected:
 
     ShaderPtr ssrQuadLightingShader = nullptr;
     ShaderPtr defaultFullscreenShader = nullptr;
+    MaterialPtr m_deferredSSRQMaterial = nullptr;
+    MaterialPtr m_postProcessSSRQMaterial = nullptr;
 
     ShaderPtr m_solidColorMeshShader = nullptr; /**< @brief Shader for rendering solid color meshes. */
     ShaderPtr m_particleSystemShader = nullptr; /**< @brief Shader for rendering particle systems. */
@@ -145,8 +147,7 @@ protected:
 
     unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the GameObject system managing game entities. */
     FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
-    unique_ptr<Image> m_deferredRenderSSRQ;
-    unique_ptr<Image> m_postProcessSSRQ;
+    unique_ptr<Image> m_SSRQ;
 
     unique_ptr<LightManager> m_lightManager = nullptr;
 

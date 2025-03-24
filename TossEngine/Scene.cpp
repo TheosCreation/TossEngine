@@ -38,8 +38,8 @@ Scene::Scene(const string& filePath)
     m_postProcessingFramebuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
 
-    m_deferredRenderSSRQ = std::make_unique<Image>(); //its a component but doesnt need update or anything really
-    m_postProcessSSRQ = std::make_unique<Image>();
+    m_SSRQ = std::make_unique<Image>();
+    m_SSRQ->SetSize({ -2.0f, 2.0f });
 
     // Create a physics world with default gravity
     rp3d::PhysicsWorld::WorldSettings settings;
@@ -78,12 +78,9 @@ Scene::Scene(const Scene& other)
 
     // Copy GameObjectManager (requires a proper copy constructor or Clone() function)
      
-    //m_gameObjectManager = std::make_unique<GameObjectManager>(this);
-    m_gameObjectManager = std::make_unique<GameObjectManager>(*other.m_gameObjectManager);
-
-    // Copy images (assuming Image has a proper copy constructor)
-    m_deferredRenderSSRQ = std::make_unique<Image>();
-    m_postProcessSSRQ = std::make_unique<Image>();
+    m_gameObjectManager = std::make_unique<GameObjectManager>(this);
+    //m_gameObjectManager = std::make_unique<GameObjectManager>(*other.m_gameObjectManager);
+    m_SSRQ = std::make_unique<Image>();
 
     // Copy physics world (ReactPhysics3D does NOT support cloning physics worlds directly)
     rp3d::PhysicsWorld::WorldSettings settings;
@@ -512,6 +509,7 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
 {
     auto& tossEngine = TossEngine::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
+    graphicsEngine.clear(glm::vec4(0, 0, 0, 1));
 
     // Populate the uniform data struct
     uniformData.currentTime = tossEngine.GetTime();
@@ -565,11 +563,11 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         }
         graphicsEngine.setViewport(tossEngine.GetWindow()->getInnerSize());
 
-
-        graphicsEngine.setShader(ssrQuadLightingShader);
+        ShaderPtr shader = m_deferredSSRQMaterial->GetShader();
+        graphicsEngine.setShader(shader);
         // Lighting Pass: Apply lighting using G-buffer data
         // Populate the shader with geometry buffer information for the lighting pass
-        GeometryBuffer::GetInstance().PopulateShader(ssrQuadLightingShader);
+        GeometryBuffer::GetInstance().PopulateShader(shader);
 
         // Apply lighting settings using the LightManager
         m_lightManager->applyLighting(ssrQuadLightingShader);
@@ -589,9 +587,13 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
 
         m_postProcessingFramebuffer->UnBind();
 
+        //graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
 
-        graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
-        m_postProcessSSRQ->Render(uniformData, RenderingPath::Forward);
+
+        // Post processing 
+        //m_postProcessingFramebuffer->PopulateShader(m_postProcessSSRQMaterial->GetShader());
+        //m_SSRQ->SetMaterial(m_postProcessSSRQMaterial);
+        //m_SSRQ->Render(uniformData, RenderingPath::Forward);
     }
     
     // Example of Forward Rendering Pipeline
@@ -632,12 +634,13 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         m_gameObjectManager->onSkyboxPass(uniformData);
 
         m_postProcessingFramebuffer->UnBind();
+        graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
 
 
         // Post processing 
-        graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
-        //m_postProcessingFramebuffer->PopulateShader();
-        m_postProcessSSRQ->Render(uniformData, RenderingPath::Forward);
+        m_postProcessingFramebuffer->PopulateShader(m_postProcessSSRQMaterial->GetShader());
+        m_SSRQ->SetMaterial(m_postProcessSSRQMaterial);
+        m_SSRQ->Render(uniformData, RenderingPath::Forward);
     }
 
 

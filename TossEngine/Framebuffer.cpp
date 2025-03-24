@@ -13,6 +13,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Framebuffer.h"
 #include "GraphicsEngine.h"
 #include "Texture2D.h"
+#include "Shader.h"
 #include <glew.h>
 #include <glfw3.h>
 
@@ -155,9 +156,14 @@ void Framebuffer::UnBind()
 
 void Framebuffer::WriteDepth()
 {
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
-    glBlitFramebuffer(
-        0, 0, (int)m_size.x, (int)m_size.y, 0, 0, (int)m_size.x, (int)m_size.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST
-    );
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);  // Source framebuffer
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);    // Default framebuffer as destination
+    glBlitFramebuffer(0, 0, (int)m_size.x, (int)m_size.y,    // Source dimensions
+        0, 0, (int)m_size.x, (int)m_size.y,    // Destination dimensions
+        GL_DEPTH_BUFFER_BIT, GL_NEAREST);  // Mask and filter
+}
+
+void Framebuffer::PopulateShader(ShaderPtr shader)
+{
+    shader->setTexture2D(RenderTexture, 0, "Texture0");
 }

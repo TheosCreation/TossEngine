@@ -184,8 +184,5 @@ void Game::onFixedUpdate(float fixedDeltaTime)
 
 void Game::onGraphicsUpdate()
 {
-    auto& graphicsEngine = GraphicsEngine::GetInstance();
-    graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
-
     m_currentScene->onGraphicsUpdate();
 }
