@@ -160,6 +160,8 @@ public:
         glUniform1ui(glGetUniformLocation(m_programId, name.c_str()), value);
     }
 
+    MaterialDesc getBindings() const;
+
 private:
     /**
      * @brief Attaches a shader to the program.

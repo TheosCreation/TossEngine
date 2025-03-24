@@ -109,7 +109,7 @@ void MeshRenderer::deserialize(const json& data)
 }
 void MeshRenderer::onShadowPass(uint index)
 {
-    if (m_shadowShader == nullptr) return;
+    if (m_shadowShader == nullptr || m_mesh == nullptr) return;
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.setFaceCulling(CullType::BackFace);
@@ -119,8 +119,6 @@ void MeshRenderer::onShadowPass(uint index)
 
     m_shadowShader->setMat4("VPLight", m_owner->getLightManager()->getLightSpaceMatrix(index));
     m_shadowShader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
-
-    if (m_mesh == nullptr) return;
 
     // Bind the vertex array object for the mesh
     auto meshVBO = m_mesh->getVertexArrayObject();
@@ -141,6 +139,8 @@ void MeshRenderer::onShadowPass(uint index)
 
 void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
 {
+    if (m_mesh == nullptr) return;
+
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.setFaceCulling(CullType::BackFace);
     graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
@@ -148,6 +148,8 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
 
     if (renderPath == RenderingPath::Deferred)
     {
+        if (m_geometryShader == nullptr) return;
+
         graphicsEngine.setShader(m_geometryShader);
         m_geometryShader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
         m_geometryShader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
@@ -172,6 +174,8 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
 
     if (renderPath == RenderingPath::Forward)
     {
+        if (m_shader == nullptr) return;
+
         graphicsEngine.setShader(m_shader);
         m_shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
         m_shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());

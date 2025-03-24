@@ -39,6 +39,36 @@ Shader::~Shader()
 	glDeleteProgram(m_programId);
 }
 
+MaterialDesc Shader::getBindings() const {
+    MaterialDesc desc;
+
+    // Query the number of active uniforms in the shader program.
+    GLint uniformCount = 0;
+    glGetProgramiv(m_programId, GL_ACTIVE_UNIFORMS, &uniformCount);
+
+    // Temporary buffer for uniform names.
+    char nameBuffer[256];
+
+    // Loop over all active uniforms.
+    for (int i = 0; i < uniformCount; i++) {
+        GLint size = 0;
+        GLenum type = 0;
+        GLsizei length = 0;
+        glGetActiveUniform(m_programId, i, sizeof(nameBuffer), &length, &size, &type, nameBuffer);
+
+        // Create a UniformBinding instance.
+        UniformBinding binding;
+        binding.name = std::string(nameBuffer, length);
+        binding.type = type;
+        binding.size = size;
+
+        // Add the binding to the MaterialDesc.
+        desc.uniformBindings.push_back(binding);
+    }
+
+    return desc;
+}
+
 void Shader::Attach(const std::string& filename, const ShaderType& type)
 {
     std::string filePath;

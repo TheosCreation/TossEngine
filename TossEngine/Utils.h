@@ -29,6 +29,7 @@ Mail : theo.morris@mds.ac.nz
 #include <fstream>
 #include <filesystem>
 #include <nlohmann\json.hpp>
+#include <glew.h>
 
 #ifdef TOSSENGINE_EXPORTS
 #define TOSSENGINE_API __declspec(dllexport)  // When compiling the DLL
@@ -356,9 +357,15 @@ struct SoundDesc
     float reverbAmount = 0.0f;
 };
 
+struct UniformBinding {
+    std::string name;  // Name of the uniform
+    GLenum type;       // GL type (e.g. GL_FLOAT_VEC3, GL_INT, etc.)
+    GLint size;
+};
+
 struct MaterialDesc
 {
-    ShaderPtr shader;
+    std::vector<UniformBinding> uniformBindings;
 };
 
 // Enum representing camera types
@@ -507,6 +514,7 @@ enum Key
     KeyF11,
     KeyF12,
     KeyEscape = 256,
+    KeyDelete = 261,
     KeyRight = 262,
     KeyLeft,
     KeyDown,

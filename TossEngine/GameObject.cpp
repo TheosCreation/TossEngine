@@ -205,6 +205,30 @@ void GameObject::onUpdate(float deltaTime)
     }
 }
 
+void GameObject::onUpdateInternal()
+{
+    for (Component* component : componentsToDestroy)
+    {
+        // Compute the key using the dynamic type of the component.
+        std::type_index key(typeid(*component));
+
+        // Look for the component in the container.
+        auto it = m_components.find(key);
+        if (it != m_components.end() && it->second == component)
+        {
+            // Optionally, call a cleanup method (e.g. onDestroy) if your component defines one.
+            component->onDestroy();
+
+            // Remove the component from the container.
+            m_components.erase(it);
+
+            // Delete the component (if you own it, which is the case here since addComponent used new).
+            delete component;
+        }
+    }
+    componentsToDestroy.clear();
+}
+
 void GameObject::onLateUpdate(float deltaTime)
 {
 }
@@ -228,6 +252,14 @@ Component* GameObject::addComponent(string componentType, const json& data)
         Debug::LogError("Error adding component of type: " + componentType + " to gameobject: " + ToString(this->m_id));
     }
     return nullptr;
+}
+
+void GameObject::removeComponent(Component* component)
+{
+    if (component == nullptr)
+        return;
+
+    componentsToDestroy.push_back(component);
 }
 
 void GameObject::setGameObjectManager(GameObjectManager* gameObjectManager)

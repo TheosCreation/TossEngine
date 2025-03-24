@@ -98,6 +98,8 @@ public:
      */
     virtual void onUpdate(float deltaTime);
 
+    void onUpdateInternal();
+
     /**
      * @brief Called every frame after all Update functions have been called.
      * Can be overridden by derived classes to implement custom behavior.
@@ -121,6 +123,7 @@ public:
     }
 
     Component* addComponent(string componentType, const json& data = nullptr);
+    void removeComponent(Component* component);
 
     template <typename Component>
     Component* getComponent()
@@ -139,6 +142,7 @@ public:
     }
 
 protected:
+    vector<Component*> componentsToDestroy;
     std::map<std::type_index, Component*> m_components;
 
     GameObjectManager* m_gameObjectManager = nullptr; // Pointer to the GameObjectManager managing this GameObject.

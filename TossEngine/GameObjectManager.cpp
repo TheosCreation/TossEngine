@@ -171,6 +171,11 @@ void GameObjectManager::onUpdateInternal()
 		m_gameObjects.erase(gameObjectId);  // Directly erase by ID
 	}
 	m_gameObjectsToDestroy.clear();
+
+	for (const auto& pair : m_gameObjects)
+	{
+		pair.second->onUpdateInternal();
+	}
 }
 
 void GameObjectManager::onLateUpdate(float deltaTime)

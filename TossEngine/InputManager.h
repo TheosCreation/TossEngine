@@ -36,12 +36,6 @@ public:
     void Init(ProjectSettingsPtr& projectSettings);
 
     /**
-     * @brief Sets the game window for input handling.
-     * @param window Pointer to the GLFW window.
-     */
-    void setGameWindow(GLFWwindow* window);
-
-    /**
      * @brief Checks if the specified key is currently being held down.
      * @param key The key to check.
      * @return True if the key is down, false otherwise.

@@ -63,6 +63,9 @@ void Skybox::onCreate()
 
 void Skybox::Render(UniformData data, RenderingPath renderPath)
 {
+    if (m_material == nullptr || m_mesh == nullptr || m_texture == nullptr) return;
+    //m_material->Bind();
+
     ShaderPtr shader = m_material->GetShader();
     
     // Get the graphics engine instance for rendering

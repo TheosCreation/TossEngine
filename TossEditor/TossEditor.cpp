@@ -82,6 +82,22 @@ void TossEditor::onCreateLate()
 {
 }
 
+void TossEditor::DeleteSelected()
+{
+    if (selectedComponent != nullptr && selectedGameObject != nullptr)
+    {
+        // Delete the selected component.
+        selectedGameObject->removeComponent(selectedComponent);
+        selectedComponent = nullptr;
+    }
+    else if (selectedGameObject != nullptr)
+    {
+        // Delete the selected GameObject.
+        selectedGameObject->release();  // Or however you remove a GameObject from your scene.
+        selectedGameObject = nullptr;
+    }
+}
+
 void TossEditor::Exit()
 {
     TossEngine::GetInstance().GetWindow()->close();
@@ -247,7 +263,7 @@ void TossEditor::onUpdateInternal()
         if (m_currentScene)
         {
             // Resize the scene's framebuffer to match the current window size.
-            m_currentScene->onResize(newSize);
+            onResize(newSize);
 
             // Now update the scene rendering with the current camera.
             m_currentScene->onGraphicsUpdate(m_player->getCamera());
@@ -281,47 +297,63 @@ void TossEditor::onUpdateInternal()
     {
         if (selectedGameObject)
         {
-            // Show the object's name
+            // Display the selected object's name and transform.
             ImGui::Text("Selected Object: %s", selectedGameObject->name.c_str());
             ImGui::Separator();
-
-            // Display the transform properties.
-            // (Assumes that your Transform has glm::vec3 members: position, rotation, scale)
             ImGui::Text("Transform:");
             ImGui::DragFloat3("Position", glm::value_ptr(selectedGameObject->m_transform.position), 0.1f);
-            ImGui::DragFloat3("Rotation", glm::value_ptr(selectedGameObject->m_transform.rotation), 0.1f);
+            ImGui::DragFloat4("Rotation", glm::value_ptr(selectedGameObject->m_transform.rotation), 0.1f);
             ImGui::DragFloat3("Scale", glm::value_ptr(selectedGameObject->m_transform.scale), 0.1f);
             ImGui::Separator();
 
-            // List the attached components.
+            // List the attached components as dropdowns.
             ImGui::Text("Components:");
-
             for (auto& pair : selectedGameObject->getAllComponents())
             {
-                ImGui::BulletText("%s", pair.second->getName().c_str());
+                Component* comp = pair.second; // Assuming getAllComponents() returns something like a std::map<... , Component*>
+                // Show each component as a tree node. Highlight it if it is selected.
+                ImGuiTreeNodeFlags flags = (selectedComponent == comp) ? ImGuiTreeNodeFlags_Selected : 0;
+                bool open = ImGui::TreeNodeEx(comp->getName().c_str(), flags);
+                if (ImGui::IsItemClicked())
+                {
+                    // Clicking on the component selects it.
+                    selectedComponent = comp;
+                }
+                // Right-click context menu for the component.
+                if (ImGui::BeginPopupContextItem())
+                {
+                    if (ImGui::MenuItem("Delete"))
+                    {
+                        // Remove the component from the game object.
+                        selectedGameObject->removeComponent(comp);
+                        if (selectedComponent == comp)
+                            selectedComponent = nullptr;
+                    }
+                    ImGui::EndPopup();
+                }
+                if (open)
+                {
+                    // Optionally, display additional details about the component here.
+                    ImGui::Text("Details can go here...");
+                    ImGui::TreePop();
+                }
             }
             ImGui::Separator();
 
-            // Add Component Button.
+            // Optionally add an "Add Component" button (already implemented in your code).
             if (ImGui::Button("Add Component"))
             {
                 ImGui::OpenPopup("Add Component Popup");
             }
-
-            // Popup for adding a component.
+            // [Add Component Popup code remains the same as before...]
             static char componentSearchBuffer[256] = "";
             if (ImGui::BeginPopup("Add Component Popup"))
             {
                 ImGui::InputText("Search", componentSearchBuffer, sizeof(componentSearchBuffer));
-
-                // Retrieve list of registered component types.
                 auto& registry = ComponentRegistry::GetInstance();
                 std::vector<std::string> componentTypes = registry.getRegisteredComponentNames();
-
-                // Display selectable list filtered by search text.
                 for (const auto& compName : componentTypes)
                 {
-                    // Filter by search text: if search buffer is empty or substring found.
                     if (componentSearchBuffer[0] == '\0' || std::strstr(compName.c_str(), componentSearchBuffer) != nullptr)
                     {
                         if (ImGui::Selectable(compName.c_str()))
@@ -337,8 +369,8 @@ void TossEditor::onUpdateInternal()
         {
             ImGui::Text("No object selected.");
         }
+        ImGui::End();
     }
-    ImGui::End();
 
     if (ImGui::Begin("Hierarchy"))
     {
@@ -397,7 +429,6 @@ void TossEditor::onUpdateInternal()
     {
     }
     ImGui::End();
-
 
     graphicsEngine.renderImGuiFrame();
     
@@ -491,6 +522,10 @@ void TossEditor::onResize(Vector2 size)
     }
 
     GeometryBuffer::GetInstance().Resize(size);
+}
+
+void TossEditor::Undo()
+{
 }
 
 void TossEditor::Save()

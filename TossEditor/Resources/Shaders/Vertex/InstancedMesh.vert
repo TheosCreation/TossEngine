@@ -14,8 +14,10 @@ out vec3 FragPos;
 
 void main()
 {
-    gl_Position = VPMatrix * InstancedModel * vec4(vertexPosition, 1.0f);
+    mat4 finalModel = modelMatrix * InstancedModel;
+    gl_Position = VPMatrix * finalModel * vec4(vertexPosition, 1.0f);
+    
     FragTexcoord = vertexTexCoords;
-    FragNormal = mat3(transpose(inverse(InstancedModel))) * vertexNormal;
-    FragPos = vec3(InstancedModel * vec4(vertexPosition, 1.0f));
-} 
+    FragNormal = mat3(transpose(inverse(finalModel))) * vertexNormal;
+    FragPos = vec3(finalModel * vec4(vertexPosition, 1.0f));
+}

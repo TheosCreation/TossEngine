@@ -158,12 +158,21 @@ void InputManager::scroll_callback(GLFWwindow* window, double xoffset, double yo
 {
 	scrollX = xoffset;
 	scrollY = yoffset;
+
+	if (ImGui::GetIO().WantCaptureMouse)
+	{
+		ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+	}
 }
 
 void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	Key translatedKey = static_cast<Key>(key);
 
+	if (ImGui::GetIO().WantCaptureKeyboard)
+	{
+		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+	}
 
 	if (action == GLFW_PRESS && !currentKeyStates[translatedKey]) {
 		currentKeyStates[translatedKey] = true;
@@ -179,7 +188,6 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
 	if (ImGui::GetIO().WantCaptureMouse)
 	{
 		ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-		currentMouseStates[translatedButton] = false;
 		
 		if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
 		{
@@ -188,7 +196,7 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
 			if (string(hoveredWindow->Name) != "Scene" &&
 				std::string(hoveredWindow->Name) != "Game")
 			{
-				//printf("Hovered Window: %s\n", hoveredWindow->Name);
+				currentMouseStates[translatedButton] = false;
 				return;
 			}
 		}

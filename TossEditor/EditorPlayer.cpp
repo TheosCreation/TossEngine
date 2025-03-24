@@ -30,6 +30,10 @@ void EditorPlayer::Update(float deltaTime)
     {
         Editor->OpenSceneViaFileSystem();
     }
+    if (inputManager.isKeyDown(KeyLeftControl) && inputManager.isKeyPressed(KeyZ))
+    {
+        Editor->Undo();
+    }
     if (inputManager.isKeyDown(KeyLeftControl) && inputManager.isKeyPressed(KeyS))
     {
         Editor->Save();
@@ -37,6 +41,10 @@ void EditorPlayer::Update(float deltaTime)
     if (inputManager.isKeyPressed(KeyEscape))
     {
         Editor->Exit();
+    }
+    if (inputManager.isKeyPressed(KeyDelete))
+    {
+        Editor->DeleteSelected();
     }
 
     if (!inputManager.isMouseDown(MouseButtonRight))

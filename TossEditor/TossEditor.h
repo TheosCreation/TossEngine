@@ -6,6 +6,7 @@ class Window;
 class Scene;
 class EditorPlayer;
 class GameObject;
+class Component;
 
 class TossEditor : public Resizable
 {
@@ -17,8 +18,11 @@ public:
 
 	void onResize(Vector2 size) override;
 	
+	void Undo();
 	void Save();
     void Exit();
+
+    void DeleteSelected();
 
     void OpenSceneViaFileSystem();
     void OpenScene(shared_ptr<Scene> _scene);
@@ -47,6 +51,7 @@ private:
 	shared_ptr<Scene> m_currentScene = nullptr;
 	Game* m_game = nullptr;
     GameObject* selectedGameObject = nullptr; 
+    Component* selectedComponent = nullptr;
     GameObject* renamingGameObject = nullptr;
     char renameBuffer[256] = "";
 

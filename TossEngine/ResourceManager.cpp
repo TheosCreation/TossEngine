@@ -286,7 +286,7 @@ SoundPtr ResourceManager::createSound(const SoundDesc& desc, const std::string& 
 MaterialPtr ResourceManager::createMaterial(const string& shaderId, const std::string& uniqueID)
 {
     ShaderPtr shader = getShader(shaderId);
-    MaterialPtr materialPtr = std::make_shared<Material>(MaterialDesc{ shader }, uniqueID, this);
+    MaterialPtr materialPtr = std::make_shared<Material>(shader, uniqueID, this);
     materialDescriptions.emplace(uniqueID, shaderId);
     m_mapResources.emplace(uniqueID, materialPtr);
     return materialPtr;
