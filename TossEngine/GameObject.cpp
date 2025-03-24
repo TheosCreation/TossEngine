@@ -60,6 +60,7 @@ json GameObject::serialize() const
     return {
         {"type", getClassName(typeid(*this))}, // Use typeid to get the class name
         {"id", m_id},
+        {"name", name},
         {"transform", {
             {"position", {m_transform.position.x, m_transform.position.y, m_transform.position.z}},
             {"rotation", {m_transform.rotation.x, m_transform.rotation.y, m_transform.rotation.z, m_transform.rotation.w}},
@@ -75,6 +76,10 @@ json GameObject::serialize() const
 
 void GameObject::deserialize(const json& data) 
 {
+    if (data.contains("name"))
+    {
+        name = data["name"];
+    }
     if (data.contains("transform"))
     {
         auto transformData = data["transform"];
@@ -159,6 +164,11 @@ void GameObject::release()
 {
 	// Remove this GameObject from the GameObjectManager
 	m_gameObjectManager->removeGameObject(this);
+}
+
+void GameObject::releaseInstant()
+{
+    m_gameObjectManager->removeGameObjectInstant(this);
 }
 
 void GameObject::onCreate()

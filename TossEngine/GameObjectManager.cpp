@@ -65,9 +65,14 @@ bool GameObjectManager::createGameObjectInternal(GameObject* gameObject)
 	return true;
 }
 
-void GameObjectManager::removeGameObject(GameObject* GameObject)
+void GameObjectManager::removeGameObject(GameObject* gameObject)
 {
-	m_gameObjectsToDestroy.push_back(GameObject->getId());
+	m_gameObjectsToDestroy.push_back(gameObject->getId());
+}
+
+void GameObjectManager::removeGameObjectInstant(GameObject* gameObject)
+{
+	m_gameObjects.erase(gameObject->getId());
 }
 
 void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
@@ -152,16 +157,21 @@ void GameObjectManager::onLateStart()
 
 void GameObjectManager::onUpdate(float deltaTime)
 {
-	for (size_t gameObjectId : m_gameObjectsToDestroy)
-	{
-		m_gameObjects.erase(gameObjectId);  // Directly erase by ID
-	}
-	m_gameObjectsToDestroy.clear();
+	onUpdateInternal();
 
 	for (const auto& pair : m_gameObjects)
 	{
 		pair.second->onUpdate(deltaTime);
 	}
+}
+
+void GameObjectManager::onUpdateInternal()
+{
+	for (size_t gameObjectId : m_gameObjectsToDestroy)
+	{
+		m_gameObjects.erase(gameObjectId);  // Directly erase by ID
+	}
+	m_gameObjectsToDestroy.clear();
 }
 
 void GameObjectManager::onLateUpdate(float deltaTime)

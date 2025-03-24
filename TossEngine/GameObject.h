@@ -24,6 +24,7 @@ public:
      */
     ~GameObject();
 
+    string name = "a";
     Transform m_transform;
 
     // Serialize the GameObject to JSON
@@ -61,6 +62,11 @@ public:
      * @brief Releases the GameObject, preparing it for destruction.
      */
     void release();
+
+    /**
+     * @brief Releases the GameObject instantly without the use of update method.
+     */
+    void releaseInstant();
 
     /**
      * @brief Called when the GameObject is created.

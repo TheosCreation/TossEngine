@@ -67,7 +67,9 @@ public:
      * @brief Removes an GameObject from the system.
      * @param GameObject Pointer to the GameObject to remove.
      */
-    void removeGameObject(GameObject* GameObject);
+    void removeGameObject(GameObject* gameObject);
+
+    void removeGameObjectInstant(GameObject* gameObject);
 
     void loadGameObjectsFromFile(const std::string& filePath);
     void saveGameObjectsToFile(const std::string& filePath);
@@ -80,6 +82,7 @@ public:
      * @param deltaTime The time elapsed since the last update.
      */
     void onUpdate(float deltaTime);
+    void onUpdateInternal();
 
     void onLateUpdate(float deltaTime);
     void onShadowPass(int index);

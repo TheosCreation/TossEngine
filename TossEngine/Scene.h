@@ -79,6 +79,7 @@ public:
      * @param deltaTime The time elapsed since the last update in seconds.
      */
     virtual void onUpdate(float deltaTime);
+    virtual void onUpdateInternal();
 
     /**
      * @brief Called every frame to update the GameObject at a fixed frame rate.
@@ -104,6 +105,7 @@ public:
     void onResize(Vector2 size) override;
 
     LightManager* getLightManager();
+    GameObjectManager* getObjectManager();
 
     /**
      * @brief Called when the game is quitting.

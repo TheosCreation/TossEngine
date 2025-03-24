@@ -115,6 +115,10 @@ void TossEditor::onUpdateInternal()
 
         // player update
         m_player->Update(deltaTime);
+        if (m_currentScene)
+        {
+            m_currentScene->onUpdateInternal();
+        }
 
         inputManager.onLateUpdate();
     }
@@ -271,8 +275,19 @@ void TossEditor::onUpdateInternal()
     ImGui::End();
     if (ImGui::Begin("Hierarchy"))
     {
+        if (m_currentScene != nullptr)
+        {
+            for (const auto& pair : m_currentScene->getObjectManager()->m_gameObjects)
+            {
+                // Only show root game objects as it will display children underneath
+                if (pair.second->m_transform.parent == nullptr)
+                {
+                    ShowGameObjectNode(pair.second);
+                }
+            }
+        }
+        ImGui::End();
     }
-    ImGui::End();
     if (ImGui::Begin("Assets"))
     {
     }
@@ -292,6 +307,72 @@ void TossEditor::onQuit()
     if (m_currentScene)
     {
         m_currentScene->onQuit();
+    }
+}
+
+void TossEditor::ShowGameObjectNode(GameObject* gameObject)
+{
+    ImGuiTreeNodeFlags flags = (gameObject->m_transform.children.empty() ? ImGuiTreeNodeFlags_Leaf : 0);
+    // If obj is selected, add ImGuiTreeNodeFlags_Selected to flags
+    if (gameObject == selectedGameObject)
+        flags |= ImGuiTreeNodeFlags_Selected;
+
+    bool open = ImGui::TreeNodeEx(gameObject->name.c_str(), flags);
+    if (ImGui::IsItemClicked()) {
+        selectedGameObject = gameObject;
+    }
+
+    // Drag & Drop source: allows this node to be dragged.
+    if (ImGui::BeginDragDropSource())
+    {
+        // Pass a pointer to the game object as payload
+        ImGui::SetDragDropPayload("DND_GAMEOBJECT", &gameObject, sizeof(GameObject*));
+        ImGui::Text("Dragging %s", gameObject->name.c_str());
+        ImGui::EndDragDropSource();
+    }
+
+    // Drag & Drop target: accepts dropped game objects.
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
+        {
+            // Retrieve the dropped game object pointer from the payload
+            GameObject* droppedGameObject = *(GameObject**)payload->Data;
+            // Avoid self-parenting
+            if (droppedGameObject != gameObject)
+            {
+                // Optionally, remove the dropped game object from its current parent here if needed.
+                // Set this game object's transform as the new parent.
+                droppedGameObject->m_transform.SetParent(&gameObject->m_transform);
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    // Context menu: right-click for options
+    if (ImGui::BeginPopupContextItem())
+    {
+        if (ImGui::MenuItem("Delete"))
+        {
+            // If the game object has a parent, unparent it.
+            if (gameObject->m_transform.parent)
+            {
+                gameObject->m_transform.SetParent(nullptr);
+            }
+            gameObject->release();
+            if (selectedGameObject == gameObject)
+                selectedGameObject = nullptr;
+        }
+        ImGui::EndPopup();
+    }
+
+    if (open)
+    {
+        for (Transform* child : gameObject->m_transform.children)
+        {
+            ShowGameObjectNode(child->gameObject);
+        }
+        ImGui::TreePop();
     }
 }
 

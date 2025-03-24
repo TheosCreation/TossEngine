@@ -491,6 +491,11 @@ void Scene::onUpdate(float deltaTime)
     m_gameObjectManager->onUpdate(deltaTime);
 }
 
+void Scene::onUpdateInternal()
+{
+    m_gameObjectManager->onUpdateInternal();
+}
+
 void Scene::onFixedUpdate(float fixedDeltaTime)
 {
     if (fixedDeltaTime <= 0.0f) return;
@@ -653,6 +658,11 @@ void Scene::onResize(Vector2 size)
 LightManager* Scene::getLightManager()
 {
     return m_lightManager.get();
+}
+
+GameObjectManager* Scene::getObjectManager()
+{
+    return m_gameObjectManager.get();
 }
 
 void Scene::onQuit()
