@@ -52,6 +52,9 @@ public:
 	 */
 	void UnBind();
 
+	void WriteDepth();
+	void PopulateShader(ShaderPtr shader);
+
 	Texture2DPtr RenderTexture;
 	//uint RenderTexture; // Identifier for the texture used for rendering.
 
