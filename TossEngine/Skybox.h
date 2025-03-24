@@ -17,7 +17,7 @@ Mail : theo.morris@mds.ac.nz
  * @class Skybox
  * @brief Represents a skybox in the 3D scene, handling its creation, updating, and shader uniform data.
  */
-class Skybox : public Renderer
+class TOSSENGINE_API Skybox : public Renderer
 {
 public:
     // Serialize the MeshRenderer to JSON
@@ -40,4 +40,6 @@ public:
 private:
     MeshPtr m_mesh;
     TexturePtr m_texture;
-};
+}; 
+
+REGISTER_COMPONENT(Skybox);

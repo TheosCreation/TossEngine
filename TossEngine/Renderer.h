@@ -2,7 +2,7 @@
 #include "Component.h"
 #include "Material.h"
 
-class Renderer : public Component
+class TOSSENGINE_API Renderer : public Component
 {
 public:
 	virtual void Render(UniformData data, RenderingPath renderPath) {}

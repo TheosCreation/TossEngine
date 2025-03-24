@@ -21,7 +21,7 @@ Mail : theo.morris@mds.ac.nz
  * @class Mesh
  * @brief A class representing a mesh resource.
  */
-class Mesh : public Resource
+class TOSSENGINE_API Mesh : public Resource
 {
 public:
     /**

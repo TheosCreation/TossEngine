@@ -44,7 +44,7 @@ public:
     ShaderPtr createComputeShader(const string& computeShaderFilename);
     TextureCubeMapPtr createCubeMapTextureFromFile(const std::vector<std::string>& filepaths);
     Texture2DPtr createTexture2DFromFile(const std::string& filepath, TextureType type = TextureType::Default);
-    Texture2DPtr createTexture2D(Texture2DDesc desc, string textureName = "");
+    Texture2DPtr createTexture2D(Texture2DDesc desc, string textureName = "NoTextureName");
     MeshPtr createMeshFromFile(const std::string& filepath);
     HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
     SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath);
@@ -55,10 +55,17 @@ public:
     void loadResourceDesc(const std::string& filepath);
     void ClearInstancesFromMeshes();
 
+    bool IsResourceLoaded(const std::string& uniqueId) const;
+    const std::map<std::string, ResourcePtr>& GetAllResources() const { return m_mapResources; }
+    void SetSelectedResource(ResourcePtr selectedResource);
+    ResourcePtr GetSelectedResource();
+
 protected:
     std::map<std::string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
+    ResourcePtr m_selectedResource = nullptr; // for editor use
 
     std::unordered_map<std::string, ShaderDesc> shaderDescriptions;
+    std::vector<std::string> texture2DFilePaths;
     std::unordered_map<std::string, vector<std::string>> cubemapTextureFilePaths;
     std::unordered_map<std::string, std::string> materialDescriptions;
 
@@ -66,3 +73,4 @@ private:
     ResourceManager() = default;
     ~ResourceManager() = default;
 };
+

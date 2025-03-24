@@ -38,7 +38,7 @@ Framebuffer::Framebuffer(Vector2 _windowSize)
     Texture2DDesc textureDesc;
     textureDesc.textureSize = { (int)_windowSize.x, (int)_windowSize.y };
     textureDesc.numChannels = 4;
-    RenderTexture = ResourceManager::GetInstance().createTexture2D(textureDesc);
+    RenderTexture = ResourceManager::GetInstance().createTexture2D(textureDesc, "FBORenderTexture" + FBO);
 
     // Attach the texture to the framebuffer
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RenderTexture->getId(), 0);

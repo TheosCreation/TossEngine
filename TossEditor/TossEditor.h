@@ -56,6 +56,8 @@ private:
     char renameBuffer[256] = "";
 
     unique_ptr<EditorPlayer> m_player = nullptr;
+    FramebufferPtr m_sceneViewFrameBuffer = nullptr;
+    FramebufferPtr m_gameViewFrameBuffer = nullptr;
 
     float m_currentTime = 0.0f;
     float m_previousTime = 0.0f;

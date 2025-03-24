@@ -22,7 +22,7 @@ class ResourceManager;
  * @class Resource
  * @brief Represents a generic resource such as a file, image, or texture.
  */
-class Resource
+class TOSSENGINE_API Resource
 {
 public:
     /**

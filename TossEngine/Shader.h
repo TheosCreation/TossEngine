@@ -19,7 +19,7 @@ Mail : theo.morris@mds.ac.nz
  * @class Shader
  * @brief A wrapper class for handling shaders in OpenGL.
  */
-class Shader : public Resource
+class TOSSENGINE_API Shader : public Resource
 {
 public:
     /**

@@ -35,8 +35,7 @@ Scene::Scene(const string& filePath)
     auto& tossEngine = TossEngine::GetInstance(); 
 
     m_lightManager = std::make_unique<LightManager>();
-    m_postProcessingFramebuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
-    m_windowFrameBuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+    m_postProcessingFramebuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
 
     m_SSRQ = std::make_unique<Image>();
@@ -52,15 +51,6 @@ Scene::Scene(const string& filePath)
     m_PhysicsWorld->setNbIterationsVelocitySolver(10);
     m_PhysicsWorld->setNbIterationsPositionSolver(5);
 
-    auto& componentRegistry = ComponentRegistry::GetInstance();
-    componentRegistry.registerComponent<MeshRenderer>();
-    componentRegistry.registerComponent<Skybox>();
-    componentRegistry.registerComponent<Rigidbody>();
-    componentRegistry.registerComponent<Image>();
-    componentRegistry.registerComponent<PointLight>();
-    componentRegistry.registerComponent<Ship>();
-    componentRegistry.registerComponent<Camera>();
-
     ResourceManager::GetInstance().ClearInstancesFromMeshes();
 
     //rp3d::DebugRenderer& debugRenderer = m_PhysicsWorld->getDebugRenderer();
@@ -75,8 +65,7 @@ Scene::Scene(const Scene& other)
 
 
     m_lightManager = std::make_unique<LightManager>();
-    m_postProcessingFramebuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
-    m_windowFrameBuffer = std::make_unique<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+    m_postProcessingFramebuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
 
     // Copy GameObjectManager (requires a proper copy constructor or Clone() function)
      
@@ -94,16 +83,6 @@ Scene::Scene(const Scene& other)
     m_PhysicsWorld->setIsDebugRenderingEnabled(other.m_PhysicsWorld->getIsDebugRenderingEnabled());
     m_PhysicsWorld->setNbIterationsVelocitySolver(other.m_PhysicsWorld->getNbIterationsVelocitySolver());
     m_PhysicsWorld->setNbIterationsPositionSolver(other.m_PhysicsWorld->getNbIterationsPositionSolver());
-
-    // Copy registered components (assuming ComponentRegistry handles duplicates properly)
-    auto& componentRegistry = ComponentRegistry::GetInstance();
-    componentRegistry.registerComponent<MeshRenderer>();
-    componentRegistry.registerComponent<Skybox>();
-    componentRegistry.registerComponent<Rigidbody>();
-    componentRegistry.registerComponent<Image>();
-    componentRegistry.registerComponent<PointLight>();
-    componentRegistry.registerComponent<Ship>();
-    componentRegistry.registerComponent<Camera>();
 
     ResourceManager::GetInstance().ClearInstancesFromMeshes();
 
@@ -585,16 +564,6 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         m_gameObjectManager->onSkyboxPass(uniformData);
 
         m_postProcessingFramebuffer->UnBind();
-
-        graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
-
-        m_windowFrameBuffer->Bind();
-        // Post processing 
-        m_postProcessingFramebuffer->PopulateShader(m_postProcessSSRQMaterial->GetShader());
-        m_SSRQ->SetMaterial(m_postProcessSSRQMaterial);
-        m_SSRQ->Render(uniformData, RenderingPath::Forward);
-
-        m_windowFrameBuffer->UnBind();
     }
     
     // Example of Forward Rendering Pipeline
@@ -635,18 +604,25 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         m_gameObjectManager->onSkyboxPass(uniformData);
 
         m_postProcessingFramebuffer->UnBind();
-
-        graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
-
-        m_windowFrameBuffer->Bind();
-        // Post processing 
-        m_postProcessingFramebuffer->PopulateShader(m_postProcessSSRQMaterial->GetShader());
-        m_SSRQ->SetMaterial(m_postProcessSSRQMaterial);
-        m_SSRQ->Render(uniformData, RenderingPath::Forward);
-
-        m_windowFrameBuffer->UnBind();
     }
 
+
+    graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
+
+    if (m_windowFrameBuffer != nullptr)
+    {
+        m_windowFrameBuffer->Bind();
+    }
+
+    // Post processing 
+    m_postProcessingFramebuffer->PopulateShader(m_postProcessSSRQMaterial->GetShader());
+    m_SSRQ->SetMaterial(m_postProcessSSRQMaterial);
+    m_SSRQ->Render(uniformData, RenderingPath::Forward);
+
+    if (m_windowFrameBuffer != nullptr)
+    {
+        m_windowFrameBuffer->UnBind();
+    }
 
     // ui canvas of some sort with the ui camera
 }
@@ -662,7 +638,11 @@ void Scene::onResize(Vector2 size)
     }
     // resize the post processing frame buffer 
     m_postProcessingFramebuffer->onResize(size);
-    m_windowFrameBuffer->onResize(size);
+
+    if (m_windowFrameBuffer != nullptr)
+    {
+        m_windowFrameBuffer->onResize(size);
+    }
 }
 
 LightManager* Scene::getLightManager()
@@ -703,6 +683,11 @@ rp3d::PhysicsWorld* Scene::GetPhysicsWorld()
 rp3d::PhysicsCommon& Scene::GetPhysicsCommon()
 {
     return m_PhysicsCommon;
+}
+
+void Scene::SetWindowFrameBuffer(FramebufferPtr windowFrameBuffer)
+{
+    m_windowFrameBuffer = windowFrameBuffer;
 }
 
 Vector2 Scene::getFrameBufferSize()

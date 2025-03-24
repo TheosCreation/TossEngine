@@ -15,8 +15,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Math.h"
 #include "Rect.h"
 
-class GameObject;
-
 class TOSSENGINE_API Camera : public Component
 {
 public:
@@ -103,3 +101,4 @@ private:
     Rect m_screenArea;                   //The screen area of the camera.
 };
 
+REGISTER_COMPONENT(Camera);

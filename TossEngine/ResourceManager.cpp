@@ -190,6 +190,7 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
 
     if (texture2DPtr)
     {
+        texture2DFilePaths.push_back(filepath);
         m_mapResources.emplace(filepath, texture2DPtr);
         return texture2DPtr;
     }
@@ -330,6 +331,11 @@ void ResourceManager::saveResourcesDescs(const std::string& filepath)
         data["materials"][key] = shaderId;
     }
 
+    for (auto& texture2DFilePath : texture2DFilePaths)
+    {
+        data["texture2Ds"].push_back(texture2DFilePath);
+    }
+
     // Serialize cubemap file paths
     for (auto& [key, cubemapFilePaths] : cubemapTextureFilePaths)
     {
@@ -340,7 +346,7 @@ void ResourceManager::saveResourcesDescs(const std::string& filepath)
     std::ofstream file(filepath);
     if (!file.is_open())
     {
-        std::cerr << "Failed to open file for writing: " << filepath << std::endl;
+        Debug::LogError("Failed to open file for writing: " + filepath);
         return;
     }
 
@@ -353,7 +359,7 @@ void ResourceManager::loadResourceDesc(const std::string& filepath)
     std::ifstream file(filepath);
     if (!file.is_open())
     {
-        std::cerr << "Failed to open file for reading: " << filepath << std::endl;
+        Debug::LogError("Failed to open file for reading: " + filepath);
         return;
     }
 
@@ -367,8 +373,8 @@ void ResourceManager::loadResourceDesc(const std::string& filepath)
         for (auto& [key, value] : data["shaders"].items())
         {
             ShaderDesc shaderDesc;
-            shaderDesc.vertexShaderFileName = value["vertexShader"].get<std::string>();
-            shaderDesc.fragmentShaderFileName = value["fragmentShader"].get<std::string>();
+            shaderDesc.vertexShaderFileName = value["vertexShader"].get<string>();
+            shaderDesc.fragmentShaderFileName = value["fragmentShader"].get<string>();
             shaderDescriptions[key] = shaderDesc;
         }
     }
@@ -378,7 +384,14 @@ void ResourceManager::loadResourceDesc(const std::string& filepath)
     {
         for (auto& [key, value] : data["materials"].items())
         {
-            materialDescriptions[key] = value.get<std::string>();
+            materialDescriptions[key] = value.get<string>();
+        }
+    }
+
+    if (data.contains("texture2Ds"))
+    {
+        for (const auto& path : data["texture2Ds"]) {
+            texture2DFilePaths.push_back(path.get<string>());
         }
     }
 
@@ -387,11 +400,25 @@ void ResourceManager::loadResourceDesc(const std::string& filepath)
     {
         for (auto& [key, value] : data["cubemaps"].items())
         {
-            cubemapTextureFilePaths[key] = value.get<std::vector<std::string>>();
+            cubemapTextureFilePaths[key] = value.get<vector<string>>();
         }
     }
 }
 
+bool ResourceManager::IsResourceLoaded(const std::string& uniqueId) const
+{
+    return m_mapResources.find(uniqueId) != m_mapResources.end();
+}
+
+ResourcePtr ResourceManager::GetSelectedResource()
+{
+    return m_selectedResource;
+}
+
+void ResourceManager::SetSelectedResource(ResourcePtr selectedResource)
+{
+    m_selectedResource = selectedResource;
+}
 
 void ResourceManager::ClearInstancesFromMeshes()
 {

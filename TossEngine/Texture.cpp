@@ -12,7 +12,7 @@ Mail : theo.morris@mds.ac.nz
 
 #include "Texture.h"
 
-Texture::Texture() : Resource("", "", nullptr)
+Texture::Texture() : Resource("NoFileID", "NoTextureID", nullptr)
 {
 }
 

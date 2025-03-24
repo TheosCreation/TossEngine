@@ -44,3 +44,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Game.h"
 #include "Renderer.h"
 #include "Player.h"
+
+#include "AudioEngine.h"
+#include "GeometryBuffer.h"

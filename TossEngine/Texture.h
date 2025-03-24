@@ -17,7 +17,7 @@ Mail : theo.morris@mds.ac.nz
  * @class Texture
  * @brief Handles the loading and management of texture resources.
  */
-class Texture : public Resource
+class TOSSENGINE_API Texture : public Resource
 {
 public:
     /**

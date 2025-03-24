@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 
-class PointLight : public Component
+class TOSSENGINE_API PointLight : public Component
 {
 public:
 	PointLight() = default;
@@ -25,3 +25,4 @@ private:
 	uint m_lightId = 0;
 };
 
+REGISTER_COMPONENT(PointLight);

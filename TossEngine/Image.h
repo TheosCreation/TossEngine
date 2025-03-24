@@ -1,7 +1,7 @@
 #pragma once
 #include "Renderer.h"
 
-class Image : public Renderer
+class TOSSENGINE_API Image : public Renderer
 {
 public:
 	Image() = default;
@@ -43,3 +43,4 @@ private:
 	TexturePtr m_texture;
 };
 
+REGISTER_COMPONENT(Image);

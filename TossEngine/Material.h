@@ -1,6 +1,8 @@
 #pragma once
 #include "Utils.h"
 #include "Resource.h"
+#include "Shader.h"
+#include "Texture.h"
 #include <variant>
 
 struct Texture2DBinding {
@@ -24,7 +26,7 @@ using UniformValue = std::variant<
 	TextureCubeMapBinding
 >;
 
-class Material : public Resource
+class TOSSENGINE_API Material : public Resource
 {
 public:
 	Material(ShaderPtr shader, const std::string& uniqueID, ResourceManager* manager);

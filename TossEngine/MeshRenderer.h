@@ -1,7 +1,8 @@
 #pragma once
 #include "Renderer.h"
+#include "Mesh.h"
 
-class MeshRenderer : public Renderer
+class TOSSENGINE_API MeshRenderer : public Renderer
 {
 public:
 	MeshRenderer() = default;
@@ -18,59 +19,12 @@ public:
 		// Display the material from the base Renderer component.
 		Renderer::OnInspectorGUI();
 
-		if (m_mesh)
-		{
-			ImGui::Text("Mesh: ");
-		}
-		else
-		{
-			ImGui::Text("No Texture assigned.");
-		}
-
-		if (m_shader)
-		{
-			ImGui::Text("Shader: ");
-		}
-		else
-		{
-			ImGui::Text("No Texture assigned.");
-		}
-
-		if (m_geometryShader)
-		{
-			ImGui::Text("Geometry Shader: ");
-		}
-		else
-		{
-			ImGui::Text("No Texture assigned.");
-		}
-
-		if (m_shadowShader)
-		{
-			ImGui::Text("Shadow Shader: ");
-		}
-		else
-		{
-			ImGui::Text("No Texture assigned.");
-		}
-
-		if (m_texture)
-		{
-			ImGui::Text("Texture: ");
-		}
-		else
-		{
-			ImGui::Text("No Texture assigned.");
-		}
-
-		if (m_reflectiveMap)
-		{
-			ImGui::Text("Reflective Map: ");
-		}
-		else
-		{
-			ImGui::Text("No Texture assigned.");
-		}
+        ResourceSerializedField(m_mesh, "Mesh");
+        ResourceSerializedField(m_shader, "Shader");
+        ResourceSerializedField(m_geometryShader, "Geometry Shader");
+        ResourceSerializedField(m_shadowShader, "Shadow Shader");
+        ResourceSerializedField(m_texture, "Texture");
+        ResourceSerializedField(m_reflectiveMap, "Reflective Map");
 
 		ImGui::DragFloat("Shininess", &m_shininess, 0.1f);
 		ImGui::DragFloat("Aplha", &m_alpha, 0.1f, 0.0f, 1.0f);
@@ -115,3 +69,4 @@ private:
 	Vector3 m_color = Color::Purple;
 };
 
+REGISTER_COMPONENT(MeshRenderer);

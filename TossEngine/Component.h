@@ -1,5 +1,6 @@
 #pragma once
 #include "Serializable.h"
+#include "ComponentRegistry.h"
 #include <imgui.h>
 
 class GameObject;

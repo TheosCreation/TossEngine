@@ -8,7 +8,7 @@ enum class BodyType {
     Dynamic
 };
 
-class Rigidbody : public Component {
+class TOSSENGINE_API Rigidbody : public Component {
 public:
     Rigidbody() = default;
     ~Rigidbody();
@@ -31,3 +31,5 @@ private:
     rp3d::Collider* m_Collider = nullptr;
     BodyType m_BodyType = BodyType::Dynamic; // Default to Dynamic
 };
+
+REGISTER_COMPONENT(Rigidbody);

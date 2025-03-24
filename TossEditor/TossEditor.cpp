@@ -4,11 +4,7 @@
 #include "Game.h"
 #include "ProjectSettings.h"
 #include "GraphicsEngine.h"
-//#include "InputManager.h"
-#include "AudioEngine.h"
-#include "MonoIntegration.h"
 #include "EditorPlayer.h"
-#include "GeometryBuffer.h"
 #include <imgui.h>
 
 TossEditor::TossEditor()
@@ -38,6 +34,10 @@ TossEditor::TossEditor()
 
     GeometryBuffer::GetInstance().Init(windowSize);
     AudioEngine::GetInstance().Init();
+
+
+    m_sceneViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+    m_gameViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
 }
 
 TossEditor::~TossEditor()
@@ -71,6 +71,7 @@ void TossEditor::onCreate()
     if (!filePath.empty()) // If a file was selected
     {
         auto scene = std::make_shared<Scene>(filePath);
+        scene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
         OpenScene(scene);
     }
 
@@ -105,8 +106,9 @@ void TossEditor::Exit()
 
 void TossEditor::onUpdateInternal()
 {
-    auto& tossEngine = TossEngine::GetInstance();
-
+    TossEngine& tossEngine = TossEngine::GetInstance();
+    GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
+    ResourceManager& resourceManager = ResourceManager::GetInstance();
 
     // delta time
     m_currentTime = tossEngine.GetTime();
@@ -128,13 +130,13 @@ void TossEditor::onUpdateInternal()
         }
 
         // player update
-        m_player->Update(deltaTime);
+        //m_player->Update(deltaTime);
         m_game->onUpdate(deltaTime);
         m_game->onLateUpdate(deltaTime);
     }
     else
     {
-        auto& inputManager = InputManager::GetInstance();
+        InputManager& inputManager = InputManager::GetInstance();
         inputManager.onUpdate();
 
         // player update
@@ -148,7 +150,6 @@ void TossEditor::onUpdateInternal()
     }
 
 
-    auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
     graphicsEngine.createImGuiFrame();
     ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
@@ -209,6 +210,7 @@ void TossEditor::onUpdateInternal()
             if (!m_game && m_currentScene)
             {
                 auto scene = std::make_shared<Scene>(m_currentScene->GetFilePath());
+                scene->SetWindowFrameBuffer(m_gameViewFrameBuffer);
                 m_game = new Game(m_projectSettings);
                 m_game->SetScene(scene);
             }
@@ -242,10 +244,10 @@ void TossEditor::onUpdateInternal()
             m_game->onGraphicsUpdate();
 
             // Get the updated texture after rendering.
-            ImTextureID sceneTexture = m_game->getScene()->getRenderTexture();
+            ImTextureID gameViewTexture = (ImTextureID)m_gameViewFrameBuffer->RenderTexture->getId();
 
             // Display the rendered scene scaled to the available region.
-            ImGui::Image(sceneTexture, availSize,
+            ImGui::Image(gameViewTexture, availSize,
                 ImVec2{ 0.f, 1.f },  // UV0
                 ImVec2{ 1.f, 0.f }   // UV1 (flipped vertically if needed)
             );
@@ -269,10 +271,10 @@ void TossEditor::onUpdateInternal()
             m_currentScene->onGraphicsUpdate(m_player->getCamera());
 
             // Get the updated texture after rendering.
-            ImTextureID sceneTexture = m_currentScene->getRenderTexture();
+            ImTextureID sceneViewTexture = (ImTextureID)m_sceneViewFrameBuffer->RenderTexture->getId();
 
             // Display the rendered scene scaled to the available region.
-            ImGui::Image(sceneTexture, availSize,
+            ImGui::Image(sceneViewTexture, availSize,
                 ImVec2{ 0.f, 1.f },  // UV0
                 ImVec2{ 1.f, 0.f }   // UV1 (flipped vertically if needed)
             );
@@ -419,10 +421,22 @@ void TossEditor::onUpdateInternal()
         ImGui::EndPopup();
     }
 
-    if (ImGui::Begin("Assets"))
-    {
+    if (ImGui::Begin("Assets")) {
+        const auto& resources = resourceManager.GetAllResources();
+
+        // Iterate over the resource map and display each resource's unique ID
+        for (const auto& [uniqueID, resource] : resources) {
+            if (uniqueID == "") continue;
+
+            bool isSelected = (resource == resourceManager.GetSelectedResource());
+            if (ImGui::Selectable(uniqueID.c_str(), isSelected)) {
+                resourceManager.SetSelectedResource(resource);
+            }
+        }
     }
     ImGui::End();
+
+    Debug::DrawConsole();
 
     graphicsEngine.renderImGuiFrame();
     

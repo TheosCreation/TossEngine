@@ -18,7 +18,7 @@ Mail : theo.morris@mds.ac.nz
  * @class Texture2D
  * @brief A representation of a 2D texture to be used by the graphics engine class.
  */
-class Texture2D : public Texture
+class TOSSENGINE_API Texture2D : public Texture
 {
 public:
     /**

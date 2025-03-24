@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
-class Ship : public Component
+
+class TOSSENGINE_API Ship : public Component
 {
 public:
     Ship() = default;
@@ -14,3 +15,4 @@ private:
     float m_speed = 1.0f;   // Speed of the ship's movement
 };
 
+REGISTER_COMPONENT(Ship);

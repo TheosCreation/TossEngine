@@ -20,7 +20,7 @@ class Texture2D;
  * @class Framebuffer
  * @brief A class representing a framebuffer used for rendering operations.
  */
-class Framebuffer : public Resizable
+class TOSSENGINE_API Framebuffer : public Resizable
 {
 public: 
 	/**

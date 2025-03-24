@@ -30,12 +30,7 @@ Mail : theo.morris@mds.ac.nz
 #include <filesystem>
 #include <nlohmann\json.hpp>
 #include <glew.h>
-
-#ifdef TOSSENGINE_EXPORTS
-#define TOSSENGINE_API __declspec(dllexport)  // When compiling the DLL
-#else
-#define TOSSENGINE_API __declspec(dllimport)  // When using the DLL
-#endif
+#include "Debug.h"
 
 
 using json = nlohmann::json; // will be using json to serialize classes and save GameObject objects and all
@@ -75,7 +70,7 @@ typedef std::shared_ptr<Resource> ResourcePtr;
 typedef std::shared_ptr<Texture> TexturePtr;
 typedef std::shared_ptr<Texture2D> Texture2DPtr;
 typedef std::shared_ptr<ShadowMap> ShadowMapPtr;
-typedef std::unique_ptr<Framebuffer> FramebufferPtr;
+typedef std::shared_ptr<Framebuffer> FramebufferPtr;
 typedef std::shared_ptr<TextureCubeMap> TextureCubeMapPtr;
 typedef std::shared_ptr<Mesh> MeshPtr;
 typedef std::shared_ptr<HeightMap> HeightMapPtr;
@@ -642,27 +637,6 @@ inline RenderingPath FromString<RenderingPath>(const std::string& input)
     auto it = enumMap.find(input);
     return (it != enumMap.end()) ? it->second : RenderingPath::Unknown;
 }
-
-class Debug
-{
-public:
-    // Static methods for logging messages
-    static void Log(const string& message) {
-        PrintMessage(message, "Log");
-    };
-    static void LogError(const string& message) {
-        PrintMessage(message, "Error");
-        throw std::runtime_error(message);
-    }
-    static void LogWarning(const string& message) {
-        PrintMessage(message, "Warning");
-    }
-private:
-    // Helper methods to format and print messages
-    static void PrintMessage(const string& message, const string& type) {
-        printf("[%s] %s\n", type.c_str(), message.c_str());
-    }
-};
 
 // Helper function to clean up the class name
 inline std::string getClassName(const std::type_info& typeInfo)

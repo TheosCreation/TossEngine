@@ -3,7 +3,9 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include "Component.h"
+#include "Utils.h"
+
+class Component;
 
 class TOSSENGINE_API ComponentRegistry
 {
@@ -91,4 +93,3 @@ private:
         ComponentRegistry::GetInstance().registerComponent<T>(); \
         return true; \
     }()
-

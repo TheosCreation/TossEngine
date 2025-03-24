@@ -9,7 +9,7 @@
 #include <string>
 #include <map>
 
-class Sound : public Resource
+class TOSSENGINE_API Sound : public Resource
 {
 public:
     /**

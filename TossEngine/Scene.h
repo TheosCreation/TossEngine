@@ -119,6 +119,8 @@ public:
     rp3d::PhysicsWorld* GetPhysicsWorld();
     rp3d::PhysicsCommon& GetPhysicsCommon();
 
+    void SetWindowFrameBuffer(FramebufferPtr windowFrameBuffer); // used to override the output window instead of using the default framebuffer
+
     Vector2 getFrameBufferSize();
     ImTextureID getRenderTexture();
 

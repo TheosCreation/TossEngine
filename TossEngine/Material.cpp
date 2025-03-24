@@ -1,5 +1,4 @@
 #include "Material.h"
-#include "Shader.h"
 #include "GraphicsEngine.h"
 
 Material::Material(ShaderPtr shader, const std::string& uniqueID, ResourceManager* manager) : Resource("", uniqueID, manager)

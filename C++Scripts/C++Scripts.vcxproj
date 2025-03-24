@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{71d94a3b-e2a4-4d01-956f-25140d135d80}</ProjectGuid>
+    <ProjectGuid>{71D94A3B-E2A4-4D01-956F-25140D135D80}</ProjectGuid>
     <RootNamespace>CScripts</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -149,10 +149,18 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="PlayerController.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="DestroyObjectWithTime.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PlayerController.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="DestroyObjectWithTime.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

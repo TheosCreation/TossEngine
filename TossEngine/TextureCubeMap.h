@@ -18,7 +18,7 @@ Mail : theo.morris@mds.ac.nz
  * @class TextureCubeMap
  * @brief A resource that represents a cubemap texture used by the graphics engine.
  */
-class TextureCubeMap : public Texture
+class TOSSENGINE_API TextureCubeMap : public Texture
 {
 public:
     /**
