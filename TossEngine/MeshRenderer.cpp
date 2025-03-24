@@ -188,6 +188,7 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
         {
             m_shader->setTexture2D(m_texture, 0, "Texture0");
             m_shader->setBool("useTexture", true);
+            m_shader->setFloat("alpha", m_alpha);
         }
         else
         {

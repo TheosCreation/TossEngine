@@ -304,27 +304,23 @@ void TossEditor::onUpdateInternal()
             ImGui::DragFloat3("Position", glm::value_ptr(selectedGameObject->m_transform.position), 0.1f);
             ImGui::DragFloat4("Rotation", glm::value_ptr(selectedGameObject->m_transform.rotation), 0.1f);
             ImGui::DragFloat3("Scale", glm::value_ptr(selectedGameObject->m_transform.scale), 0.1f);
-            ImGui::Separator();
-
-            // List the attached components as dropdowns.
-            ImGui::Text("Components:");
             for (auto& pair : selectedGameObject->getAllComponents())
             {
-                Component* comp = pair.second; // Assuming getAllComponents() returns something like a std::map<... , Component*>
-                // Show each component as a tree node. Highlight it if it is selected.
+                ImGui::Separator();
+                Component* comp = pair.second; // e.g., from a std::map
+                // Highlight the selected component.
                 ImGuiTreeNodeFlags flags = (selectedComponent == comp) ? ImGuiTreeNodeFlags_Selected : 0;
                 bool open = ImGui::TreeNodeEx(comp->getName().c_str(), flags);
                 if (ImGui::IsItemClicked())
                 {
-                    // Clicking on the component selects it.
+                    // Select the component when clicked.
                     selectedComponent = comp;
                 }
-                // Right-click context menu for the component.
+                // Right-click context menu.
                 if (ImGui::BeginPopupContextItem())
                 {
                     if (ImGui::MenuItem("Delete"))
                     {
-                        // Remove the component from the game object.
                         selectedGameObject->removeComponent(comp);
                         if (selectedComponent == comp)
                             selectedComponent = nullptr;
@@ -333,19 +329,17 @@ void TossEditor::onUpdateInternal()
                 }
                 if (open)
                 {
-                    // Optionally, display additional details about the component here.
-                    ImGui::Text("Details can go here...");
+                    comp->OnInspectorGUI();
                     ImGui::TreePop();
                 }
             }
             ImGui::Separator();
 
-            // Optionally add an "Add Component" button (already implemented in your code).
+            // "Add Component" button and popup remain unchanged.
             if (ImGui::Button("Add Component"))
             {
                 ImGui::OpenPopup("Add Component Popup");
             }
-            // [Add Component Popup code remains the same as before...]
             static char componentSearchBuffer[256] = "";
             if (ImGui::BeginPopup("Add Component Popup"))
             {

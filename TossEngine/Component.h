@@ -1,5 +1,6 @@
 #pragma once
 #include "Serializable.h"
+#include <imgui.h>
 
 class GameObject;
 
@@ -33,6 +34,8 @@ public:
 
     virtual void onDestroy() {
     }
+
+    virtual void OnInspectorGUI() {}
 
     void Destroy(GameObject* objectToDestroy);
 

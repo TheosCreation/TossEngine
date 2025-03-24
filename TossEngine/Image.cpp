@@ -86,6 +86,7 @@ void Image::Render(UniformData data, RenderingPath renderPath)
     graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_vbo->getNumIndices()); // Draw the indexed triangles
 }
 
+
 void Image::SetSize(Vector2 size)
 {
     if (m_size != size)
