@@ -5,7 +5,7 @@
 struct TOSSENGINE_API TossPlayerSettings
 {
     std::string firstSceneToOpen = "";
-    std::vector<std::string> allSceneFilePaths = std::vector<std::string>();
+    std::vector<std::string> selectedSceneFilePaths = std::vector<std::string>();
     Vector2 windowSize = Vector2(800, 800);
 
     //stuff pulled from the project settings 
@@ -31,7 +31,7 @@ struct TOSSENGINE_API TossPlayerSettings
         if (j.contains("AllSceneFilePaths"))
         {
             // Automatically convert JSON array to std::vector<std::string>
-            allSceneFilePaths = j["AllSceneFilePaths"].get<std::vector<std::string>>();
+            selectedSceneFilePaths = j["AllSceneFilePaths"].get<std::vector<std::string>>();
         }
 
         if (j.contains("RenderingPath") && j["RenderingPath"].is_string()) {
@@ -51,9 +51,24 @@ struct TOSSENGINE_API TossPlayerSettings
     // Save settings to a JSON file
     void SaveToFile(const std::string& filename)
     {
+        // Before saving, check if firstSceneToOpen is empty.
+        if (firstSceneToOpen.empty())
+        {
+            if (!selectedSceneFilePaths.empty())
+            {
+                // Use the first selected scene if available.
+                firstSceneToOpen = selectedSceneFilePaths[0];
+            }
+            else
+            {
+                // Log a debug message if no scene is selected.
+                Debug::LogError("No scene file selected for FirstSceneToOpen.");
+            }
+        }
+
         json j;
         j["FirstSceneToOpen"] = firstSceneToOpen;
-        j["AllSceneFilePaths"] = allSceneFilePaths; // Save the scenes list
+        j["AllSceneFilePaths"] = selectedSceneFilePaths; // Save the scenes list
         j["RenderingPath"] = ToString(renderingPath);
         j["WindowSize"] = { windowSize.x, windowSize.y };
 
@@ -63,6 +78,8 @@ struct TOSSENGINE_API TossPlayerSettings
             std::cerr << "Failed to save " << filename << std::endl;
             return;
         }
+
+        Debug::Log("Saved Player Settings to filepath: " + filename);
 
         file << j.dump(4); // Pretty-print JSON with indentation
     }

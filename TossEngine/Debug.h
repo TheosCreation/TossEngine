@@ -17,7 +17,7 @@ public:
     // Log an error message and throw an exception
     static void LogError(const std::string& message) {
         PrintMessage(message, "Error");
-        throw std::runtime_error(message);
+        throw std::runtime_error("");
     }
     // Log a warning message
     static void LogWarning(const std::string& message) {

@@ -19,7 +19,7 @@ TossPlayer::TossPlayer()
 
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
-    tossEngine.TryCreateWindow(this, windowSize, "TossEditor");
+    tossEngine.TryCreateWindow(this, windowSize, "TossPlayer");
 
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
@@ -45,9 +45,13 @@ TossPlayer::~TossPlayer()
 
 void TossPlayer::run()
 {
-    if (abort) return;
-
     auto& tossEngine = TossEngine::GetInstance();
+    if (abort)
+    {
+        tossEngine.GetWindow()->close(); 
+        return;
+    }
+
     tossEngine.LoadGenericResources();
 
     onCreate();
@@ -81,6 +85,8 @@ void TossPlayer::onUpdateInternal()
 {
     TossEngine& tossEngine = TossEngine::GetInstance();
     GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
+
+    FindSceneFiles();
 
     // delta time
     m_currentTime = tossEngine.GetTime();

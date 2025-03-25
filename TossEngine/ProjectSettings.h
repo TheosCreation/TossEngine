@@ -39,6 +39,8 @@ struct TOSSENGINE_API ProjectSettings
             return;
         }
 
+        Debug::Log("Saved Project Settings to filepath: " + filename);
+
         file << j.dump(4); // Pretty-print JSON with indentation
     }
 };

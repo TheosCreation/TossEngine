@@ -17,7 +17,7 @@ TossEditor::TossEditor()
     m_projectSettings->LoadFromFile("ProjectSettings.json");
 
     m_playerSettings = std::make_unique<TossPlayerSettings>();
-    m_playerSettings->LoadFromFile("PlayersSettings.json");
+    m_playerSettings->LoadFromFile("PlayerSettings.json");
 
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
@@ -109,6 +109,8 @@ void TossEditor::onUpdateInternal()
     TossEngine& tossEngine = TossEngine::GetInstance();
     GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
     ResourceManager& resourceManager = ResourceManager::GetInstance();
+
+    FindSceneFiles();
 
     // delta time
     m_currentTime = tossEngine.GetTime();
@@ -288,19 +290,110 @@ void TossEditor::onUpdateInternal()
         }
     }
     ImGui::End();
-    
+
     if (ImGui::Begin("Settings"))
     {
-        static const char* items[]{ "Deferred Rendering","Forward" }; static int Selecteditem = (int)m_projectSettings->renderingPath;
+        ImGui::Text("Graphics Options");
+        // Rendering Path selection
+        static const char* items[]{ "Deferred Rendering", "Forward" };
+        static int Selecteditem = (int)m_projectSettings->renderingPath;
         if (ImGui::Combo("Rendering Path", &Selecteditem, items, IM_ARRAYSIZE(items)))
         {
             RenderingPath selectedPath = static_cast<RenderingPath>(Selecteditem);
             Debug::Log("Rendering Path changed to option: " + ToString(selectedPath));
             graphicsEngine.setRenderingPath(selectedPath);
             m_projectSettings->renderingPath = selectedPath;
+            m_playerSettings->renderingPath = selectedPath;
+        }
+
+        ImGui::Separator();
+        ImGui::Text("Player Settings");
+
+
+        ImGui::Text("All Scene File Paths:");
+
+        // Ensure we have a selection flag for each scene file.
+        static std::vector<bool> selected;
+        if (selected.size() != allSceneFilePaths.size())
+        {
+            // Resize the selection flags vector.
+            selected.resize(allSceneFilePaths.size(), false);
+
+            // Set each flag to true if the file is already in selectedSceneFilePaths.
+            for (size_t i = 0; i < allSceneFilePaths.size(); i++)
+            {
+                if (std::find(m_playerSettings->selectedSceneFilePaths.begin(),
+                    m_playerSettings->selectedSceneFilePaths.end(),
+                    allSceneFilePaths[i]) != m_playerSettings->selectedSceneFilePaths.end())
+                {
+                    selected[i] = true;
+                }
+            }
+        }
+
+
+        // Iterate over all scene file paths and display a checkbox for each.
+        for (size_t i = 0; i < allSceneFilePaths.size(); i++)
+        {
+            std::string label = allSceneFilePaths[i];
+            bool isSelected = selected[i];
+
+            if (ImGui::Checkbox(label.c_str(), &isSelected))
+            {
+                selected[i] = isSelected;
+
+                if (isSelected)
+                {
+                    // Add the file if not already selected.
+                    if (std::find(m_playerSettings->selectedSceneFilePaths.begin(),
+                        m_playerSettings->selectedSceneFilePaths.end(), label)
+                        == m_playerSettings->selectedSceneFilePaths.end())
+                    {
+                        m_playerSettings->selectedSceneFilePaths.push_back(label);
+                    }
+                }
+                else
+                {
+                    auto& vec = m_playerSettings->selectedSceneFilePaths;
+                    vec.erase(std::remove(vec.begin(), vec.end(), label), vec.end());
+                }
+            }
+        }
+
+        ImGui::Text("First Scene To Open:");
+        if (!m_playerSettings->selectedSceneFilePaths.empty())
+        {
+            // Static index to track the selected scene. Defaults to 0 (first option).
+            static int selectedFirstSceneIndex = 0;
+
+            // Build an array of C-string pointers from the vector of scene file paths.
+            std::vector<const char*> sceneNames;
+            for (const auto& scenePath : m_playerSettings->selectedSceneFilePaths)
+            {
+                sceneNames.push_back(scenePath.c_str());
+            }
+
+            // Display the combo box. If the user selects a different option, update the first scene.
+            if (ImGui::Combo("##FirstSceneCombo", &selectedFirstSceneIndex, sceneNames.data(), sceneNames.size()))
+            {
+                m_playerSettings->firstSceneToOpen = m_playerSettings->selectedSceneFilePaths[selectedFirstSceneIndex];
+            }
+        }
+        else
+        {
+            ImGui::Text("No scene files available.");
+        }
+
+        // Option to change the window size (assumed to have x and y components)
+        int windowSize[2] = { m_playerSettings->windowSize.x, m_playerSettings->windowSize.y };
+        if (ImGui::InputInt2("Game Resolution", windowSize))
+        {
+            m_playerSettings->windowSize.x = windowSize[0];
+            m_playerSettings->windowSize.y = windowSize[1];
         }
     }
     ImGui::End();
+
 
     if (ImGui::Begin("Inspector"))
     {
@@ -393,6 +486,27 @@ void TossEditor::onUpdateInternal()
     
     // Render to window
     tossEngine.GetWindow()->present();
+}
+
+void TossEditor::FindSceneFiles()
+{
+    // Clear the current list to update it with any changes.
+    allSceneFilePaths.clear();
+
+    // Check if the "Scenes" directory exists.
+    const std::filesystem::path scenesDir("Scenes");
+    if (std::filesystem::exists(scenesDir) && std::filesystem::is_directory(scenesDir))
+    {
+        // Iterate over files in the directory.
+        for (const auto& entry : std::filesystem::directory_iterator(scenesDir))
+        {
+            // Ensure it is a regular file and has a .json extension.
+            if (entry.is_regular_file() && entry.path().extension() == ".json")
+            {
+                allSceneFilePaths.push_back(entry.path().string());
+            }
+        }
+    }
 }
 
 void TossEditor::onQuit()

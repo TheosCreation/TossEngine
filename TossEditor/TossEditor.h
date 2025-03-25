@@ -32,6 +32,7 @@ public:
 
 protected:
     void onUpdateInternal();
+    void FindSceneFiles();
     /**
      * @brief Called when the editor is created.
      */
@@ -51,6 +52,7 @@ protected:
 
 private:
     EditorPreferences editorPreferences;
+    std::vector<std::string> allSceneFilePaths = std::vector<std::string>();
 
 	ProjectSettingsPtr m_projectSettings = nullptr;
 	TossPlayerSettingsPtr m_playerSettings = nullptr;

@@ -42,6 +42,8 @@ struct EditorPreferences
             return;
         }
 
+        Debug::Log("Saved Editor preferences to filepath: " + filename);
+
         file << j.dump(4); // Pretty-print JSON with indentation
     }
 };
