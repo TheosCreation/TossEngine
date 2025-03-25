@@ -391,6 +391,33 @@ void TossEditor::onUpdateInternal()
             m_playerSettings->windowSize.x = windowSize[0];
             m_playerSettings->windowSize.y = windowSize[1];
         }
+
+
+        // --- Build Button ---
+        //if (ImGui::Button("Build Project"))
+        //{
+        //    // Define the absolute paths (with escaped backslashes).
+        //    std::string msbuildPath = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe";
+        //    std::string projectFile = "C:\\Users\\Theo\\TossEngine\\TossPlayer\\TossPlayer.vcxproj";
+        //    std::string configuration = "/p:Configuration=Release";
+        //    // Use a double trailing backslash to avoid escaping the closing quote.
+        //    std::string solutionDirProp = " /p:SolutionDir=\"C:\\Users\\Theo\\TossEngine\\\\\"";
+        //
+        //    // Construct the command string using cmd /c and proper quoting.
+        //    std::string command = "cmd /c \"\"" + msbuildPath + "\" \"" + projectFile + "\" " + configuration + solutionDirProp + "\"";
+        //
+        //    Debug::Log("Starting build: " + command);
+        //    int result = system(command.c_str());
+        //
+        //    if (result == 0)
+        //    {
+        //        Debug::Log("Build succeeded.");
+        //    }
+        //    else
+        //    {
+        //        Debug::Log("Build failed with error code: " + std::to_string(result));
+        //    }
+        //}
     }
     ImGui::End();
 

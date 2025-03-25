@@ -123,10 +123,7 @@
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /I "$(SolutionDir)TossEditor/Scenes" "$(SolutionDir)TossPlayer/Scenes"
-xcopy /y "$(SolutionDir)TossEditor\PlayerSettings.json" "$(SolutionDir)TossPlayer"
-xcopy /y /I /E "$(SolutionDir)TossEditor/Resources" "$(SolutionDir)/TossPlayer/Resources"
-</Command>
+      <Command>xcopy /y /I "$(SolutionDir)TossEditor/Scenes" "$(SolutionDir)TossPlayer/Scenes"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,6 +144,9 @@ xcopy /y /I /E "$(SolutionDir)TossEditor/Resources" "$(SolutionDir)/TossPlayer/R
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /I "$(SolutionDir)TossEditor/Scenes" "$(SolutionDir)TossPlayer/Scenes"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\IMGUI\imgui.cpp" />
