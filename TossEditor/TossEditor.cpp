@@ -84,12 +84,12 @@ void TossEditor::onCreate()
 {
     string filePath = m_projectSettings->lastKnownOpenScenePath;
 
-    //if (!filePath.empty()) // If a file was selected
-    //{
-    //    auto scene = std::make_shared<Scene>(filePath);
-    //    scene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
-    //    OpenScene(scene);
-    //}
+    if (!filePath.empty()) // If a file was selected
+    {
+        auto scene = std::make_shared<Scene>(filePath);
+        scene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
+        OpenScene(scene);
+    }
 
     m_player = std::make_unique<EditorPlayer>(this);
     m_player->onCreate();
@@ -649,7 +649,7 @@ void TossEditor::LoadWatchAndCompileScripts()
 void TossEditor::PerformSafeDllReload()
 {
     Save();
-    ComponentRegistry::GetInstance().CleanUp();
+    //ComponentRegistry::GetInstance().CleanUp();
     if (m_currentScene != nullptr)
     {
         m_currentScene->onQuit();
@@ -670,6 +670,16 @@ void TossEditor::PerformSafeDllReload()
     }
 
     canUpdateInternal = true;
+
+    string filePath = m_projectSettings->lastKnownOpenScenePath;
+
+    if (!filePath.empty()) // If a file was selected
+    {
+        auto scene = std::make_shared<Scene>(filePath);
+        scene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
+        OpenScene(scene);
+    }
+
 }
 
 

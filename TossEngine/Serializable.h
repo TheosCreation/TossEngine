@@ -75,4 +75,6 @@ public:
             ImGui::EndTable();
         }
     }
+
+    void FloatSlider(const std::string& name, float& value, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
 };
