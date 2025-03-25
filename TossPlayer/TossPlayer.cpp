@@ -86,8 +86,6 @@ void TossPlayer::onUpdateInternal()
     TossEngine& tossEngine = TossEngine::GetInstance();
     GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
 
-    FindSceneFiles();
-
     // delta time
     m_currentTime = tossEngine.GetTime();
     float deltaTime = m_currentTime - m_previousTime;
