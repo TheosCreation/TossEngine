@@ -10,7 +10,7 @@ class TOSSENGINE_API Component : public Serializable, public ISelectable
 {
 public:
     //Component(const Component& other);
-
+    //
 	GameObject* getOwner();
 	string getName();
 	void setOwner(GameObject* gameObject);
@@ -29,6 +29,9 @@ public:
     }
 
     virtual void onUpdate(float deltaTime) {
+    }
+
+    virtual void onUpdateInternal() {
     }
 
     virtual void onFixedUpdate(float fixedDeltaTime) {

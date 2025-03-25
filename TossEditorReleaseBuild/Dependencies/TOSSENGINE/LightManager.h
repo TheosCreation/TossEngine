@@ -32,24 +32,31 @@ public:
     * @param newPointLight The point light to be added.
     */
     uint createPointLight(const PointLightData& newPointLight);
-
+    void updatePointLightIntencity(uint lightId, const float& newIntencity);
     void updatePointLightPosition(uint lightId, const Vector3& position);
-
     void updatePointLightColor(uint lightId, const Vector3& newColor);
-
     void updatePointLightRadius(uint lightId, float newRadius);
 
     /**
      * @brief Creates a directional light and adds it to the manager.
      * @param newDirectionalLight The directional light to be added.
      */
-    void createDirectionalLight(const DirectionalLightData& newDirectionalLight);
+    uint createDirectionalLight(const DirectionalLightData& newDirectionalLight);
+    void updateDirectionalLightDirection(uint lightId, const Vector3& direction);
+    void updateDirectionalLightIntencity(uint lightId, const float& newIntencity);
+    void updateDirectionalLightColor(uint lightId, const Vector3& newColor);
 
     /**
      * @brief Creates a spotlight and adds it to the manager.
      * @param newSpotLight The spotlight to be added.
      */
-    void createSpotLight(const SpotLightData& newSpotLight);
+    uint createSpotLight(const SpotLightData& newSpotLight);
+    void updateSpotLightIntencity(uint lightId, const float& newIntencity);
+    void updateSpotLightPosition(uint lightId, const Vector3& position);
+    void updateSpotLightDirection(uint lightId, const Vector3& direction);
+    void updateSpotLightColor(uint lightId, const Vector3& newColor);
+    void updateSpotLightCutOff(uint lightId, const float& newCutoff);
+    void updateSpotLightOuterCutOff(uint lightId, const float& newCutoff);
 
     /**
     * @brief Applies lighting information to the specified shader.
@@ -143,7 +150,10 @@ private:
     Vector3 AmbientColor = Vector3(1.0f, 1.0f, 1.0f); //The color of the ambient light
     static const int MAX_POINT_LIGHTS = 25; //The maximum number of point lights
     PointLightData m_pointLights[MAX_POINT_LIGHTS] = {}; // Array of point lights
+    static const int MAX_SPOT_LIGHTS = 10; //The maximum number of spot lights
+    SpotLightData m_spotLights[MAX_SPOT_LIGHTS] = {}; // Array of point lights
     uint m_pointLightCount = 0; // The current count of point lights
+    uint m_spotLightCount = 0; // The current count of spot lights
 
     static const int MAX_DIRECTIONAL_LIGHTS = 2; // The maximum number of directional lights
     DirectionalLightData m_directionalLights[MAX_DIRECTIONAL_LIGHTS] = {}; // Array of directional lights

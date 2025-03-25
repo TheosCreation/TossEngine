@@ -26,7 +26,7 @@ uint LightManager::createPointLight(const PointLightData& newPointLight)
 {
     if (m_pointLightCount >= MAX_POINT_LIGHTS)
     {
-        std::cerr << "Error: Maximum number of point lights reached!" << std::endl;
+        Debug::LogWarning("Maximum number of point lights reached!");
         return -1; // Indicate failure
     }
 
@@ -37,11 +37,22 @@ uint LightManager::createPointLight(const PointLightData& newPointLight)
     return lightId; // Return valid ID
 }
 
+void LightManager::updatePointLightIntencity(uint lightId, const float& newIntencity)
+{
+    if (lightId >= m_pointLightCount)
+    {
+        Debug::LogWarning("Invalid PointLight ID: " + lightId);
+        return;
+    }
+
+    m_pointLights[lightId].SpecularStrength = newIntencity;
+}
+
 void LightManager::updatePointLightPosition(uint lightId, const Vector3& position)
 {
     if (lightId >= m_pointLightCount)
     {
-        std::cerr << "Error: Invalid PointLight ID " << lightId << "!" << std::endl;
+        Debug::LogWarning("Invalid PointLight ID: " + lightId);
         return;
     }
 
@@ -52,7 +63,7 @@ void LightManager::updatePointLightColor(uint lightId, const Vector3& newColor)
 {
     if (lightId >= m_pointLightCount)
     {
-        std::cerr << "Error: Invalid PointLight ID " << lightId << "!" << std::endl;
+        Debug::LogWarning("Invalid PointLight ID: " + lightId);
         return;
     }
 
@@ -63,22 +74,140 @@ void LightManager::updatePointLightRadius(uint lightId, float newRadius)
 {
     if (lightId >= m_pointLightCount)
     {
-        std::cerr << "Error: Invalid PointLight ID " << lightId << "!" << std::endl;
+        Debug::LogWarning("Invalid PointLight ID: " + lightId);
         return;
     }
 
     m_pointLights[lightId].Radius = newRadius;
 }
 
-void LightManager::createDirectionalLight(const DirectionalLightData& newDirectionalLight)
+uint LightManager::createDirectionalLight(const DirectionalLightData& newDirectionalLight)
 {
-    m_directionalLights[m_directionalLightCount] = newDirectionalLight;
+    if (m_directionalLightCount >= MAX_DIRECTIONAL_LIGHTS)
+    {
+        Debug::LogWarning("Maximum number of directional lights reached!");
+        return -1;
+    }
+
+    uint lightId = m_directionalLightCount; // Assign ID based on count
+    m_directionalLights[lightId] = newDirectionalLight;
     m_directionalLightCount++;
+
+    return lightId; // Return valid ID
 }
 
-void LightManager::createSpotLight(const SpotLightData& newSpotLight)
+void LightManager::updateDirectionalLightDirection(uint lightId, const Vector3& direction)
 {
-    m_spotLight = newSpotLight;
+    if (lightId >= m_directionalLightCount)
+    {
+        Debug::LogWarning("Invalid Directional ID: " + lightId);
+        return;
+    }
+
+    m_directionalLights[lightId].Direction = direction;
+}
+
+void LightManager::updateDirectionalLightIntencity(uint lightId, const float& newIntencity)
+{
+    if (lightId >= m_directionalLightCount)
+    {
+        Debug::LogWarning("Invalid Directional ID: " + lightId);
+        return;
+    }
+
+    m_directionalLights[lightId].SpecularStrength = newIntencity;
+}
+
+void LightManager::updateDirectionalLightColor(uint lightId, const Vector3& newColor)
+{
+    if (lightId >= m_directionalLightCount)
+    {
+        Debug::LogWarning("Invalid Directional ID: " + lightId);
+        return;
+    }
+
+    m_directionalLights[lightId].Color = newColor;
+}
+
+uint LightManager::createSpotLight(const SpotLightData& newSpotLight)
+{
+    if (m_spotLightCount >= MAX_SPOT_LIGHTS)
+    {
+        Debug::LogWarning("Maximum number of spot lights reached!");
+        return -1; // Indicate failure
+    }
+
+    uint lightId = m_spotLightCount; // Assign ID based on count
+    m_spotLights[lightId] = newSpotLight;
+    m_spotLightCount++;
+
+    return lightId; // Return valid ID
+}
+
+void LightManager::updateSpotLightIntencity(uint lightId, const float& newIntencity)
+{
+    if (lightId >= m_spotLightCount)
+    {
+        Debug::LogWarning("Invalid Spot Light ID: " + lightId);
+        return;
+    }
+
+    m_spotLights[lightId].SpecularStrength = newIntencity;
+}
+
+void LightManager::updateSpotLightPosition(uint lightId, const Vector3& position)
+{
+    if (lightId >= m_spotLightCount)
+    {
+        Debug::LogWarning("Invalid Spot Light ID: " + lightId);
+        return;
+    }
+
+    m_spotLights[lightId].Position = position;
+}
+
+void LightManager::updateSpotLightDirection(uint lightId, const Vector3& direction)
+{
+    if (lightId >= m_spotLightCount)
+    {
+        Debug::LogWarning("Invalid Spot Light ID: " + lightId);
+        return;
+    }
+
+    m_spotLights[lightId].Direction = direction;
+}
+
+void LightManager::updateSpotLightColor(uint lightId, const Vector3& newColor)
+{
+    if (lightId >= m_spotLightCount)
+    {
+        Debug::LogWarning("Invalid Spot Light ID: " + lightId);
+        return;
+    }
+
+    m_spotLights[lightId].Color = newColor;
+}
+
+void LightManager::updateSpotLightCutOff(uint lightId, const float& newCutoff)
+{
+    if (lightId >= m_spotLightCount)
+    {
+        Debug::LogWarning("Invalid Spot Light ID: " + lightId);
+        return;
+    }
+
+    m_spotLights[lightId].CutOff = newCutoff;
+}
+
+void LightManager::updateSpotLightOuterCutOff(uint lightId, const float& newCutoff)
+{
+    if (lightId >= m_spotLightCount)
+    {
+        Debug::LogWarning("Invalid Spot Light ID: " + lightId);
+        return;
+    }
+
+    m_spotLights[lightId].OuterCutOff = newCutoff;
 }
 
 void LightManager::applyLighting(ShaderPtr shader) const
@@ -127,24 +256,29 @@ void LightManager::applyLighting(ShaderPtr shader) const
     {
         shader->setUint("DirectionalLightCount", 0);
     }
-    
-    // Make this so i can have multiple spotlights
+
     if (SpotlightStatus)
     {
-        shader->setVec3("SpotLight1.Base.Color", m_spotLight.Color);
-        shader->setFloat("SpotLight1.Base.SpecularStrength", m_spotLight.SpecularStrength);
-        shader->setVec3("SpotLight1.Position", m_spotLight.Position);
-        shader->setVec3("SpotLight1.Direction", m_spotLight.Direction);
-        shader->setFloat("SpotLight1.CutOff", m_spotLight.CutOff);
-        shader->setFloat("SpotLight1.OuterCutOff", m_spotLight.OuterCutOff);
-        shader->setFloat("SpotLight1.AttenuationConstant", m_spotLight.AttenuationConstant);
-        shader->setFloat("SpotLight1.AttenuationLinear", m_spotLight.AttenuationLinear);
-        shader->setFloat("SpotLight1.AttenuationExponent", m_spotLight.AttenuationExponent);
-        shader->setInt("SpotLightStatus", 1);
+        for (unsigned int i = 0; i < m_spotLightCount; i++)
+        {
+            std::string index = std::to_string(i);
+            shader->setVec3("SpotLightArray[" + index + "].Base.Color", m_spotLights[i].Color);
+            shader->setFloat("SpotLightArray[" + index + "].Base.SpecularStrength", m_spotLights[i].SpecularStrength);
+
+            shader->setVec3("SpotLightArray[" + index + "].Position", m_spotLights[i].Position);
+            shader->setVec3("SpotLightArray[" + index + "].Direction", m_spotLights[i].Direction);
+            shader->setFloat("SpotLightArray[" + index + "].CutOff", m_spotLights[i].CutOff);
+            shader->setFloat("SpotLightArray[" + index + "].CutOff", m_spotLights[i].OuterCutOff);
+            shader->setFloat("SpotLightArray[" + index + "].AttenuationConstant", m_spotLights[i].AttenuationConstant);
+            shader->setFloat("SpotLightArray[" + index + "].AttenuationLinear", m_spotLights[i].AttenuationLinear);
+            shader->setFloat("SpotLightArray[" + index + "].AttenuationExponent", m_spotLights[i].AttenuationExponent);
+        }
+
+        shader->setUint("SpotLightCount", m_spotLightCount);
     }
     else
     {
-        shader->setInt("SpotLightStatus", 0);
+        shader->setUint("SpotLightCount", 0);
     }
 }
 

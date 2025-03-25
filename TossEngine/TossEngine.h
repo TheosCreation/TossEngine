@@ -1,6 +1,8 @@
 #pragma once
 #include "All.h"
 
+class ScriptLoader;
+
 class TOSSENGINE_API TossEngine
 {
 public:
@@ -16,6 +18,7 @@ public:
 
     void Init();
     void LoadScripts();
+    void CompileScriptsProject();
     void LoadGenericResources();
     void TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName, bool maximized = false);
     Window* GetWindow();
@@ -26,11 +29,13 @@ public:
 
     bool IsDebugMode();
     void SetDebugMode(bool enabled);
+    ScriptLoader* getScriptLoader();
 
 private:
     bool isInitilized = false;
     bool isDebugMode = false;
     std::unique_ptr<Window> m_window = nullptr;
+    ScriptLoader* m_scriptLoader = nullptr;
 
     /**
      * @brief Private constructor to prevent external instantiation.

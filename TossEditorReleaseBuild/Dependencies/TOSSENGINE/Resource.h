@@ -14,6 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include <map>
 #include <string>
 #include "Utils.h"
+#include "ISelectable.h"
 
 // Forward declaration of ResourceManager class
 class ResourceManager;
@@ -22,7 +23,7 @@ class ResourceManager;
  * @class Resource
  * @brief Represents a generic resource such as a file, image, or texture.
  */
-class TOSSENGINE_API Resource
+class TOSSENGINE_API Resource : public ISelectable
 {
 public:
     /**

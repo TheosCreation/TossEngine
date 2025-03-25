@@ -34,6 +34,9 @@ public:
      */
     Texture(const string& filePath, ResourceManager* manager);
 
+    void OnInspectorGUI() override;
+    bool Delete(bool deleteSelf = true) override;
+
     /**
      * @brief Destructor for the Texture class.
      * Cleans up resources associated with the texture.

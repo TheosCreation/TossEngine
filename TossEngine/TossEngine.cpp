@@ -4,6 +4,7 @@
 #include <glfw3.h>
 #include <windows.h>
 #include "tinyfiledialogs.h"
+#include "ScriptLoader.h"
 
 void TossEngine::Init()
 {
@@ -15,24 +16,27 @@ void TossEngine::Init()
         Debug::LogError("GLFW failed to initialize properly. Terminating program.");
         return;
     }
-    LoadScripts();
+
     isInitilized = true;
+
+    m_scriptLoader = new ScriptLoader();
 }
 
 void TossEngine::LoadScripts()
 {
     HMODULE scriptsDll = LoadLibrary(L"C++Scripts.dll");
-    if (scriptsDll) {
-        typedef void (*RegisterComponentsFunc)();
-        RegisterComponentsFunc registerFunc = (RegisterComponentsFunc)GetProcAddress(scriptsDll, "RegisterComponents");
-        if (registerFunc) {
-            registerFunc();
-        }
+    if (scriptsDll) 
+    {
     }
     else
     {
         Debug::Log("No Scripts dll found");
     }
+}
+
+void TossEngine::CompileScriptsProject() 
+{
+
 }
 
 void TossEngine::LoadGenericResources()
@@ -61,6 +65,11 @@ void TossEngine::SetDebugMode(bool enabled)
     isDebugMode = enabled;
 }
 
+ScriptLoader* TossEngine::getScriptLoader()
+{
+    return m_scriptLoader;
+}
+
 Window* TossEngine::GetWindow()
 {
     return m_window.get();
@@ -73,6 +82,9 @@ void TossEngine::PollEvents()
 
 void TossEngine::CleanUp()
 {
+    ComponentRegistry::GetInstance().CleanUp();
+    isInitilized = false; 
+
     glfwTerminate();
 }
 

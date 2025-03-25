@@ -32,6 +32,7 @@ public:
 
 protected:
     void onUpdateInternal();
+    void onLateUpdateInternal();
     void FindSceneFiles();
     /**
      * @brief Called when the editor is created.
@@ -50,9 +51,16 @@ protected:
 
     void ShowGameObjectNode(GameObject* gameObject);
 
+    void LoadWatchAndCompileScripts();
+    void PerformSafeDllReload();
+
 private:
+    bool m_editorRunning = true;
+    bool canUpdateInternal = true;
+    bool requestDllReload = false;
     EditorPreferences editorPreferences;
     std::vector<std::string> allSceneFilePaths = std::vector<std::string>();
+    std::thread scriptWatcherThread;
 
 	ProjectSettingsPtr m_projectSettings = nullptr;
 	TossPlayerSettingsPtr m_playerSettings = nullptr;

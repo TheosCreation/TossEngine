@@ -26,6 +26,14 @@ public:
     // Deserialize the MeshRenderer from JSON
     void deserialize(const json& data) override;
 
+    virtual void OnInspectorGUI() override
+    {
+        Renderer::OnInspectorGUI();
+
+        ResourceSerializedField(m_mesh, "Mesh");
+        ResourceSerializedField(m_texture, "CubeMapTexture");
+    }
+
     /**
      * @brief Called when the GameObject is created.
      */

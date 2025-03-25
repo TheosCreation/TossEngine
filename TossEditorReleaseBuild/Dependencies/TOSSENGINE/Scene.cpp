@@ -104,35 +104,6 @@ void Scene::onCreate()
     m_postProcessSSRQMaterial = resourceManager.getMaterial("PostProcessSSRQMaterial");
 
 
-    // Create and initialize a DirectionalLight struct
-    DirectionalLightData directionalLight1;
-    directionalLight1.Direction = Vector3(0.0f, -1.0f, -0.5f);
-    directionalLight1.Color = Vector3(0.6f);
-    directionalLight1.SpecularStrength = 0.1f;
-    m_lightManager->createDirectionalLight(directionalLight1);
-
-    // Create and initialize a DirectionalLight struct
-    DirectionalLightData directionalLight2;
-    directionalLight2.Direction = Vector3(0.0f, -1.0f, 0.5f);
-    directionalLight2.Color = Vector3(0.6f);
-    directionalLight2.SpecularStrength = 0.1f;
-    m_lightManager->createDirectionalLight(directionalLight2);
-
-    // Create and initialize SpotLight struct
-    SpotLightData spotLight;
-    spotLight.Position = Vector3(0.0f);
-    spotLight.Direction = Vector3(0.0f, 0.0f, -1.0f);
-    spotLight.Color = Color::White;
-    spotLight.SpecularStrength = 1.0f;
-    spotLight.CutOff = glm::cos(glm::radians(25.0f));
-    spotLight.OuterCutOff = glm::cos(glm::radians(35.0f));
-    spotLight.AttenuationConstant = 1.0f;
-    spotLight.AttenuationLinear = 0.014f;
-    spotLight.AttenuationExponent = 0.0007f;
-    m_lightManager->createSpotLight(spotLight);
-    m_lightManager->setSpotlightStatus(false);
-
-
     MeshPtr statueMesh = resourceManager.createMeshFromFile("Resources/Meshes/SM_Prop_Statue_01.obj");
     float spacing = 50.0f;
     for (int row = -4; row < 4; ++row) {

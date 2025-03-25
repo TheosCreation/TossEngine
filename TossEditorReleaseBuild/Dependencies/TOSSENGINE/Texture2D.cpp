@@ -43,6 +43,17 @@ Texture2D::Texture2D(const Texture2DDesc& desc, const string& filePath, Resource
     m_desc = desc;
 }
 
+void Texture2D::OnInspectorGUI()
+{
+    ImGui::Text(("Texture2D Inspector - ID: " + m_uniqueID).c_str());
+    ImGui::Separator();
+}
+
+bool Texture2D::Delete(bool deleteSelf)
+{
+    return false;
+}
+
 int Texture2D::getHeight()
 {
     return m_desc.textureSize.height;

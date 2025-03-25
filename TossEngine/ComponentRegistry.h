@@ -72,6 +72,8 @@ public:
         return m_componentCreators.find(typeName) != m_componentCreators.end();
     }
 
+    void CleanUp();
+
 private:
     // Map of component type names to their creation functions
     std::unordered_map<std::string, std::function<Component* ()>> m_componentCreators;

@@ -137,6 +137,63 @@ Mesh::~Mesh()
 {
 }
 
+void Mesh::OnInspectorGUI()
+{
+    ImGui::Text(("Mesh Inspector - ID: " + m_uniqueID).c_str());
+    ImGui::Separator();
+
+    if (ImGui::CollapsingHeader("Mesh Instances", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        // Display instance count
+        ImGui::Text("Instance Count: %d", getInstanceCount());
+
+        // Button to add an instance with default transform
+        if (ImGui::Button("Add Instance"))
+        {
+            addInstance(Vector3(0, 0, 0), Vector3(1, 1, 1), Vector3(0, 0, 0));
+            initInstanceBuffer();
+        }
+
+        ImGui::SameLine();
+
+        // Button to clear all instances
+        if (ImGui::Button("Clear Instances"))
+        {
+            clearInstances();
+            initInstanceBuffer();
+        }
+
+        ImGui::Separator();
+
+        // Display transforms for each instance
+        if (ImGui::TreeNode("Instance Transforms"))
+        {
+            int index = 0;
+            for (auto& transform : m_instanceTransforms)
+            {
+                if (ImGui::TreeNode(("Instance " + std::to_string(index)).c_str()))
+                {
+                    // Display each transformation matrix elements
+                    for (int row = 0; row < 4; row++)
+                    {
+                        ImGui::Text("%.2f %.2f %.2f %.2f",
+                            transform[row][0], transform[row][1],
+                            transform[row][2], transform[row][3]);
+                    }
+                    ImGui::TreePop();
+                }
+                index++;
+            }
+            ImGui::TreePop();
+        }
+    }
+}
+
+bool Mesh::Delete(bool deleteSelf)
+{
+    return false;
+}
+
 VertexArrayObjectPtr Mesh::getVertexArrayObject()
 {
 	return m_vao;

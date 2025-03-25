@@ -154,7 +154,7 @@
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor"
-xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/C++Scripts"</Command>
+xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++Scripts"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
@@ -196,7 +196,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/C++Scripts"</Co
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor"
-xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/C++Scripts"</Command>
+xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++Scripts"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
@@ -218,6 +218,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/C++Scripts"</Co
     <ClCompile Include="ComponentRegistry.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
+    <ClCompile Include="FileWatcher.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="GeometryBuffer.cpp" />
     <ClCompile Include="HeightMap.cpp" />
@@ -234,6 +235,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/C++Scripts"</Co
     <ClCompile Include="Resizable.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="ScriptLoader.cpp" />
     <ClCompile Include="Serializable.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Ship.cpp" />
@@ -291,6 +293,8 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/C++Scripts"</Co
     <ClInclude Include="Resizable.h" />
     <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="ScriptLoader.h" />
+    <ClInclude Include="FileWatcher.h" />
     <ClInclude Include="Serializable.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Ship.h" />

@@ -9,3 +9,8 @@ std::vector<std::string> ComponentRegistry::getRegisteredComponentNames() const
     }
     return names;
 }
+
+void ComponentRegistry::CleanUp()
+{
+    m_componentCreators.clear();
+}

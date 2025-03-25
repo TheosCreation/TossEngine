@@ -20,6 +20,17 @@ Texture::Texture(const string& filePath, ResourceManager* manager) : Resource(fi
 {
 }
 
+void Texture::OnInspectorGUI()
+{
+    ImGui::Text(("Texture Inspector - ID: " + m_uniqueID).c_str());
+    ImGui::Separator();
+}
+
+bool Texture::Delete(bool deleteSelf)
+{
+    return false;
+}
+
 Texture::~Texture()
 {
 }

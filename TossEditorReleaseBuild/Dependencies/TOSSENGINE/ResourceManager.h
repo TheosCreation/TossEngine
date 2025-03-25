@@ -56,7 +56,7 @@ public:
     void ClearInstancesFromMeshes();
 
     bool IsResourceLoaded(const std::string& uniqueId) const;
-    const std::map<std::string, ResourcePtr>& GetAllResources() const { return m_mapResources; }
+    std::map<std::string, ResourcePtr>& GetAllResources() { return m_mapResources; }
     void SetSelectedResource(ResourcePtr selectedResource);
     ResourcePtr GetSelectedResource();
 

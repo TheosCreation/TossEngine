@@ -7,6 +7,8 @@
 #include "GraphicsEngine.h"
 #include "EditorPlayer.h"
 #include "ISelectable.h"
+#include "ScriptLoader.h"
+#include "FileWatcher.h"
 #include <imgui.h>
 
 TossEditor::TossEditor()
@@ -43,6 +45,9 @@ TossEditor::TossEditor()
 
     m_sceneViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+
+
+    scriptWatcherThread = std::thread(&TossEditor::LoadWatchAndCompileScripts, this);
 }
 
 TossEditor::~TossEditor()
@@ -61,24 +66,30 @@ void TossEditor::run()
     while (tossEngine.GetWindow()->shouldClose() == false)
     {
         tossEngine.PollEvents();
-        onUpdateInternal();
+        if (canUpdateInternal)
+        {
+            onUpdateInternal();
+            onLateUpdateInternal();
+        }
     }
 
     
     onQuit();
     tossEngine.CleanUp();
+    if (scriptWatcherThread.joinable())
+        scriptWatcherThread.join();
 }
 
 void TossEditor::onCreate()
 {
     string filePath = m_projectSettings->lastKnownOpenScenePath;
 
-    if (!filePath.empty()) // If a file was selected
-    {
-        auto scene = std::make_shared<Scene>(filePath);
-        scene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
-        OpenScene(scene);
-    }
+    //if (!filePath.empty()) // If a file was selected
+    //{
+    //    auto scene = std::make_shared<Scene>(filePath);
+    //    scene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
+    //    OpenScene(scene);
+    //}
 
     m_player = std::make_unique<EditorPlayer>(this);
     m_player->onCreate();
@@ -516,6 +527,16 @@ void TossEditor::onUpdateInternal()
     tossEngine.GetWindow()->present();
 }
 
+void TossEditor::onLateUpdateInternal()
+{
+    if (requestDllReload)
+    {
+        Debug::Log("Reloading DLL safely at end of frame...");
+        PerformSafeDllReload();
+        requestDllReload = false;
+    }
+}
+
 void TossEditor::FindSceneFiles()
 {
     // Clear the current list to update it with any changes.
@@ -543,7 +564,7 @@ void TossEditor::onQuit()
     {
         m_currentScene->onQuit();
     }
-
+    m_editorRunning = false;
     editorPreferences.SaveToFile("EditorPreferences.json");
 }
 
@@ -608,7 +629,49 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
         }
         ImGui::TreePop();
     }
+
 }
+
+
+void TossEditor::LoadWatchAndCompileScripts()
+{
+    FileWatcher sourceWatcher("C++Scripts/");
+
+    while (m_editorRunning) {
+        if (sourceWatcher.hasChanged()) {
+            Debug::Log("Scripts DLL changed. Marking for reload...");
+            requestDllReload = true;  // atomic or thread-safe bool
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+}
+
+void TossEditor::PerformSafeDllReload()
+{
+    Save();
+    ComponentRegistry::GetInstance().CleanUp();
+    if (m_currentScene != nullptr)
+    {
+        m_currentScene->onQuit();
+        m_currentScene.reset();
+        m_currentScene = nullptr;
+    }
+    canUpdateInternal = false;
+
+
+    ScriptLoader* loader = TossEngine::GetInstance().getScriptLoader();
+    if (loader)
+    {
+        loader->reloadDLL();
+    }
+    else
+    {
+        Debug::LogError("Loader is null");
+    }
+
+    canUpdateInternal = true;
+}
+
 
 void TossEditor::onResize(Vector2 size)
 {

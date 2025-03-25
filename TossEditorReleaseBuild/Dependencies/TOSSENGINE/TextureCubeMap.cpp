@@ -41,3 +41,14 @@ TextureCubeMap::~TextureCubeMap()
 {
     glDeleteTextures(1, &m_textureId); // Destroys the cubemap texture
 }
+
+void TextureCubeMap::OnInspectorGUI()
+{
+    ImGui::Text(("TextureCube Inspector - ID: " + m_uniqueID).c_str());
+    ImGui::Separator();
+}
+
+bool TextureCubeMap::Delete(bool deleteSelf)
+{
+    return false;
+}

@@ -287,6 +287,10 @@ void GameObject::onUpdateInternal()
         }
     }
     componentsToDestroy.clear();
+
+    for (auto& pair : m_components) {
+        pair.second->onUpdateInternal();
+    }
 }
 
 void GameObject::onLateUpdate(float deltaTime)

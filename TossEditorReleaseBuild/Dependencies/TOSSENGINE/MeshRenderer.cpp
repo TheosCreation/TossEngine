@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "GameObjectManager.h"
 #include "Texture.h"
+#include "TextureCubeMap.h"
 #include "VertexArrayObject.h"
 
 json MeshRenderer::serialize() const
