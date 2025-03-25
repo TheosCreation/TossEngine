@@ -5,6 +5,7 @@
 #include "ProjectSettings.h"
 #include "GraphicsEngine.h"
 #include "EditorPlayer.h"
+#include "ISelectable.h"
 #include <imgui.h>
 
 TossEditor::TossEditor()
@@ -85,12 +86,11 @@ void TossEditor::onCreateLate()
 
 void TossEditor::DeleteSelected()
 {
-    if (selectedGameObject != nullptr)
+    if (selectedSelectable != nullptr)
     {
-        if (!selectedGameObject->tryDeleteSelectedComponent())
+        if (selectedSelectable->Delete(false))
         {
-            selectedGameObject->release();
-            selectedGameObject = nullptr;
+            selectedSelectable = nullptr;
         }
     }
 }
@@ -293,14 +293,14 @@ void TossEditor::onUpdateInternal()
 
     if (ImGui::Begin("Inspector"))
     {
-        if (selectedGameObject)
+        if (selectedSelectable)
         {
             // Display the selected object's name and transform.
-            selectedGameObject->OnInspectorGUI();
+            selectedSelectable->OnInspectorGUI();
         }
         else
         {
-            ImGui::Text("No object selected.");
+            ImGui::Text("Nothing selected.");
         }
         ImGui::End();
     }
@@ -395,13 +395,13 @@ void TossEditor::onQuit()
 void TossEditor::ShowGameObjectNode(GameObject* gameObject)
 {
     ImGuiTreeNodeFlags flags = (gameObject->m_transform.children.empty() ? ImGuiTreeNodeFlags_Leaf : 0);
-    if (gameObject == selectedGameObject)
+    if (gameObject == selectedSelectable)
         flags |= ImGuiTreeNodeFlags_Selected;
 
     bool open = ImGui::TreeNodeEx(gameObject->name.c_str(), flags);
     if (ImGui::IsItemClicked())
     {
-        selectedGameObject = gameObject;
+        selectedSelectable = gameObject;
     }
 
     if (ImGui::BeginDragDropSource())
@@ -438,9 +438,9 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
             {
                 gameObject->m_transform.SetParent(nullptr);
             }
-            gameObject->release();
-            if (selectedGameObject == gameObject)
-                selectedGameObject = nullptr;
+            gameObject->Delete();
+            if (selectedSelectable == gameObject)
+                selectedSelectable = nullptr;
         }
         ImGui::EndPopup();
     }

@@ -231,17 +231,6 @@ void GameObject::setId(size_t id)
 	m_id = id;
 }
 
-void GameObject::release()
-{
-	// Remove this GameObject from the GameObjectManager
-	m_gameObjectManager->removeGameObject(this);
-}
-
-void GameObject::releaseInstant()
-{
-    m_gameObjectManager->removeGameObjectInstant(this);
-}
-
 void GameObject::onCreate()
 {
 }
@@ -348,6 +337,21 @@ void GameObject::setGameObjectManager(GameObjectManager* gameObjectManager)
 {
 	// Set the GameObjectManager managing this GameObject
 	m_gameObjectManager = gameObjectManager;
+}
+
+bool GameObject::Delete(bool deleteSelf)
+{
+    if (selectedComponent != nullptr && !deleteSelf)
+    {
+        selectedComponent->Delete();
+        selectedComponent = nullptr;
+        return false;
+    }
+    else
+    {
+        m_gameObjectManager->removeGameObject(this);
+        return true;
+    }
 }
 
 GameObjectManager* GameObject::getGameObjectManager()

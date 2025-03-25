@@ -1,11 +1,12 @@
 #pragma once
 #include "Serializable.h"
+#include "ISelectable.h"
 #include "ComponentRegistry.h"
 #include <imgui.h>
 
 class GameObject;
 
-class TOSSENGINE_API Component : public Serializable
+class TOSSENGINE_API Component : public Serializable, public ISelectable
 {
 public:
     //Component(const Component& other);
@@ -38,6 +39,7 @@ public:
 
     virtual void OnInspectorGUI() {}
 
+    bool Delete(bool deleteSelf = true);
     void Destroy(GameObject* objectToDestroy);
 
     /**

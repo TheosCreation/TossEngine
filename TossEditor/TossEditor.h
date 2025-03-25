@@ -7,6 +7,7 @@ class Scene;
 class EditorPlayer;
 class GameObject;
 class Component;
+class ISelectable;
 
 class TossEditor : public Resizable
 {
@@ -50,7 +51,7 @@ private:
 	ProjectSettingsPtr m_projectSettings = nullptr;
 	shared_ptr<Scene> m_currentScene = nullptr;
 	Game* m_game = nullptr;
-    GameObject* selectedGameObject = nullptr; 
+    ISelectable* selectedSelectable = nullptr;
     GameObject* renamingGameObject = nullptr;
     char renameBuffer[256] = "";
 

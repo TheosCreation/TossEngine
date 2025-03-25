@@ -21,7 +21,16 @@ void Component::setOwner(GameObject* gameObject)
     m_owner = gameObject;
 }
 
+bool Component::Delete(bool deleteSelf)
+{
+    if (deleteSelf)
+    {
+        m_owner->removeComponent(this);
+    }
+    return true;
+}
+
 void Component::Destroy(GameObject* objectToDestroy)
 {
-    objectToDestroy->release();
+    objectToDestroy->Delete();
 }

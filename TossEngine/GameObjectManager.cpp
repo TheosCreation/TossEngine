@@ -69,11 +69,6 @@ void GameObjectManager::removeGameObject(GameObject* gameObject)
 	m_gameObjectsToDestroy.push_back(gameObject->getId());
 }
 
-void GameObjectManager::removeGameObjectInstant(GameObject* gameObject)
-{
-	m_gameObjects.erase(gameObject->getId());
-}
-
 void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
 {
 	std::ifstream file(filePath);

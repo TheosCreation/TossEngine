@@ -224,6 +224,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/C++Scripts"</Co
     <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImGuiLogger.cpp" />
+    <ClCompile Include="ISelectable.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
@@ -281,6 +282,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/C++Scripts"</Co
     <ClInclude Include="HeightMap.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImGuiLogger.h" />
+    <ClInclude Include="ISelectable.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="MonoIntegration.h" />

@@ -69,8 +69,6 @@ public:
      */
     void removeGameObject(GameObject* gameObject);
 
-    void removeGameObjectInstant(GameObject* gameObject);
-
     void loadGameObjectsFromFile(const std::string& filePath);
     void saveGameObjectsToFile(const std::string& filePath);
 

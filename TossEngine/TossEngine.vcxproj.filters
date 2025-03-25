@@ -223,6 +223,9 @@
     <ClCompile Include="Serializable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ISelectable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rect.h">
@@ -398,6 +401,9 @@
     </ClInclude>
     <ClInclude Include="Spotlight.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ISelectable.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

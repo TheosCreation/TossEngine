@@ -4,12 +4,13 @@
 #include "Serializable.h"
 #include "Component.h"
 #include "GameObjectManager.h"
+#include "ISelectable.h"
 
 /**
  * @class GameObject
  * @brief Represents an object for OpenGl with its own update and onCreate functions.
  */
-class TOSSENGINE_API GameObject : public Serializable
+class TOSSENGINE_API GameObject : public Serializable, public ISelectable
 {
 public:
     /**
@@ -33,7 +34,7 @@ public:
     // Deserialize the GameObject from JSON
     virtual void deserialize(const json& data) override;
 
-    virtual void OnInspectorGUI();
+    virtual void OnInspectorGUI() override;
 
     /**
      * @brief Gets the unique identifier of the GameObject.
@@ -63,12 +64,7 @@ public:
     /**
      * @brief Releases the GameObject, preparing it for destruction.
      */
-    void release();
-
-    /**
-     * @brief Releases the GameObject instantly without the use of update method.
-     */
-    void releaseInstant();
+    bool Delete(bool deleteSelf = true);
 
     /**
      * @brief Called when the GameObject is created.
