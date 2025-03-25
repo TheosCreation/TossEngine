@@ -177,9 +177,6 @@
     <ClCompile Include="Resizable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MonoIntegration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TossEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -355,9 +352,6 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="Resizable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MonoIntegration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TossEngine.h">

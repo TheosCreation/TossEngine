@@ -21,7 +21,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Scene.h"
 #include "ShadowMap.h"
 #include "Player.h"
-#include "MonoIntegration.h"
 
 // Forward declarations of classes
 class Window;
