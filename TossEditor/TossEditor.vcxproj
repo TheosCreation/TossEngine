@@ -170,6 +170,7 @@
     <ClInclude Include="..\Dependencies\IMGUI\imstb_textedit.h" />
     <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h" />
     <ClInclude Include="EditorPlayer.h" />
+    <ClInclude Include="EditorPreferences.h" />
     <ClInclude Include="TossEditor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

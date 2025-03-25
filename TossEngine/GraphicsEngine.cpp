@@ -22,12 +22,21 @@ Mail : theo.morris@mds.ac.nz
 #include "ShadowMap.h"
 #include "TextureCubeMap.h"
 #include "ProjectSettings.h"
+#include "TossPlayerSettings.h"
 
 void GraphicsEngine::Init(ProjectSettingsPtr& projectSettings)
 {
     if (isInitilized) return;
 
     m_renderingPath = projectSettings->renderingPath;
+    isInitilized = true;
+}
+
+void GraphicsEngine::Init(TossPlayerSettingsPtr& playerSettings)
+{
+    if (isInitilized) return;
+
+    m_renderingPath = playerSettings->renderingPath;
     isInitilized = true;
 }
 

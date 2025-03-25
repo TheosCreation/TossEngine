@@ -17,11 +17,13 @@ Mail : theo.morris@mds.ac.nz
 #include <glew.h>
 #include <glfw3.h>
 
-Window::Window(Resizable* owner, Vector2 size, const string& windowName)
+Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool maximized)
 {
     m_size = size;
     m_resizableOwner = owner;
     m_windowName = windowName;
+    m_maximized = maximized;
+
     // Set GLFW window hints
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -67,8 +69,19 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName)
             }
         });
 
+    glfwSetWindowMaximizeCallback(m_windowPtr, [](GLFWwindow* window, int maximized) {
+        Window* display = static_cast<Window*>(glfwGetWindowUserPointer(window));
+        if (display) {
+            display->onMaximize(maximized);
+        }
+        });
+
     // Show the window
-    glfwShowWindow(m_windowPtr);
+    glfwShowWindow(m_windowPtr); 
+    
+    if (m_maximized) {
+        glfwMaximizeWindow(m_windowPtr);
+    }
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -140,10 +153,16 @@ void Window::close()
 void Window::onResize(Vector2 size)
 {
     Resizable::onResize(size);
-    Debug::Log("Window resized to: " + ToString(size.x) + "x" + ToString(size.y));
+    //Debug::Log("Window resized to: " + ToString(size.x) + "x" + ToString(size.y));
 
     if (glm::length(size) <= 10.0f) return;
-    //m_resizableOwner->onResize(size);
+    m_resizableOwner->onResize(size);
+}
+
+void Window::onMaximize(int maximized)
+{
+    Resizable::onMaximize(maximized);
+    m_resizableOwner->onMaximize(maximized);
 }
 
 bool Window::shouldClose()

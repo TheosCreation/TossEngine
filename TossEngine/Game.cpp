@@ -24,6 +24,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Framebuffer.h"
 #include "GeometryBuffer.h"
 #include "ProjectSettings.h"
+#include "TossPlayerSettings.h"
 #include "AudioEngine.h"
 #include <imgui.h>
 
@@ -49,6 +50,33 @@ Game::Game(ProjectSettingsPtr& projectSettings)
 
     auto& inputManager = InputManager::GetInstance();
     inputManager.Init(projectSettings);
+    inputManager.setScreenArea(windowSize);
+
+    AudioEngine::GetInstance().Init();
+}
+
+Game::Game(TossPlayerSettingsPtr& playerSettings)
+{
+    auto& tossEngine = TossEngine::GetInstance();
+    tossEngine.Init();
+    Vector2 windowSize = Vector2(800, 800);
+    tossEngine.TryCreateWindow(this, windowSize, "Game");
+
+    initRandomSeed();
+    GeometryBuffer::GetInstance().Init(windowSize);
+
+    auto& graphicsEngine = GraphicsEngine::GetInstance();
+    graphicsEngine.Init(playerSettings);
+    graphicsEngine.setViewport(windowSize);
+    graphicsEngine.setDepthFunc(DepthType::Less);
+    graphicsEngine.setBlendFunc(BlendType::SrcAlpha, BlendType::OneMinusSrcAlpha);
+    graphicsEngine.setFaceCulling(CullType::BackFace);
+    graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
+    graphicsEngine.setScissorSize(Rect(200, 200, 400, 300));
+    graphicsEngine.setMultiSampling(true);
+
+    auto& inputManager = InputManager::GetInstance();
+    inputManager.Init(playerSettings);
     inputManager.setScreenArea(windowSize);
 
     AudioEngine::GetInstance().Init();

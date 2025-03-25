@@ -1,5 +1,6 @@
 #pragma once
 #include "Resizable.h"
+#include "EditorPreferences.h"
 
 class Game;
 class Window;
@@ -18,6 +19,7 @@ public:
 	void run();
 
 	void onResize(Vector2 size) override;
+    void onMaximize(int maximized) override;
 	
 	void Undo();
 	void Save();
@@ -48,7 +50,10 @@ protected:
     void ShowGameObjectNode(GameObject* gameObject);
 
 private:
+    EditorPreferences editorPreferences;
+
 	ProjectSettingsPtr m_projectSettings = nullptr;
+	TossPlayerSettingsPtr m_playerSettings = nullptr;
 	shared_ptr<Scene> m_currentScene = nullptr;
 	Game* m_game = nullptr;
     ISelectable* selectedSelectable = nullptr;

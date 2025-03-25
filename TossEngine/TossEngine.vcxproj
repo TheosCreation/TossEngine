@@ -312,6 +312,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/C++Scripts"</Co
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="TossEngine.h" />
+    <ClInclude Include="TossPlayerSettings.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Resource.h" />

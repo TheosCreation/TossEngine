@@ -81,5 +81,8 @@
     <ClInclude Include="EditorPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EditorPreferences.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

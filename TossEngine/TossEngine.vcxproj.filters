@@ -405,6 +405,9 @@
     <ClInclude Include="ISelectable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TossPlayerSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\TossEditor\Resources\Shaders\BlinnPhongLighting.glsl">

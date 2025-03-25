@@ -34,6 +34,7 @@ public:
     void operator=(const InputManager&) = delete;
 
     void Init(ProjectSettingsPtr& projectSettings);
+    void Init(TossPlayerSettingsPtr& playerSettings);
 
     /**
      * @brief Checks if the specified key is currently being held down.

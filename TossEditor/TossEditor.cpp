@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Game.h"
 #include "ProjectSettings.h"
+#include "TossPlayerSettings.h"
 #include "GraphicsEngine.h"
 #include "EditorPlayer.h"
 #include "ISelectable.h"
@@ -10,19 +11,22 @@
 
 TossEditor::TossEditor()
 {
+    editorPreferences.LoadFromFile("EditorPreferences.json");
+
     m_projectSettings = std::make_unique<ProjectSettings>();
     m_projectSettings->LoadFromFile("ProjectSettings.json");
 
-    Vector2 windowSize = Vector2(800, 800);
+    m_playerSettings = std::make_unique<TossPlayerSettings>();
+    m_playerSettings->LoadFromFile("PlayersSettings.json");
 
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
-    tossEngine.TryCreateWindow(this, windowSize, "TossEditor");
+    tossEngine.TryCreateWindow(this, editorPreferences.windowSize, "TossEditor", editorPreferences.maximized);
 
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.Init(m_projectSettings);
-    graphicsEngine.setViewport(windowSize);
+    graphicsEngine.setViewport(editorPreferences.windowSize);
     graphicsEngine.setDepthFunc(DepthType::Less);
     graphicsEngine.setBlendFunc(BlendType::SrcAlpha, BlendType::OneMinusSrcAlpha);
     graphicsEngine.setFaceCulling(CullType::BackFace);
@@ -31,9 +35,9 @@ TossEditor::TossEditor()
 
     auto& inputManager = InputManager::GetInstance();
     inputManager.Init(m_projectSettings);
-    inputManager.setScreenArea(windowSize);
+    inputManager.setScreenArea(editorPreferences.windowSize);
 
-    GeometryBuffer::GetInstance().Init(windowSize);
+    GeometryBuffer::GetInstance().Init(editorPreferences.windowSize);
     AudioEngine::GetInstance().Init();
 
 
@@ -234,7 +238,10 @@ void TossEditor::onUpdateInternal()
         if (m_game != nullptr)
         {
             // Resize the scene's framebuffer to match the current window size.
-            m_game->getScene()->onResize(newSize);
+            if (m_game)
+            {
+                m_game->onResize(newSize);
+            }
 
             // Now update the scene rendering with the current camera.
             m_game->onGraphicsUpdate();
@@ -261,7 +268,11 @@ void TossEditor::onUpdateInternal()
         if (m_currentScene)
         {
             // Resize the scene's framebuffer to match the current window size.
-            onResize(newSize);
+            if (m_currentScene)
+            {
+                m_player->getCamera()->setScreenArea(newSize);
+                m_currentScene->onResize(newSize);
+            }
 
             // Now update the scene rendering with the current camera.
             m_currentScene->onGraphicsUpdate(m_player->getCamera());
@@ -390,6 +401,8 @@ void TossEditor::onQuit()
     {
         m_currentScene->onQuit();
     }
+
+    editorPreferences.SaveToFile("EditorPreferences.json");
 }
 
 void TossEditor::ShowGameObjectNode(GameObject* gameObject)
@@ -459,14 +472,13 @@ void TossEditor::onResize(Vector2 size)
 {
     Resizable::onResize(size);
 
-    m_player->getCamera()->setScreenArea(size);
+    editorPreferences.windowSize = size;
+}
 
-    if (m_currentScene)
-    {
-        m_currentScene->onResize(size);
-    }
-
-    GeometryBuffer::GetInstance().Resize(size);
+void TossEditor::onMaximize(int maximized)
+{
+    Resizable::onMaximize(maximized);
+    editorPreferences.maximized = maximized;
 }
 
 void TossEditor::Undo()
@@ -476,6 +488,7 @@ void TossEditor::Undo()
 void TossEditor::Save()
 {
     m_projectSettings->SaveToFile("ProjectSettings.json");
+    m_playerSettings->SaveToFile("PlayerSettings.json");
     if (m_currentScene)
     {
         m_currentScene->Save();

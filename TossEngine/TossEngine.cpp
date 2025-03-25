@@ -42,12 +42,12 @@ void TossEngine::LoadGenericResources()
     resourceManager.createMeshFromFile("Resources/Meshes/cube.obj");
 }
 
-void TossEngine::TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName)
+void TossEngine::TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName, bool maximized)
 {
     if (m_window == nullptr)
     {
         // Create the window if there isnt one already
-        m_window = std::make_unique<Window>(owner, size, windowName);
+        m_window = std::make_unique<Window>(owner, size, windowName, maximized);
     }
 }
 

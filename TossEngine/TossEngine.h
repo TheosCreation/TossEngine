@@ -17,7 +17,7 @@ public:
     void Init();
     void LoadScripts();
     void LoadGenericResources();
-    void TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName);
+    void TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName, bool maximized = false);
     Window* GetWindow();
     void PollEvents();
     void CleanUp();

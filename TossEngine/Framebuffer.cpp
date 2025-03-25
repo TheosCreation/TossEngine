@@ -106,6 +106,8 @@ Framebuffer::~Framebuffer()
 
 void Framebuffer::onResize(Vector2 size)
 {
+    if (size.x <= 2 || size.y <= 2) return; // safety measure 
+
     Resizable::onResize(size);
     
     // Bind the framebuffer to update its attachments

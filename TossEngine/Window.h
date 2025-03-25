@@ -27,7 +27,7 @@ public:
     /**
      * @brief Constructor for the Window class.
      */
-    Window(Resizable* owner, Vector2 size, const string& windowName);
+    Window(Resizable* owner, Vector2 size, const string& windowName, bool maximized = false);
 
     /**
      * @brief Destructor for the Window class.
@@ -61,6 +61,7 @@ public:
     void close();
 
     void onResize(Vector2 size) override;
+    void onMaximize(int maximized) override;
 
     /**
      * @brief Checks if the window should close.

@@ -54,6 +54,7 @@ class Component;
 class Material;
 class Scene;
 class GameObject;
+class TossPlayerSettings;
 
 // Type definitions for common engine variables
 typedef unsigned int uint;
@@ -75,6 +76,7 @@ typedef std::shared_ptr<TextureCubeMap> TextureCubeMapPtr;
 typedef std::shared_ptr<Mesh> MeshPtr;
 typedef std::shared_ptr<HeightMap> HeightMapPtr;
 typedef std::unique_ptr<ProjectSettings> ProjectSettingsPtr;
+typedef std::unique_ptr<TossPlayerSettings> TossPlayerSettingsPtr;
 typedef std::shared_ptr<Sound> SoundPtr;
 typedef std::shared_ptr<Material> MaterialPtr;
 typedef std::shared_ptr<Scene> ScenePtr;

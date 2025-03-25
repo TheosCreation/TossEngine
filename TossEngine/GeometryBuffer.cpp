@@ -118,6 +118,8 @@ void GeometryBuffer::PopulateShader(ShaderPtr _shader)
 
 void GeometryBuffer::Resize(Vector2 _windowSize)
 {
+    if (_windowSize.x <= 2 || _windowSize.y <= 2) return;
+
 	// Store new size
 	m_size = _windowSize;
 

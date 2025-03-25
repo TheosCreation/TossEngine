@@ -13,6 +13,8 @@ Mail : theo.morris@mds.ac.nz
 #include "InputManager.h"
 #include "Window.h"
 #include "TossEngine.h"
+#include "ProjectSettings.h"
+#include "TossPlayerSettings.h"
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -40,6 +42,18 @@ void InputManager::Init(ProjectSettingsPtr& projectSettings)
 	glfwSetMouseButtonCallback(WindowPtr, mouse_button_callback); // Set the mouse button callback function
 
 	isInitilized = true;
+}
+
+void InputManager::Init(TossPlayerSettingsPtr& playerSettings)
+{
+    if (isInitilized) return;
+
+    WindowPtr = TossEngine::GetInstance().GetWindow()->getWindow();
+    glfwSetScrollCallback(WindowPtr, scroll_callback); // Set the scroll callback function
+    glfwSetKeyCallback(WindowPtr, key_callback);       // Set the key callback function
+    glfwSetMouseButtonCallback(WindowPtr, mouse_button_callback); // Set the mouse button callback function
+
+    isInitilized = true;
 }
 
 bool InputManager::isKeyDown(Key key)

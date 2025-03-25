@@ -28,6 +28,7 @@ public:
     GraphicsEngine& operator=(const GraphicsEngine& other) = delete;
 
     void Init(ProjectSettingsPtr& projectSettings);
+    void Init(TossPlayerSettingsPtr& playerSettings);
 
     /**
      * @brief Creates a Vertex Array Object (VAO) without an Index Buffer.

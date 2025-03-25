@@ -41,6 +41,7 @@ public:
      * @brief Constructor for the Game class.
      */
     Game(ProjectSettingsPtr& projectSettings);
+    Game(TossPlayerSettingsPtr& playerSettings);
 
     /**
      * @brief Destructor for the Game class.
