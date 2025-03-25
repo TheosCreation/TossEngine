@@ -136,7 +136,7 @@ void GameObject::deserialize(const json& data)
             }
         }
     }
-
+    eulerAngles = m_transform.ToEulerAngles();
     m_transform.UpdateWorldTransform();
     //m_transform.SetParent();
 
@@ -147,6 +147,77 @@ void GameObject::deserialize(const json& data)
             std::string componentType = componentData["type"];
             addComponent(componentType, componentData);
         }
+    }
+}
+
+void GameObject::OnInspectorGUI()
+{
+    ImGui::Text("Selected Object: %s", name.c_str());
+    ImGui::Separator();
+    ImGui::Text("Transform:");
+    ImGui::DragFloat3("Position", glm::value_ptr(m_transform.position), 0.1f);
+    // Convert from radians to degrees for display
+    
+    if (ImGui::DragFloat3("Rotation", glm::value_ptr(eulerAngles), 0.1f))
+    {
+        // Convert the edited angles back to radians and update the quaternion
+        m_transform.rotation = glm::normalize(glm::quat(glm::radians(eulerAngles)));
+    }
+
+    ImGui::DragFloat3("Scale", glm::value_ptr(m_transform.scale), 0.1f);
+    for (auto& pair : m_components)
+    {
+        ImGui::Separator();
+        Component* comp = pair.second; // e.g., from a std::map
+        // Highlight the selected component.
+        ImGuiTreeNodeFlags flags = (selectedComponent == comp) ? ImGuiTreeNodeFlags_Selected : 0;
+        bool open = ImGui::TreeNodeEx(comp->getName().c_str(), flags);
+        if (ImGui::IsItemClicked())
+        {
+            // Select the component when clicked.
+            selectedComponent = comp;
+        }
+        // Right-click context menu.
+        if (ImGui::BeginPopupContextItem())
+        {
+            if (ImGui::MenuItem("Delete"))
+            {
+                removeComponent(comp);
+                if (selectedComponent == comp)
+                    selectedComponent = nullptr;
+            }
+            ImGui::EndPopup();
+        }
+        if (open)
+        {
+            comp->OnInspectorGUI();
+            ImGui::TreePop();
+        }
+    }
+    ImGui::Separator();
+
+    // "Add Component" button and popup remain unchanged.
+    if (ImGui::Button("Add Component"))
+    {
+        ImGui::OpenPopup("Add Component Popup");
+    }
+    static char componentSearchBuffer[256] = "";
+    if (ImGui::BeginPopup("Add Component Popup"))
+    {
+        ImGui::InputText("Search", componentSearchBuffer, sizeof(componentSearchBuffer));
+        auto& registry = ComponentRegistry::GetInstance();
+        std::vector<std::string> componentTypes = registry.getRegisteredComponentNames();
+        for (const auto& compName : componentTypes)
+        {
+            if (componentSearchBuffer[0] == '\0' || std::strstr(compName.c_str(), componentSearchBuffer) != nullptr)
+            {
+                if (ImGui::Selectable(compName.c_str()))
+                {
+                    addComponent(compName);
+                }
+            }
+        }
+        ImGui::EndPopup();
     }
 }
 
@@ -260,6 +331,17 @@ void GameObject::removeComponent(Component* component)
         return;
 
     componentsToDestroy.push_back(component);
+}
+
+bool GameObject::tryDeleteSelectedComponent()
+{
+    if (selectedComponent != nullptr)
+    {
+        removeComponent(selectedComponent);
+        selectedComponent = nullptr;
+        return true;
+    }
+    return false;
 }
 
 void GameObject::setGameObjectManager(GameObjectManager* gameObjectManager)

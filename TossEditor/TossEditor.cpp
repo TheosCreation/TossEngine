@@ -85,17 +85,13 @@ void TossEditor::onCreateLate()
 
 void TossEditor::DeleteSelected()
 {
-    if (selectedComponent != nullptr && selectedGameObject != nullptr)
+    if (selectedGameObject != nullptr)
     {
-        // Delete the selected component.
-        selectedGameObject->removeComponent(selectedComponent);
-        selectedComponent = nullptr;
-    }
-    else if (selectedGameObject != nullptr)
-    {
-        // Delete the selected GameObject.
-        selectedGameObject->release();  // Or however you remove a GameObject from your scene.
-        selectedGameObject = nullptr;
+        if (!selectedGameObject->tryDeleteSelectedComponent())
+        {
+            selectedGameObject->release();
+            selectedGameObject = nullptr;
+        }
     }
 }
 
@@ -300,66 +296,7 @@ void TossEditor::onUpdateInternal()
         if (selectedGameObject)
         {
             // Display the selected object's name and transform.
-            ImGui::Text("Selected Object: %s", selectedGameObject->name.c_str());
-            ImGui::Separator();
-            ImGui::Text("Transform:");
-            ImGui::DragFloat3("Position", glm::value_ptr(selectedGameObject->m_transform.position), 0.1f);
-            ImGui::DragFloat4("Rotation", glm::value_ptr(selectedGameObject->m_transform.rotation), 0.1f);
-            ImGui::DragFloat3("Scale", glm::value_ptr(selectedGameObject->m_transform.scale), 0.1f);
-            for (auto& pair : selectedGameObject->getAllComponents())
-            {
-                ImGui::Separator();
-                Component* comp = pair.second; // e.g., from a std::map
-                // Highlight the selected component.
-                ImGuiTreeNodeFlags flags = (selectedComponent == comp) ? ImGuiTreeNodeFlags_Selected : 0;
-                bool open = ImGui::TreeNodeEx(comp->getName().c_str(), flags);
-                if (ImGui::IsItemClicked())
-                {
-                    // Select the component when clicked.
-                    selectedComponent = comp;
-                }
-                // Right-click context menu.
-                if (ImGui::BeginPopupContextItem())
-                {
-                    if (ImGui::MenuItem("Delete"))
-                    {
-                        selectedGameObject->removeComponent(comp);
-                        if (selectedComponent == comp)
-                            selectedComponent = nullptr;
-                    }
-                    ImGui::EndPopup();
-                }
-                if (open)
-                {
-                    comp->OnInspectorGUI();
-                    ImGui::TreePop();
-                }
-            }
-            ImGui::Separator();
-
-            // "Add Component" button and popup remain unchanged.
-            if (ImGui::Button("Add Component"))
-            {
-                ImGui::OpenPopup("Add Component Popup");
-            }
-            static char componentSearchBuffer[256] = "";
-            if (ImGui::BeginPopup("Add Component Popup"))
-            {
-                ImGui::InputText("Search", componentSearchBuffer, sizeof(componentSearchBuffer));
-                auto& registry = ComponentRegistry::GetInstance();
-                std::vector<std::string> componentTypes = registry.getRegisteredComponentNames();
-                for (const auto& compName : componentTypes)
-                {
-                    if (componentSearchBuffer[0] == '\0' || std::strstr(compName.c_str(), componentSearchBuffer) != nullptr)
-                    {
-                        if (ImGui::Selectable(compName.c_str()))
-                        {
-                            selectedGameObject->addComponent(compName);
-                        }
-                    }
-                }
-                ImGui::EndPopup();
-            }
+            selectedGameObject->OnInspectorGUI();
         }
         else
         {

@@ -139,6 +139,11 @@ struct TOSSENGINE_API Transform
         }
     }
 
+    Vector3 ToEulerAngles() // this isnt the best but it will do, ill make wrapper classes for quaternion and stuff
+    {
+        return glm::eulerAngles(rotation);
+    }
+
     void SetPosition(const Vector3& newPosition)
     {
         position = newPosition;

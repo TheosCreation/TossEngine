@@ -51,7 +51,6 @@ private:
 	shared_ptr<Scene> m_currentScene = nullptr;
 	Game* m_game = nullptr;
     GameObject* selectedGameObject = nullptr; 
-    Component* selectedComponent = nullptr;
     GameObject* renamingGameObject = nullptr;
     char renameBuffer[256] = "";
 

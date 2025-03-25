@@ -33,6 +33,8 @@ public:
     // Deserialize the GameObject from JSON
     virtual void deserialize(const json& data) override;
 
+    virtual void OnInspectorGUI();
+
     /**
      * @brief Gets the unique identifier of the GameObject.
      * @return The unique identifier of the GameObject.
@@ -141,12 +143,16 @@ public:
         return m_components;
     }
 
+    bool tryDeleteSelectedComponent();
+
 protected:
     vector<Component*> componentsToDestroy;
     std::map<std::type_index, Component*> m_components;
 
     GameObjectManager* m_gameObjectManager = nullptr; // Pointer to the GameObjectManager managing this GameObject.
 
+    Component* selectedComponent = nullptr; 
+    Vector3 eulerAngles = Vector3(0.0f);
 private:
     size_t m_id = 0; // Unique identifier for the GameObject.
 };
