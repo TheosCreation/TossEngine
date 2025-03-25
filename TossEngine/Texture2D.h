@@ -29,6 +29,9 @@ public:
      */
     Texture2D(const Texture2DDesc& desc, const string& filePath, ResourceManager* manager);
 
+    void OnInspectorGUI() override;
+    bool Delete(bool deleteSelf = true) override;
+
     /**
      * @brief Gets the height of the texture.
      * @return Height of the texture in pixels.

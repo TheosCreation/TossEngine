@@ -36,6 +36,9 @@ public:
      */
     virtual ~Mesh();
 
+    void OnInspectorGUI() override;
+    bool Delete(bool deleteSelf = true) override;
+
     /**
      * @brief Gets the Vertex Array Object (VAO) associated with this mesh.
      * @return A shared pointer to the Vertex Array Object.

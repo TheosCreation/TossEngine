@@ -33,6 +33,9 @@ public:
      */
     ~TextureCubeMap();
 
+    void OnInspectorGUI() override;
+    bool Delete(bool deleteSelf = true) override;
+
 private:
     TextureCubeMapDesc m_desc = {};     // Description of the 2D texture.
 };

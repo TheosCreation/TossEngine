@@ -32,6 +32,9 @@ public:
 	Material(ShaderPtr shader, const std::string& uniqueID, ResourceManager* manager);
 	~Material();
 
+    void OnInspectorGUI() override;
+    bool Delete(bool deleteSelf = true) override;
+
 	void SetShader(const ShaderPtr& shader);
 	ShaderPtr GetShader();
 

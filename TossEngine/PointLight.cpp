@@ -29,6 +29,30 @@ void PointLight::deserialize(const json& data)
     m_owner->getLightManager()->updatePointLightRadius(m_lightId, m_radius);
 }
 
+void PointLight::OnInspectorGUI()
+{
+    ImGui::Text("Point Light Inspector - ID: %p", this);
+    ImGui::Separator();
+
+    // Intencity input
+    if (ImGui::SliderFloat("Intencity", &m_intencity, 0.0f, 5.0f))
+    {
+        SetIntencity(m_intencity);
+    }
+
+    // Color input
+    if (ImGui::ColorEdit3("Color", &m_color.x))
+    {
+        m_owner->getLightManager()->updatePointLightColor(m_lightId, m_color);
+    }
+
+    // Radius input
+    if (ImGui::SliderFloat("Radius", &m_radius, 0.0f, 250.0f))
+    {
+        SetRadius(m_radius);
+    }
+}
+
 void PointLight::onCreate()
 {
     // Configure point light properties
@@ -52,6 +76,18 @@ void PointLight::onUpdate(float deltaTime)
     {
         m_owner->getLightManager()->updatePointLightPosition(m_lightId, m_owner->m_transform.position);
     }
+}
+
+void PointLight::onUpdateInternal()
+{
+
+    m_owner->getLightManager()->updatePointLightPosition(m_lightId, m_owner->m_transform.position);
+}
+
+void PointLight::SetIntencity(float intencity)
+{
+    m_intencity = intencity;
+    m_owner->getLightManager()->updatePointLightIntencity(m_lightId, m_intencity);
 }
 
 void PointLight::SetColor(Vector3 color)

@@ -39,6 +39,17 @@ Shader::~Shader()
 	glDeleteProgram(m_programId);
 }
 
+void Shader::OnInspectorGUI()
+{
+    ImGui::Text(("Shader Inspector - ID: " + m_uniqueID).c_str());
+    ImGui::Separator();
+}
+
+bool Shader::Delete(bool deleteSelf)
+{
+    return false;
+}
+
 MaterialDesc Shader::getBindings() const {
     MaterialDesc desc;
 

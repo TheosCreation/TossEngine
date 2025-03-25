@@ -50,6 +50,18 @@ Material::~Material()
 {
 }
 
+void Material::OnInspectorGUI()
+{
+    ImGui::Text(("Material Inspector - ID: " + m_uniqueID).c_str());
+    ImGui::Separator();
+    m_shader->OnInspectorGUI();
+}
+
+bool Material::Delete(bool deleteSelf)
+{
+    return false;
+}
+
 void Material::SetShader(const ShaderPtr& shader)
 {
 	m_shader = shader;

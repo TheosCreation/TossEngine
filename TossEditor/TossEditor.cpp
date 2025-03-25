@@ -493,11 +493,12 @@ void TossEditor::onUpdateInternal()
         const auto& resources = resourceManager.GetAllResources();
 
         // Iterate over the resource map and display each resource's unique ID
-        for (const auto& [uniqueID, resource] : resources) {
+        for (auto& [uniqueID, resource] : resources) {
             if (uniqueID == "") continue;
 
             bool isSelected = (resource == resourceManager.GetSelectedResource());
             if (ImGui::Selectable(uniqueID.c_str(), isSelected)) {
+                selectedSelectable = resource.get();
                 resourceManager.SetSelectedResource(resource);
             }
         }

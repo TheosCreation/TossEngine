@@ -12,13 +12,17 @@ public:
 
 	// Deserialize
 	virtual void deserialize(const json& data) override;
+    virtual void OnInspectorGUI() override;
 
 	virtual void onCreate() override;
 	virtual void onUpdate(float deltaTime) override;
+    virtual void onUpdateInternal() override;
 
+    void SetIntencity(float intencity);
 	void SetColor(Vector3 color);
 	void SetRadius(float radius);
 private:
+    float m_intencity = 1.0f;
 	Vector3 m_color = Color::White;
 	float m_radius = 200.0f;
 

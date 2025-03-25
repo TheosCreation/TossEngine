@@ -39,6 +39,9 @@ public:
      */
     ~Shader();
 
+    void OnInspectorGUI() override;
+    bool Delete(bool deleteSelf = true) override;
+
     /**
      * @brief Gets the ID of the shader program.
      * @return The ID of the shader program.
