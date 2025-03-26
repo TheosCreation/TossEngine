@@ -60,11 +60,18 @@ TextureCubeMapPtr ResourceManager::getCubemapTexture(const std::string& uniqueId
 
 TexturePtr ResourceManager::getTexture(const std::string& uniqueId)
 {
+    // Try finding the texture in the resource map first
     auto it = m_mapResources.find(uniqueId);
     if (it != m_mapResources.end())
         return std::static_pointer_cast<Texture>(it->second);
 
-    return createTexture2DFromFile(uniqueId);
+    // If not found, try creating it from known texture file paths
+    auto it2 = std::find(texture2DFilePaths.begin(), texture2DFilePaths.end(), uniqueId);
+    if (it2 != texture2DFilePaths.end())
+        return createTexture2DFromFile(uniqueId);
+
+    // Not found anywhere
+    return TexturePtr();
 }
 
 MaterialPtr ResourceManager::getMaterial(const std::string& uniqueId)
@@ -190,7 +197,12 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
 
     if (texture2DPtr)
     {
-        texture2DFilePaths.push_back(filepath);
+        auto found = std::find(texture2DFilePaths.begin(), texture2DFilePaths.end(), filepath);
+        if (found == texture2DFilePaths.end()) 
+        {
+            texture2DFilePaths.push_back(filepath);
+        }
+
         m_mapResources.emplace(filepath, texture2DPtr);
         return texture2DPtr;
     }
@@ -489,4 +501,36 @@ void ResourceManager::ClearInstancesFromMeshes()
             meshPtr->clearInstances();
         }
     }
+}
+
+CoroutineTask ResourceManager::createResourcesFromDescs()
+{
+    if (hasCreatedResources) co_return;
+
+    // Create Shaders
+    for (const auto& [uniqueID, shaderDesc] : shaderDescriptions)
+    {
+        createShader(shaderDesc, uniqueID);
+    }
+
+    // Create Materials
+    for (const auto& [uniqueID, shaderId] : materialDescriptions)
+    {
+        createMaterial(shaderId, uniqueID);
+    }
+
+    // Create Texture2D resources
+    for (const auto& filepath : texture2DFilePaths)
+    {
+        createTexture2DFromFile(filepath); // Change type as needed
+    }
+
+    // Create Cubemap Textures
+    for (const auto& [uniqueID, filepaths] : cubemapTextureFilePaths)
+    {
+        createCubeMapTextureFromFile(filepaths);
+    }
+
+    hasCreatedResources = true;
+    co_return;
 }

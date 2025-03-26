@@ -56,6 +56,8 @@ public:
     CoroutineTask loadResourceDesc(const std::string& filepath);
     void ClearInstancesFromMeshes();
 
+    CoroutineTask createResourcesFromDescs();
+
     bool IsResourceLoaded(const std::string& uniqueId) const;
     std::map<std::string, ResourcePtr>& GetAllResources() { return m_mapResources; }
     void SetSelectedResource(ResourcePtr selectedResource);
@@ -66,6 +68,7 @@ public:
 
 protected:
     bool hasLoadedResources = false;
+    bool hasCreatedResources = false;
     std::map<std::string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
     ResourcePtr m_selectedResource = nullptr; // for editor use
 

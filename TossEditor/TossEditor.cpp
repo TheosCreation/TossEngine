@@ -20,6 +20,7 @@ TossEditor::TossEditor()
 
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     TossEngine::GetInstance().StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
+    TossEngine::GetInstance().StartCoroutine(resourceManager.createResourcesFromDescs());
 
     m_projectSettings = std::make_unique<ProjectSettings>();
     m_projectSettings->LoadFromFile("ProjectSettings.json");
@@ -724,29 +725,29 @@ void TossEditor::LoadWatchAndCompileScripts()
 
 void TossEditor::PerformSafeDllReload()
 {
-    Save();
+    //all not needed yepee but will leave here if i found that it does cause issues
+    //Save();
     //ComponentRegistry::GetInstance().CleanUp();
-    if (m_currentScene != nullptr)
-    {
-        m_currentScene->onQuit();
-        m_currentScene.reset();
-        m_currentScene = nullptr;
-    }
+    //if (m_currentScene != nullptr)
+    //{
+    //    m_currentScene->onQuit();
+    //    m_currentScene.reset();
+    //    m_currentScene = nullptr;
+    //}
     canUpdateInternal = false;
 
     TossEngine::GetInstance().ReloadDLL();
 
     canUpdateInternal = true;
 
-    string filePath = m_projectSettings->lastKnownOpenScenePath;
-
-    if (!filePath.empty()) // If a file was selected
-    {
-        auto scene = std::make_shared<Scene>(filePath);
-        scene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
-        OpenScene(scene);
-    }
-
+    //string filePath = m_projectSettings->lastKnownOpenScenePath;
+    //
+    //if (!filePath.empty()) // If a file was selected
+    //{
+    //    auto scene = std::make_shared<Scene>(filePath);
+    //    scene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
+    //    OpenScene(scene);
+    //}
 }
 
 
