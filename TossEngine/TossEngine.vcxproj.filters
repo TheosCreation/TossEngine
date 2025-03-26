@@ -15,9 +15,6 @@
     <Filter Include="Header Files\Graphics">
       <UniqueIdentifier>{52e41388-48df-4c1a-aac3-56752d638940}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Game">
-      <UniqueIdentifier>{079a653e-a495-465c-acbd-028df419095c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Resource">
       <UniqueIdentifier>{15ec77d1-fa92-4cd9-8bc6-da32c1bcfc65}</UniqueIdentifier>
     </Filter>
@@ -40,9 +37,6 @@
     <Filter Include="Source Files\Graphics">
       <UniqueIdentifier>{6c4c78f2-cc1a-4c9b-b131-36560cfcb2c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game">
-      <UniqueIdentifier>{47458695-4ff2-4e17-ad7b-38d0f092cdff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{4ee72e77-1aec-40e6-b15e-bf426a0bfc63}</UniqueIdentifier>
     </Filter>
@@ -64,13 +58,19 @@
     <Filter Include="ImGui">
       <UniqueIdentifier>{bfa902c8-b982-4003-a185-62b5ee41e087}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{079a653e-a495-465c-acbd-028df419095c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{47458695-4ff2-4e17-ad7b-38d0f092cdff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Source Files\Game</Filter>
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="VertexArrayObject.cpp">
       <Filter>Source Files\Graphics</Filter>
@@ -139,7 +139,7 @@
       <Filter>Source Files\Resource</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>Source Files\Game</Filter>
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Source Files\Graphics</Filter>
@@ -174,9 +174,6 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Resizable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TossEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -208,29 +205,32 @@
     <ClCompile Include="..\Dependencies\tinyfiledialogs\tinyfiledialogs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Debug.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGuiLogger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Spotlight.cpp">
       <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Serializable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ISelectable.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DirectionalLight.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FileWatcher.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiLogger.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ISelectable.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Resizable.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptLoader.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Serializable.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -241,7 +241,7 @@
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
-      <Filter>Header Files\Game</Filter>
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="VertexArrayObject.h">
       <Filter>Header Files\Graphics</Filter>
@@ -325,13 +325,10 @@
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Header Files\Game</Filter>
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
       <Filter>Header Files\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Serializable.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Texture2D.h">
       <Filter>Header Files\Resource</Filter>
@@ -359,9 +356,6 @@
     </ClInclude>
     <ClInclude Include="PointLight.h">
       <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Resizable.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TossEngine.h">
       <Filter>Header Files</Filter>
@@ -396,17 +390,8 @@
     <ClInclude Include="Skybox.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Debug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGuiLogger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Spotlight.h">
       <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="ISelectable.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TossPlayerSettings.h">
       <Filter>Header Files</Filter>
@@ -414,11 +399,29 @@
     <ClInclude Include="DirectionalLight.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptLoader.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Resizable.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ISelectable.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Serializable.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiLogger.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="FileWatcher.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="CoroutineTask.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptLoader.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

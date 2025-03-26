@@ -16,7 +16,7 @@ public:
 
 	void onStart() override;
 	void onUpdate(float deltaTime) override;
-	void OnInspectorGUI() override;
+	void OnInspectorGUI() override;//
 
 protected:
 	float lifeTime = 5.0f;

@@ -312,7 +312,7 @@ void ResourceManager::deleteTexture(TexturePtr texture)
     }
 }
 
-void ResourceManager::saveResourcesDescs(const std::string& filepath)
+CoroutineTask ResourceManager::saveResourcesDescs(const std::string& filepath)
 {
     json data;
 
@@ -347,20 +347,26 @@ void ResourceManager::saveResourcesDescs(const std::string& filepath)
     if (!file.is_open())
     {
         Debug::LogError("Failed to open file for writing: " + filepath);
-        return;
+        co_return;
     }
 
     file << data.dump(4); // Pretty-print JSON with 4-space indentation
     file.close();
+
+    Debug::Log("Saved Resources to filepath: " + filepath);
+
+    co_return;
 }
 
-void ResourceManager::loadResourceDesc(const std::string& filepath)
+CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
 {
+    if (hasLoadedResources) co_return;
+
     std::ifstream file(filepath);
     if (!file.is_open())
     {
         Debug::LogError("Failed to open file for reading: " + filepath);
-        return;
+        co_return;
     }
 
     json data;
@@ -403,6 +409,8 @@ void ResourceManager::loadResourceDesc(const std::string& filepath)
             cubemapTextureFilePaths[key] = value.get<vector<string>>();
         }
     }
+
+    hasLoadedResources = true;
 }
 
 bool ResourceManager::IsResourceLoaded(const std::string& uniqueId) const
@@ -413,6 +421,49 @@ bool ResourceManager::IsResourceLoaded(const std::string& uniqueId) const
 ResourcePtr ResourceManager::GetSelectedResource()
 {
     return m_selectedResource;
+}
+
+void ResourceManager::RenameResource(const std::string& oldId, const std::string& newId)
+{
+    // Make sure the old ID exists
+    auto it = m_mapResources.find(oldId);
+    if (it == m_mapResources.end()) {
+        Debug::LogError("RenameResource failed: old ID not found: " + oldId);
+        return;
+    }
+
+    // Prevent overwriting an existing resource
+    if (m_mapResources.find(newId) != m_mapResources.end()) {
+        Debug::LogError("RenameResource failed: new ID already exists: " + newId);
+        return;
+    }
+
+    it->second->setUniqueID(newId);
+
+    // Move to new key and erase old
+    m_mapResources[newId] = it->second;
+    m_mapResources.erase(it);
+
+    Debug::Log("Resource renamed from '" + oldId + "' to '" + newId + "'");
+}
+
+void ResourceManager::DeleteResource(ResourcePtr resource)
+{
+    if (!resource) return;
+
+    auto it = std::find_if(m_mapResources.begin(), m_mapResources.end(),
+        [&resource](const auto& pair) { return pair.second == resource; });
+
+    if (it != m_mapResources.end())
+    {
+        m_mapResources.erase(it);
+    }
+
+    // If the resource was selected, deselect it
+    if (m_selectedResource == resource)
+    {
+        m_selectedResource = nullptr;
+    }
 }
 
 void ResourceManager::SetSelectedResource(ResourcePtr selectedResource)

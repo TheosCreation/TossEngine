@@ -1,6 +1,7 @@
 #version 460 core
 #define MAX_POINT_LIGHTS 4
 #define MAX_DIR_LIGHTS 2
+#define MAX_SPOT_LIGHTS 10
 #include "Shadows.glsl"
 #include "BlinnPhongLighting.glsl"
 
@@ -29,8 +30,8 @@ uniform uint PointLightCount;
 uniform DirectionalLight DirLightArray[MAX_DIR_LIGHTS];
 uniform uint DirectionalLightCount;
 
-uniform SpotLight SpotLight1;
-uniform int SpotLightStatus;
+uniform SpotLight SpotLightArray[MAX_SPOT_LIGHTS];
+uniform uint SpotLightCount;
 
 uniform vec3 CameraPos;
 uniform float ObjectShininess = 32.0f;
@@ -60,10 +61,10 @@ void main()
         float Shadow = CalculateShadow(VPLight[i], Texture_ShadowMap[i], FragPos);
         TotalLightOutput += (1.0 - Shadow) * CalculateDirectionalLight(DirLightArray[i], ViewDir, ObjectShininess, Normal);
     }
-
-    if (SpotLightStatus == 1)
+    
+    for (uint i = 0; i < SpotLightCount; ++i)
     {
-        TotalLightOutput += CalculateSpotLight(SpotLight1, ViewDir, ObjectShininess, Normal, FragPos);
+        TotalLightOutput += CalculateSpotLight(SpotLightArray[i], ViewDir, ObjectShininess, Normal, FragPos);
     }
 
 

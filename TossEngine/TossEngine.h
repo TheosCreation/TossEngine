@@ -17,14 +17,16 @@ public:
     TossEngine& operator=(const TossEngine& other) = delete;
 
     void Init();
-    void LoadScripts();
-    void CompileScriptsProject();
     void LoadGenericResources();
     void TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName, bool maximized = false);
     Window* GetWindow();
     void PollEvents();
     void CleanUp();
+    void ReloadDLL();
     float GetTime();
+
+    std::shared_ptr<bool> StartCoroutine(CoroutineTask&& coroutine);
+
     string openFileDialog(const std::string& filter);
 
     bool IsDebugMode();
@@ -32,10 +34,19 @@ public:
     ScriptLoader* getScriptLoader();
 
 private:
-    bool isInitilized = false;
     bool isDebugMode = false;
     std::unique_ptr<Window> m_window = nullptr;
     ScriptLoader* m_scriptLoader = nullptr;
+
+
+    std::atomic<bool> running = false;
+    std::thread coroutineThread;
+
+    std::mutex coroutineMutex;
+    std::queue<CoroutineTask> coroutineQueue;
+    std::condition_variable coroutineCondition;
+
+    void CoroutineRunner();
 
     /**
      * @brief Private constructor to prevent external instantiation.

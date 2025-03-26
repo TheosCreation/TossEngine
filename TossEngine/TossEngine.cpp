@@ -8,7 +8,7 @@
 
 void TossEngine::Init()
 {
-    if (isInitilized) return;
+    if (running) return;
 
     //init GLFW ver 4.6
     if (!glfwInit())
@@ -17,26 +17,10 @@ void TossEngine::Init()
         return;
     }
 
-    isInitilized = true;
+    running = true;
 
     m_scriptLoader = new ScriptLoader();
-}
-
-void TossEngine::LoadScripts()
-{
-    HMODULE scriptsDll = LoadLibrary(L"C++Scripts.dll");
-    if (scriptsDll) 
-    {
-    }
-    else
-    {
-        Debug::Log("No Scripts dll found");
-    }
-}
-
-void TossEngine::CompileScriptsProject() 
-{
-
+    coroutineThread = std::thread(&TossEngine::CoroutineRunner, this);
 }
 
 void TossEngine::LoadGenericResources()
@@ -70,6 +54,33 @@ ScriptLoader* TossEngine::getScriptLoader()
     return m_scriptLoader;
 }
 
+void TossEngine::CoroutineRunner()
+{
+    while (running)
+    {
+        CoroutineTask currentTask(nullptr);
+        {
+            std::unique_lock<std::mutex> lock(coroutineMutex);
+            coroutineCondition.wait(lock, [this]() {
+                return !coroutineQueue.empty() || !running;
+                });
+
+            if (!running && coroutineQueue.empty())
+                return;
+
+            currentTask = std::move(coroutineQueue.front());
+            coroutineQueue.pop();
+        }
+
+        while (currentTask.Resume())
+        {
+            // Simulate waiting or yielding, depending on your coroutine logic
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        // Coroutine finished execution
+    }
+}
+
 Window* TossEngine::GetWindow()
 {
     return m_window.get();
@@ -83,14 +94,40 @@ void TossEngine::PollEvents()
 void TossEngine::CleanUp()
 {
     ComponentRegistry::GetInstance().CleanUp();
-    isInitilized = false; 
+    running = false;
+    coroutineCondition.notify_all();
+    if (coroutineThread.joinable())
+        coroutineThread.join();
 
     glfwTerminate();
+}
+
+void TossEngine::ReloadDLL()
+{
+    m_scriptLoader->reloadDLL();
 }
 
 float TossEngine::GetTime()
 {
     return static_cast<float>(glfwGetTime());
+}
+
+std::shared_ptr<bool> TossEngine::StartCoroutine(CoroutineTask&& coroutine)
+{
+    auto doneFlag = std::make_shared<bool>(false);
+
+    // Capture the flag in the coroutine and set it on completion
+    coroutine.SetOnComplete([doneFlag]() {
+        *doneFlag = true;
+        });
+
+    {
+        std::lock_guard<std::mutex> lock(coroutineMutex);
+        coroutineQueue.emplace(std::move(coroutine));
+        coroutineCondition.notify_one();
+    }
+
+    return doneFlag;
 }
 
 std::string TossEngine::openFileDialog(const std::string& filter)

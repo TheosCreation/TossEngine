@@ -98,7 +98,7 @@ void Scene::onCreate()
     auto& graphicsEngine = GraphicsEngine::GetInstance();
 
     auto& resourceManager = ResourceManager::GetInstance();
-    resourceManager.loadResourceDesc("Resources/Resources.json");
+    TossEngine::GetInstance().StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
 
     m_deferredSSRQMaterial = resourceManager.getMaterial("DeferredSSRQMaterial");
     m_postProcessSSRQMaterial = resourceManager.getMaterial("PostProcessSSRQMaterial");
@@ -637,7 +637,6 @@ void Scene::onQuit()
 void Scene::Save()
 {
     m_gameObjectManager->saveGameObjectsToFile(m_filePath);
-    ResourceManager::GetInstance().saveResourcesDescs("Resources/Resources.json");
     Debug::Log("Scene saved to file path: " + m_filePath);
 }
 

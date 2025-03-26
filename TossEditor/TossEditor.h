@@ -1,6 +1,7 @@
 #pragma once
 #include "Resizable.h"
 #include "EditorPreferences.h"
+#include "TossEngine.h"
 
 class Game;
 class Window;
@@ -58,6 +59,7 @@ private:
     bool m_editorRunning = true;
     bool canUpdateInternal = true;
     bool requestDllReload = false;
+
     EditorPreferences editorPreferences;
     std::vector<std::string> allSceneFilePaths = std::vector<std::string>();
     std::thread scriptWatcherThread;
@@ -69,6 +71,7 @@ private:
     ISelectable* selectedSelectable = nullptr;
     GameObject* renamingGameObject = nullptr;
     char renameBuffer[256] = "";
+    ResourcePtr resourceBeingRenamed = nullptr;
 
     unique_ptr<EditorPlayer> m_player = nullptr;
     FramebufferPtr m_sceneViewFrameBuffer = nullptr;

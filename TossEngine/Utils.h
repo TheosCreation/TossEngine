@@ -11,7 +11,8 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include <sstream>
+#include <sstream>#
+#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 #include <memory>
@@ -28,12 +29,18 @@ Mail : theo.morris@mds.ac.nz
 #include <typeindex>
 #include <fstream>
 #include <filesystem>
+#include <thread>
+#include <mutex>
+#include <queue>
+#include <atomic>
+#include <condition_variable>
 #include <nlohmann\json.hpp>
 #include <glew.h>
 #include "Debug.h"
 
 
 using json = nlohmann::json; // will be using json to serialize classes and save GameObject objects and all
+namespace fs = std::filesystem;
 
 // Forward declarations of classes
 class UniformBuffer;

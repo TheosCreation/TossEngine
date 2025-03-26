@@ -1,5 +1,4 @@
 #include "TossEditor.h"
-#include "TossEngine.h"
 #include "Window.h"
 #include "Game.h"
 #include "ProjectSettings.h"
@@ -15,16 +14,18 @@ TossEditor::TossEditor()
 {
     editorPreferences.LoadFromFile("EditorPreferences.json");
 
+    auto& tossEngine = TossEngine::GetInstance();
+    tossEngine.Init();
+    tossEngine.TryCreateWindow(this, editorPreferences.windowSize, "TossEditor", editorPreferences.maximized);
+
+    ResourceManager& resourceManager = ResourceManager::GetInstance();
+    TossEngine::GetInstance().StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
+
     m_projectSettings = std::make_unique<ProjectSettings>();
     m_projectSettings->LoadFromFile("ProjectSettings.json");
 
     m_playerSettings = std::make_unique<TossPlayerSettings>();
     m_playerSettings->LoadFromFile("PlayerSettings.json");
-
-    auto& tossEngine = TossEngine::GetInstance();
-    tossEngine.Init();
-    tossEngine.TryCreateWindow(this, editorPreferences.windowSize, "TossEditor", editorPreferences.maximized);
-
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.Init(m_projectSettings);
@@ -46,7 +47,6 @@ TossEditor::TossEditor()
     m_sceneViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
 
-
     scriptWatcherThread = std::thread(&TossEditor::LoadWatchAndCompileScripts, this);
 }
 
@@ -57,7 +57,7 @@ TossEditor::~TossEditor()
 void TossEditor::run()
 {
     auto& tossEngine = TossEngine::GetInstance();
-    tossEngine.LoadGenericResources();
+    //tossEngine.LoadGenericResources();
 
     onCreate();
     onCreateLate();
@@ -503,18 +503,93 @@ void TossEditor::onUpdateInternal()
     if (ImGui::Begin("Assets")) {
         const auto& resources = resourceManager.GetAllResources();
 
-        // Iterate over the resource map and display each resource's unique ID
         for (auto& [uniqueID, resource] : resources) {
-            if (uniqueID == "") continue;
+            if (uniqueID.empty()) continue;
 
             bool isSelected = (resource == resourceManager.GetSelectedResource());
+
             if (ImGui::Selectable(uniqueID.c_str(), isSelected)) {
                 selectedSelectable = resource.get();
                 resourceManager.SetSelectedResource(resource);
             }
+
+            // Right-click menu for deleting the resource
+            if (ImGui::BeginPopupContextItem(("item_context_" + uniqueID).c_str())) {
+                if (ImGui::MenuItem("Rename")) {
+                    resourceBeingRenamed = resource;
+                    strncpy_s(renameBuffer, sizeof(renameBuffer), uniqueID.c_str(), _TRUNCATE);
+                    ImGui::OpenPopup("Rename Resource");
+                }
+
+                if (ImGui::MenuItem("Delete")) {
+                    resourceManager.DeleteResource(resource);
+                    if (isSelected) {
+                        resourceManager.SetSelectedResource(nullptr);
+                        selectedSelectable = nullptr;
+                    }
+                    ImGui::CloseCurrentPopup();
+                    break; // Break since resources have changed
+                }
+                ImGui::EndPopup();
+            }
+        }
+
+        // Right-click on empty space to create new resource
+        if (ImGui::BeginPopupContextWindow("create_resource_context", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
+            if (ImGui::MenuItem("Create Texture2D")) {
+                string textureFilePath = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;*.jpeg;*.bmp");
+
+                if (!textureFilePath.empty()) // If a file was selected
+                {
+                    resourceManager.createTexture2DFromFile(textureFilePath);
+                }
+            }
+            if (ImGui::MenuItem("Create Mesh")) {
+                //resourceManager.createMeshFromFile();
+            }
+            if (ImGui::MenuItem("Create Shader")) {
+                //resourceManager.createShader();
+            }
+            // Add more resource types here if needed
+
+            ImGui::EndPopup();
         }
     }
     ImGui::End();
+
+    if (resourceBeingRenamed != nullptr)
+    {
+        ImGui::OpenPopup("Rename Resource");
+    }
+    if (ImGui::BeginPopupModal("Rename Resource", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::InputText("New ID", renameBuffer, sizeof(renameBuffer));
+
+        if (ImGui::Button("OK"))
+        {
+            if (resourceBeingRenamed && strlen(renameBuffer) > 0)
+            {
+                std::string oldID = resourceBeingRenamed->getUniqueID();
+                std::string newID = renameBuffer;
+
+                // Rename the resource
+                resourceManager.RenameResource(oldID, newID);
+            }
+
+            resourceBeingRenamed = nullptr;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel"))
+        {
+            resourceBeingRenamed = nullptr;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
 
     Debug::DrawConsole();
 
@@ -565,6 +640,7 @@ void TossEditor::onQuit()
         m_currentScene->onQuit();
     }
     m_editorRunning = false;
+    TossEngine::GetInstance().StartCoroutine(ResourceManager::GetInstance().saveResourcesDescs("Resources/Resources.json"));
     editorPreferences.SaveToFile("EditorPreferences.json");
 }
 
@@ -658,16 +734,7 @@ void TossEditor::PerformSafeDllReload()
     }
     canUpdateInternal = false;
 
-
-    ScriptLoader* loader = TossEngine::GetInstance().getScriptLoader();
-    if (loader)
-    {
-        loader->reloadDLL();
-    }
-    else
-    {
-        Debug::LogError("Loader is null");
-    }
+    TossEngine::GetInstance().ReloadDLL();
 
     canUpdateInternal = true;
 

@@ -29,3 +29,8 @@ const std::string& Resource::getUniqueID()
 {
 	return m_uniqueID;
 }
+
+void Resource::setUniqueID(const std::string& id)
+{
+    m_uniqueID = id;
+}

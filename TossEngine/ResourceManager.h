@@ -14,6 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include <map>
 #include <string>
 #include "Utils.h"
+#include "CoroutineTask.h"
 
 /**
  * @class ResourceManager
@@ -51,16 +52,20 @@ public:
     MaterialPtr createMaterial(const string& shaderId, const std::string& uniqueID);
 
     void deleteTexture(TexturePtr texture);
-    void saveResourcesDescs(const std::string& filepath);
-    void loadResourceDesc(const std::string& filepath);
+    CoroutineTask saveResourcesDescs(const std::string& filepath);
+    CoroutineTask loadResourceDesc(const std::string& filepath);
     void ClearInstancesFromMeshes();
 
     bool IsResourceLoaded(const std::string& uniqueId) const;
     std::map<std::string, ResourcePtr>& GetAllResources() { return m_mapResources; }
     void SetSelectedResource(ResourcePtr selectedResource);
     ResourcePtr GetSelectedResource();
+    void RenameResource(const std::string& oldId, const std::string& newId);
+
+    void DeleteResource(ResourcePtr resource);
 
 protected:
+    bool hasLoadedResources = false;
     std::map<std::string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
     ResourcePtr m_selectedResource = nullptr; // for editor use
 

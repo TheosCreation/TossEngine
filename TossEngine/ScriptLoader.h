@@ -13,6 +13,10 @@ private:
     void loadDLL();
     void CompileScriptsProject();
 
+    std::string FindSolutionPath(const std::string& solutionName);
+
+    string getMSBuildPath();
+
     void unloadDLL();
 
     HMODULE scriptsDll;
