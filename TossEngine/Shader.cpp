@@ -17,8 +17,8 @@ Mail : theo.morris@mds.ac.nz
 Shader::Shader(const ShaderDesc& desc, const string& uniqueId, ResourceManager* manager) : Resource("", uniqueId, manager)
 {
     m_programId = glCreateProgram();
-    Attach(desc.vertexShaderFileName, ShaderType::VertexShader);
-    Attach(desc.fragmentShaderFileName, ShaderType::FragmentShader);
+    Attach(desc.vertexShaderFilePath, ShaderType::VertexShader);
+    Attach(desc.fragmentShaderFilePath, ShaderType::FragmentShader);
     link();
 }
 
@@ -80,30 +80,10 @@ MaterialDesc Shader::getBindings() const {
     return desc;
 }
 
-void Shader::Attach(const std::string& filename, const ShaderType& type)
+void Shader::Attach(const std::string& filePath, const ShaderType& type)
 {
-    std::string filePath;
     std::ifstream shaderStream;
     std::string shaderCode;
-
-    // Set file path based on shader type
-    if (type == ShaderType::VertexShader)
-    {
-        filePath = "Resources/Shaders/Vertex/" + filename + ".vert";
-    }
-    else if (type == ShaderType::FragmentShader)
-    {
-        filePath = "Resources/Shaders/Fragment/" + filename + ".frag";
-    }
-    else if (type == ShaderType::ComputeShader)
-    {
-        filePath = "Resources/Shaders/Compute/" + filename + ".comp";
-    }
-    else
-    {
-        Debug::LogWarning("Shader | Cannot find file: " + filePath);
-        return;
-    }
 
     // Open the shader file
     shaderStream.open(filePath.c_str(), std::ios::in);
@@ -192,7 +172,7 @@ std::string Shader::PreprocessShader(const std::string& shaderCode) {
             includeFilePath = includeFilePath.substr(0, includeFilePath.find('"'));
 
             // Read the included file
-            std::string includedCode = ReadShaderFile("Resources/Shaders/" + includeFilePath);
+            std::string includedCode = ReadShaderFile(includeFilePath);
             processedCode += includedCode + "\n"; // Add included code
         }
         else {

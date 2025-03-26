@@ -31,7 +31,6 @@ public:
 
     bool IsDebugMode();
     void SetDebugMode(bool enabled);
-    ScriptLoader* getScriptLoader();
 
 private:
     bool isDebugMode = false;

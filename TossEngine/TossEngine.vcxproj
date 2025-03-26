@@ -326,46 +326,6 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++S
     <ClInclude Include="VertexMesh.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\TossEditor\Resources\Shaders\BlinnPhongLighting.glsl" />
-    <None Include="..\TossEditor\Resources\Shaders\BRDFlighting.glsl" />
-    <None Include="..\TossEditor\Resources\Shaders\Compute\ComputeParticles.comp" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\ChromaticAberrationRenderPass.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\GeometryPass.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\GeometryPassSkybox.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\GeometryPassTerrian.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\GreyScaleFullRenderPass.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\GreyScaleLuminosityFullRenderPass.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\InvertColorFullRenderPass.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\MattiasCRTRenderPass.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\MeshShader.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\OldFilmRenderPass.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\OutlineShader.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\ParticleSystem.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\QuadBlendingShader.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\QuadShader.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\RainFullRenderPass.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\ScanLineFullRenderPass.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\ShadowShader.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\SkyBoxShader.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\SolidColorMesh.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\SSRLightingShader.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\SSRShader.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\Fragment\TerrainShader.frag" />
-    <None Include="..\TossEditor\Resources\Shaders\ShaderUtils.glsl" />
-    <None Include="..\TossEditor\Resources\Shaders\Shadows.glsl" />
-    <None Include="..\TossEditor\Resources\Shaders\Vertex\InstancedMesh.vert" />
-    <None Include="..\TossEditor\Resources\Shaders\Vertex\MeshShader.vert" />
-    <None Include="..\TossEditor\Resources\Shaders\Vertex\OutlineShader.vert" />
-    <None Include="..\TossEditor\Resources\Shaders\Vertex\ParticleSystem.vert" />
-    <None Include="..\TossEditor\Resources\Shaders\Vertex\QuadShader.vert" />
-    <None Include="..\TossEditor\Resources\Shaders\Vertex\ScreenQuad.vert" />
-    <None Include="..\TossEditor\Resources\Shaders\Vertex\ShadowShader.vert" />
-    <None Include="..\TossEditor\Resources\Shaders\Vertex\ShadowShaderInstanced.vert" />
-    <None Include="..\TossEditor\Resources\Shaders\Vertex\SkyBoxShader.vert" />
-    <None Include="..\TossEditor\Resources\Shaders\Vertex\SolidColorMesh.vert" />
-    <None Include="..\TossEditor\Resources\Shaders\Vertex\TerrainShader.vert" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

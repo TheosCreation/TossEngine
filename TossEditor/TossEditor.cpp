@@ -501,6 +501,11 @@ void TossEditor::onUpdateInternal()
         ImGui::EndPopup();
     }
 
+
+    static std::string shaderVertPath;
+    static std::string shaderFragPath;
+    static char shaderIDBuffer[256] = "";
+    static bool openShaderPopupNextFrame = false;
     if (ImGui::Begin("Assets")) {
         const auto& resources = resourceManager.GetAllResources();
 
@@ -519,7 +524,6 @@ void TossEditor::onUpdateInternal()
                 if (ImGui::MenuItem("Rename")) {
                     resourceBeingRenamed = resource;
                     strncpy_s(renameBuffer, sizeof(renameBuffer), uniqueID.c_str(), _TRUNCATE);
-                    ImGui::OpenPopup("Rename Resource");
                 }
 
                 if (ImGui::MenuItem("Delete")) {
@@ -538,25 +542,110 @@ void TossEditor::onUpdateInternal()
         // Right-click on empty space to create new resource
         if (ImGui::BeginPopupContextWindow("create_resource_context", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
             if (ImGui::MenuItem("Create Texture2D")) {
-                string textureFilePath = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;*.jpeg;*.bmp");
+                std::string textureFilePath = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;*.jpeg;*.bmp");
 
-                if (!textureFilePath.empty()) // If a file was selected
-                {
-                    resourceManager.createTexture2DFromFile(textureFilePath);
+                if (!textureFilePath.empty()) {
+                    fs::path selectedPath = textureFilePath;
+                    fs::path projectRoot = getProjectRoot();
+                    fs::path relativePath;
+
+                    // Ensure the selected path is within the project root
+                    if (fs::equivalent(selectedPath.root_name(), projectRoot.root_name()) &&
+                        selectedPath.string().find(projectRoot.string()) == 0)
+                    {
+                        relativePath = fs::relative(selectedPath, projectRoot);
+                        Debug::Log(relativePath.string());
+                        resourceManager.createTexture2DFromFile(relativePath.string());
+                    }
+                    else
+                    {
+                        Debug::LogWarning("Selected texture must be inside the project folder.");
+                    }
                 }
             }
             if (ImGui::MenuItem("Create Mesh")) {
-                //resourceManager.createMeshFromFile();
-            }
-            if (ImGui::MenuItem("Create Shader")) {
-                //resourceManager.createShader();
-            }
-            // Add more resource types here if needed
 
+                std::string meshObjFilePath = TossEngine::GetInstance().openFileDialog("*.obj;");
+
+                if (!meshObjFilePath.empty()) {
+                    fs::path selectedPath = meshObjFilePath;
+                    fs::path projectRoot = getProjectRoot();
+                    fs::path relativePath;
+
+                    // Ensure the selected path is within the project root
+                    if (fs::equivalent(selectedPath.root_name(), projectRoot.root_name()) &&
+                        selectedPath.string().find(projectRoot.string()) == 0)
+                    {
+                        relativePath = fs::relative(selectedPath, projectRoot);
+                        resourceManager.createMeshFromFile(relativePath.string());
+                    }
+                    else
+                    {
+                        Debug::LogWarning("Selected mesh must be inside the project folder.");
+                    }
+                }
+            }
+
+            if (ImGui::MenuItem("Create Shader")) {
+                shaderVertPath = TossEngine::GetInstance().openFileDialog("*.vert");
+                if (!shaderVertPath.empty()) {
+                    shaderFragPath = TossEngine::GetInstance().openFileDialog("*.frag");
+                    if (!shaderFragPath.empty()) {
+                        openShaderPopupNextFrame = true; // trigger for next frame
+                    }
+                }
+            }
             ImGui::EndPopup();
         }
     }
     ImGui::End();
+
+    // In the same frame, open the popup if flagged
+    if (openShaderPopupNextFrame) {
+        ImGui::OpenPopup("Enter Shader ID");
+        openShaderPopupNextFrame = false;
+    }
+
+    // Show the popup to name the shader
+    if (ImGui::BeginPopupModal("Enter Shader ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::InputText("Shader ID", shaderIDBuffer, sizeof(shaderIDBuffer));
+
+        if (ImGui::Button("Create")) {
+            if (strlen(shaderIDBuffer) > 0) {
+                std::string shaderID = shaderIDBuffer;
+                std::filesystem::path root = getProjectRoot();
+                std::filesystem::path vertRel = std::filesystem::relative(shaderVertPath, root);
+                std::filesystem::path fragRel = std::filesystem::relative(shaderFragPath, root);
+
+                ShaderDesc desc;
+                desc.vertexShaderFilePath = vertRel.string();
+                desc.fragmentShaderFilePath = fragRel.string();
+
+                resourceManager.createShader(desc, shaderID);
+
+                Debug::Log("Created shader: " + shaderID);
+
+                // Reset state
+                shaderVertPath.clear();
+                shaderFragPath.clear();
+                shaderIDBuffer[0] = '\0';
+
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel")) {
+            shaderVertPath.clear();
+            shaderFragPath.clear();
+            shaderIDBuffer[0] = '\0';
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
 
     if (resourceBeingRenamed != nullptr)
     {
@@ -574,7 +663,7 @@ void TossEditor::onUpdateInternal()
                 std::string newID = renameBuffer;
 
                 // Rename the resource
-                resourceManager.RenameResource(oldID, newID);
+                resourceManager.RenameResource(resourceBeingRenamed, newID);
             }
 
             resourceBeingRenamed = nullptr;

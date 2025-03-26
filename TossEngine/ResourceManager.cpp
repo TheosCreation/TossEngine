@@ -332,8 +332,8 @@ CoroutineTask ResourceManager::saveResourcesDescs(const std::string& filepath)
     for (auto& [key, shaderDesc] : shaderDescriptions)
     {
         data["shaders"][key] = {
-            {"vertexShader", shaderDesc.vertexShaderFileName},
-            {"fragmentShader", shaderDesc.fragmentShaderFileName}
+            {"vertexShader", shaderDesc.vertexShaderFilePath},
+            {"fragmentShader", shaderDesc.fragmentShaderFilePath}
         };
     }
 
@@ -397,8 +397,8 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
         for (auto& [key, value] : data["shaders"].items())
         {
             ShaderDesc shaderDesc;
-            shaderDesc.vertexShaderFileName = value["vertexShader"].get<string>();
-            shaderDesc.fragmentShaderFileName = value["fragmentShader"].get<string>();
+            shaderDesc.vertexShaderFilePath = value["vertexShader"].get<string>();
+            shaderDesc.fragmentShaderFilePath = value["fragmentShader"].get<string>();
             shaderDescriptions[key] = shaderDesc;
         }
     }
@@ -440,8 +440,10 @@ ResourcePtr ResourceManager::GetSelectedResource()
     return m_selectedResource;
 }
 
-void ResourceManager::RenameResource(const std::string& oldId, const std::string& newId)
+void ResourceManager::RenameResource(ResourcePtr resource, const std::string& newId)
 {
+    const std::string& oldId = resource->getUniqueID();
+
     // Make sure the old ID exists
     auto it = m_mapResources.find(oldId);
     if (it == m_mapResources.end()) {
@@ -455,11 +457,58 @@ void ResourceManager::RenameResource(const std::string& oldId, const std::string
         return;
     }
 
-    it->second->setUniqueID(newId);
-
-    // Move to new key and erase old
-    m_mapResources[newId] = it->second;
+    // Update the resource ID
+    resource->setUniqueID(newId);
+    m_mapResources[newId] = resource;
     m_mapResources.erase(it);
+
+    // --- Update saved data ---
+    if (std::dynamic_pointer_cast<Shader>(resource)) {
+        auto shaderIt = shaderDescriptions.find(oldId);
+        if (shaderIt != shaderDescriptions.end()) {
+            shaderDescriptions[newId] = shaderIt->second;
+            shaderDescriptions.erase(shaderIt);
+            Debug::Log("Detected Type Shader");
+        }
+    }
+    else if (std::dynamic_pointer_cast<Material>(resource)) {
+        auto matIt = materialDescriptions.find(oldId);
+        if (matIt != materialDescriptions.end()) {
+            materialDescriptions[newId] = matIt->second;
+            materialDescriptions.erase(matIt);
+            Debug::Log("Detected Type Material");
+        }
+
+        // Also update any material that references this shader ID
+        for (auto& [matID, shaderID] : materialDescriptions) {
+            if (shaderID == oldId)
+                shaderID = newId;
+        }
+    }
+    else if (std::dynamic_pointer_cast<Texture>(resource)) {
+        // Replace in texture2DFilePaths (file path used as ID)
+        auto itTex = std::find(texture2DFilePaths.begin(), texture2DFilePaths.end(), oldId);
+        if (itTex != texture2DFilePaths.end()) {
+            *itTex = newId;
+            Debug::Log("Detected Type Texture2D");
+        }
+
+        // Also check if it's a cubemap key
+        auto cubeIt = cubemapTextureFilePaths.find(oldId);
+        if (cubeIt != cubemapTextureFilePaths.end()) {
+            cubemapTextureFilePaths[newId] = cubeIt->second;
+            cubemapTextureFilePaths.erase(cubeIt);
+            Debug::Log("Detected Type TextureCubeMap");
+        }
+
+        // Update any cubemaps that reference the texture by value
+        for (auto& [cubeID, facePaths] : cubemapTextureFilePaths) {
+            for (auto& facePath : facePaths) {
+                if (facePath == oldId)
+                    facePath = newId;
+            }
+        }
+    }
 
     Debug::Log("Resource renamed from '" + oldId + "' to '" + newId + "'");
 }

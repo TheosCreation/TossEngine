@@ -62,7 +62,7 @@ public:
     std::map<std::string, ResourcePtr>& GetAllResources() { return m_mapResources; }
     void SetSelectedResource(ResourcePtr selectedResource);
     ResourcePtr GetSelectedResource();
-    void RenameResource(const std::string& oldId, const std::string& newId);
+    void RenameResource(ResourcePtr resource, const std::string& newId);
 
     void DeleteResource(ResourcePtr resource);
 

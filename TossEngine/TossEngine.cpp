@@ -49,11 +49,6 @@ void TossEngine::SetDebugMode(bool enabled)
     isDebugMode = enabled;
 }
 
-ScriptLoader* TossEngine::getScriptLoader()
-{
-    return m_scriptLoader;
-}
-
 void TossEngine::CoroutineRunner()
 {
     while (running)

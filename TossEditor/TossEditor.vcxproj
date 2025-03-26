@@ -175,6 +175,46 @@
     <ClInclude Include="EditorPreferences.h" />
     <ClInclude Include="TossEditor.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\BlinnPhongLighting.glsl" />
+    <None Include="Resources\Shaders\BRDFlighting.glsl" />
+    <None Include="Resources\Shaders\Compute\ComputeParticles.comp" />
+    <None Include="Resources\Shaders\Fragment\ChromaticAberrationRenderPass.frag" />
+    <None Include="Resources\Shaders\Fragment\GeometryPass.frag" />
+    <None Include="Resources\Shaders\Fragment\GeometryPassSkybox.frag" />
+    <None Include="Resources\Shaders\Fragment\GeometryPassTerrian.frag" />
+    <None Include="Resources\Shaders\Fragment\GreyScaleFullRenderPass.frag" />
+    <None Include="Resources\Shaders\Fragment\GreyScaleLuminosityFullRenderPass.frag" />
+    <None Include="Resources\Shaders\Fragment\InvertColorFullRenderPass.frag" />
+    <None Include="Resources\Shaders\Fragment\MattiasCRTRenderPass.frag" />
+    <None Include="Resources\Shaders\Fragment\MeshShader.frag" />
+    <None Include="Resources\Shaders\Fragment\OldFilmRenderPass.frag" />
+    <None Include="Resources\Shaders\Fragment\OutlineShader.frag" />
+    <None Include="Resources\Shaders\Fragment\ParticleSystem.frag" />
+    <None Include="Resources\Shaders\Fragment\QuadBlendingShader.frag" />
+    <None Include="Resources\Shaders\Fragment\QuadShader.frag" />
+    <None Include="Resources\Shaders\Fragment\RainFullRenderPass.frag" />
+    <None Include="Resources\Shaders\Fragment\ScanLineFullRenderPass.frag" />
+    <None Include="Resources\Shaders\Fragment\ShadowShader.frag" />
+    <None Include="Resources\Shaders\Fragment\SkyBoxShader.frag" />
+    <None Include="Resources\Shaders\Fragment\SolidColorMesh.frag" />
+    <None Include="Resources\Shaders\Fragment\SSRLightingShader.frag" />
+    <None Include="Resources\Shaders\Fragment\SSRShader.frag" />
+    <None Include="Resources\Shaders\Fragment\TerrainShader.frag" />
+    <None Include="Resources\Shaders\ShaderUtils.glsl" />
+    <None Include="Resources\Shaders\Shadows.glsl" />
+    <None Include="Resources\Shaders\Vertex\InstancedMesh.vert" />
+    <None Include="Resources\Shaders\Vertex\MeshShader.vert" />
+    <None Include="Resources\Shaders\Vertex\OutlineShader.vert" />
+    <None Include="Resources\Shaders\Vertex\ParticleSystem.vert" />
+    <None Include="Resources\Shaders\Vertex\QuadShader.vert" />
+    <None Include="Resources\Shaders\Vertex\ScreenQuad.vert" />
+    <None Include="Resources\Shaders\Vertex\ShadowShader.vert" />
+    <None Include="Resources\Shaders\Vertex\ShadowShaderInstanced.vert" />
+    <None Include="Resources\Shaders\Vertex\SkyBoxShader.vert" />
+    <None Include="Resources\Shaders\Vertex\SolidColorMesh.vert" />
+    <None Include="Resources\Shaders\Vertex\TerrainShader.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

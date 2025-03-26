@@ -277,8 +277,8 @@ struct IndexBufferDesc
 // Struct representing a shader description
 struct ShaderDesc
 {
-    string vertexShaderFileName;    // Filename of the vertex shader
-    string fragmentShaderFileName;  // Filename of the fragment shader
+    string vertexShaderFilePath;    // Filename of the vertex shader
+    string fragmentShaderFilePath;  // Filename of the fragment shader
 };
 
 // Struct representing a uniform buffer description
@@ -637,6 +637,51 @@ inline T FromString(const std::string& input)
     }
 
     return value;
+}
+
+inline std::string FindSolutionPath(const std::string& solutionName) {
+    std::filesystem::path currentPath = std::filesystem::current_path();
+
+    while (!currentPath.empty()) {
+        std::filesystem::path solutionPath = currentPath / solutionName;
+        if (std::filesystem::exists(solutionPath)) {
+            return solutionPath.string();
+        }
+        currentPath = currentPath.parent_path();
+    }
+
+    return "";  // Not found
+}
+
+inline std::string getProjectRoot()
+{
+    static std::string cachedRoot = [] {
+        std::filesystem::path root = std::filesystem::current_path();
+        return root.string();
+        }();
+    return cachedRoot;
+}
+
+inline string getMSBuildPath() {
+    const char* vswhereCmd =
+        R"("C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe)";
+
+    std::array<char, 512> buffer;
+    std::string result;
+
+    // Use pipe to execute command and get output
+    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(vswhereCmd, "r"), _pclose);
+    if (!pipe) {
+        throw std::runtime_error("Failed to run vswhere.");
+    }
+
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+
+    // Remove potential trailing newline
+    result.erase(result.find_last_not_of(" \n\r\t") + 1);
+    return result;
 }
 
 // Specialization of FromString for RenderingPath
