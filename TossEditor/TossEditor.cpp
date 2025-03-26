@@ -559,7 +559,7 @@ void TossEditor::onUpdateInternal()
             ImGui::EndPopup();
         }
 
-        const auto& resources = resourceManager.GetAllResources();
+        std::map<string, ResourcePtr>& resources = resourceManager.GetAllResources();
 
         for (auto& [uniqueID, resource] : resources) {
             if (uniqueID.empty()) continue;

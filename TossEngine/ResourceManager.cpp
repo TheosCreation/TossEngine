@@ -442,7 +442,7 @@ ResourcePtr ResourceManager::GetSelectedResource()
 
 void ResourceManager::RenameResource(ResourcePtr resource, const std::string& newId)
 {
-    const std::string& oldId = resource->getUniqueID();
+    std::string oldId = resource->getUniqueID();
 
     // Make sure the old ID exists
     auto it = m_mapResources.find(oldId);
@@ -468,7 +468,7 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
         if (shaderIt != shaderDescriptions.end()) {
             shaderDescriptions[newId] = shaderIt->second;
             shaderDescriptions.erase(shaderIt);
-            Debug::Log("Detected Type Shader");
+            Debug::Log("Shader renamed from '" + oldId + "' to '" + newId + "'");
         }
     }
     else if (std::dynamic_pointer_cast<Material>(resource)) {
@@ -476,7 +476,7 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
         if (matIt != materialDescriptions.end()) {
             materialDescriptions[newId] = matIt->second;
             materialDescriptions.erase(matIt);
-            Debug::Log("Detected Type Material");
+            Debug::Log("Material renamed from '" + oldId + "' to '" + newId + "'");
         }
 
         // Also update any material that references this shader ID
@@ -490,7 +490,7 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
         auto itTex = std::find(texture2DFilePaths.begin(), texture2DFilePaths.end(), oldId);
         if (itTex != texture2DFilePaths.end()) {
             *itTex = newId;
-            Debug::Log("Detected Type Texture2D");
+            Debug::Log("Texture2D renamed from '" + oldId + "' to '" + newId + "'");
         }
 
         // Also check if it's a cubemap key
@@ -498,7 +498,7 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
         if (cubeIt != cubemapTextureFilePaths.end()) {
             cubemapTextureFilePaths[newId] = cubeIt->second;
             cubemapTextureFilePaths.erase(cubeIt);
-            Debug::Log("Detected Type TextureCubeMap");
+            Debug::Log("TextureCubeMap renamed from '" + oldId + "' to '" + newId + "'");
         }
 
         // Update any cubemaps that reference the texture by value
@@ -510,7 +510,6 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
         }
     }
 
-    Debug::Log("Resource renamed from '" + oldId + "' to '" + newId + "'");
 }
 
 void ResourceManager::DeleteResource(ResourcePtr resource)
