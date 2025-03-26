@@ -373,6 +373,12 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
     file >> data;
     file.close();
 
+    // Clear existing data to prevent duplication
+    shaderDescriptions.clear();
+    materialDescriptions.clear();
+    texture2DFilePaths.clear();
+    cubemapTextureFilePaths.clear();
+
     // Deserialize shaders
     if (data.contains("shaders"))
     {
@@ -401,7 +407,6 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
         }
     }
 
-    // Deserialize cubemap file paths
     if (data.contains("cubemaps"))
     {
         for (auto& [key, value] : data["cubemaps"].items())
