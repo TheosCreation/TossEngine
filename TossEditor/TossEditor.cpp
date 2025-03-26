@@ -9,6 +9,7 @@
 #include "ScriptLoader.h"
 #include "FileWatcher.h"
 #include <imgui.h>
+#include <ImGuizmo.h>
 
 TossEditor::TossEditor()
 {
@@ -167,6 +168,7 @@ void TossEditor::onUpdateInternal()
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
     graphicsEngine.createImGuiFrame();
     ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
+    ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
 
     float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
     ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -241,7 +243,6 @@ void TossEditor::onUpdateInternal()
         ImGui::EndMainMenuBar();
     }
 
-    
     ImGui::Begin("Game", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     {
         // Get the available size for the Scene window.
@@ -271,7 +272,7 @@ void TossEditor::onUpdateInternal()
         }
     }
     ImGui::End();
-
+    
     ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     {
         // Get the available size for the Scene window.
@@ -294,11 +295,34 @@ void TossEditor::onUpdateInternal()
             // Get the updated texture after rendering.
             ImTextureID sceneViewTexture = (ImTextureID)m_sceneViewFrameBuffer->RenderTexture->getId();
 
+            ImGui::SetNextItemAllowOverlap();
             // Display the rendered scene scaled to the available region.
-            ImGui::Image(sceneViewTexture, availSize,
-                ImVec2{ 0.f, 1.f },  // UV0
-                ImVec2{ 1.f, 0.f }   // UV1 (flipped vertically if needed)
-            );
+            ImGui::Image(sceneViewTexture, availSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
+
+            if (selectedSelectable)
+            {
+                if (auto gameObject = dynamic_cast<GameObject*>(selectedSelectable))
+                {
+                    ImGuizmo::SetOrthographic(false);
+                    ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
+
+                    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, availSize.x, availSize.y);
+
+                    glm::mat4 cameraView;
+                    m_player->getCamera()->getViewMatrix(cameraView);
+
+                    Mat4 projectionMat;
+                    m_player->getCamera()->getProjectionMatrix(projectionMat);
+
+                    Mat4 transformMat = gameObject->m_transform.GetMatrix();
+                    ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(projectionMat), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(transformMat));
+                    if (ImGuizmo::IsUsing())
+                    {
+                        gameObject->m_transform.SetMatrix(transformMat);
+                    }
+
+                }
+            }
         }
     }
     ImGui::End();
@@ -438,7 +462,6 @@ void TossEditor::onUpdateInternal()
     {
         if (selectedSelectable)
         {
-            // Display the selected object's name and transform.
             selectedSelectable->OnInspectorGUI();
         }
         else
@@ -515,7 +538,7 @@ void TossEditor::onUpdateInternal()
                     {
                         relativePath = fs::relative(selectedPath, projectRoot);
                         Debug::Log(relativePath.string());
-                        resourceManager.createTexture2DFromFile(relativePath.string());
+                        resourceManager.createTexture2DFromFile(relativePath.string(), relativePath.string());//change this soon
                     }
                     else {
                         Debug::LogWarning("Selected texture must be inside the project folder.");

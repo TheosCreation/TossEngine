@@ -55,7 +55,7 @@ TextureCubeMapPtr ResourceManager::getCubemapTexture(const std::string& uniqueId
 
     auto it2 = cubemapTextureFilePaths.find(uniqueId);
     if (it2 != cubemapTextureFilePaths.end())
-        return createCubeMapTextureFromFile(it2->second);
+        return createCubeMapTextureFromFile(it2->second, uniqueId);
 }
 
 TexturePtr ResourceManager::getTexture(const std::string& uniqueId)
@@ -65,13 +65,12 @@ TexturePtr ResourceManager::getTexture(const std::string& uniqueId)
     if (it != m_mapResources.end())
         return std::static_pointer_cast<Texture>(it->second);
 
-    // If not found, try creating it from known texture file paths
-    auto it2 = std::find(texture2DFilePaths.begin(), texture2DFilePaths.end(), uniqueId);
+    // Look up in the file path map
+    auto it2 = texture2DFilePaths.find(uniqueId);
     if (it2 != texture2DFilePaths.end())
-        return createTexture2DFromFile(uniqueId);
+        return createTexture2DFromFile(it2->second, uniqueId);
 
-    // Not found anywhere
-    return TexturePtr();
+    return TexturePtr(); // Not found anywhere
 }
 
 MaterialPtr ResourceManager::getMaterial(const std::string& uniqueId)
@@ -106,7 +105,7 @@ ShaderPtr ResourceManager::createComputeShader(const string& computeShaderFilena
     return shader;
 }
 
-TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vector<std::string>& filepaths)
+TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vector<std::string>& filepaths, const string& uniqueId)
 {
     stbi_set_flip_vertically_on_load(false);
 
@@ -136,7 +135,7 @@ TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vecto
     }
 
     // Create a cubemap texture using the graphics engine.
-    TextureCubeMapPtr textureCubeMapPtr = std::make_shared<TextureCubeMap>(desc, filepaths[0], this);
+    TextureCubeMapPtr textureCubeMapPtr = std::make_shared<TextureCubeMap>(desc, uniqueId, this);
     if (!textureCubeMapPtr)
     {
         Debug::LogError("Cubemap texture not generated");
@@ -150,10 +149,10 @@ TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vecto
 
     if (textureCubeMapPtr)
     {
-        m_mapResources.emplace(filepaths[0], textureCubeMapPtr);
-        if (cubemapTextureFilePaths.find(filepaths[0]) == cubemapTextureFilePaths.end())
+        m_mapResources.emplace(uniqueId, textureCubeMapPtr);
+        if (cubemapTextureFilePaths.find(uniqueId) == cubemapTextureFilePaths.end())
         {
-            cubemapTextureFilePaths.emplace(filepaths[0], filepaths);
+            cubemapTextureFilePaths.emplace(uniqueId, filepaths);
         }
         return textureCubeMapPtr;
     }
@@ -161,10 +160,10 @@ TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vecto
     return TextureCubeMapPtr();
 }
 
-Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepath, TextureType type)
+Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepath, const string& uniqueId, TextureType type)
 {
     // Check if the resource has already been loaded
-    auto it = m_mapResources.find(filepath);
+    auto it = m_mapResources.find(uniqueId);
     if (it != m_mapResources.end())
     {
         return std::static_pointer_cast<Texture2D>(it->second);
@@ -186,7 +185,7 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
     desc.numChannels = nrChannels;
 
     // Create a 2D texture using the graphics engine.
-    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, filepath, this);
+    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, filepath, uniqueId, this);
     if (!texture2DPtr)
     {
         Debug::LogError("Texture not generated");
@@ -197,10 +196,9 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
 
     if (texture2DPtr)
     {
-        auto found = std::find(texture2DFilePaths.begin(), texture2DFilePaths.end(), filepath);
-        if (found == texture2DFilePaths.end()) 
+        if (texture2DFilePaths.find(uniqueId) == texture2DFilePaths.end())
         {
-            texture2DFilePaths.push_back(filepath);
+            texture2DFilePaths.emplace(uniqueId, filepath);
         }
 
         m_mapResources.emplace(filepath, texture2DPtr);
@@ -213,7 +211,7 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
 Texture2DPtr ResourceManager::createTexture2D(Texture2DDesc desc, string textureName)
 {
     // Create a 2D texture using the graphics engine.
-    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, textureName, this);
+    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, textureName, textureName, this);
     if (!texture2DPtr)
     {
         Debug::LogError("Texture not generated");
@@ -343,9 +341,10 @@ CoroutineTask ResourceManager::saveResourcesDescs(const std::string& filepath)
         data["materials"][key] = shaderId;
     }
 
-    for (auto& texture2DFilePath : texture2DFilePaths)
+    // Serialize texture2D file paths
+    for (auto& [key, texture2DFilePath] : texture2DFilePaths)
     {
-        data["texture2Ds"].push_back(texture2DFilePath);
+        data["texture2Ds"][key] = texture2DFilePath;
     }
 
     // Serialize cubemap file paths
@@ -414,8 +413,8 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
 
     if (data.contains("texture2Ds"))
     {
-        for (const auto& path : data["texture2Ds"]) {
-            texture2DFilePaths.push_back(path.get<string>());
+        for (auto& [key, path] : data["texture2Ds"].items()) {
+            texture2DFilePaths[key] = path;
         }
     }
 
@@ -487,9 +486,10 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
     }
     else if (std::dynamic_pointer_cast<Texture>(resource)) {
         // Replace in texture2DFilePaths (file path used as ID)
-        auto itTex = std::find(texture2DFilePaths.begin(), texture2DFilePaths.end(), oldId);
+        auto itTex = texture2DFilePaths.find(oldId);
         if (itTex != texture2DFilePaths.end()) {
-            *itTex = newId;
+            texture2DFilePaths[newId] = itTex->second;
+            texture2DFilePaths.erase(itTex);
             Debug::Log("Texture2D renamed from '" + oldId + "' to '" + newId + "'");
         }
 
@@ -554,12 +554,11 @@ void ResourceManager::DeleteResource(ResourcePtr resource)
     }
     else if (std::dynamic_pointer_cast<Texture>(resource)) {
         // Remove from texture2D list
-        auto itTex = std::find(texture2DFilePaths.begin(), texture2DFilePaths.end(), id);
+        auto itTex = texture2DFilePaths.find(id);
         if (itTex != texture2DFilePaths.end()) {
             texture2DFilePaths.erase(itTex);
             Debug::Log("Deleted Texture2D: " + id);
         }
-
         // Remove as a cubemap key
         auto cubeIt = cubemapTextureFilePaths.find(id);
         if (cubeIt != cubemapTextureFilePaths.end()) {
@@ -614,15 +613,15 @@ CoroutineTask ResourceManager::createResourcesFromDescs()
     }
 
     // Create Texture2D resources
-    for (const auto& filepath : texture2DFilePaths)
+    for (const auto& [uniqueID, filepath] : texture2DFilePaths)
     {
-        createTexture2DFromFile(filepath); // Change type as needed
+        createTexture2DFromFile(filepath, uniqueID); // Change type as needed
     }
 
     // Create Cubemap Textures
     for (const auto& [uniqueID, filepaths] : cubemapTextureFilePaths)
     {
-        createCubeMapTextureFromFile(filepaths);
+        createCubeMapTextureFromFile(filepaths, uniqueID);
     }
 
     hasCreatedResources = true;

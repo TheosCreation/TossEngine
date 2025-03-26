@@ -3,6 +3,7 @@
 #include "ISelectable.h"
 #include "ComponentRegistry.h"
 #include <imgui.h>
+#include <ImGuizmo.h>
 
 class GameObject;
 

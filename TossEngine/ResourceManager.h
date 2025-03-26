@@ -43,8 +43,8 @@ public:
     // Methods to create various resources
     ShaderPtr createShader(const ShaderDesc& desc, const std::string& uniqueID);
     ShaderPtr createComputeShader(const string& computeShaderFilename);
-    TextureCubeMapPtr createCubeMapTextureFromFile(const std::vector<std::string>& filepaths);
-    Texture2DPtr createTexture2DFromFile(const std::string& filepath, TextureType type = TextureType::Default);
+    TextureCubeMapPtr createCubeMapTextureFromFile(const std::vector<std::string>& filepaths, const string& uniqueId);
+    Texture2DPtr createTexture2DFromFile(const string& filepath, const string& uniqueId, TextureType type = TextureType::Default);
     Texture2DPtr createTexture2D(Texture2DDesc desc, string textureName = "NoTextureName");
     MeshPtr createMeshFromFile(const std::string& filepath);
     HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
@@ -73,7 +73,7 @@ protected:
     ResourcePtr m_selectedResource = nullptr; // for editor use
 
     std::unordered_map<std::string, ShaderDesc> shaderDescriptions;
-    std::vector<std::string> texture2DFilePaths;
+    std::unordered_map<std::string, std::string> texture2DFilePaths;
     std::unordered_map<std::string, vector<std::string>> cubemapTextureFilePaths;
     std::unordered_map<std::string, std::string> materialDescriptions;
 

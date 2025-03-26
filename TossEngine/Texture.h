@@ -32,7 +32,7 @@ public:
      * @param path The file path to the texture.
      * @param manager Pointer to the resource manager.
      */
-    Texture(const string& filePath, ResourceManager* manager);
+    Texture(const string& filePath, const string& uniqueId, ResourceManager* manager);
 
     void OnInspectorGUI() override;
     bool Delete(bool deleteSelf = true) override;

@@ -131,7 +131,28 @@ struct TOSSENGINE_API Transform
 
         return translationMatrix * rotationMatrix * scaleMatrix;
     }
-    
+
+    void SetMatrix(Mat4 matrix)
+    {
+        // Extract translation (last column)
+        position = Vector3(matrix[3]);
+
+        // Extract scale
+        scale.x = glm::length(Vector3(matrix[0]));
+        scale.y = glm::length(Vector3(matrix[1]));
+        scale.z = glm::length(Vector3(matrix[2]));
+
+        // Remove scale from matrix to isolate rotation
+        Mat4 rotationMatrix;
+        rotationMatrix[0] = Vector4(glm::normalize(Vector3(matrix[0])), 0.0f);
+        rotationMatrix[1] = Vector4(glm::normalize(Vector3(matrix[1])), 0.0f);
+        rotationMatrix[2] = Vector4(glm::normalize(Vector3(matrix[2])), 0.0f);
+        rotationMatrix[3] = glm::vec4(0, 0, 0, 1);
+
+        // Convert rotation matrix to quaternion
+        rotation = glm::quat_cast(rotationMatrix);
+    }
+
     void UpdateWorldTransform()
     {
         if (parent)

@@ -16,6 +16,9 @@
     <Filter Include="ImGui">
       <UniqueIdentifier>{e04874f9-9694-403d-bd3a-238377626fe6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImGuizmos">
+      <UniqueIdentifier>{5943a0e2-bb59-4476-bf77-4019329c6859}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -47,6 +50,21 @@
     </ClCompile>
     <ClCompile Include="..\..\Dependencies\IMGUI\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImGuizmo.cpp">
+      <Filter>ImGuizmos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImSequencer.cpp">
+      <Filter>ImGuizmos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\IMGUIZMO\GraphEditor.cpp">
+      <Filter>ImGuizmos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImCurveEdit.cpp">
+      <Filter>ImGuizmos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImGradient.cpp">
+      <Filter>ImGuizmos</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +100,24 @@
     </ClInclude>
     <ClInclude Include="..\..\Dependencies\IMGUI\imstb_truetype.h">
       <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\ImGradient.h">
+      <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\ImGuizmo.h">
+      <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\ImSequencer.h">
+      <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\ImZoomSlider.h">
+      <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\GraphEditor.h">
+      <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\ImCurveEdit.h">
+      <Filter>ImGuizmos</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

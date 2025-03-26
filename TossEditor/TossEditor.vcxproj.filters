@@ -19,6 +19,9 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{d949656c-6147-438d-9902-6f0562ed5f27}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImGuizmos">
+      <UniqueIdentifier>{e249bb45-fcbd-4178-9f11-67ae5782b035}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TossEditor.cpp">
@@ -49,6 +52,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImGuizmo.cpp">
+      <Filter>ImGuizmos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImSequencer.cpp">
+      <Filter>ImGuizmos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUIZMO\GraphEditor.cpp">
+      <Filter>ImGuizmos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImCurveEdit.cpp">
+      <Filter>ImGuizmos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImGradient.cpp">
+      <Filter>ImGuizmos</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TossEditor.h">
@@ -86,6 +104,24 @@
     </ClInclude>
     <ClInclude Include="EditorPreferences.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImGradient.h">
+      <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImGuizmo.h">
+      <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImSequencer.h">
+      <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImZoomSlider.h">
+      <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\GraphEditor.h">
+      <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImCurveEdit.h">
+      <Filter>ImGuizmos</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

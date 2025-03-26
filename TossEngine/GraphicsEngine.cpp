@@ -11,6 +11,7 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "GraphicsEngine.h"
+#include <ImGuizmo.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -79,6 +80,7 @@ void GraphicsEngine::createImGuiFrame()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame(); 
+    ImGuizmo::BeginFrame();
 }
 
 // Inside your GraphicsEngine class
