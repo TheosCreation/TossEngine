@@ -73,6 +73,11 @@ private:
     char renameBuffer[256] = "";
     ResourcePtr resourceBeingRenamed = nullptr;
 
+    std::string shaderVertPath;
+    std::string shaderFragPath;
+    char shaderIDBuffer[256] = "";
+    bool openShaderPopupNextFrame = false;
+
     unique_ptr<EditorPlayer> m_player = nullptr;
     FramebufferPtr m_sceneViewFrameBuffer = nullptr;
     FramebufferPtr m_gameViewFrameBuffer = nullptr;

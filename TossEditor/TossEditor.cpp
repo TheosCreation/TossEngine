@@ -450,14 +450,8 @@ void TossEditor::onUpdateInternal()
 
     if (ImGui::Begin("Hierarchy"))
     {
-        // Right-click context menu on the window background
-        if (ImGui::BeginPopupContextWindow("Hierarchy Context"))
-        {
-            if (ImGui::MenuItem("Add Empty GameObject"))
-            {
-                m_currentScene->getObjectManager()->createGameObject<GameObject>();
-            }
-            ImGui::EndPopup();
+        if (ImGui::Button("Add Empty GameObject")) {
+            m_currentScene->getObjectManager()->createGameObject<GameObject>();
         }
 
         // Display root game objects.
@@ -501,12 +495,70 @@ void TossEditor::onUpdateInternal()
         ImGui::EndPopup();
     }
 
-
-    static std::string shaderVertPath;
-    static std::string shaderFragPath;
-    static char shaderIDBuffer[256] = "";
-    static bool openShaderPopupNextFrame = false;
     if (ImGui::Begin("Assets")) {
+        if (ImGui::Button("Create Resource")) {
+            ImGui::OpenPopup("CreateResourcePopup");
+        }
+
+        // Resource creation popup
+        if (ImGui::BeginPopup("CreateResourcePopup")) {
+            if (ImGui::MenuItem("Texture2D")) {
+                std::string textureFilePath = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;*.jpeg;*.bmp");
+
+                if (!textureFilePath.empty()) {
+                    fs::path selectedPath = textureFilePath;
+                    fs::path projectRoot = getProjectRoot();
+                    fs::path relativePath;
+
+                    if (fs::equivalent(selectedPath.root_name(), projectRoot.root_name()) &&
+                        selectedPath.string().find(projectRoot.string()) == 0)
+                    {
+                        relativePath = fs::relative(selectedPath, projectRoot);
+                        Debug::Log(relativePath.string());
+                        resourceManager.createTexture2DFromFile(relativePath.string());
+                    }
+                    else {
+                        Debug::LogWarning("Selected texture must be inside the project folder.");
+                    }
+                }
+                ImGui::CloseCurrentPopup();
+            }
+
+            if (ImGui::MenuItem("Mesh")) {
+                std::string meshObjFilePath = TossEngine::GetInstance().openFileDialog("*.obj");
+
+                if (!meshObjFilePath.empty()) {
+                    fs::path selectedPath = meshObjFilePath;
+                    fs::path projectRoot = getProjectRoot();
+                    fs::path relativePath;
+
+                    if (fs::equivalent(selectedPath.root_name(), projectRoot.root_name()) &&
+                        selectedPath.string().find(projectRoot.string()) == 0)
+                    {
+                        relativePath = fs::relative(selectedPath, projectRoot);
+                        resourceManager.createMeshFromFile(relativePath.string());
+                    }
+                    else {
+                        Debug::LogWarning("Selected mesh must be inside the project folder.");
+                    }
+                }
+                ImGui::CloseCurrentPopup();
+            }
+
+            if (ImGui::MenuItem("Shader")) {
+                shaderVertPath = TossEngine::GetInstance().openFileDialog("*.vert");
+                if (!shaderVertPath.empty()) {
+                    shaderFragPath = TossEngine::GetInstance().openFileDialog("*.frag");
+                    if (!shaderFragPath.empty()) {
+                        openShaderPopupNextFrame = true; // Trigger name popup
+                    }
+                }
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+
         const auto& resources = resourceManager.GetAllResources();
 
         for (auto& [uniqueID, resource] : resources) {
@@ -533,69 +585,11 @@ void TossEditor::onUpdateInternal()
                         selectedSelectable = nullptr;
                     }
                     ImGui::CloseCurrentPopup();
+                    ImGui::EndPopup();
                     break; // Break since resources have changed
                 }
                 ImGui::EndPopup();
             }
-        }
-
-        // Right-click on empty space to create new resource
-        if (ImGui::BeginPopupContextWindow("create_resource_context", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
-            if (ImGui::MenuItem("Create Texture2D")) {
-                std::string textureFilePath = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;*.jpeg;*.bmp");
-
-                if (!textureFilePath.empty()) {
-                    fs::path selectedPath = textureFilePath;
-                    fs::path projectRoot = getProjectRoot();
-                    fs::path relativePath;
-
-                    // Ensure the selected path is within the project root
-                    if (fs::equivalent(selectedPath.root_name(), projectRoot.root_name()) &&
-                        selectedPath.string().find(projectRoot.string()) == 0)
-                    {
-                        relativePath = fs::relative(selectedPath, projectRoot);
-                        Debug::Log(relativePath.string());
-                        resourceManager.createTexture2DFromFile(relativePath.string());
-                    }
-                    else
-                    {
-                        Debug::LogWarning("Selected texture must be inside the project folder.");
-                    }
-                }
-            }
-            if (ImGui::MenuItem("Create Mesh")) {
-
-                std::string meshObjFilePath = TossEngine::GetInstance().openFileDialog("*.obj;");
-
-                if (!meshObjFilePath.empty()) {
-                    fs::path selectedPath = meshObjFilePath;
-                    fs::path projectRoot = getProjectRoot();
-                    fs::path relativePath;
-
-                    // Ensure the selected path is within the project root
-                    if (fs::equivalent(selectedPath.root_name(), projectRoot.root_name()) &&
-                        selectedPath.string().find(projectRoot.string()) == 0)
-                    {
-                        relativePath = fs::relative(selectedPath, projectRoot);
-                        resourceManager.createMeshFromFile(relativePath.string());
-                    }
-                    else
-                    {
-                        Debug::LogWarning("Selected mesh must be inside the project folder.");
-                    }
-                }
-            }
-
-            if (ImGui::MenuItem("Create Shader")) {
-                shaderVertPath = TossEngine::GetInstance().openFileDialog("*.vert");
-                if (!shaderVertPath.empty()) {
-                    shaderFragPath = TossEngine::GetInstance().openFileDialog("*.frag");
-                    if (!shaderFragPath.empty()) {
-                        openShaderPopupNextFrame = true; // trigger for next frame
-                    }
-                }
-            }
-            ImGui::EndPopup();
         }
     }
     ImGui::End();

@@ -517,18 +517,64 @@ void ResourceManager::DeleteResource(ResourcePtr resource)
 {
     if (!resource) return;
 
+    std::string id = resource->getUniqueID();
+
+    // Erase from resource map
     auto it = std::find_if(m_mapResources.begin(), m_mapResources.end(),
         [&resource](const auto& pair) { return pair.second == resource; });
 
-    if (it != m_mapResources.end())
-    {
+    if (it != m_mapResources.end()) {
         m_mapResources.erase(it);
     }
 
-    // If the resource was selected, deselect it
-    if (m_selectedResource == resource)
-    {
+    // Deselect if selected
+    if (m_selectedResource == resource) {
         m_selectedResource = nullptr;
+    }
+
+    // --- Remove from saved data ---
+    if (std::dynamic_pointer_cast<Shader>(resource)) {
+        auto shaderIt = shaderDescriptions.find(id);
+        if (shaderIt != shaderDescriptions.end()) {
+            shaderDescriptions.erase(shaderIt);
+            Debug::Log("Deleted Shader: " + id);
+        }
+    }
+    else if (std::dynamic_pointer_cast<Material>(resource)) {
+        auto matIt = materialDescriptions.find(id);
+        if (matIt != materialDescriptions.end()) {
+            materialDescriptions.erase(matIt);
+            Debug::Log("Deleted Material: " + id);
+        }
+
+        // Also remove any references TO this shader from other materials
+        for (auto& [matID, shaderID] : materialDescriptions) {
+            if (shaderID == id)
+                shaderID = ""; // or some fallback/default shader ID
+        }
+    }
+    else if (std::dynamic_pointer_cast<Texture>(resource)) {
+        // Remove from texture2D list
+        auto itTex = std::find(texture2DFilePaths.begin(), texture2DFilePaths.end(), id);
+        if (itTex != texture2DFilePaths.end()) {
+            texture2DFilePaths.erase(itTex);
+            Debug::Log("Deleted Texture2D: " + id);
+        }
+
+        // Remove as a cubemap key
+        auto cubeIt = cubemapTextureFilePaths.find(id);
+        if (cubeIt != cubemapTextureFilePaths.end()) {
+            cubemapTextureFilePaths.erase(cubeIt);
+            Debug::Log("Deleted Cubemap Texture: " + id);
+        }
+
+        // Also remove from any cubemap references
+        for (auto& [cubeID, facePaths] : cubemapTextureFilePaths) {
+            for (auto& facePath : facePaths) {
+                if (facePath == id)
+                    facePath = ""; // or handle missing face logic
+            }
+        }
     }
 }
 
