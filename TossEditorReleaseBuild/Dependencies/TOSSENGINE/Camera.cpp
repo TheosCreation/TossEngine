@@ -13,6 +13,62 @@ Mail : theo.morris@mds.ac.nz
 #include "Camera.h"
 #include "GameObject.h"
 
+json Camera::serialize() const
+{
+    json data;
+    data["type"] = getClassName(typeid(*this)); // Store the component type
+    data["nearPlane"] = m_nearPlane;
+    data["farPlane"] = m_farPlane;
+    data["fov"] = m_fov;
+    data["projection"] = ToString(m_type);
+
+	return data;
+}
+
+void Camera::deserialize(const json& data)
+{
+    if (data.contains("nearPlane"))
+    {
+        m_nearPlane = data["nearPlane"];
+    }
+    
+    if (data.contains("farPlane"))
+    {
+        m_farPlane = data["farPlane"];
+    }
+    
+    if (data.contains("fov"))
+    {
+        m_fov = data["fov"];
+    }
+    if (data.contains("projection"))
+    {
+        m_type = FromString<CameraType>(data["projection"]);
+    }
+}
+
+void Camera::OnInspectorGUI()
+{
+    ImGui::Text("Camera Inspector - ID: %p", this);
+    ImGui::Separator();
+
+    ImGui::DragFloat("Near Plane", &m_nearPlane, 0.1f);
+    ImGui::DragFloat("Far Plane", &m_farPlane, 0.1f);
+    ImGui::DragFloat("Fov", &m_fov, 0.1f, 1.0f, 179.0f);
+
+
+    ImGui::Text("Camera Projection");
+    // Rendering Path selection
+    static const char* items[]{ "Orthogonal", "Perspective" };
+    static int Selecteditem = (int)m_type;
+    if (ImGui::Combo("Projection", &Selecteditem, items, IM_ARRAYSIZE(items)))
+    {
+        CameraType selectedPath = static_cast<CameraType>(Selecteditem);
+        Debug::Log("Camera Projection changed to option: " + ToString(selectedPath));
+        m_type = selectedPath;
+    }
+}
+
 void Camera::getViewMatrix(Mat4& view)
 {
 	if (m_type == CameraType::Perspective)

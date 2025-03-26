@@ -16,7 +16,7 @@ Texture::Texture() : Resource("NoFileID", "NoTextureID", nullptr)
 {
 }
 
-Texture::Texture(const string& filePath, ResourceManager* manager) : Resource(filePath, filePath, manager)
+Texture::Texture(const string& filePath, const string& uniqueId, ResourceManager* manager) : Resource(filePath, uniqueId, manager)
 {
 }
 

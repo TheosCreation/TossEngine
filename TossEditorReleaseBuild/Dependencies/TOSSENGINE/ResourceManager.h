@@ -14,6 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include <map>
 #include <string>
 #include "Utils.h"
+#include "CoroutineTask.h"
 
 /**
  * @class ResourceManager
@@ -42,8 +43,8 @@ public:
     // Methods to create various resources
     ShaderPtr createShader(const ShaderDesc& desc, const std::string& uniqueID);
     ShaderPtr createComputeShader(const string& computeShaderFilename);
-    TextureCubeMapPtr createCubeMapTextureFromFile(const std::vector<std::string>& filepaths);
-    Texture2DPtr createTexture2DFromFile(const std::string& filepath, TextureType type = TextureType::Default);
+    TextureCubeMapPtr createCubeMapTextureFromFile(const std::vector<std::string>& filepaths, const string& uniqueId);
+    Texture2DPtr createTexture2DFromFile(const string& filepath, const string& uniqueId, TextureType type = TextureType::Default);
     Texture2DPtr createTexture2D(Texture2DDesc desc, string textureName = "NoTextureName");
     MeshPtr createMeshFromFile(const std::string& filepath);
     HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
@@ -51,21 +52,28 @@ public:
     MaterialPtr createMaterial(const string& shaderId, const std::string& uniqueID);
 
     void deleteTexture(TexturePtr texture);
-    void saveResourcesDescs(const std::string& filepath);
-    void loadResourceDesc(const std::string& filepath);
+    CoroutineTask saveResourcesDescs(const std::string& filepath);
+    CoroutineTask loadResourceDesc(const std::string& filepath);
     void ClearInstancesFromMeshes();
+
+    CoroutineTask createResourcesFromDescs();
 
     bool IsResourceLoaded(const std::string& uniqueId) const;
     std::map<std::string, ResourcePtr>& GetAllResources() { return m_mapResources; }
     void SetSelectedResource(ResourcePtr selectedResource);
     ResourcePtr GetSelectedResource();
+    void RenameResource(ResourcePtr resource, const std::string& newId);
+
+    void DeleteResource(ResourcePtr resource);
 
 protected:
+    bool hasLoadedResources = false;
+    bool hasCreatedResources = false;
     std::map<std::string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
     ResourcePtr m_selectedResource = nullptr; // for editor use
 
     std::unordered_map<std::string, ShaderDesc> shaderDescriptions;
-    std::vector<std::string> texture2DFilePaths;
+    std::unordered_map<std::string, std::string> texture2DFilePaths;
     std::unordered_map<std::string, vector<std::string>> cubemapTextureFilePaths;
     std::unordered_map<std::string, std::string> materialDescriptions;
 

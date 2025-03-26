@@ -200,10 +200,11 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
 {
 	MouseButton translatedButton = static_cast<MouseButton>(button);
 
-    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 
     if (ImGui::GetIO().WantCaptureMouse)
     {
+        ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+
         ImGuiWindow* hoveredWindow = ImGui::GetCurrentContext()->HoveredWindow;
         std::string name = hoveredWindow ? hoveredWindow->Name : "";
 

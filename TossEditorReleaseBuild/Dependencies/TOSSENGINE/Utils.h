@@ -11,7 +11,8 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include <sstream>
+#include <sstream>#
+#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 #include <memory>
@@ -28,12 +29,18 @@ Mail : theo.morris@mds.ac.nz
 #include <typeindex>
 #include <fstream>
 #include <filesystem>
+#include <thread>
+#include <mutex>
+#include <queue>
+#include <atomic>
+#include <condition_variable>
 #include <nlohmann\json.hpp>
 #include <glew.h>
 #include "Debug.h"
 
 
 using json = nlohmann::json; // will be using json to serialize classes and save GameObject objects and all
+namespace fs = std::filesystem;
 
 // Forward declarations of classes
 class UniformBuffer;
@@ -124,7 +131,28 @@ struct TOSSENGINE_API Transform
 
         return translationMatrix * rotationMatrix * scaleMatrix;
     }
-    
+
+    void SetMatrix(Mat4 matrix)
+    {
+        // Extract translation (last column)
+        position = Vector3(matrix[3]);
+
+        // Extract scale
+        scale.x = glm::length(Vector3(matrix[0]));
+        scale.y = glm::length(Vector3(matrix[1]));
+        scale.z = glm::length(Vector3(matrix[2]));
+
+        // Remove scale from matrix to isolate rotation
+        Mat4 rotationMatrix;
+        rotationMatrix[0] = Vector4(glm::normalize(Vector3(matrix[0])), 0.0f);
+        rotationMatrix[1] = Vector4(glm::normalize(Vector3(matrix[1])), 0.0f);
+        rotationMatrix[2] = Vector4(glm::normalize(Vector3(matrix[2])), 0.0f);
+        rotationMatrix[3] = glm::vec4(0, 0, 0, 1);
+
+        // Convert rotation matrix to quaternion
+        rotation = glm::quat_cast(rotationMatrix);
+    }
+
     void UpdateWorldTransform()
     {
         if (parent)
@@ -270,8 +298,8 @@ struct IndexBufferDesc
 // Struct representing a shader description
 struct ShaderDesc
 {
-    string vertexShaderFileName;    // Filename of the vertex shader
-    string fragmentShaderFileName;  // Filename of the fragment shader
+    string vertexShaderFilePath;    // Filename of the vertex shader
+    string fragmentShaderFilePath;  // Filename of the fragment shader
 };
 
 // Struct representing a uniform buffer description
@@ -612,6 +640,18 @@ inline std::string ToString<RenderingPath>(const RenderingPath& value)
     }
 }
 
+// Specialization of ToString for CameraType
+template <>
+inline std::string ToString<CameraType>(const CameraType& value)
+{
+    switch (value)
+    {
+    case CameraType::Perspective: return "Perspective";
+    case CameraType::Orthogonal: return "Orthogonal";
+    default: return "Unknown";
+    }
+}
+
 template <typename T>
 inline T FromString(const std::string& input)
 {
@@ -640,10 +680,70 @@ inline RenderingPath FromString<RenderingPath>(const std::string& input)
         {"Forward Rendering", RenderingPath::Forward},
         {"Deferred Rendering", RenderingPath::Deferred}
     };
-    
+
     auto it = enumMap.find(input);
     return (it != enumMap.end()) ? it->second : RenderingPath::Unknown;
 }
+
+// Specialization of FromString for CameraType
+template <>
+inline CameraType FromString<CameraType>(const std::string& input)
+{
+    static const std::unordered_map<std::string, CameraType> enumMap = {
+        {"Perspective", CameraType::Perspective},
+        {"Orthogonal", CameraType::Orthogonal}
+    };
+
+    auto it = enumMap.find(input);
+    return (it != enumMap.end()) ? it->second : CameraType::Perspective;
+}
+
+inline std::string FindSolutionPath(const std::string& solutionName) {
+    std::filesystem::path currentPath = std::filesystem::current_path();
+
+    while (!currentPath.empty()) {
+        std::filesystem::path solutionPath = currentPath / solutionName;
+        if (std::filesystem::exists(solutionPath)) {
+            return solutionPath.string();
+        }
+        currentPath = currentPath.parent_path();
+    }
+
+    return "";  // Not found
+}
+
+inline std::string getProjectRoot()
+{
+    static std::string cachedRoot = [] {
+        std::filesystem::path root = std::filesystem::current_path();
+        return root.string();
+        }();
+    return cachedRoot;
+}
+
+inline string getMSBuildPath() {
+    const char* vswhereCmd =
+        R"("C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe)";
+
+    std::array<char, 512> buffer;
+    std::string result;
+
+    // Use pipe to execute command and get output
+    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(vswhereCmd, "r"), _pclose);
+    if (!pipe) {
+        throw std::runtime_error("Failed to run vswhere.");
+    }
+
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+
+    // Remove potential trailing newline
+    result.erase(result.find_last_not_of(" \n\r\t") + 1);
+    return result;
+}
+
+
 
 // Helper function to clean up the class name
 inline std::string getClassName(const std::type_info& typeInfo)

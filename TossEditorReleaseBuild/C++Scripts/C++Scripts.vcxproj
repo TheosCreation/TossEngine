@@ -71,14 +71,17 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/FMOD/Lib;$(SolutionDir)/Dependencies/REACTPHYSICS3D/Lib;$(SolutionDir)/Dependencies/TOSSENGINE;$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/TOSSENGINE;$(SolutionDir)TossEngine/</ExternalIncludePath>
-    <OutDir>$(SolutionDir)</OutDir>
+    <LibraryPath>$(SolutionDir)Dependencies\GLFW;$(SolutionDir)Dependencies\GLEW;$(SolutionDir)Dependencies\FMOD\Lib;$(SolutionDir)Dependencies\REACTPHYSICS3D\Lib;$(SolutionDir)Dependencies\TOSSENGINE;$(LibraryPath)
+</LibraryPath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies\STB;$(SolutionDir)Dependencies\tinyobjloader;$(SolutionDir)Dependencies\GLFW;$(SolutionDir)Dependencies\GLEW;$(SolutionDir)Dependencies\JSON;$(SolutionDir)Dependencies\GLM;$(SolutionDir)Dependencies\IMGUI;$(SolutionDir)Dependencies\FMOD\Include;$(SolutionDir)Dependencies\REACTPHYSICS3D;$(SolutionDir)Dependencies\TOSSENGINE;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)TossEngine</ExternalIncludePath>
+    <OutDir>$(SolutionDir)TossEditor</OutDir>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/FMOD/Lib;$(SolutionDir)/Dependencies/REACTPHYSICS3D/Lib;$(SolutionDir)/Dependencies/TOSSENGINE;$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/TOSSENGINE;$(SolutionDir)TossEngine/</ExternalIncludePath>
-    <OutDir>$(SolutionDir)</OutDir>
+    <LibraryPath>$(SolutionDir)Dependencies\GLFW;$(SolutionDir)Dependencies\GLEW;$(SolutionDir)Dependencies\FMOD\Lib;$(SolutionDir)Dependencies\REACTPHYSICS3D\Lib;$(SolutionDir)Dependencies\TOSSENGINE;$(LibraryPath)
+</LibraryPath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies\STB;$(SolutionDir)Dependencies\tinyobjloader;$(SolutionDir)Dependencies\GLFW;$(SolutionDir)Dependencies\GLEW;$(SolutionDir)Dependencies\JSON;$(SolutionDir)Dependencies\GLM;$(SolutionDir)Dependencies\IMGUI;$(SolutionDir)Dependencies\FMOD\Include;$(SolutionDir)Dependencies\REACTPHYSICS3D;$(SolutionDir)Dependencies\TOSSENGINE;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)TossEngine</ExternalIncludePath>
+    <OutDir>$(SolutionDir)TossEditor</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -114,13 +117,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
+      <ProgramDatabaseFile>$(OutDir)DebugSymbols\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -135,15 +139,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
+      <ProgramDatabaseFile>$(OutDir)DebugSymbols\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -151,6 +156,18 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Dependencies\IMGUIZMO\GraphEditor.cpp" />
+    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImCurveEdit.cpp" />
+    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImGradient.cpp" />
+    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImGuizmo.cpp" />
+    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImSequencer.cpp" />
+    <ClCompile Include="..\..\Dependencies\IMGUI\imgui.cpp" />
+    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_tables.cpp" />
+    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="PlayerController.cpp">
       <SubType>
       </SubType>
@@ -159,6 +176,21 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\GraphEditor.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\ImCurveEdit.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\ImGradient.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\ImGuizmo.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\ImSequencer.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUIZMO\ImZoomSlider.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUI\imconfig.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUI\imgui.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUI\imgui_impl_glfw.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUI\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUI\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUI\imgui_internal.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUI\imstb_rectpack.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUI\imstb_textedit.h" />
+    <ClInclude Include="..\..\Dependencies\IMGUI\imstb_truetype.h" />
     <ClInclude Include="PlayerController.h">
       <SubType>
       </SubType>

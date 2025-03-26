@@ -21,6 +21,14 @@ public:
     Camera() = default;
     ~Camera() = default;
 
+    // Serialize 
+    virtual json serialize() const override;
+
+    // Deserialize
+    virtual void deserialize(const json& data) override;
+
+    virtual void OnInspectorGUI() override;
+
     /**
      * @brief Gets the view matrix for the camera.
      * @param[out] view The view matrix to fill.

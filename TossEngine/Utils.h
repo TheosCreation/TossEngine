@@ -640,6 +640,18 @@ inline std::string ToString<RenderingPath>(const RenderingPath& value)
     }
 }
 
+// Specialization of ToString for CameraType
+template <>
+inline std::string ToString<CameraType>(const CameraType& value)
+{
+    switch (value)
+    {
+    case CameraType::Perspective: return "Perspective";
+    case CameraType::Orthogonal: return "Orthogonal";
+    default: return "Unknown";
+    }
+}
+
 template <typename T>
 inline T FromString(const std::string& input)
 {
@@ -658,6 +670,32 @@ inline T FromString(const std::string& input)
     }
 
     return value;
+}
+
+// Specialization of FromString for RenderingPath
+template <>
+inline RenderingPath FromString<RenderingPath>(const std::string& input)
+{
+    static const std::unordered_map<std::string, RenderingPath> enumMap = {
+        {"Forward Rendering", RenderingPath::Forward},
+        {"Deferred Rendering", RenderingPath::Deferred}
+    };
+
+    auto it = enumMap.find(input);
+    return (it != enumMap.end()) ? it->second : RenderingPath::Unknown;
+}
+
+// Specialization of FromString for CameraType
+template <>
+inline CameraType FromString<CameraType>(const std::string& input)
+{
+    static const std::unordered_map<std::string, CameraType> enumMap = {
+        {"Perspective", CameraType::Perspective},
+        {"Orthogonal", CameraType::Orthogonal}
+    };
+
+    auto it = enumMap.find(input);
+    return (it != enumMap.end()) ? it->second : CameraType::Perspective;
 }
 
 inline std::string FindSolutionPath(const std::string& solutionName) {
@@ -705,18 +743,7 @@ inline string getMSBuildPath() {
     return result;
 }
 
-// Specialization of FromString for RenderingPath
-template <>
-inline RenderingPath FromString<RenderingPath>(const std::string& input)
-{
-    static const std::unordered_map<std::string, RenderingPath> enumMap = {
-        {"Forward Rendering", RenderingPath::Forward},
-        {"Deferred Rendering", RenderingPath::Deferred}
-    };
-    
-    auto it = enumMap.find(input);
-    return (it != enumMap.end()) ? it->second : RenderingPath::Unknown;
-}
+
 
 // Helper function to clean up the class name
 inline std::string getClassName(const std::type_info& typeInfo)

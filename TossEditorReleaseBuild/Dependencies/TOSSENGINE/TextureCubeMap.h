@@ -26,7 +26,7 @@ public:
      * @param faces The file paths to the six faces of the cubemap.
      * @param manager Pointer to the resource manager.
      */
-    TextureCubeMap(const TextureCubeMapDesc& desc, const string& filePath, ResourceManager* manager);
+    TextureCubeMap(const TextureCubeMapDesc& desc, const string& uniqueId, ResourceManager* manager);
 
     /**
      * @brief Destructor for the TextureCubeMap class.

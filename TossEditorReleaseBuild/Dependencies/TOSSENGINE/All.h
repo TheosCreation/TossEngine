@@ -47,3 +47,5 @@ Mail : theo.morris@mds.ac.nz
 
 #include "AudioEngine.h"
 #include "GeometryBuffer.h"
+
+#include "CoroutineTask.h"

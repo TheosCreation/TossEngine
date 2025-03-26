@@ -44,6 +44,7 @@ public:
      */
     std::string getPath();
     const std::string& getUniqueID();
+    void setUniqueID(const std::string& id);
 
 protected:
     std::string m_path; // The file path of the resource

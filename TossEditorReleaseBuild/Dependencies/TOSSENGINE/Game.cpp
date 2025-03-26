@@ -27,6 +27,7 @@ Mail : theo.morris@mds.ac.nz
 #include "TossPlayerSettings.h"
 #include "AudioEngine.h"
 #include <imgui.h>
+#include <ImGuizmo.h>
 
 Game::Game(ProjectSettingsPtr& projectSettings)
 {

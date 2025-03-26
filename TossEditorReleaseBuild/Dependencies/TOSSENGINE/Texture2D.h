@@ -27,7 +27,7 @@ public:
      * @param path File path of the 2D texture.
      * @param manager Resource Manager of the 2D texture.
      */
-    Texture2D(const Texture2DDesc& desc, const string& filePath, ResourceManager* manager);
+    Texture2D(const Texture2DDesc& desc, const string& filePath, const string& uniqueId, ResourceManager* manager);
 
     void OnInspectorGUI() override;
     bool Delete(bool deleteSelf = true) override;
