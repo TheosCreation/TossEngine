@@ -66,6 +66,16 @@ void PlayerController::onUpdate(float deltaTime)
         }
     }
 
+    if (inputManager.isKeyPressed(Key::KeySpace) && jumpTimer <= 0)
+    {
+        m_rigidBody->AddForce(Vector3(0.0f, 1.0f, 0.0f) * m_jumpForce);
+        jumpTimer = m_jumpCooldown;
+    }
+    else
+    {
+        jumpTimer -= deltaTime;
+    }
+
 
     Vector3 forward = m_owner->m_transform.GetForward();
     Vector3 right = m_owner->m_transform.GetRight();
@@ -98,7 +108,7 @@ void PlayerController::onUpdate(float deltaTime)
     else
     {
         // Dampen velocity when no input
-        velocity *= 0.9f;
+        //velocity *= 0.9f;
         m_rigidBody->SetLinearVelocity(velocity);
     }
 

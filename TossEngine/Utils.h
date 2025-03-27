@@ -363,6 +363,7 @@ enum class ShaderType
 // Enum representing key codes
 enum Key
 {
+    KeySpace = 32,
     Key0 = 48,
     Key1,
     Key2,

@@ -17,8 +17,12 @@ public:
 private:
     float m_elapsedSeconds = 0.0f; // Elapsed time in seconds
 
-    float m_movementSpeed = 50.0f; // Movement speed of the movable object
-    float m_acceleration = 20.0f;
+    float m_movementSpeed = 35.0f; // Movement speed of the movable object
+    float m_acceleration = 50.0f;
+    float m_jumpForce = 2000.0f;
+    float m_jumpCooldown = 0.5f;
+
+    float jumpTimer = 0.0f;
 
     float m_yaw = 0.0f; // Yaw angle for rotation of the camera
     float m_pitch = 0.0f; // Pitch angle for rotation of the camera
