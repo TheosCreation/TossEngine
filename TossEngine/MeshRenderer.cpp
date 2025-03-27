@@ -145,7 +145,7 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.setFaceCulling(CullType::BackFace);
     graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
-    graphicsEngine.setDepthFunc(DepthType::Less);
+    graphicsEngine.setDepthFunc(DepthType::LessEqual);
 
     if (renderPath == RenderingPath::Deferred)
     {
@@ -227,11 +227,6 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
     {
         graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, meshVBO->getNumIndices());
     }
-
-    graphicsEngine.setTexture2D(nullptr, 0, "");
-    graphicsEngine.setTextureCubeMap(nullptr, 1, "");
-    graphicsEngine.setTexture2D(nullptr, 2, "");
-    graphicsEngine.setTexture2D(nullptr, 3, "");
 }
 
 void MeshRenderer::SetMesh(MeshPtr mesh)

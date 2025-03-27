@@ -38,13 +38,20 @@ ShaderPtr ResourceManager::getShader(const std::string& uniqueId)
     return ShaderPtr(); // Return empty if not found
 }
 
-MeshPtr ResourceManager::getMesh(const std::string& uniqueId)
+MeshPtr ResourceManager::getMesh(const std::string& uniqueId, bool createIfNotFound)
 {
     auto it = m_mapResources.find(uniqueId);
     if (it != m_mapResources.end())
         return std::static_pointer_cast<Mesh>(it->second);
 
-    return createMeshFromFile(uniqueId);
+    if (createIfNotFound)
+    {
+        auto it2 = meshDescriptions.find(uniqueId);
+        if (it2 != meshDescriptions.end())
+
+            return createMesh(it2->second, uniqueId);
+    }
+    return nullptr;
 }
 
 TextureCubeMapPtr ResourceManager::getCubemapTexture(const std::string& uniqueId)
@@ -226,19 +233,24 @@ Texture2DPtr ResourceManager::createTexture2D(Texture2DDesc desc, string texture
     return Texture2DPtr();
 }
 
-MeshPtr ResourceManager::createMeshFromFile(const std::string& filepath)
+MeshPtr ResourceManager::createMesh(MeshDesc desc, const string& uniqueId)
 {
     // Check if the resource has already been loaded
-    auto it = m_mapResources.find(filepath);
+    auto it = m_mapResources.find(uniqueId);
     if (it != m_mapResources.end())
     {
         return std::static_pointer_cast<Mesh>(it->second);
     }
 
-    MeshPtr meshPtr = std::make_shared<Mesh>(filepath, this);
+    MeshPtr meshPtr = std::make_shared<Mesh>(desc, uniqueId, this);
     if (meshPtr)
     {
-        m_mapResources.emplace(filepath, meshPtr);
+        if (meshDescriptions.find(uniqueId) == meshDescriptions.end())
+        {
+            meshDescriptions.emplace(uniqueId, desc);
+        }
+
+        m_mapResources.emplace(uniqueId, meshPtr);
         return meshPtr;
     }
     return MeshPtr();
@@ -334,6 +346,34 @@ CoroutineTask ResourceManager::saveResourcesDescs(const std::string& filepath)
             {"fragmentShader", shaderDesc.fragmentShaderFilePath}
         };
     }
+    for (auto& [key, meshDesc] : meshDescriptions)
+    {
+        json instancesJson = json::array();
+
+        // Check if the mesh is available in current resources
+        auto mesh = getMesh(key, false);
+        if (mesh)
+        {
+            for (const auto& transform : mesh->getInstanceTransforms())
+            {
+                instancesJson.push_back(transform.serialize());
+            }
+        }
+        else
+        {
+            // Fallback to saved transforms if mesh not loaded
+            for (const auto& transform : meshDesc.instanceTransforms)
+            {
+                instancesJson.push_back(transform.serialize());
+            }
+        }
+
+        data["meshes"][key] = {
+            {"filepath", meshDesc.filePath},
+            {"instances", instancesJson}
+        };
+    }
+
 
     // Serialize material descriptions correctly
     for (auto& [key, shaderId] : materialDescriptions)
@@ -389,6 +429,7 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
     materialDescriptions.clear();
     texture2DFilePaths.clear();
     cubemapTextureFilePaths.clear();
+    meshDescriptions.clear();
 
     // Deserialize shaders
     if (data.contains("shaders"))
@@ -396,8 +437,8 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
         for (auto& [key, value] : data["shaders"].items())
         {
             ShaderDesc shaderDesc;
-            shaderDesc.vertexShaderFilePath = value["vertexShader"].get<string>();
-            shaderDesc.fragmentShaderFilePath = value["fragmentShader"].get<string>();
+            shaderDesc.vertexShaderFilePath = value["vertexShader"].get<std::string>();
+            shaderDesc.fragmentShaderFilePath = value["fragmentShader"].get<std::string>();
             shaderDescriptions[key] = shaderDesc;
         }
     }
@@ -407,26 +448,52 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
     {
         for (auto& [key, value] : data["materials"].items())
         {
-            materialDescriptions[key] = value.get<string>();
+            materialDescriptions[key] = value.get<std::string>();
         }
     }
 
+    // Deserialize texture2Ds
     if (data.contains("texture2Ds"))
     {
-        for (auto& [key, path] : data["texture2Ds"].items()) {
+        for (auto& [key, path] : data["texture2Ds"].items())
+        {
             texture2DFilePaths[key] = path;
         }
     }
 
+    // Deserialize cubemaps
     if (data.contains("cubemaps"))
     {
         for (auto& [key, value] : data["cubemaps"].items())
         {
-            cubemapTextureFilePaths[key] = value.get<vector<string>>();
+            cubemapTextureFilePaths[key] = value.get<std::vector<std::string>>();
+        }
+    }
+
+    // Deserialize meshes with instance transforms
+    if (data.contains("meshes"))
+    {
+        for (auto& [key, value] : data["meshes"].items())
+        {
+            MeshDesc desc;
+            desc.filePath = value["filepath"].get<std::string>();
+
+            if (value.contains("instances"))
+            {
+                for (const auto& instanceData : value["instances"])
+                {
+                    Transform t;
+                    t.deserialize(instanceData);
+                    desc.instanceTransforms.push_back(t);
+                }
+            }
+
+            meshDescriptions[key] = desc;
         }
     }
 
     hasLoadedResources = true;
+    co_return;
 }
 
 bool ResourceManager::IsResourceLoaded(const std::string& uniqueId) const
@@ -482,6 +549,14 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
         for (auto& [matID, shaderID] : materialDescriptions) {
             if (shaderID == oldId)
                 shaderID = newId;
+        }
+    }
+    else if (std::dynamic_pointer_cast<Mesh>(resource)) {
+        auto meshIt = meshDescriptions.find(oldId);
+        if (meshIt != meshDescriptions.end()) {
+            meshDescriptions[newId] = meshIt->second;
+            meshDescriptions.erase(meshIt);
+            Debug::Log("Mesh renamed from '" + oldId + "' to '" + newId + "'");
         }
     }
     else if (std::dynamic_pointer_cast<Texture>(resource)) {
@@ -550,6 +625,13 @@ void ResourceManager::DeleteResource(ResourcePtr resource)
         for (auto& [matID, shaderID] : materialDescriptions) {
             if (shaderID == id)
                 shaderID = ""; // or some fallback/default shader ID
+        }
+    }
+    else if (std::dynamic_pointer_cast<Mesh>(resource)) {
+        auto meshIt = meshDescriptions.find(id);
+        if (meshIt != meshDescriptions.end()) {
+            meshDescriptions.erase(meshIt);
+            Debug::Log("Deleted Mesh: " + id);
         }
     }
     else if (std::dynamic_pointer_cast<Texture>(resource)) {

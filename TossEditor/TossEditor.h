@@ -82,6 +82,10 @@ private:
     char shaderIDBuffer[256] = "";
     bool openShaderPopupNextFrame = false;
 
+    std::string meshFilepath;
+    char meshIDBuffer[256] = "";
+    bool openMeshPopupNextFrame = false;
+
     unique_ptr<EditorPlayer> m_player = nullptr;
     FramebufferPtr m_sceneViewFrameBuffer = nullptr;
     FramebufferPtr m_gameViewFrameBuffer = nullptr;

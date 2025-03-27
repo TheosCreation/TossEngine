@@ -144,8 +144,8 @@ private:
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
-    static double currentMouseX; // Current mouse x position
-    static double currentMouseY; // Current mouse y position
+    static float currentMouseX; // Current mouse x position
+    static float currentMouseY; // Current mouse y position
 
     static double scrollX; // Current mouse x scroll
     static double scrollY; // Current mouse y scroll
@@ -163,6 +163,6 @@ private:
 
     bool m_playEnable = false; // Indicates whether play mode is enabled
     Vector2 m_oldMousePos{}; // Previous mouse position
-    Rect m_screenArea; // Screen area for cursor locking
+    Vector2 m_screenArea; // Screen area for cursor locking
     Vector2 m_deltaMouse{}; // Mouse movement delta
 };

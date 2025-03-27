@@ -28,6 +28,8 @@ TossEditor::TossEditor()
     m_projectSettings = std::make_unique<ProjectSettings>();
     m_projectSettings->LoadFromFile("ProjectSettings.json");
 
+    Physics::GetInstance().SetGravity(m_projectSettings->gravity);
+
     m_playerSettings = std::make_unique<TossPlayerSettings>();
     m_playerSettings->LoadFromFile("PlayerSettings.json");
 
@@ -151,6 +153,7 @@ void TossEditor::onUpdateInternal()
 
     // Accumulate time
     m_accumulatedTime += deltaTime;
+    Physics::GetInstance().Update(deltaTime);
 
     if (m_game != nullptr)
     {
@@ -358,10 +361,20 @@ void TossEditor::onUpdateInternal()
             m_projectSettings->renderingPath = selectedPath;
             m_playerSettings->renderingPath = selectedPath;
         }
+        
+        ImGui::Separator();
+        ImGui::Text("Physics Settings");
+
+        if (ImGui::DragFloat3("Gravity", m_projectSettings->gravity.Data(), 0.1f))
+        {
+            if (Physics::GetInstance().GetWorld())
+            {
+                Physics::GetInstance().SetGravity(m_projectSettings->gravity);
+            }
+        }
 
         ImGui::Separator();
         ImGui::Text("Player Settings");
-
 
         ImGui::Text("All Scene File Paths:");
 
@@ -545,22 +558,10 @@ void TossEditor::onUpdateInternal()
             }
 
             if (ImGui::MenuItem("Mesh")) {
-                std::string meshObjFilePath = TossEngine::GetInstance().openFileDialog("*.obj");
+                meshFilepath = TossEngine::GetInstance().openFileDialog("*.obj");
 
-                if (!meshObjFilePath.empty()) {
-                    fs::path selectedPath = meshObjFilePath;
-                    fs::path projectRoot = getProjectRoot();
-                    fs::path relativePath;
-
-                    if (fs::equivalent(selectedPath.root_name(), projectRoot.root_name()) &&
-                        selectedPath.string().find(projectRoot.string()) == 0)
-                    {
-                        relativePath = fs::relative(selectedPath, projectRoot);
-                        resourceManager.createMeshFromFile(relativePath.string());
-                    }
-                    else {
-                        Debug::LogWarning("Selected mesh must be inside the project folder.");
-                    }
+                if (!meshFilepath.empty()) {
+                    openMeshPopupNextFrame = true;
                 }
                 ImGui::CloseCurrentPopup();
             }
@@ -613,6 +614,49 @@ void TossEditor::onUpdateInternal()
         }
     }
     ImGui::End();
+
+    // In the same frame, open the popup if flagged
+    if (openMeshPopupNextFrame) {
+        ImGui::OpenPopup("Enter Mesh ID");
+        openMeshPopupNextFrame = false;
+    }
+
+    // Show the popup to name the shader
+    if (ImGui::BeginPopupModal("Enter Mesh ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::InputText("Mesh ID", meshIDBuffer, sizeof(meshIDBuffer));
+
+        if (ImGui::Button("Create")) {
+            if (strlen(meshIDBuffer) > 0) {
+                std::string meshId = meshIDBuffer;
+                std::filesystem::path root = getProjectRoot();
+                std::filesystem::path relativeMeshPath = std::filesystem::relative(meshFilepath, root);
+
+                MeshDesc desc;
+                desc.filePath = relativeMeshPath.string();
+
+                resourceManager.createMesh(desc, meshId);
+
+                Debug::Log("Created mesh: " + meshId);
+
+                // Reset state
+                meshFilepath.clear();
+                meshIDBuffer[0] = '\0';
+
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel")) {
+            meshFilepath.clear();
+            meshIDBuffer[0] = '\0';
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
 
     // In the same frame, open the popup if flagged
     if (openShaderPopupNextFrame) {

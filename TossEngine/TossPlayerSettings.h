@@ -7,6 +7,7 @@ struct TOSSENGINE_API TossPlayerSettings
     std::string firstSceneToOpen = "";
     std::vector<std::string> selectedSceneFilePaths = std::vector<std::string>();
     Vector2 windowSize = Vector2(800, 800);
+    Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f);
 
     //stuff pulled from the project settings 
     RenderingPath renderingPath = RenderingPath::Deferred;

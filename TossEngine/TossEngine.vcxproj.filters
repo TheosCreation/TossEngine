@@ -93,9 +93,6 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Source Files\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="GameObjectManager.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
@@ -265,6 +262,12 @@
     <ClCompile Include="Vector4.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rect.h">
@@ -305,9 +308,6 @@
     </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="MeshRenderer.h">
       <Filter>Header Files\Components</Filter>
@@ -497,6 +497,12 @@
     </ClInclude>
     <ClInclude Include="Mat3.h">
       <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

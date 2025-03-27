@@ -17,7 +17,6 @@ Mail : theo.morris@mds.ac.nz
 #include "VertexArrayObject.h"
 #include "Shader.h"
 #include "GameObjectManager.h"
-#include "Player.h"
 #include "TextureCubeMap.h"
 #include "Camera.h"
 #include "Scene.h"

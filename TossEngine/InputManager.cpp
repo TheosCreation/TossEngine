@@ -24,8 +24,8 @@ Mail : theo.morris@mds.ac.nz
 
 double InputManager::scrollX = 0.0;
 double InputManager::scrollY = 0.0;
-double InputManager::currentMouseX = 0.0;
-double InputManager::currentMouseY = 0.0;
+float InputManager::currentMouseX = 0.0;
+float InputManager::currentMouseY = 0.0;
 
 std::map<Key, bool> InputManager::currentKeyStates;
 std::map<Key, bool> InputManager::previousKeyStates;
@@ -119,7 +119,7 @@ void InputManager::enablePlayMode(bool enable)
 
 	if (enable) {
 		glfwSetInputMode(WindowPtr, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		glfwSetCursorPos(WindowPtr, m_screenArea.width / 2.0, m_screenArea.height / 2.0);
+		glfwSetCursorPos(WindowPtr, m_screenArea.x / 2.0, m_screenArea.y / 2.0);
 	}
 	else {
 		glfwSetInputMode(WindowPtr, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -128,21 +128,21 @@ void InputManager::enablePlayMode(bool enable)
 
 void InputManager::setScreenArea(const Vector2& area)
 {
-	m_screenArea = Rect(0, 0, (int)area.x, (int)area.y);
+	m_screenArea = area;
 }
 
 void InputManager::onUpdate()
 {
 	double newMouseX, newMouseY;
 	glfwGetCursorPos(WindowPtr, &newMouseX, &newMouseY);
-	currentMouseX = newMouseX;
-	currentMouseY = newMouseY;
+	currentMouseX = (float)newMouseX;
+	currentMouseY = (float)newMouseY;
 
 	if (m_playEnable) {
 		// Calculate delta mouse position
-		m_deltaMouse = Vector2(currentMouseX - m_screenArea.width / 2.0, currentMouseY - m_screenArea.height / 2.0);
+		m_deltaMouse = Vector2(currentMouseX - m_screenArea.x / 2.0, currentMouseY - m_screenArea.y / 2.0);
 		// Reset the cursor to the center of the window
-		glfwSetCursorPos(WindowPtr, m_screenArea.width / 2.0, m_screenArea.height / 2.0);
+		glfwSetCursorPos(WindowPtr, m_screenArea.x / 2.0, m_screenArea.y / 2.0);
 	}
 	else {
 		// Calculate delta mouse position based on the previous frame's position
@@ -161,7 +161,7 @@ void InputManager::onLateUpdate()
 	if (m_playEnable)
 	{
 		// Reset the cursor to the center of the window
-		glfwSetCursorPos(WindowPtr, m_screenArea.width / 2.0, m_screenArea.height / 2.0);
+		glfwSetCursorPos(WindowPtr, m_screenArea.x / 2.0, m_screenArea.y / 2.0);
 	}
 
 	// Update old mouse position

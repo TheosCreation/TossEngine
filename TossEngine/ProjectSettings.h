@@ -5,6 +5,7 @@
 struct TOSSENGINE_API ProjectSettings
 {
     RenderingPath renderingPath = RenderingPath::Deferred;
+    Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f);
 
     void LoadFromFile(const std::string& filename)
     {
@@ -20,6 +21,14 @@ struct TOSSENGINE_API ProjectSettings
         if (j.contains("RenderingPath") && j["RenderingPath"].is_string()) {
             renderingPath = FromString<RenderingPath>(j["RenderingPath"].get<std::string>()); 
         }
+
+        if (j.contains("Gravity") && j["Gravity"].is_array() && j["Gravity"].size() == 3) {
+            gravity = Vector3(
+                j["Gravity"][0].get<float>(),
+                j["Gravity"][1].get<float>(),
+                j["Gravity"][2].get<float>()
+            );
+        }
     }
 
     // Save settings to a JSON file
@@ -27,6 +36,7 @@ struct TOSSENGINE_API ProjectSettings
     {
         json j;
         j["RenderingPath"] = ToString(renderingPath);
+        j["Gravity"] = { gravity.x, gravity.y, gravity.z };
 
         std::ofstream file(filename);
         if (!file) {

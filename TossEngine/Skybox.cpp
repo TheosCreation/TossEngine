@@ -78,6 +78,7 @@ void Skybox::Render(UniformData data, RenderingPath renderPath)
 
     // Configure graphics engine settings for rendering the skybox
     graphicsEngine.setFaceCulling(CullType::FrontFace); // Enable front face culling
+    graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
     graphicsEngine.setDepthFunc(DepthType::LessEqual); // Set the depth function
 
     // Bind the skybox texture if available
@@ -92,9 +93,6 @@ void Skybox::Render(UniformData data, RenderingPath renderPath)
 
     // Draw the indexed triangles for the skybox
     graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, meshVBO->getNumIndices());
-
-    // Unbind the skybox texture
-    graphicsEngine.setTextureCubeMap(nullptr, 0, "");
 }
 
 TexturePtr Skybox::getTexture()

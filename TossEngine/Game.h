@@ -20,7 +20,6 @@ Mail : theo.morris@mds.ac.nz
 #include "LightManager.h"
 #include "Scene.h"
 #include "ShadowMap.h"
-#include "Player.h"
 
 // Forward declarations of classes
 class Window;

@@ -35,7 +35,7 @@ public:
     ResourceManager& operator=(const ResourceManager& _copy) = delete;
 
     ShaderPtr getShader(const std::string& uniqueId);
-    MeshPtr getMesh(const std::string& uniqueId);
+    MeshPtr getMesh(const std::string& uniqueId, bool createIfNotFound = true);
     TextureCubeMapPtr getCubemapTexture(const std::string& uniqueId);
     TexturePtr getTexture(const std::string& uniqueId);
     MaterialPtr getMaterial(const std::string& uniqueId);
@@ -46,7 +46,7 @@ public:
     TextureCubeMapPtr createCubeMapTextureFromFile(const std::vector<std::string>& filepaths, const string& uniqueId);
     Texture2DPtr createTexture2DFromFile(const string& filepath, const string& uniqueId, TextureType type = TextureType::Default);
     Texture2DPtr createTexture2D(Texture2DDesc desc, string textureName = "NoTextureName");
-    MeshPtr createMeshFromFile(const std::string& filepath);
+    MeshPtr createMesh(MeshDesc desc, const string& uniqueId);
     HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
     SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath);
     MaterialPtr createMaterial(const string& shaderId, const std::string& uniqueID);
@@ -76,6 +76,7 @@ protected:
     std::unordered_map<std::string, std::string> texture2DFilePaths;
     std::unordered_map<std::string, vector<std::string>> cubemapTextureFilePaths;
     std::unordered_map<std::string, std::string> materialDescriptions;
+    std::unordered_map<std::string, MeshDesc> meshDescriptions;
 
 private:
     ResourceManager() = default;

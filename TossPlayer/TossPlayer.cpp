@@ -22,6 +22,8 @@ TossPlayer::TossPlayer()
     tossEngine.TryCreateWindow(this, windowSize, "TossPlayer");
     tossEngine.LoadScripts();
 
+    Physics::GetInstance().SetGravity(m_playerSettings->gravity);
+
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     tossEngine.StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
     tossEngine.StartCoroutine(resourceManager.createResourcesFromDescs());
@@ -105,7 +107,7 @@ void TossPlayer::onUpdateInternal()
         m_game->onFixedUpdate(fixedDeltaTime);
         m_accumulatedTime -= m_fixedTimeStep;
     }
-    
+    Physics::GetInstance().Update(deltaTime);
     m_game->onUpdate(deltaTime);
     m_game->onLateUpdate(deltaTime);
 

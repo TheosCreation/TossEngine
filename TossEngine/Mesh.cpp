@@ -20,7 +20,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Game.h"
 #include "GraphicsEngine.h"
 
-Mesh::Mesh(const string& filePath, ResourceManager* manager) : Resource(filePath, filePath, manager)
+Mesh::Mesh(const MeshDesc& desc, const string& uniqueId, ResourceManager* manager) : Resource(desc.filePath, uniqueId, manager)
 {
     tinyobj::attrib_t attribs;
     std::vector<tinyobj::shape_t> shapes;
@@ -28,7 +28,7 @@ Mesh::Mesh(const string& filePath, ResourceManager* manager) : Resource(filePath
     std::string warn;
     std::string err;
     
-    auto inputfile = std::filesystem::path(filePath).string();
+    auto inputfile = std::filesystem::path(desc.filePath).string();
     
     bool res = tinyobj::LoadObj(&attribs, &shapes, nullptr, &warn, &err, inputfile.c_str(), nullptr);
 
@@ -131,6 +131,9 @@ Mesh::Mesh(const string& filePath, ResourceManager* manager) : Resource(filePath
             (uint)list_indices.size()
         }
         );
+
+    m_instanceTransforms = desc.instanceTransforms; 
+    initInstanceBuffer();
 }
 
 Mesh::~Mesh()
@@ -224,6 +227,8 @@ void Mesh::addInstance(Vector3 position, Vector3 scale, Vector3 rotation)
 
 void Mesh::initInstanceBuffer()
 {
+    if (m_instanceTransforms.empty()) return;
+
     std::vector<Mat4> matrices;
     matrices.reserve(m_instanceTransforms.size());
 
@@ -238,6 +243,10 @@ void Mesh::initInstanceBuffer()
 int Mesh::getInstanceCount()
 {
     return static_cast<int>(m_instanceTransforms.size());
+}
+
+std::vector<Transform> Mesh::getInstanceTransforms() const {
+    return m_instanceTransforms;
 }
 
 void Mesh::clearInstances()

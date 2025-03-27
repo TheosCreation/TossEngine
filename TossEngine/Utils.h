@@ -43,6 +43,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Quaternion.h"
 #include "Mat4.h"
 #include "Mat3.h"
+#include "Transform.h"
 
 
 using json = nlohmann::json; // will be using json to serialize classes and save GameObject objects and all
@@ -67,7 +68,7 @@ class Component;
 class Material;
 class Scene;
 class GameObject;
-class TossPlayerSettings;
+struct TossPlayerSettings;
 
 // Type definitions for common engine variables
 typedef unsigned int uint;
@@ -94,168 +95,6 @@ using std::shared_ptr;
 using std::unique_ptr;
 using std::vector;
 using std::string;
-
-// Structure representing the transformation of an object in 3D space
-struct TOSSENGINE_API Transform
-{
-    Vector3 position;         // World position
-    Quaternion rotation;      // World rotation
-    Vector3 scale;            // World scale
-
-    Vector3 localPosition;    // Local position relative to parent
-    Quaternion localRotation; // Local rotation relative to parent
-    Vector3 localScale;       // Local scale relative to parent
-
-    Transform* parent;                // Pointer to parent transform (nullptr if root)
-    std::vector<Transform*> children; // List of pointers to child transforms
-
-    GameObject* gameObject;   // Pointer to the GameObject this Transform is attached to
-
-    // Default Constructor for none attached transforms and just data
-    Transform()
-        : position(Vector3(0.0f, 0.0f, 0.0f)),
-        rotation(Quaternion(1.0f, 0.0f, 0.0f, 0.0f)),
-        scale(Vector3(1.0f, 1.0f, 1.0f)),
-        localPosition(Vector3(0.0f, 0.0f, 0.0f)),
-        localRotation(Quaternion(1.0f, 0.0f, 0.0f, 0.0f)),
-        localScale(Vector3(1.0f, 1.0f, 1.0f)),
-        parent(nullptr),
-        gameObject(nullptr)
-    {
-    }
-
-    // Constructor initializes defaults and attaches GameObject
-    Transform(GameObject* attachedGameObject)
-        : position(Vector3(0.0f, 0.0f, 0.0f)),
-        rotation(Quaternion(1.0f, 0.0f, 0.0f, 0.0f)),
-        scale(Vector3(1.0f, 1.0f, 1.0f)),
-        localPosition(Vector3(0.0f, 0.0f, 0.0f)),
-        localRotation(Quaternion(1.0f, 0.0f, 0.0f, 0.0f)),
-        localScale(Vector3(1.0f, 1.0f, 1.0f)),
-        parent(nullptr),
-        gameObject(attachedGameObject)
-    {
-    }
-
-    Mat4 GetMatrix() const
-    {
-        Mat4 translationMatrix = position.ToTranslation();
-        Mat4 rotationMatrix = rotation.ToMat4();
-        Mat4 scaleMatrix = scale.ToScale();
-
-        return translationMatrix * rotationMatrix * scaleMatrix;
-    }
-
-    void SetMatrix(const Mat4& matrix)
-    {
-        const glm::mat4& raw = matrix.value;
-
-        // Extract translation (last column)
-        position = Vector3(raw[3]);
-
-        // Extract scale
-        scale.x = Vector3(raw[0]).Length();
-        scale.y = Vector3(raw[1]).Length();
-        scale.z = Vector3(raw[2]).Length();
-
-        // Remove scale from matrix to isolate rotation
-        glm::mat4 rotMatrix = glm::mat4(1.0f);
-        rotMatrix[0] = glm::vec4(glm::normalize(glm::vec3(raw[0])), 0.0f);
-        rotMatrix[1] = glm::vec4(glm::normalize(glm::vec3(raw[1])), 0.0f);
-        rotMatrix[2] = glm::vec4(glm::normalize(glm::vec3(raw[2])), 0.0f);
-        rotMatrix[3] = glm::vec4(0, 0, 0, 1);
-
-        rotation = Quaternion(glm::quat_cast(rotMatrix));
-    }
-
-    void UpdateWorldTransform()
-    {
-        if (parent)
-        {
-            position = parent->position + (parent->rotation * (parent->scale * localPosition));
-            rotation = parent->rotation * localRotation;
-            rotation.Normalize();
-            scale = parent->scale * localScale;
-        }
-
-        // Recursively update children
-        for (Transform* child : children)
-        {
-            child->UpdateWorldTransform();
-        }
-    }
-
-    Vector3 ToEulerAngles()
-    {
-        return rotation.ToEulerAngles();
-    }
-
-    void SetPosition(const Vector3& newPosition)
-    {
-        position = newPosition;
-    }
-
-    void SetRotation(const Quaternion& newRotation)
-    {
-        rotation = newRotation;
-    }
-
-    void SetScale(const Vector3& newScale)
-    {
-        scale = newScale;
-    }
-
-    void Translate(const Vector3& translation)
-    {
-        position += translation;
-    }
-
-    void Rotate(const Quaternion& deltaRotation)
-    {
-        rotation = deltaRotation * rotation;
-        rotation.Normalize();
-    }
-
-    void Scale(const Vector3& scaleFactor)
-    {
-        scale *= scaleFactor;
-    }
-
-    Vector3 GetForward() const
-    {
-        return rotation * Vector3(0.0f, 0.0f, -1.0f);
-    }
-
-    Vector3 GetRight() const
-    {
-        return rotation * Vector3(1.0f, 0.0f, 0.0f);
-    }
-
-    Vector3 GetUp() const
-    {
-        return rotation * Vector3(0.0f, 1.0f, 0.0f);
-    }
-
-    void SetParent(Transform* newParent)
-    {
-        if (parent)
-        {
-            parent->RemoveChild(this);
-        }
-
-        parent = newParent;
-        if (parent)
-        {
-            parent->children.push_back(this);
-        }
-    }
-
-private:
-    void RemoveChild(Transform* child)
-    {
-        children.erase(std::remove(children.begin(), children.end(), child), children.end());
-    }
-};
 
 namespace QuaternionUtils
 {
@@ -323,6 +162,13 @@ struct ShaderDesc
 {
     string vertexShaderFilePath;    // Filename of the vertex shader
     string fragmentShaderFilePath;  // Filename of the fragment shader
+};
+
+// Struct representing a mesh description
+struct MeshDesc
+{
+    string filePath;    // Filename of the obj file(will be more import types in future)
+    vector<Transform> instanceTransforms;  // transforms of instances added if any
 };
 
 // Struct representing a uniform buffer description
@@ -753,7 +599,7 @@ inline string getMSBuildPath() {
         throw std::runtime_error("Failed to run vswhere.");
     }
 
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+    while (fgets(buffer.data(), (int)buffer.size(), pipe.get()) != nullptr) {
         result += buffer.data();
     }
 

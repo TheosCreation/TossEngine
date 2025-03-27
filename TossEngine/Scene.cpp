@@ -16,7 +16,6 @@ Mail : theo.morris@mds.ac.nz
 #include "GeometryBuffer.h"
 #include "AudioEngine.h"
 #include "ComponentRegistry.h"
-#include "Player.h"
 #include "MeshRenderer.h"
 #include "Rigidbody.h"
 #include "Image.h"
@@ -27,6 +26,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Skybox.h"
 #include "Camera.h"
 #include "Framebuffer.h"
+#include "Physics.h"
 
 Scene::Scene(const string& filePath)
 {
@@ -40,23 +40,6 @@ Scene::Scene(const string& filePath)
 
     m_SSRQ = std::make_unique<Image>();
     m_SSRQ->SetSize({ -2.0f, 2.0f });
-
-    // Create a physics world with default gravity
-    rp3d::PhysicsWorld::WorldSettings settings;
-    settings.gravity = rp3d::Vector3(0, -9.81f, 0);
-    m_PhysicsWorld = m_PhysicsCommon.createPhysicsWorld(settings);
-
-
-    m_PhysicsWorld->setIsDebugRenderingEnabled(true);
-    m_PhysicsWorld->setNbIterationsVelocitySolver(10);
-    m_PhysicsWorld->setNbIterationsPositionSolver(5);
-
-    ResourceManager::GetInstance().ClearInstancesFromMeshes();
-
-    //rp3d::DebugRenderer& debugRenderer = m_PhysicsWorld->getDebugRenderer();
-    //// Select the contact points and contact normals to be displayed
-    //debugRenderer.setIsDebugItemDisplayed(rp3d::DebugRenderer::DebugItem::CONTACT_POINT, true);
-    //debugRenderer.setIsDebugItemDisplayed(rp3d::DebugRenderer::DebugItem::CONTACT_NORMAL, true);
 }
 
 Scene::Scene(const Scene& other)
@@ -73,20 +56,6 @@ Scene::Scene(const Scene& other)
     //m_gameObjectManager = std::make_unique<GameObjectManager>(*other.m_gameObjectManager);
     m_SSRQ = std::make_unique<Image>();
     m_SSRQ->SetSize({ -2.0f, 2.0f });
-
-    // Copy physics world (ReactPhysics3D does NOT support cloning physics worlds directly)
-    rp3d::PhysicsWorld::WorldSettings settings;
-    settings.gravity = other.m_PhysicsWorld->getGravity();
-    m_PhysicsWorld = m_PhysicsCommon.createPhysicsWorld(settings);
-
-    // Copy physics debug settings
-    m_PhysicsWorld->setIsDebugRenderingEnabled(other.m_PhysicsWorld->getIsDebugRenderingEnabled());
-    m_PhysicsWorld->setNbIterationsVelocitySolver(other.m_PhysicsWorld->getNbIterationsVelocitySolver());
-    m_PhysicsWorld->setNbIterationsPositionSolver(other.m_PhysicsWorld->getNbIterationsPositionSolver());
-
-    ResourceManager::GetInstance().ClearInstancesFromMeshes();
-
-    // You may also need to manually copy game objects inside GameObjectManager.
 }
 
 Scene::~Scene()
@@ -111,25 +80,28 @@ void Scene::onCreate()
     m_deferredSSRQMaterial = resourceManager.getMaterial("DeferredSSRQMaterial");
     m_postProcessSSRQMaterial = resourceManager.getMaterial("PostProcessSSRQMaterial");
 
+    m_gameObjectManager->loadGameObjectsFromFile(m_filePath);
 
-    MeshPtr statueMesh = resourceManager.createMeshFromFile("Resources/Meshes/SM_Prop_Statue_01.obj");
-    float spacing = 50.0f;
-    for (int row = -4; row < 4; ++row) {
-        for (int col = -4; col < 4; ++col) {
-            // Calculate the position of the current tree based on the grid and spacing
-            Vector3 position = Vector3(col * spacing, 0, row * spacing);
-
-            if (position == Vector3(0.0f)) break;
-
-            // Generate random rotation angles
-            float angleY = randomNumber(360.0f);
-
-            // Add the tree instance with random rotations
-            statueMesh->addInstance(position, Vector3(0.2f), Vector3(0, angleY, 0));
-        }
-    }
+    //MeshDesc mesh;
+    //mesh.filePath = "Resources/Meshes/SM_Prop_Statue_01.obj";
+    //MeshPtr statueMesh = resourceManager.createMesh(mesh, "Resources/Meshes/SM_Prop_Statue_01.obj");
+    //float spacing = 50.0f;
+    //for (int row = -4; row < 4; ++row) {
+    //    for (int col = -4; col < 4; ++col) {
+    //        // Calculate the position of the current tree based on the grid and spacing
+    //        Vector3 position = Vector3(col * spacing, 0, row * spacing);
+    //
+    //        if (position == Vector3(0.0f)) break;
+    //
+    //        // Generate random rotation angles
+    //        float angleY = randomNumber(360.0f);
+    //
+    //        // Add the tree instance with random rotations
+    //        statueMesh->addInstance(position, Vector3(0.2f), Vector3(0, angleY, 0));
+    //    }
+    //}
     //Init instance buffer
-    statueMesh->initInstanceBuffer();
+    //statueMesh->initInstanceBuffer();
 
 
     //defaultFullscreenShader = resourceManager.createShader({
@@ -408,7 +380,6 @@ void Scene::onCreate()
    //    }
    //}
 
-    m_gameObjectManager->loadGameObjectsFromFile(m_filePath);
 }
 
 void Scene::onStart()
@@ -449,7 +420,6 @@ void Scene::onFixedUpdate(float fixedDeltaTime)
     if (fixedDeltaTime <= 0.0f) return;
 
     m_gameObjectManager->onFixedUpdate(fixedDeltaTime); 
-    m_PhysicsWorld->update(fixedDeltaTime);
 }
 
 void Scene::onLateUpdate(float deltaTime)
@@ -633,9 +603,6 @@ GameObjectManager* Scene::getObjectManager()
 void Scene::onQuit()
 {
     m_gameObjectManager->clearGameObjects();
-
-    // Destroy the physics world when the scene is deleted
-    m_PhysicsCommon.destroyPhysicsWorld(m_PhysicsWorld);
 }
 
 void Scene::Save()
@@ -647,16 +614,6 @@ void Scene::Save()
 string Scene::GetFilePath()
 {
     return m_filePath;
-}
-
-rp3d::PhysicsWorld* Scene::GetPhysicsWorld()
-{
-    return m_PhysicsWorld;
-}
-
-rp3d::PhysicsCommon& Scene::GetPhysicsCommon()
-{
-    return m_PhysicsCommon;
 }
 
 void Scene::SetWindowFrameBuffer(FramebufferPtr windowFrameBuffer)

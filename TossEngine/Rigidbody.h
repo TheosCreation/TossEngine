@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"
-#include <reactphysics3d/reactphysics3d.h>
+#include "Physics.h"
 
 enum class BodyType {
     Static,
@@ -49,28 +49,62 @@ public:
         // Collider section
         if (ImGui::CollapsingHeader("Collider Settings", ImGuiTreeNodeFlags_DefaultOpen))
         {
-            static Vector3 boxSize(1.0f, 1.0f, 1.0f);
-            static float sphereRadius = 0.5f;
-
-            // Box Collider settings
-            if (ImGui::Button("Add Box Collider"))
+            if (m_Collider)
             {
-                SetBoxCollider(boxSize);
-            }
-            ImGui::SameLine();
-            ImGui::InputFloat3("Box Size", &boxSize.x);
+                auto shapeType = m_Collider->getCollisionShape()->getType();
 
-            // Sphere Collider settings
-            if (ImGui::Button("Add Sphere Collider"))
-            {
-                SetSphereCollider(sphereRadius);
+                if (shapeType == rp3d::CollisionShapeType::CONVEX_POLYHEDRON)
+                {
+                    ImGui::Text("Box Collider:");
+                    Vector3 size = m_boxColliderSize;
+                    if (ImGui::InputFloat3("Size", size.Data()))
+                    {
+                        SetBoxCollider(size); // Update size
+                    }
+                }
+                else if (shapeType == rp3d::CollisionShapeType::SPHERE)
+                {
+                    ImGui::Text("Sphere Collider:");
+                    float radius = m_radius;
+                    if (ImGui::InputFloat("Radius", &radius, 0.1f, 0.5f, "%.2f"))
+                    {
+                        SetSphereCollider(radius); // Update radius
+                    }
+                }
+                else
+                {
+                    ImGui::Text("Unknown Collider Type");
+                }
+
+                if (ImGui::Button("Remove Collider"))
+                {
+                    RemoveCollider();
+                }
             }
-            ImGui::SameLine();
-            ImGui::InputFloat("Sphere Radius", &sphereRadius, 0.1f, 0.5f, "%.2f");
+            else
+            {
+                ImGui::Text("No Collider Found");
+
+                static Vector3 newBoxSize(1.0f, 1.0f, 1.0f);
+                ImGui::InputFloat3("New Box Size", newBoxSize.Data());
+                if (ImGui::Button("Add Box Collider"))
+                {
+                    SetBoxCollider(newBoxSize);
+                }
+
+                static float newSphereRadius = 0.5f;
+                ImGui::InputFloat("New Sphere Radius", &newSphereRadius, 0.1f, 0.5f, "%.2f");
+                if (ImGui::Button("Add Sphere Collider"))
+                {
+                    SetSphereCollider(newSphereRadius);
+                }
+            }
         }
+
     }
 
     void onCreate() override;
+    void onStart() override; // we dont allow for runtime scaling yet for the colliders
     void onFixedUpdate(float fixedDeltaTime) override;
 
     void SetBodyType(BodyType type);
@@ -78,11 +112,15 @@ public:
     void SetUseGravity(bool useGravity);
     void SetBoxCollider(const Vector3& size);
     void SetSphereCollider(float radius);
+    void RemoveCollider();
 
 private:
     rp3d::RigidBody* m_Body = nullptr;
     rp3d::Collider* m_Collider = nullptr;
     BodyType m_BodyType = BodyType::Dynamic; // Default to Dynamic
+
+    float m_radius = 1.0f;
+    Vector3 m_boxColliderSize = Vector3(1.0f);
 };
 
 REGISTER_COMPONENT(Rigidbody);

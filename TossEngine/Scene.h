@@ -13,7 +13,6 @@ Mail : theo.morris@mds.ac.nz
 #pragma once
 #include "Utils.h"
 #include "Resizable.h"
-#include <reactphysics3d/reactphysics3d.h>
 #include <imgui.h>
 
 class Game;
@@ -23,6 +22,7 @@ class Image;
 class Camera;
 class Player;
 class LightManager;
+class Physics;
 
 /**
  * @class Scene
@@ -118,9 +118,6 @@ public:
     void Save();
     string GetFilePath();
 
-    rp3d::PhysicsWorld* GetPhysicsWorld();
-    rp3d::PhysicsCommon& GetPhysicsCommon();
-
     void SetWindowFrameBuffer(FramebufferPtr windowFrameBuffer); // used to override the output window instead of using the default framebuffer
 
     Vector2 getFrameBufferSize();
@@ -130,9 +127,6 @@ protected:
     bool m_initilized = false;
     string m_filePath = "";
     UniformData uniformData = {};
-
-    rp3d::PhysicsCommon m_PhysicsCommon;  // Manages physics resources
-    rp3d::PhysicsWorld* m_PhysicsWorld;   // Scene-specific physics world
 
     MaterialPtr m_deferredSSRQMaterial = nullptr;
     MaterialPtr m_postProcessSSRQMaterial = nullptr;

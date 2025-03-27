@@ -21,13 +21,15 @@ void TossEngine::Init()
 
     m_scriptLoader = new ScriptLoader();
     coroutineThread = std::thread(&TossEngine::CoroutineRunner, this);
+
+    Physics::GetInstance().Init();
 }
 
 void TossEngine::LoadGenericResources()
 {
-    auto& resourceManager = ResourceManager::GetInstance();
-    resourceManager.createMeshFromFile("Resources/Meshes/sphere.obj");
-    resourceManager.createMeshFromFile("Resources/Meshes/cube.obj");
+   // auto& resourceManager = ResourceManager::GetInstance();
+   // resourceManager.createMeshFromFile("Resources/Meshes/sphere.obj");
+   // resourceManager.createMeshFromFile("Resources/Meshes/cube.obj");
 }
 
 void TossEngine::TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName, bool maximized)
@@ -88,6 +90,7 @@ void TossEngine::PollEvents()
 
 void TossEngine::CleanUp()
 {
+    Physics::GetInstance().CleanUp();
     ComponentRegistry::GetInstance().CleanUp();
     running = false;
     coroutineCondition.notify_all();

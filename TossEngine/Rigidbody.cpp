@@ -7,7 +7,7 @@ Rigidbody::~Rigidbody()
 {
 	if (m_Body) {
 		m_Body->removeCollider(m_Collider); // Ensure collider is removed
-		m_owner->getGameObjectManager()->getScene()->GetPhysicsWorld()->destroyRigidBody(m_Body);
+        Physics::GetInstance().GetWorld()->destroyRigidBody(m_Body);
 		m_Body = nullptr;
 		m_Collider = nullptr;
 	}
@@ -16,21 +16,21 @@ Rigidbody::~Rigidbody()
 json Rigidbody::serialize() const
 {
 	json colliderJson;
-	if (m_Collider) {
-		if (auto boxShape = dynamic_cast<rp3d::BoxShape*>(m_Collider->getCollisionShape())) {
-			rp3d::Vector3 halfExtents = boxShape->getHalfExtents();
-			colliderJson = {
-				{"type", "box"},
-				{"size", {halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2}}
-			};
-		}
-		else if (auto sphereShape = dynamic_cast<rp3d::SphereShape*>(m_Collider->getCollisionShape())) {
-			colliderJson = {
-				{"type", "sphere"},
-				{"radius", sphereShape->getRadius()}
-			};
-		}
-	}
+    // Serialize using stored values
+    if (m_Collider) {
+        if (auto boxShape = dynamic_cast<rp3d::BoxShape*>(m_Collider->getCollisionShape())) {
+            colliderJson = {
+                {"type", "box"},
+                {"size", {m_boxColliderSize.x, m_boxColliderSize.y, m_boxColliderSize.z}}
+            };
+        }
+        else if (auto sphereShape = dynamic_cast<rp3d::SphereShape*>(m_Collider->getCollisionShape())) {
+            colliderJson = {
+                {"type", "sphere"},
+                {"radius", m_radius}
+            };
+        }
+    }
 
 	json data;
 	data["type"] = getClassName(typeid(*this));
@@ -74,11 +74,7 @@ void Rigidbody::deserialize(const json& data)
 
 void Rigidbody::onCreate()
 {
-	// this is our awake method happens before serialization
-	Scene* scene = m_owner->getGameObjectManager()->getScene();
-	if (!scene) return; // Early exit if scene is null
-
-	rp3d::PhysicsWorld* world = scene->GetPhysicsWorld();
+	PhysicsWorld* world = Physics::GetInstance().GetWorld();
 	if (!world) return; // Early exit if world is null
 
 	Transform transform = m_owner->m_transform;
@@ -95,6 +91,30 @@ void Rigidbody::onCreate()
 
 	// Apply the default body type
 	SetBodyType(m_BodyType);
+}
+
+void Rigidbody::onStart()
+{
+    if (!m_Body) return;
+
+    Vector3 worldScale = m_owner->m_transform.GetWorldScale();
+
+    // Re-apply the collider with correct world scale
+    if (m_Collider)
+    {
+        auto shape = m_Collider->getCollisionShape();
+        if (dynamic_cast<rp3d::BoxShape*>(shape))
+        {
+            Vector3 scaledSize = m_boxColliderSize * worldScale;
+            SetBoxCollider(m_boxColliderSize); // SetBoxCollider already scales internally
+        }
+        else if (dynamic_cast<rp3d::SphereShape*>(shape))
+        {
+            float maxAxis = std::max({ worldScale.x, worldScale.y, worldScale.z });
+            float scaledRadius = m_radius * maxAxis;
+            SetSphereCollider(m_radius); // Same here — let it scale inside the setter
+        }
+    }
 }
 
 void Rigidbody::onFixedUpdate(float fixedDeltaTime)
@@ -143,42 +163,41 @@ void Rigidbody::SetUseGravity(bool useGravity)
 }
 
 void Rigidbody::SetBoxCollider(const Vector3& size) {
-	if (!m_Body) return;
+    if (!m_Body) return;
+    m_boxColliderSize = size;
 
-	Scene* scene = m_owner->getGameObjectManager()->getScene();
-	if (!scene) return;
+    PhysicsCommon& physicsCommon = Physics::GetInstance().GetPhysicsCommon();
 
-	rp3d::PhysicsCommon& physicsCommon = scene->GetPhysicsCommon();
+    if (m_Collider) {
+        m_Body->removeCollider(m_Collider);
+        m_Collider = nullptr;
+    }
 
-	// Destroy previous collider before assigning a new one
-	if (m_Collider) {
-		m_Body->removeCollider(m_Collider);
-		m_Collider = nullptr;
-	}
+    rp3d::Vector3 boxSize = { size.x * 0.5f, size.y * 0.5f, size.z * 0.5f }; // half extents
+    rp3d::BoxShape* boxShape = physicsCommon.createBoxShape(boxSize);
 
-	rp3d::Vector3 boxSize = { size.x * 0.5f, size.y * 0.5f, size.z * 0.5f };
-	rp3d::BoxShape* boxShape = physicsCommon.createBoxShape(boxSize);
-
-	m_Collider = m_Body->addCollider(boxShape, rp3d::Transform::identity());
+    m_Collider = m_Body->addCollider(boxShape, rp3d::Transform::identity());
 }
 
 void Rigidbody::SetSphereCollider(float radius) {
-	if (!m_Body) return;
+    if (!m_Body) return;
+    m_radius = radius;
 
-	Scene* scene = m_owner->getGameObjectManager()->getScene();
-	if (!scene) return;
+    PhysicsCommon& physicsCommon = Physics::GetInstance().GetPhysicsCommon();
 
-	rp3d::PhysicsCommon& physicsCommon = scene->GetPhysicsCommon();
+    if (m_Collider) {
+        m_Body->removeCollider(m_Collider);
+        m_Collider = nullptr;
+    }
 
-	// Destroy previous collider before assigning a new one
-	if (m_Collider) {
-		m_Body->removeCollider(m_Collider);
-		m_Collider = nullptr;
-	}
+    rp3d::SphereShape* sphereShape = physicsCommon.createSphereShape(radius);
+    m_Collider = m_Body->addCollider(sphereShape, rp3d::Transform::identity());
+}
 
-	// Create a sphere shape
-	rp3d::SphereShape* sphereShape = physicsCommon.createSphereShape(radius);
-
-	// Attach the new collider
-	m_Collider = m_Body->addCollider(sphereShape, rp3d::Transform::identity());
+void Rigidbody::RemoveCollider()
+{
+    if (m_Collider) {
+        m_Body->removeCollider(m_Collider);
+        m_Collider = nullptr;
+    }
 }

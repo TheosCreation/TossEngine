@@ -33,6 +33,8 @@ Mail : theo.morris@mds.ac.nz
 
 #include "GameObjectManager.h"
 #include "GameObject.h"
+#include "Scene.h"
+#include "Physics.h"
 
 #include "ComponentRegistry.h"
 #include "Component.h"
@@ -41,7 +43,6 @@ Mail : theo.morris@mds.ac.nz
 #include "GameObjectManager.h"
 #include "Game.h"
 #include "Renderer.h"
-#include "Player.h"
 
 #include "AudioEngine.h"
 #include "GeometryBuffer.h"
