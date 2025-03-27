@@ -150,4 +150,6 @@ protected:
     Component* selectedComponent = nullptr; 
 private:
     size_t m_id = 0; // Unique identifier for the GameObject.
+    
+    Vector3 eulerAngles;//for inspector
 };

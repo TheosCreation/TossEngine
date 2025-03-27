@@ -180,7 +180,7 @@ void Mesh::OnInspectorGUI()
                         m_instanceBufferDirty = true;
                     // Convert from radians to degrees for display
 
-                    Vector3 eulerAngles = transform.rotation.ToEulerAngles().ToDegrees();
+                    eulerAngles = transform.rotation.ToEulerAngles().ToDegrees();
                     if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
                     {
                         // Convert the edited angles back to radians and update the quaternion

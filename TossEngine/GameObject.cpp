@@ -100,7 +100,7 @@ void GameObject::OnInspectorGUI()
     ImGui::DragFloat3("Position", m_transform.position.Data(), 0.1f);
     // Convert from radians to degrees for display
 
-    Vector3 eulerAngles = m_transform.rotation.ToEulerAngles().ToDegrees();
+    eulerAngles = m_transform.rotation.ToEulerAngles().ToDegrees();
     if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
     {
         // Convert the edited angles back to radians and update the quaternion

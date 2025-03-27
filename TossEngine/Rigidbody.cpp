@@ -30,6 +30,14 @@ json Rigidbody::serialize() const
                 {"radius", m_radius}
             };
         }
+        else if (auto capsuleShape = dynamic_cast<rp3d::CapsuleShape*>(m_Collider->getCollisionShape()))
+        {
+            colliderJson = {
+                {"type", "capsule"},
+                {"radius", m_radius},
+                {"height", m_height},
+            };
+        }
     }
 
 	json data;
@@ -37,7 +45,9 @@ json Rigidbody::serialize() const
 	data["bodyType"] = static_cast<int>(m_BodyType);
 	data["mass"] = m_Body ? m_Body->getMass() : 0.0f;
 	data["useGravity"] = m_Body ? m_Body->isGravityEnabled() : false;
-	data["collider"] = colliderJson;
+	data["collider"] = colliderJson; 
+    data["positionConstraints"] = positionAxisLocks;
+    data["rotationConstraints"] = rotationAxisLocks;
 
 	return data;
 }
@@ -66,8 +76,17 @@ void Rigidbody::deserialize(const json& data)
 			else if (type == "sphere" && colliderData.contains("radius")) {
 				SetSphereCollider(colliderData["radius"].get<float>());
 			}
+            else if (type == "capsule" && colliderData.contains("radius") && colliderData.contains("height")) {
+				SetCapsuleCollider(colliderData["radius"].get<float>(), colliderData["height"].get<float>());
+			}
 		}
 	}
+    
+    if (data.contains("positionConstraints"))
+        positionAxisLocks = data["positionConstraints"].get<std::array<bool, 3>>();
+
+    if (data.contains("rotationConstraints"))
+        rotationAxisLocks = data["rotationConstraints"].get<std::array<bool, 3>>();
 
 	m_Body->setIsSleeping(false);
 }
@@ -95,38 +114,48 @@ void Rigidbody::onCreate()
 
 void Rigidbody::onStart()
 {
-    if (!m_Body) return;
+    if (m_Body) {
+        m_Body->setLinearLockAxisFactor(rp3d::Vector3(
+            positionAxisLocks[0] ? 0.0f : 1.0f,
+            positionAxisLocks[1] ? 0.0f : 1.0f,
+            positionAxisLocks[2] ? 0.0f : 1.0f
+        ));
 
-    Vector3 worldScale = m_owner->m_transform.GetWorldScale();
-
-    // Re-apply the collider with correct world scale
-    if (m_Collider)
-    {
-        auto shape = m_Collider->getCollisionShape();
-        if (dynamic_cast<rp3d::BoxShape*>(shape))
-        {
-            Vector3 scaledSize = m_boxColliderSize * worldScale;
-            SetBoxCollider(m_boxColliderSize); // SetBoxCollider already scales internally
-        }
-        else if (dynamic_cast<rp3d::SphereShape*>(shape))
-        {
-            float maxAxis = std::max({ worldScale.x, worldScale.y, worldScale.z });
-            float scaledRadius = m_radius * maxAxis;
-            SetSphereCollider(m_radius); // Same here — let it scale inside the setter
-        }
+        m_Body->setAngularLockAxisFactor(rp3d::Vector3(
+            rotationAxisLocks[0] ? 0.0f : 1.0f,
+            rotationAxisLocks[1] ? 0.0f : 1.0f,
+            rotationAxisLocks[2] ? 0.0f : 1.0f
+        ));
     }
 }
 
-void Rigidbody::onFixedUpdate(float fixedDeltaTime)
+void Rigidbody::onUpdate(float deltaTime)
 {
-	if (!m_Body) return;
+    if (!m_Body) return;
 
-	rp3d::Transform bodyTransform = m_Body->getTransform();
-	rp3d::Vector3 position = bodyTransform.getPosition();
-	rp3d::Quaternion rotation = bodyTransform.getOrientation();
+    rp3d::Transform bodyTransform = m_Body->getTransform();
+    rp3d::Vector3 position = bodyTransform.getPosition();
+    rp3d::Quaternion rotation = bodyTransform.getOrientation();
 
-	m_owner->m_transform.position = { position.x, position.y, position.z };
-	m_owner->m_transform.rotation = { rotation.x, rotation.y, rotation.z, rotation.w };
+    // Apply position constraints
+    Vector3& pos = m_owner->m_transform.position;
+    if (!positionAxisLocks[0]) pos.x = position.x;
+    if (!positionAxisLocks[1]) pos.y = position.y;
+    if (!positionAxisLocks[2]) pos.z = position.z;
+
+    // Apply rotation constraints
+    Quaternion currentRot = m_owner->m_transform.rotation;
+    Quaternion newRot(rotation.w, rotation.x, rotation.y, rotation.z);
+
+    // Simple approach: convert both to Euler angles
+    Vector3 currentEuler = currentRot.ToEulerAngles();
+    Vector3 newEuler = newRot.ToEulerAngles();
+
+    if (!rotationAxisLocks[0]) currentEuler.x = newEuler.x;
+    if (!rotationAxisLocks[1]) currentEuler.y = newEuler.y;
+    if (!rotationAxisLocks[2]) currentEuler.z = newEuler.z;
+
+    m_owner->m_transform.rotation = Quaternion(currentEuler);
 }
 
 void Rigidbody::SetBodyType(BodyType type)
@@ -192,6 +221,23 @@ void Rigidbody::SetSphereCollider(float radius) {
 
     rp3d::SphereShape* sphereShape = physicsCommon.createSphereShape(radius);
     m_Collider = m_Body->addCollider(sphereShape, rp3d::Transform::identity());
+}
+
+void Rigidbody::SetCapsuleCollider(float radius, float height)
+{
+    if (!m_Body) return;
+    m_radius = radius; 
+    m_height = height;
+
+    PhysicsCommon& physicsCommon = Physics::GetInstance().GetPhysicsCommon();
+
+    if (m_Collider) {
+        m_Body->removeCollider(m_Collider);
+        m_Collider = nullptr;
+    }
+
+    rp3d::CapsuleShape* capsuleShape = physicsCommon.createCapsuleShape(radius, height);
+    m_Collider = m_Body->addCollider(capsuleShape, rp3d::Transform::identity());
 }
 
 void Rigidbody::RemoveCollider()

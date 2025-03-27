@@ -1,5 +1,9 @@
 #pragma once
 #include <TossEngine.h>
+#include <All.h>
+
+class Camera;
+class Rigidbody;
 
 class PlayerController : public Component
 {
@@ -8,14 +12,14 @@ public:
     ~PlayerController() = default;
 
     virtual void onCreate() override;
+    virtual void onStart() override;
     virtual void onUpdate(float deltaTime) override;
 private:
     float m_elapsedSeconds = 0.0f; // Elapsed time in seconds
 
-    float m_minSpeed = 1.0f; //a
-    float m_maxSpeed = 500.0f; //s
     float m_movementSpeed = 50.0f; // Movement speed of the movable object
-    float m_speedAdjustmentFactor = 2.0f; // 
+    float m_acceleration = 20.0f;
+
     float m_yaw = 0.0f; // Yaw angle for rotation of the camera
     float m_pitch = 0.0f; // Pitch angle for rotation of the camera
     float m_minFov = 1.0f; // Minimum fov for the camera
@@ -26,6 +30,7 @@ private:
     bool m_wireframeMode = false; // Flag for wireframe mode
 
     Camera* m_cam = nullptr; // Pointer to the main camera
+    Rigidbody* m_rigidBody = nullptr; // Pointer to the rigidbody
     SoundPtr fireSound = nullptr;
 };
 

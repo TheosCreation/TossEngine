@@ -71,6 +71,25 @@ public:
                         SetSphereCollider(radius); // Update radius
                     }
                 }
+                else if (shapeType == rp3d::CollisionShapeType::CAPSULE)
+                {
+                    ImGui::Text("Capsule Collider:");
+                    float radius = m_radius;
+                    float height = m_height;
+                    bool somethingupdated = false;
+                    if (ImGui::InputFloat("Radius", &radius, 0.1f, 0.5f, "%.2f"))
+                    {
+                        somethingupdated = true;
+                    }
+                    if (ImGui::InputFloat("Height", &height, 0.1f, 0.5f, "%.2f"))
+                    {
+                        somethingupdated = true;
+                    }
+                    if (somethingupdated)
+                    {
+                        SetCapsuleCollider(radius, height); // Update radius and height
+                    }
+                }
                 else
                 {
                     ImGui::Text("Unknown Collider Type");
@@ -98,28 +117,96 @@ public:
                 {
                     SetSphereCollider(newSphereRadius);
                 }
+
+                static float newCapsuleRadius = 0.5f;
+                static float newCapsuleHeight = 1.0f;
+                ImGui::InputFloat("New Capsule Radius", &newCapsuleRadius, 0.1f, 0.5f, "%.2f");
+                ImGui::InputFloat("New Capsule Height", &newCapsuleHeight, 0.1f, 0.5f, "%.2f");
+                if (ImGui::Button("Add Capsule Collider"))
+                {
+                    SetCapsuleCollider(newCapsuleRadius, newCapsuleHeight);
+                }
             }
         }
 
+        if (ImGui::CollapsingHeader("Constraints", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::Text("Position Locks");
+            ImGui::Checkbox("X##pos", &positionAxisLocks[0]);
+            ImGui::SameLine();
+            ImGui::Checkbox("Y##pos", &positionAxisLocks[1]);
+            ImGui::SameLine();
+            ImGui::Checkbox("Z##pos", &positionAxisLocks[2]);
+
+            ImGui::Text("Rotation Locks");
+            ImGui::Checkbox("X##rot", &rotationAxisLocks[0]);
+            ImGui::SameLine();
+            ImGui::Checkbox("Y##rot", &rotationAxisLocks[1]);
+            ImGui::SameLine();
+            ImGui::Checkbox("Z##rot", &rotationAxisLocks[2]);
+        }
     }
 
     void onCreate() override;
     void onStart() override; // we dont allow for runtime scaling yet for the colliders
-    void onFixedUpdate(float fixedDeltaTime) override;
+    void onUpdate(float deltaTime) override;
 
     void SetBodyType(BodyType type);
     void SetMass(float mass);
     void SetUseGravity(bool useGravity);
     void SetBoxCollider(const Vector3& size);
     void SetSphereCollider(float radius);
+    void SetCapsuleCollider(float radius, float height);
     void RemoveCollider();
+
+    Vector3 GetLinearVelocity() const {
+        return m_Body ? Vector3(m_Body->getLinearVelocity()) : Vector3(0.0f);
+    }
+
+    void SetLinearVelocity(const Vector3& velocity) {
+        if (m_Body)
+            m_Body->setLinearVelocity(static_cast<rp3d::Vector3>(velocity));
+    }
+
+    Vector3 GetAngularVelocity() const {
+        return m_Body ? Vector3(m_Body->getAngularVelocity()) : Vector3(0.0f);
+    }
+
+    void SetAngularVelocity(const Vector3& velocity) {
+        if (m_Body)
+            m_Body->setAngularVelocity(static_cast<rp3d::Vector3>(velocity));
+    }
+    
+    void AddForce(const Vector3& force) {
+        if (m_Body)
+            m_Body->applyWorldForceAtCenterOfMass(static_cast<rp3d::Vector3>(force));
+    }
+
+    void AddTorque(const Vector3& torque) {
+        if (m_Body)
+            m_Body->applyWorldTorque(static_cast<rp3d::Vector3>(torque));
+    }
+    
+    void SetPositionConstraints(bool lockX, bool lockY, bool lockZ) {
+        if (m_Body)
+            m_Body->setLinearLockAxisFactor(rp3d::Vector3(!lockX, !lockY, !lockZ));
+    }
+
+    void SetRotationConstraints(bool lockX, bool lockY, bool lockZ) {
+        if (m_Body)
+            m_Body->setAngularLockAxisFactor(rp3d::Vector3(!lockX, !lockY, !lockZ));
+    }
+
 
 private:
     rp3d::RigidBody* m_Body = nullptr;
     rp3d::Collider* m_Collider = nullptr;
     BodyType m_BodyType = BodyType::Dynamic; // Default to Dynamic
 
+    std::array<bool, 3> positionAxisLocks = { false, false, false };
+    std::array<bool, 3> rotationAxisLocks = { false, false, false };
+
     float m_radius = 1.0f;
+    float m_height = 1.0f;
     Vector3 m_boxColliderSize = Vector3(1.0f);
 };
 

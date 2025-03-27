@@ -1,6 +1,7 @@
 #include "PlayerController.h"
 #include "AudioEngine.h"
 #include "Camera.h"
+#include "Rigidbody.h"
 
 void PlayerController::onCreate()
 {
@@ -10,6 +11,11 @@ void PlayerController::onCreate()
     fireSound = resourceManager.createSound(SoundDesc(), "Fire", "Resources/Audio/fire.ogg");
     auto& inputManager = InputManager::GetInstance();
     inputManager.enablePlayMode(m_playMode);
+}
+
+void PlayerController::onStart()
+{
+    m_rigidBody = m_owner->getComponent<Rigidbody>();
 }
 
 void PlayerController::onUpdate(float deltaTime)
@@ -60,49 +66,40 @@ void PlayerController::onUpdate(float deltaTime)
         }
     }
 
-    Vector2 mouseScroll = inputManager.getMouseScroll();
-    if (inputManager.isKeyDown(Key::KeyLeftControl))
-    {
-        if (mouseScroll.y < 0 || mouseScroll.y > 0)
-        {
-            //adjust the movement speed
-            m_movementSpeed += mouseScroll.y * m_speedAdjustmentFactor;
-            m_movementSpeed = Clamp(m_movementSpeed, m_minSpeed, m_maxSpeed);
-        }
-    }
-    else
-    {
-        if (mouseScroll.y < 0 || mouseScroll.y > 0)
-        {
-            m_fov -= mouseScroll.y * m_zoomSpeed;
-            m_fov = Clamp(m_fov, m_minFov, m_maxFov);
-            m_cam->setFieldOfView(m_fov);
-        }
-    }
-
-    float adjustedMoveSpeed = m_movementSpeed;
-    // Adjust camera speed if Shift key is pressed
-    if (inputManager.isKeyDown(Key::KeyShift)) {
-        adjustedMoveSpeed = m_movementSpeed * 2.0f;
-    }
-
 
     Vector3 forward = m_owner->m_transform.GetForward();
     Vector3 right = m_owner->m_transform.GetRight();
-    Vector3 up = m_owner->m_transform.GetUp();
+    Vector3 velocity = m_rigidBody->GetLinearVelocity();
 
-    if (inputManager.isKeyDown(Key::KeyW))
-        m_owner->m_transform.position += forward * adjustedMoveSpeed * deltaTime;
-    if (inputManager.isKeyDown(Key::KeyS))
-        m_owner->m_transform.position -= forward * adjustedMoveSpeed * deltaTime;
-    if (inputManager.isKeyDown(Key::KeyA))
-        m_owner->m_transform.position -= right * adjustedMoveSpeed * deltaTime;
-    if (inputManager.isKeyDown(Key::KeyD))
-        m_owner->m_transform.position += right * adjustedMoveSpeed * deltaTime;
+    Vector3 moveDirection(0.0f);
 
-    // Handle input for player rotation
-    if (inputManager.isKeyDown(Key::KeyQ))
-        m_owner->m_transform.position -= up * m_movementSpeed * deltaTime;
-    if (inputManager.isKeyDown(Key::KeyE))
-        m_owner->m_transform.position += up * m_movementSpeed * deltaTime;
+    if (inputManager.isKeyDown(Key::KeyW)) moveDirection += forward;
+    if (inputManager.isKeyDown(Key::KeyS)) moveDirection -= forward;
+    if (inputManager.isKeyDown(Key::KeyA)) moveDirection -= right;
+    if (inputManager.isKeyDown(Key::KeyD)) moveDirection += right;
+
+    if (moveDirection.Length() > 0.0f)
+    {
+        moveDirection = moveDirection.Normalized();
+
+        // Accelerate toward direction
+        Vector3 desiredVelocity = moveDirection * m_movementSpeed;
+        Vector3 velocityChange = desiredVelocity - velocity;
+
+        // Limit acceleration
+        Vector3 accelerationStep = velocityChange.Normalized() * m_acceleration * deltaTime;
+
+        // Don't overshoot
+        if (accelerationStep.Length() > velocityChange.Length())
+            accelerationStep = velocityChange;
+
+        m_rigidBody->SetLinearVelocity(velocity + accelerationStep);
+    }
+    else
+    {
+        // Dampen velocity when no input
+        velocity *= 0.9f;
+        m_rigidBody->SetLinearVelocity(velocity);
+    }
+
 }

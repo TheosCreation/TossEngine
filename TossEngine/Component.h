@@ -41,7 +41,9 @@ public:
     virtual void onDestroy() {
     }
 
-    virtual void OnInspectorGUI() {}
+    virtual void OnInspectorGUI() 
+    {
+    }
 
     bool Delete(bool deleteSelf = true);
     void Destroy(GameObject* objectToDestroy);
