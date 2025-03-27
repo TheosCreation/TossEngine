@@ -45,6 +45,8 @@ public:
      */
     ~Scene();
 
+    void reload();
+
     /**
      * @brief Called when the scene is created.
      * Use this method to initialize resources such as textures, meshes, and shaders.

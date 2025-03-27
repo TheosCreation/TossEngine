@@ -68,7 +68,7 @@ unsigned char* Texture2D::getData() const
 {
     if (!m_desc.textureData)
     {
-        Debug::LogError("Texture data is null");
+        Debug::LogError("Texture data is null", false);
     }
     return m_desc.textureData;
 }

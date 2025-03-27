@@ -9,7 +9,6 @@ Description : The entry point of the application
 Author : Theo Morris
 Mail : theo.morris@mds.ac.nz
 **/
-
 #include "TossEditor.h"
 
 int main()
@@ -21,7 +20,9 @@ int main()
     }
     catch (const std::exception& e)
     {
-        std::wclog << e.what() << std::endl; // Log any exceptions that occur
+        std::wclog << L"Exception: " << e.what() << std::endl;
+        std::wclog << L"Press Enter to close..." << std::endl;
+        std::wcin.get(); // Wait for user input
         return -1; // Return -1 to indicate an error
     }
 

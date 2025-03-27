@@ -93,6 +93,14 @@ Scene::~Scene()
 {
 }
 
+void Scene::reload()
+{
+    m_gameObjectManager->clearGameObjects();
+    m_lightManager->clearLights();
+    onCreate(); 
+    onCreateLate();
+}
+
 void Scene::onCreate()
 {
     auto& graphicsEngine = GraphicsEngine::GetInstance();
@@ -415,16 +423,12 @@ void Scene::onLateStart()
 
 void Scene::onCreateLate()
 {
-    if (m_initilized) return;
-
     auto& tossEngine = TossEngine::GetInstance();
     for (auto& camera : m_gameObjectManager->getCameras())
     {
         // Set the screen area for all cameras
         camera->setScreenArea(tossEngine.GetWindow()->getInnerSize());
     }
-
-    m_initilized = true;
 }
 
 

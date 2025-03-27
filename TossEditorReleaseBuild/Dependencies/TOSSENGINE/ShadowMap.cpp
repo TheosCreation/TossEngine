@@ -27,7 +27,7 @@ ShadowMap::ShadowMap(Vector2 _resolution) : Texture("", "", nullptr)
 
     // Check if framebuffer is complete
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        Debug::LogError("Framebuffer failed to initialize correctly");
+        Debug::LogError("Framebuffer failed to initialize correctly", false);
     }
 
     // Unbind the framebuffer

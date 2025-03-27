@@ -304,13 +304,13 @@ void LightManager::BindShadowMap(int index)
         else
         {
             // Handle error: shadow map at index is null
-            Debug::LogError("Error: Shadow map at index " + ToString(index) + " is null.");
+            Debug::LogError("Error: Shadow map at index " + ToString(index) + " is null.", false);
         }
     }
     else
     {
         // Handle error: index is out of bounds
-        Debug::LogError("Error: Index " + ToString(index) + " is out of bounds.");
+        Debug::LogError("Error: Index " + ToString(index) + " is out of bounds.", false);
     }
 }
 
@@ -406,8 +406,12 @@ void LightManager::clearLights()
         pointLight = PointLightData(); // Reset each point light to its default state
     }
 
-    // Reset the spot light
-    m_spotLight = SpotLightData(); // Reset the spot light to its default state
+    // Reset the spot lights
+    m_spotLightCount = 0;
+    for (auto& spotLight : m_spotLights)
+    {
+        spotLight = SpotLightData(); // Reset each spot light to its default state
+    }
 
     // Reset the directional lights
     m_directionalLightCount = 0;

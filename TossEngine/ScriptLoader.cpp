@@ -2,12 +2,10 @@
 
 ScriptLoader::ScriptLoader() : scriptsDll(nullptr) 
 {
-    loadDLL();
 }
 
 ScriptLoader::~ScriptLoader()
 {
-    unloadDLL();
 }
 
 void ScriptLoader::reloadDLL()
@@ -23,24 +21,19 @@ void ScriptLoader::loadDLL()
     if (scriptsDll)
     {
         Debug::Log("Scripts DLL loaded.");
-
-        typedef void (*RegisterComponentsFunc)();
-        RegisterComponentsFunc registerFunc = (RegisterComponentsFunc)GetProcAddress(scriptsDll, "RegisterComponents");
-        if (registerFunc) {
-            registerFunc();
-            Debug::Log("Register function called.");
-        }
     }
     else
     {
-        Debug::Log("No Scripts dll found.");
+        DWORD errorCode = GetLastError();
+        string errorMessage = "Failed to load C++Scripts.dll. Win32 Error Code: " + errorCode;
+        Debug::LogError(errorMessage, false);
     }
 }
 
 void ScriptLoader::CompileScriptsProject()
 {
     std::string msBuildPath = getMSBuildPath();
-    std::string solutionPath = FindSolutionPath("TossEditor.sln"); //this needs to change to proper name of the solution on the release build of the engine
+    std::string solutionPath = FindSolutionPath(); //this needs to change to proper name of the solution on the release build of the engine
     std::string config;
 
     #ifdef _DEBUG
@@ -50,12 +43,12 @@ void ScriptLoader::CompileScriptsProject()
     #endif
 
     if (msBuildPath.empty()) {
-        Debug::LogError("No buildpath (MSBuild.exe not found)");
+        Debug::LogError("No buildpath (MSBuild.exe not found) | Did not recompile scripts", false);
         return;
     }
 
     if (solutionPath.empty()) {
-        Debug::LogError("Could not locate TossEngine.sln");
+        Debug::LogError("Could not locate TossEngine.sln | Did not recompile scripts", false);
         return;
     }
 
@@ -69,7 +62,7 @@ void ScriptLoader::CompileScriptsProject()
         Debug::Log("Scripts Project compiled successfully.");
     }
     else {
-        Debug::LogError("Scripts Project compilation failed.");
+        Debug::LogWarning("Scripts Project compilation failed.");
     }
 }
 

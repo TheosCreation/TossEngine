@@ -15,6 +15,7 @@ Mail : theo.morris@mds.ac.nz
 #include "ResourceManager.h"
 #include <algorithm>
 #include "TossEngine.h"
+#include "Camera.h"
 
 Player::Player()
 {

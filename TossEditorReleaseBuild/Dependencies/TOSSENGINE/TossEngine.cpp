@@ -13,7 +13,7 @@ void TossEngine::Init()
     //init GLFW ver 4.6
     if (!glfwInit())
     {
-        Debug::LogError("GLFW failed to initialize properly. Terminating program.");
+        Debug::LogError("GLFW failed to initialize properly. Terminating program.", false);
         return;
     }
 

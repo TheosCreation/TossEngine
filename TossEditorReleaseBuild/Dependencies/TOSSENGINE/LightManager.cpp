@@ -304,13 +304,13 @@ void LightManager::BindShadowMap(int index)
         else
         {
             // Handle error: shadow map at index is null
-            Debug::LogError("Error: Shadow map at index " + ToString(index) + " is null.");
+            Debug::LogError("Error: Shadow map at index " + ToString(index) + " is null.", false);
         }
     }
     else
     {
         // Handle error: index is out of bounds
-        Debug::LogError("Error: Index " + ToString(index) + " is out of bounds.");
+        Debug::LogError("Error: Index " + ToString(index) + " is out of bounds.", false);
     }
 }
 

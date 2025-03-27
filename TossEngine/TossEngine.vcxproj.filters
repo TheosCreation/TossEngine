@@ -456,5 +456,26 @@
     <ClInclude Include="..\Dependencies\IMGUIZMO\ImCurveEdit.h">
       <Filter>ImGuizmos</Filter>
     </ClInclude>
+    <ClInclude Include="ProjectSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TossEngineAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Mat4.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

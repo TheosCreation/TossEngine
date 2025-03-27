@@ -10,6 +10,7 @@ class EditorPlayer;
 class GameObject;
 class Component;
 class ISelectable;
+class FileWatcher;
 
 class TossEditor : public Resizable
 {
@@ -53,17 +54,20 @@ protected:
     void ShowGameObjectNode(GameObject* gameObject);
 
     void LoadWatchAndCompileScripts();
+    void PerformSafeBuild();
     void PerformSafeDllReload();
 
 private:
-    bool m_editorRunning = true;
+    std::atomic<bool> m_editorRunning = true;
     bool canUpdateInternal = true;
-    bool requestDllReload = false;
+    std::atomic<bool> requestDllReload = false;
+    std::atomic<bool> requestBuild = false;
 
     EditorPreferences editorPreferences;
     std::vector<std::string> allSceneFilePaths = std::vector<std::string>();
     std::thread scriptWatcherThread;
 
+    FileWatcher* sourceWatcher = nullptr;
 	ProjectSettingsPtr m_projectSettings = nullptr;
 	TossPlayerSettingsPtr m_playerSettings = nullptr;
 	shared_ptr<Scene> m_currentScene = nullptr;

@@ -76,7 +76,7 @@ void GeometryBuffer::Init(Vector2 _windowSize)
 
 	// Check if the framebuffer is still complete
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		Debug::LogError("Framebuffer is not complete after resizing!");
+		Debug::LogError("Framebuffer is not complete after resizing!", false);
 	}
 
 	// Unbindings

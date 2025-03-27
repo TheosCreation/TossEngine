@@ -313,7 +313,7 @@ Component* GameObject::addComponent(string componentType, const json& data)
     }
     else
     {
-        Debug::LogError("Error adding component of type: " + componentType + " to gameobject: " + ToString(this->m_id));
+        Debug::LogError("Error adding component of type: " + componentType + " to gameobject: " + ToString(this->m_id), false);
     }
     return nullptr;
 }

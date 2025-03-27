@@ -22,7 +22,9 @@ public:
     Window* GetWindow();
     void PollEvents();
     void CleanUp();
-    void ReloadDLL();
+    void UnLoadScripts();
+    void LoadScripts();
+    void ReloadScripts();
     float GetTime();
 
     std::shared_ptr<bool> StartCoroutine(CoroutineTask&& coroutine);

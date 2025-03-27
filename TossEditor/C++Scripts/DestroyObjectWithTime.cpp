@@ -36,4 +36,5 @@ void DestroyObjectWithTime::onUpdate(float deltaTime)
 void DestroyObjectWithTime::OnInspectorGUI()
 {
     FloatSlider("LifeTime", lifeTime);
+    FloatSlider("abc", abc);
 }

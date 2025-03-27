@@ -39,12 +39,12 @@ Mesh::Mesh(const string& filePath, ResourceManager* manager) : Resource(filePath
 
     // Log any errors if they exist
     if (!err.empty()) {
-        Debug::LogError("Mesh | Creation failed with the following error(s): " + err);
+        Debug::LogError("Mesh | Creation failed with the following error(s): " + err, false);
     }
 
     // Check if the result was unsuccessful and log an additional message if needed
     if (!res) {
-        Debug::LogError("Mesh | not created successfully.");
+        Debug::LogError("Mesh | not created successfully.", false);
     }
     
     std::vector<VertexMesh> list_vertices;
@@ -62,7 +62,7 @@ Mesh::Mesh(const string& filePath, ResourceManager* manager) : Resource(filePath
     
     size_t index_global_offset = 0;
     
-    if (shapes.size() == 0 || shapes.size() > 1) Debug::LogError("Mesh not created successfully");
+    if (shapes.size() == 0 || shapes.size() > 1) Debug::LogError("Mesh not created successfully", false);
     
     for (size_t s = 0; s < shapes.size(); s++)
     {

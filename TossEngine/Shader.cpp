@@ -132,7 +132,7 @@ void Shader::Attach(const std::string& filePath, const ShaderType& type)
     {
         std::vector<char> errorMessage(logLength + 1);
         glGetShaderInfoLog(shaderId, logLength, nullptr, &errorMessage[0]);
-        Debug::LogError("Shader | " + filePath + " compiled with errors: " + std::string(errorMessage.data()));
+        Debug::LogError("Shader | " + filePath + " compiled with errors: " + std::string(errorMessage.data()), false);
         return;
     }
 

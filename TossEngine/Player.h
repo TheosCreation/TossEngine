@@ -15,7 +15,8 @@ Mail : theo.morris@mds.ac.nz
 #include "LightManager.h"
 #include "GameObjectManager.h"
 #include "GameObject.h"
-#include "Camera.h"
+
+class Camera;
 
 /**
  * @class Player

@@ -62,7 +62,7 @@ struct TOSSENGINE_API TossPlayerSettings
             else
             {
                 // Log a debug message if no scene is selected.
-                Debug::LogError("No scene file selected for FirstSceneToOpen.");
+                Debug::LogError("No scene file selected for FirstSceneToOpen.", false);
             }
         }
 

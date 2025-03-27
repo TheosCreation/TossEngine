@@ -9,11 +9,11 @@ public:
 
     void reloadDLL();
 
-private:
+    void unloadDLL();
     void loadDLL();
     void CompileScriptsProject();
 
-    void unloadDLL();
+private:
 
     HMODULE scriptsDll;
 };

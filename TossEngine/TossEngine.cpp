@@ -13,7 +13,7 @@ void TossEngine::Init()
     //init GLFW ver 4.6
     if (!glfwInit())
     {
-        Debug::LogError("GLFW failed to initialize properly. Terminating program.");
+        Debug::LogError("GLFW failed to initialize properly. Terminating program.", false);
         return;
     }
 
@@ -93,11 +93,22 @@ void TossEngine::CleanUp()
     coroutineCondition.notify_all();
     if (coroutineThread.joinable())
         coroutineThread.join();
+    m_scriptLoader->unloadDLL();
 
     glfwTerminate();
 }
 
-void TossEngine::ReloadDLL()
+void TossEngine::UnLoadScripts()
+{
+    m_scriptLoader->unloadDLL();
+}
+
+void TossEngine::LoadScripts()
+{
+    m_scriptLoader->loadDLL();
+}
+
+void TossEngine::ReloadScripts()
 {
     m_scriptLoader->reloadDLL();
 }

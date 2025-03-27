@@ -15,9 +15,12 @@ public:
         PrintMessage(message, "Log");
     }
     // Log an error message and throw an exception
-    static void LogError(const std::string& message) {
+    static void LogError(const std::string& message, bool shouldThrow = true) {
         PrintMessage(message, "Error");
-        throw std::runtime_error("");
+        if (shouldThrow)
+        {
+            throw std::runtime_error(message);
+        }
     }
     // Log a warning message
     static void LogWarning(const std::string& message) {

@@ -154,7 +154,8 @@
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor"
-xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++Scripts"</Command>
+xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++Scripts"
+xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
@@ -196,7 +197,8 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++S
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor"
-xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++Scripts"</Command>
+xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++Scripts"
+xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
@@ -292,6 +294,9 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++S
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="GeometryBuffer.h" />
+    <ClInclude Include="Mat4.h" />
+    <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="Vector2.h" />
     <ClInclude Include="HeightMap.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImGuiLogger.h" />
@@ -301,6 +306,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++S
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="PointLight.h" />
+    <ClInclude Include="ProjectSettings.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resizable.h" />
     <ClInclude Include="Rigidbody.h" />
@@ -326,6 +332,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++S
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="TossEngine.h" />
+    <ClInclude Include="TossEngineAPI.h" />
     <ClInclude Include="TossPlayerSettings.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Rect.h" />
@@ -333,6 +340,8 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++S
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vector4.h" />
     <ClInclude Include="VertexArrayObject.h" />
     <ClInclude Include="VertexMesh.h" />
     <ClInclude Include="Window.h" />

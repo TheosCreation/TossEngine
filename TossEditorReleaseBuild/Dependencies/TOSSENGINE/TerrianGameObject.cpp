@@ -7,7 +7,7 @@ void TerrainGameObject::generateTerrainMesh(HeightMapPtr _heightMap)
 {
     if (!_heightMap) {
         // Handle the error if _heightMap is null
-        Debug::LogError("Heightmap is null could not generate terrain");
+        Debug::LogError("Heightmap is null could not generate terrain", false);
         return;
     }
 

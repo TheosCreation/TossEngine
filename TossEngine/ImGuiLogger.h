@@ -5,8 +5,9 @@
 #include <cstdarg>
 #include <cstdio>
 #include "imgui.h"
+#include "TossEngineAPI.h"
 
-class ImGuiLogger {
+class TOSSENGINE_API ImGuiLogger {
 public:
     // Append a log message with formatting support
     void AddLog(const char* fmt, ...) {

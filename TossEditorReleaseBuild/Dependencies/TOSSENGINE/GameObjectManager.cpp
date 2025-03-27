@@ -74,7 +74,7 @@ void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
 	std::ifstream file(filePath);
 	if (!file.is_open())
 	{
-        Debug::LogError("Failed to open file game object manager: " + filePath);
+        Debug::LogError("Failed to open file game object manager: " + filePath, false);
 		return;
 	}
 
@@ -85,13 +85,13 @@ void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
 	}
 	catch (const std::exception& e)
 	{
-        Debug::LogError("Failed to parse JSON file: " + (string)e.what());
+        Debug::LogError("Failed to parse JSON file: " + (string)e.what(), false);
 		return;
 	}
 
 	if (!sceneData.contains("gameobjects") || !sceneData["gameobjects"].is_array())
 	{
-        Debug::LogError("Error: JSON does not contain a valid 'gameobjects' array!");
+        Debug::LogError("Error: JSON does not contain a valid 'gameobjects' array!", false);
 		return;
 	}
 

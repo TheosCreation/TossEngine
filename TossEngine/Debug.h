@@ -1,12 +1,6 @@
 #pragma once
 #include "ImGuiLogger.h"
 
-#ifdef TOSSENGINE_EXPORTS
-#define TOSSENGINE_API __declspec(dllexport)  // When compiling the DLL
-#else
-#define TOSSENGINE_API __declspec(dllimport)  // When using the DLL
-#endif
-
 class TOSSENGINE_API Debug
 {
 public:
@@ -15,9 +9,12 @@ public:
         PrintMessage(message, "Log");
     }
     // Log an error message and throw an exception
-    static void LogError(const std::string& message) {
+    static void LogError(const std::string& message, bool shouldThrow = true) {
         PrintMessage(message, "Error");
-        throw std::runtime_error("");
+        if (shouldThrow)
+        {
+            throw std::runtime_error(message);
+        }
     }
     // Log a warning message
     static void LogWarning(const std::string& message) {

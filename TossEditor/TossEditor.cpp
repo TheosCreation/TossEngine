@@ -8,6 +8,7 @@
 #include "ISelectable.h"
 #include "ScriptLoader.h"
 #include "FileWatcher.h"
+#include "Camera.h"
 #include <imgui.h>
 #include <ImGuizmo.h>
 
@@ -18,10 +19,11 @@ TossEditor::TossEditor()
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, editorPreferences.windowSize, "TossEditor", editorPreferences.maximized);
+    tossEngine.ReloadScripts(); //recompiles and loads scripts
 
     ResourceManager& resourceManager = ResourceManager::GetInstance();
-    TossEngine::GetInstance().StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
-    TossEngine::GetInstance().StartCoroutine(resourceManager.createResourcesFromDescs());
+    tossEngine.StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
+    tossEngine.StartCoroutine(resourceManager.createResourcesFromDescs());
 
     m_projectSettings = std::make_unique<ProjectSettings>();
     m_projectSettings->LoadFromFile("ProjectSettings.json");
@@ -48,8 +50,6 @@ TossEditor::TossEditor()
 
     m_sceneViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
-
-    scriptWatcherThread = std::thread(&TossEditor::LoadWatchAndCompileScripts, this);
 }
 
 TossEditor::~TossEditor()
@@ -59,24 +59,38 @@ TossEditor::~TossEditor()
 void TossEditor::run()
 {
     auto& tossEngine = TossEngine::GetInstance();
-    //tossEngine.LoadGenericResources();
 
-    onCreate();
-    onCreateLate();
-
-    //run funcs while window open
-    while (tossEngine.GetWindow()->shouldClose() == false)
+    try
     {
-        tossEngine.PollEvents();
-        if (canUpdateInternal)
+        onCreate();
+        onCreateLate();
+
+        while (!tossEngine.GetWindow()->shouldClose())
         {
-            onUpdateInternal();
-            onLateUpdateInternal();
+            tossEngine.PollEvents();
+            if (canUpdateInternal)
+            {
+                onUpdateInternal();
+            }
+            //check again as it can change
+            if (canUpdateInternal)
+            {
+                onLateUpdateInternal();
+            }
         }
+
+        onQuit();
+    }
+    catch (...)
+    {
+        tossEngine.CleanUp();
+        if (scriptWatcherThread.joinable())
+            scriptWatcherThread.join();
+
+        throw; // Rethrow to main()
     }
 
-    
-    onQuit();
+    // Normal cleanup if no exceptions
     tossEngine.CleanUp();
     if (scriptWatcherThread.joinable())
         scriptWatcherThread.join();
@@ -84,7 +98,7 @@ void TossEditor::run()
 
 void TossEditor::onCreate()
 {
-    string filePath = m_projectSettings->lastKnownOpenScenePath;
+    string filePath = editorPreferences.lastKnownOpenScenePath;
 
     if (!filePath.empty()) // If a file was selected
     {
@@ -92,6 +106,10 @@ void TossEditor::onCreate()
         scene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
         OpenScene(scene);
     }
+
+    sourceWatcher = new FileWatcher("C++Scripts/");
+
+    scriptWatcherThread = std::thread(&TossEditor::LoadWatchAndCompileScripts, this);
 
     m_player = std::make_unique<EditorPlayer>(this);
     m_player->onCreate();
@@ -149,14 +167,14 @@ void TossEditor::onUpdateInternal()
         m_game->onUpdate(deltaTime);
         m_game->onLateUpdate(deltaTime);
     }
-    else
+    else if (m_currentScene)
     {
         InputManager& inputManager = InputManager::GetInstance();
         inputManager.onUpdate();
 
         // player update
         m_player->Update(deltaTime);
-        if (m_currentScene)
+        if (canUpdateInternal)
         {
             m_currentScene->onUpdateInternal();
         }
@@ -326,7 +344,7 @@ void TossEditor::onUpdateInternal()
     }
     ImGui::End();
 
-    if (ImGui::Begin("Settings"))
+    if (ImGui::Begin("SettingsAndBuild"))
     {
         ImGui::Text("Graphics Options");
         // Rendering Path selection
@@ -429,30 +447,10 @@ void TossEditor::onUpdateInternal()
 
 
         // --- Build Button ---
-        //if (ImGui::Button("Build Project"))
-        //{
-        //    // Define the absolute paths (with escaped backslashes).
-        //    std::string msbuildPath = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe";
-        //    std::string projectFile = "C:\\Users\\Theo\\TossEngine\\TossPlayer\\TossPlayer.vcxproj";
-        //    std::string configuration = "/p:Configuration=Release";
-        //    // Use a double trailing backslash to avoid escaping the closing quote.
-        //    std::string solutionDirProp = " /p:SolutionDir=\"C:\\Users\\Theo\\TossEngine\\\\\"";
-        //
-        //    // Construct the command string using cmd /c and proper quoting.
-        //    std::string command = "cmd /c \"\"" + msbuildPath + "\" \"" + projectFile + "\" " + configuration + solutionDirProp + "\"";
-        //
-        //    Debug::Log("Starting build: " + command);
-        //    int result = system(command.c_str());
-        //
-        //    if (result == 0)
-        //    {
-        //        Debug::Log("Build succeeded.");
-        //    }
-        //    else
-        //    {
-        //        Debug::Log("Build failed with error code: " + std::to_string(result));
-        //    }
-        //}
+        if (ImGui::Button("Build Project"))
+        {
+            requestBuild.store(true);
+        }
     }
     ImGui::End();
 
@@ -710,11 +708,17 @@ void TossEditor::onUpdateInternal()
 
 void TossEditor::onLateUpdateInternal()
 {
-    if (requestDllReload)
+    if (requestDllReload.load())
     {
         Debug::Log("Reloading DLL safely at end of frame...");
         PerformSafeDllReload();
-        requestDllReload = false;
+        requestDllReload.store(false);
+    }
+    if (requestBuild.load())
+    {
+        Debug::Log("Building player safely at end of frame...");
+        PerformSafeBuild();
+        requestBuild.store(false);
     }
 }
 
@@ -745,7 +749,7 @@ void TossEditor::onQuit()
     {
         m_currentScene->onQuit();
     }
-    m_editorRunning = false;
+    m_editorRunning.store(false);
     TossEngine::GetInstance().StartCoroutine(ResourceManager::GetInstance().saveResourcesDescs("Resources/Resources.json"));
     editorPreferences.SaveToFile("EditorPreferences.json");
 }
@@ -817,22 +821,66 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
 
 void TossEditor::LoadWatchAndCompileScripts()
 {
-    FileWatcher sourceWatcher("C++Scripts/");
-
-    while (m_editorRunning) {
-        if (sourceWatcher.hasChanged()) {
-            Debug::Log("Scripts DLL changed. Marking for reload...");
-            requestDllReload = true;  // atomic or thread-safe bool
+    while (m_editorRunning.load())
+    {
+        try {
+            if (sourceWatcher->hasChanged()) {
+                Debug::Log("Scripts folder changed. Marking DLL for reload...");
+                requestDllReload.store(true); // atomic flag
+            }
         }
+        catch (const std::exception& e) {
+            Debug::LogWarning(std::string("[Watcher] Exception: ") + e.what());
+        }
+
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 }
 
+void TossEditor::PerformSafeBuild()
+{
+    std::string msBuildPath = getMSBuildPath();
+    std::string solutionPath = FindSolutionPath(); //this needs to change to proper name of the solution on the release build of the engine
+    std::string config;
+
+    #ifdef _DEBUG
+        config = "Debug";
+    #else
+        config = "Release";
+    #endif
+
+    if (msBuildPath.empty()) {
+        Debug::LogError("No buildpath (MSBuild.exe not found)", false);
+        return;
+    }
+
+    if (solutionPath.empty()) {
+        Debug::LogError("Could not locate sln | did not compile build", false);
+        return;
+    }
+    // frees up the dll to be read
+    TossEngine& tossEngine = TossEngine::GetInstance();
+    tossEngine.UnLoadScripts();
+
+    std::string command = std::string("cmd /C \"\"") + msBuildPath +
+        "\" \"" + solutionPath +
+        "\" /t:TossPlayer /p:Configuration=" + config + " /p:Platform=x64\"";
+
+    int result = system(command.c_str());
+
+    if (result == 0) {
+        Debug::Log("TossPlayer Project compiled successfully.");
+    }
+    else {
+        Debug::LogError("TossPlayer Project compilation failed.");
+    }
+
+    tossEngine.LoadScripts();
+}
 void TossEditor::PerformSafeDllReload()
 {
     //all not needed yepee but will leave here if i found that it does cause issues
     //Save();
-    //ComponentRegistry::GetInstance().CleanUp();
     //if (m_currentScene != nullptr)
     //{
     //    m_currentScene->onQuit();
@@ -841,7 +889,8 @@ void TossEditor::PerformSafeDllReload()
     //}
     canUpdateInternal = false;
 
-    TossEngine::GetInstance().ReloadDLL();
+    TossEngine::GetInstance().ReloadScripts();
+    m_currentScene->reload();
 
     canUpdateInternal = true;
 
@@ -885,12 +934,23 @@ void TossEditor::Save()
 
 void TossEditor::OpenSceneViaFileSystem()
 {
-    string filePath = TossEngine::GetInstance().openFileDialog("*.json");
+    string sceneFilePath = TossEngine::GetInstance().openFileDialog("*.json");
 
-    if (!filePath.empty()) // If a file was selected
-    {
-        auto scene = std::make_shared<Scene>(filePath);
-        OpenScene(scene);
+    if (!sceneFilePath.empty()) {
+        fs::path selectedPath = sceneFilePath;
+        fs::path projectRoot = getProjectRoot();
+        fs::path relativeSceneFilePath;
+
+        if (fs::equivalent(selectedPath.root_name(), projectRoot.root_name()) &&
+            selectedPath.string().find(projectRoot.string()) == 0)
+        {
+            relativeSceneFilePath = fs::relative(selectedPath, projectRoot);
+            auto scene = std::make_shared<Scene>(relativeSceneFilePath.string());
+            OpenScene(scene);
+        }
+        else {
+            Debug::LogWarning("Selected scene file must be inside the project folder.");
+        }
     }
 }
 
@@ -905,7 +965,8 @@ void TossEditor::OpenScene(shared_ptr<Scene> _scene)
 
     // set the current scene to the new scene
     m_currentScene = std::move(_scene);
-    m_projectSettings->lastKnownOpenScenePath = m_currentScene->GetFilePath();
+    m_currentScene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
+    editorPreferences.lastKnownOpenScenePath = m_currentScene->GetFilePath();
     m_currentScene->onCreate();
     m_currentScene->onCreateLate();
 }

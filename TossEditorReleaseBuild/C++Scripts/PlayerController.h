@@ -26,7 +26,7 @@ private:
     bool m_wireframeMode = false; // Flag for wireframe mode
 
     Camera* m_cam = nullptr; // Pointer to the main camera
-    SoundPtr fireSound = nullptr;//
+    SoundPtr fireSound = nullptr;
 };
 
 REGISTER_COMPONENT(PlayerController);

@@ -698,18 +698,25 @@ inline CameraType FromString<CameraType>(const std::string& input)
     return (it != enumMap.end()) ? it->second : CameraType::Perspective;
 }
 
-inline std::string FindSolutionPath(const std::string& solutionName) {
+inline std::string FindSolutionPath() {
     std::filesystem::path currentPath = std::filesystem::current_path();
 
-    while (!currentPath.empty()) {
-        std::filesystem::path solutionPath = currentPath / solutionName;
-        if (std::filesystem::exists(solutionPath)) {
-            return solutionPath.string();
+    while (true) {
+        for (const auto& entry : std::filesystem::directory_iterator(currentPath)) {
+            if (entry.is_regular_file() && entry.path().extension() == ".sln") {
+                return entry.path().string(); // Return first .sln file found
+            }
         }
-        currentPath = currentPath.parent_path();
+
+        std::filesystem::path parentPath = currentPath.parent_path();
+        if (parentPath == currentPath) {
+            break; // Reached root
+        }
+
+        currentPath = parentPath;
     }
 
-    return "";  // Not found
+    return ""; // No .sln found
 }
 
 inline std::string getProjectRoot()

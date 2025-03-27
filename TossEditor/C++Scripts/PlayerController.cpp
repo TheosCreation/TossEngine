@@ -1,5 +1,6 @@
 #include "PlayerController.h"
 #include "AudioEngine.h"
+#include "Camera.h"
 
 void PlayerController::onCreate()
 {

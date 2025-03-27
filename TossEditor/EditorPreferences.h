@@ -3,6 +3,7 @@
 
 struct EditorPreferences
 {
+    string lastKnownOpenScenePath = "";
     Vector2 windowSize = Vector2(800, 800);
     bool maximized = false;
 
@@ -27,6 +28,9 @@ struct EditorPreferences
             windowSize.x = j["WindowSize"][0].get<float>();
             windowSize.y = j["WindowSize"][1].get<float>();
         }
+        if (j.contains("LastKnownOpenScenePath") && j["LastKnownOpenScenePath"].is_string()) {
+            lastKnownOpenScenePath = j["LastKnownOpenScenePath"];
+        }
     }
 
     // Save settings to a JSON file
@@ -35,6 +39,7 @@ struct EditorPreferences
         json j;
         j["Maximized"] = maximized;
         j["WindowSize"] = { windowSize.x, windowSize.y };
+        j["LastKnownOpenScenePath"] = lastKnownOpenScenePath;
 
         std::ofstream file(filename);
         if (!file) {

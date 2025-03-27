@@ -33,15 +33,29 @@ public:
     void registerComponent()
     {
         static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
-        std::string typeName = getClassName(typeid(T));  // Ensure consistent type name usage
-        if (m_componentCreators.find(typeName) != m_componentCreators.end()) {
-            return; // If the type is already registered, return early.
+
+        std::string typeName = getClassName(typeid(T));
+        std::type_index currentType = std::type_index(typeid(T));
+
+        auto it = m_componentTypes.find(typeName);
+
+        if (it != m_componentTypes.end()) {
+            if (it->second == currentType) {
+                // Already registered, identical — skip
+                return;
+            }
+            else {
+                Debug::Log("Updating component type: " + typeName);
+            }
+        }
+        else {
+            Debug::Log("Registering new component type: " + typeName);
         }
 
-        Debug::Log("Registering component type: " + typeName);
-
+        // (Re)register the component
+        m_componentTypes[typeName] = currentType;
         m_componentCreators[typeName] = []() -> Component* {
-            return new T(); // Directly allocate memory for T
+            return new T();
             };
     }
 
@@ -76,7 +90,8 @@ public:
 
 private:
     // Map of component type names to their creation functions
-    std::unordered_map<std::string, std::function<Component* ()>> m_componentCreators;
+    std::unordered_map<std::string, std::function<Component* ()>> m_componentCreators; 
+    std::unordered_map<std::string, std::optional<std::type_index>> m_componentTypes;
 
 
     /**

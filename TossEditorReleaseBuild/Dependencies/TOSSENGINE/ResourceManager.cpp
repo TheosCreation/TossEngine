@@ -111,7 +111,7 @@ TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vecto
 
     if (filepaths.size() != 6)
     {
-        Debug::LogError("Cubemap texture requires exactly 6 images");
+        Debug::LogError("Cubemap texture requires exactly 6 images", false);
         return TextureCubeMapPtr();
     }
 
@@ -128,7 +128,7 @@ TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vecto
         }
         else
         {
-            Debug::LogError("Cubemap texture failed to load at path: " + filepath);
+            Debug::LogError("Cubemap texture failed to load at path: " + filepath, false);
             stbi_image_free(data);
             return TextureCubeMapPtr();
         }
@@ -138,7 +138,7 @@ TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vecto
     TextureCubeMapPtr textureCubeMapPtr = std::make_shared<TextureCubeMap>(desc, uniqueId, this);
     if (!textureCubeMapPtr)
     {
-        Debug::LogError("Cubemap texture not generated");
+        Debug::LogError("Cubemap texture not generated", false);
     }
 
     // Free the image data.
@@ -176,7 +176,7 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
     unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
     if (!data)
     {
-        Debug::LogError("Texture failed to load at path: " + filepath);
+        Debug::LogError("Texture failed to load at path: " + filepath, false);
         return Texture2DPtr();
     }
 
@@ -188,7 +188,7 @@ Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepat
     Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, filepath, uniqueId, this);
     if (!texture2DPtr)
     {
-        Debug::LogError("Texture not generated");
+        Debug::LogError("Texture not generated", false);
     }
 
     // Free the image data.
@@ -214,7 +214,7 @@ Texture2DPtr ResourceManager::createTexture2D(Texture2DDesc desc, string texture
     Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, textureName, textureName, this);
     if (!texture2DPtr)
     {
-        Debug::LogError("Texture not generated");
+        Debug::LogError("Texture not generated", false);
     }
 
     if (texture2DPtr)
@@ -256,7 +256,7 @@ HeightMapPtr ResourceManager::createHeightMap(HeightMapInfo& _buildInfo)
         file.close();
     }
     else {
-        Debug::LogError("Error: Height map failed to load: " + _buildInfo.filePath);
+        Debug::LogError("Error: Height map failed to load: " + _buildInfo.filePath, false);
         return HeightMapPtr();  // Return null pointer if file reading fails
     }
 
@@ -269,7 +269,7 @@ HeightMapPtr ResourceManager::createHeightMap(HeightMapInfo& _buildInfo)
     // Create a HeightMap
     HeightMapPtr heightMapPtr = std::make_shared<HeightMap>(desc, _buildInfo, _buildInfo.filePath, this);
     if (!heightMapPtr) {
-        Debug::LogError("Heightmap not generated");
+        Debug::LogError("Heightmap not generated", false);
         return HeightMapPtr();  // Return null pointer if HeightMap creation fails
     }
 
@@ -357,7 +357,7 @@ CoroutineTask ResourceManager::saveResourcesDescs(const std::string& filepath)
     std::ofstream file(filepath);
     if (!file.is_open())
     {
-        Debug::LogError("Failed to open file for writing: " + filepath);
+        Debug::LogError("Failed to open file for writing: " + filepath, false);
         co_return;
     }
 
@@ -376,7 +376,7 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
     std::ifstream file(filepath);
     if (!file.is_open())
     {
-        Debug::LogError("Failed to open file for reading: " + filepath);
+        Debug::LogError("Failed to open file for reading: " + filepath, false);
         co_return;
     }
 
@@ -446,13 +446,13 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
     // Make sure the old ID exists
     auto it = m_mapResources.find(oldId);
     if (it == m_mapResources.end()) {
-        Debug::LogError("RenameResource failed: old ID not found: " + oldId);
+        Debug::LogError("RenameResource failed: old ID not found: " + oldId, false);
         return;
     }
 
     // Prevent overwriting an existing resource
     if (m_mapResources.find(newId) != m_mapResources.end()) {
-        Debug::LogError("RenameResource failed: new ID already exists: " + newId);
+        Debug::LogError("RenameResource failed: new ID already exists: " + newId, false);
         return;
     }
 

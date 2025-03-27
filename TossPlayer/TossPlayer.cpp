@@ -20,7 +20,11 @@ TossPlayer::TossPlayer()
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, windowSize, "TossPlayer");
+    tossEngine.LoadScripts();
 
+    ResourceManager& resourceManager = ResourceManager::GetInstance();
+    tossEngine.StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
+    tossEngine.StartCoroutine(resourceManager.createResourcesFromDescs());
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.Init(m_playerSettings);

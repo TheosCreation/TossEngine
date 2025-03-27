@@ -9,6 +9,7 @@ void PlayerController::onCreate()
     fireSound = resourceManager.createSound(SoundDesc(), "Fire", "Resources/Audio/fire.ogg");
     auto& inputManager = InputManager::GetInstance();
     inputManager.enablePlayMode(m_playMode);
+    //
 }
 
 void PlayerController::onUpdate(float deltaTime)

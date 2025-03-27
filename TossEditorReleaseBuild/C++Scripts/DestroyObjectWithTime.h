@@ -21,7 +21,7 @@ public:
 protected:
 	float lifeTime = 5.0f;
 private:
-	float elapsedTime = 0.0f;
+	float elapsedTime = 0.0f;//
 };
 
 REGISTER_COMPONENT(DestroyObjectWithTime);

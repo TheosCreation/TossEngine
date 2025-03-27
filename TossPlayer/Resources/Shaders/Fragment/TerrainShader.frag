@@ -1,8 +1,8 @@
 #version 460 core
 #define MAX_POINT_LIGHTS 4
 #define MAX_DIR_LIGHTS 2
-#include "Shadows.glsl"
-#include "BlinnPhonglighting.glsl"
+#include "Resources/Shaders/Shadows.glsl"
+#include "Resources/Shaders/BlinnPhonglighting.glsl"
 
 in vec3 FragPos;
 in vec2 FragTexcoord;
