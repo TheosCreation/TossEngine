@@ -24,7 +24,7 @@ void ParticleSystem::onCreate()
 	glGenBuffers(1, &VBO_PositionLife);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, VBO_PositionLife);
 	glBufferData(GL_SHADER_STORAGE_BUFFER,
-		sizeof(Vector4) * NumParticles,
+		sizeof(glm::vec4) * NumParticles,
 		NULL,
 		GL_DYNAMIC_DRAW);
 
@@ -32,7 +32,7 @@ void ParticleSystem::onCreate()
 	glGenBuffers(1, &VBO_Velocity);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, VBO_Velocity);
 	glBufferData(GL_SHADER_STORAGE_BUFFER,
-		sizeof(Vector4) * NumParticles,
+		sizeof(glm::vec4) * NumParticles,
 		NULL,
 		GL_DYNAMIC_DRAW);
 
@@ -40,7 +40,7 @@ void ParticleSystem::onCreate()
 	glGenBuffers(1, &VBO_Color);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, VBO_Color);
 	glBufferData(GL_SHADER_STORAGE_BUFFER,
-		sizeof(Vector4) * NumParticles,
+		sizeof(glm::vec4) * NumParticles,
 		NULL,
 		GL_DYNAMIC_DRAW);
 
@@ -51,19 +51,19 @@ void ParticleSystem::onCreate()
 	// Bind the position and life buffer for the standard pipeline render
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_PositionLife);
 	// Setup position attribute (4 components: x, y, z, lifespan)
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vector4), (void*)0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	// Bind the velocity buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_Velocity);
 	// Setup velocity attribute (4 components: x, y, z, w)
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vector4), (void*)0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)0);
 	glEnableVertexAttribArray(1);
 
 	// Bind the color buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_Color);
 	// Setup color attribute (4 components: r, g, b, a)
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vector4), (void*)0);
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)0);
 	glEnableVertexAttribArray(2);
 
 	// Unbinding

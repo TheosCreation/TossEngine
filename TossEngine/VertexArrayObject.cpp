@@ -91,15 +91,18 @@ void VertexArrayObject::initInstanceBuffer(Mat4* instanceData, size_t instanceCo
 	glBindVertexArray(m_vertexArrayObjectID); // Bind the vertex array object
 
 	// Initialize the instance buffer
-	glGenBuffers(1, &m_instanceBufferID);
+    if (m_instanceBufferID == 0)
+        glGenBuffers(1, &m_instanceBufferID);
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_instanceBufferID);
 	// Allocate memory and upload instance data to the buffer
-	glBufferData(GL_ARRAY_BUFFER, instanceCount * sizeof(Mat4), instanceData, GL_DYNAMIC_DRAW);
+    const glm::mat4* rawData = reinterpret_cast<const glm::mat4*>(instanceData);
+    glBufferData(GL_ARRAY_BUFFER, instanceCount * sizeof(glm::mat4), rawData, GL_DYNAMIC_DRAW);
 
 	// Set up attribute pointers for the instance data bound to attribute locations 3, 4, 5, and 6
 	for (int i = 0; i < 4; i++) {
 		glEnableVertexAttribArray(3 + i); // Enable instance attribute array
-		glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(Mat4), (void*)(sizeof(glm::vec4) * i)); // Set the attribute pointer
+		glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4) * i)); // Set the attribute pointer
 		glVertexAttribDivisor(3 + i, 1); // Set the divisor to 1 for instancing
 	}
 

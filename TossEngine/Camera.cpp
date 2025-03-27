@@ -73,13 +73,13 @@ void Camera::getViewMatrix(Mat4& view)
 {
 	if (m_type == CameraType::Perspective)
 	{
-		m_view = glm::lookAt(m_owner->m_transform.position, m_owner->m_transform.position + m_owner->m_transform.GetForward(), m_owner->m_transform.GetUp());
+		m_view = LookAt(m_owner->m_transform.position, m_owner->m_transform.position + m_owner->m_transform.GetForward(), m_owner->m_transform.GetUp());
 	}
 	else if (m_type == CameraType::Orthogonal)
 	{
 		Vector3 cameraPosition = Vector3(m_screenArea.width, -m_screenArea.height, 1.0f);
 		Vector3 targetPosition = Vector3(m_screenArea.width, -m_screenArea.height, 0.0f);
-		m_view = glm::lookAt(cameraPosition, targetPosition, m_owner->m_transform.GetUp());
+		m_view = LookAt(cameraPosition, targetPosition, m_owner->m_transform.GetUp());
 	}
 	view = m_view;
 }
@@ -142,7 +142,7 @@ Vector3 Camera::getFacingDirection()
 void Camera::computeProjectionMatrix()
 {
 	if (m_type == CameraType::Perspective)
-		m_projection = glm::perspective(glm::radians(m_fov), (float)m_screenArea.width / (float)m_screenArea.height, m_nearPlane, m_farPlane);
+		m_projection = Mat4(glm::perspective(glm::radians(m_fov), (float)m_screenArea.width / (float)m_screenArea.height, m_nearPlane, m_farPlane));
 	else if (m_type == CameraType::Orthogonal)
-		m_projection = glm::ortho(-(float)m_screenArea.width, (float)m_screenArea.width, -(float)m_screenArea.height, (float)m_screenArea.height, m_nearPlane, m_farPlane);
+		m_projection = Mat4(glm::ortho(-(float)m_screenArea.width, (float)m_screenArea.width, -(float)m_screenArea.height, (float)m_screenArea.height, m_nearPlane, m_farPlane));
 }

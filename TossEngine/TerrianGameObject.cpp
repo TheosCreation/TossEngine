@@ -95,7 +95,8 @@ void TerrainGameObject::generateTerrainMesh(HeightMapPtr _heightMap)
             // Compute tangents and normal using cross product
             Vector3 tangentZ(0.0f, x * invCellSpacing, 1.0f);
             Vector3 tangentX(1.0f, y * invCellSpacing, 0.0f);
-            Vector3 normal = glm::normalize(glm::cross(tangentZ, tangentX));
+            Vector3 normal = Vector3::Cross(tangentZ, tangentX).Normalized();
+
             unsigned int i = row * depth + col;
             verticesList[i].normal = normal; // Set the normal for the current vertex
         }

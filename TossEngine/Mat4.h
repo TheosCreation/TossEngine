@@ -2,6 +2,9 @@
 #include "TossEngineAPI.h"
 #include "Math.h"
 
+class Vector3;
+class Mat3;
+
 class TOSSENGINE_API Mat4 {
 public:
     glm::mat4 value;
@@ -9,6 +12,7 @@ public:
     Mat4() : value(1.0f) {}
     Mat4(float diagonal) : value(diagonal) {}
     Mat4(const glm::mat4& m) : value(m) {}
+    Mat4(const Mat3& mat);
 
     operator glm::mat4() const { return value; }
 
@@ -21,15 +25,9 @@ public:
         return *this;
     }
 
-    static Mat4 Translate(const Vector3& translation) {
-        return Mat4(glm::translate(glm::mat4(1.0f), static_cast<glm::vec3>(translation)));
-    }
+    static Mat4 Translate(const Vector3& translation);
 
-    static Mat4 Scale(const Vector3& scale) {
-        return Mat4(glm::scale(glm::mat4(1.0f), static_cast<glm::vec3>(scale)));
-    }
+    static Mat4 Scale(const Vector3& scale);
 
-    static Mat4 Rotate(float angleRadians, const Vector3& axis) {
-        return Mat4(glm::rotate(glm::mat4(1.0f), angleRadians, static_cast<glm::vec3>(axis)));
-    }
+    static Mat4 Rotate(float angleRadians, const Vector3& axis);
 };

@@ -136,7 +136,6 @@ void GameObject::deserialize(const json& data)
             }
         }
     }
-    eulerAngles = m_transform.ToEulerAngles();
     m_transform.UpdateWorldTransform();
     //m_transform.SetParent();
 
@@ -155,16 +154,17 @@ void GameObject::OnInspectorGUI()
     ImGui::Text("Selected Object: %s", name.c_str());
     ImGui::Separator();
     ImGui::Text("Transform:");
-    ImGui::DragFloat3("Position", glm::value_ptr(m_transform.position), 0.1f);
+    ImGui::DragFloat3("Position", m_transform.position.Data(), 0.1f);
     // Convert from radians to degrees for display
-    
-    if (ImGui::DragFloat3("Rotation", glm::value_ptr(eulerAngles), 0.1f))
+
+    Vector3 eulerAngles = m_transform.rotation.ToEulerAngles().ToDegrees();
+    if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
     {
         // Convert the edited angles back to radians and update the quaternion
-        m_transform.rotation = glm::normalize(glm::quat(glm::radians(eulerAngles)));
+        m_transform.rotation = Quaternion(eulerAngles.ToRadians());
     }
 
-    ImGui::DragFloat3("Scale", glm::value_ptr(m_transform.scale), 0.1f);
+    ImGui::DragFloat3("Scale", m_transform.scale.Data(), 0.1f);
     for (auto& pair : m_components)
     {
         ImGui::Separator();

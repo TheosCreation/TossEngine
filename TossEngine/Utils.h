@@ -37,6 +37,12 @@ Mail : theo.morris@mds.ac.nz
 #include <nlohmann\json.hpp>
 #include <glew.h>
 #include "Debug.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
+#include "Quaternion.h"
+#include "Mat4.h"
+#include "Mat3.h"
 
 
 using json = nlohmann::json; // will be using json to serialize classes and save GameObject objects and all
@@ -65,11 +71,6 @@ class TossPlayerSettings;
 
 // Type definitions for common engine variables
 typedef unsigned int uint;
-typedef glm::quat Quaternion;
-typedef glm::mat4 Mat4; 
-typedef glm::vec4 Vector4;
-typedef glm::vec3 Vector3;
-typedef glm::vec2 Vector2; 
 
 // Type definitions for shared pointers
 typedef std::shared_ptr<VertexArrayObject> VertexArrayObjectPtr;
@@ -110,6 +111,19 @@ struct TOSSENGINE_API Transform
 
     GameObject* gameObject;   // Pointer to the GameObject this Transform is attached to
 
+    // Default Constructor for none attached transforms and just data
+    Transform()
+        : position(Vector3(0.0f, 0.0f, 0.0f)),
+        rotation(Quaternion(1.0f, 0.0f, 0.0f, 0.0f)),
+        scale(Vector3(1.0f, 1.0f, 1.0f)),
+        localPosition(Vector3(0.0f, 0.0f, 0.0f)),
+        localRotation(Quaternion(1.0f, 0.0f, 0.0f, 0.0f)),
+        localScale(Vector3(1.0f, 1.0f, 1.0f)),
+        parent(nullptr),
+        gameObject(nullptr)
+    {
+    }
+
     // Constructor initializes defaults and attaches GameObject
     Transform(GameObject* attachedGameObject)
         : position(Vector3(0.0f, 0.0f, 0.0f)),
@@ -125,32 +139,33 @@ struct TOSSENGINE_API Transform
 
     Mat4 GetMatrix() const
     {
-        Mat4 translationMatrix = glm::translate(Mat4(1.0f), position);
-        Mat4 rotationMatrix = glm::toMat4(rotation);
-        Mat4 scaleMatrix = glm::scale(Mat4(1.0f), scale);
+        Mat4 translationMatrix = position.ToTranslation();
+        Mat4 rotationMatrix = rotation.ToMat4();
+        Mat4 scaleMatrix = scale.ToScale();
 
         return translationMatrix * rotationMatrix * scaleMatrix;
     }
 
-    void SetMatrix(Mat4 matrix)
+    void SetMatrix(const Mat4& matrix)
     {
+        const glm::mat4& raw = matrix.value;
+
         // Extract translation (last column)
-        position = Vector3(matrix[3]);
+        position = Vector3(raw[3]);
 
         // Extract scale
-        scale.x = glm::length(Vector3(matrix[0]));
-        scale.y = glm::length(Vector3(matrix[1]));
-        scale.z = glm::length(Vector3(matrix[2]));
+        scale.x = Vector3(raw[0]).Length();
+        scale.y = Vector3(raw[1]).Length();
+        scale.z = Vector3(raw[2]).Length();
 
         // Remove scale from matrix to isolate rotation
-        Mat4 rotationMatrix;
-        rotationMatrix[0] = Vector4(glm::normalize(Vector3(matrix[0])), 0.0f);
-        rotationMatrix[1] = Vector4(glm::normalize(Vector3(matrix[1])), 0.0f);
-        rotationMatrix[2] = Vector4(glm::normalize(Vector3(matrix[2])), 0.0f);
-        rotationMatrix[3] = glm::vec4(0, 0, 0, 1);
+        glm::mat4 rotMatrix = glm::mat4(1.0f);
+        rotMatrix[0] = glm::vec4(glm::normalize(glm::vec3(raw[0])), 0.0f);
+        rotMatrix[1] = glm::vec4(glm::normalize(glm::vec3(raw[1])), 0.0f);
+        rotMatrix[2] = glm::vec4(glm::normalize(glm::vec3(raw[2])), 0.0f);
+        rotMatrix[3] = glm::vec4(0, 0, 0, 1);
 
-        // Convert rotation matrix to quaternion
-        rotation = glm::quat_cast(rotationMatrix);
+        rotation = Quaternion(glm::quat_cast(rotMatrix));
     }
 
     void UpdateWorldTransform()
@@ -158,7 +173,8 @@ struct TOSSENGINE_API Transform
         if (parent)
         {
             position = parent->position + (parent->rotation * (parent->scale * localPosition));
-            rotation = glm::normalize(parent->rotation * localRotation);
+            rotation = parent->rotation * localRotation;
+            rotation.Normalize();
             scale = parent->scale * localScale;
         }
 
@@ -169,9 +185,9 @@ struct TOSSENGINE_API Transform
         }
     }
 
-    Vector3 ToEulerAngles() // this isnt the best but it will do, ill make wrapper classes for quaternion and stuff
+    Vector3 ToEulerAngles()
     {
-        return glm::eulerAngles(rotation);
+        return rotation.ToEulerAngles();
     }
 
     void SetPosition(const Vector3& newPosition)
@@ -196,7 +212,8 @@ struct TOSSENGINE_API Transform
 
     void Rotate(const Quaternion& deltaRotation)
     {
-        rotation = glm::normalize(deltaRotation * rotation);
+        rotation = deltaRotation * rotation;
+        rotation.Normalize();
     }
 
     void Scale(const Vector3& scaleFactor)
@@ -260,6 +277,12 @@ namespace QuaternionUtils
         // Convert the matrix to a quaternion
         return glm::quat_cast(rotationMatrix);
     }
+}
+
+inline glm::mat4 LookAt(const Vector3& eye, const Vector3& center, const Vector3& up) {
+    return glm::lookAt(static_cast<glm::vec3>(eye),
+        static_cast<glm::vec3>(center),
+        static_cast<glm::vec3>(up));
 }
 
 
@@ -609,17 +632,6 @@ struct SpotLightData
     float AttenuationExponent;
 };
 
-// Normalizes a given vector using GLM library functions
-// Template parameters:
-// L      - The length of the vector (e.g., 2 for vec2, 3 for vec3)
-// T      - The data type of the vector components (e.g., float, double)
-// Q      - The qualifier for the vector (e.g., default, highp, lowp)
-template<glm::length_t L, typename T, glm::qualifier Q>
-GLM_FUNC_QUALIFIER glm::vec<L, T, Q> Normalize(glm::vec<L, T, Q> const& vector)
-{
-    return glm::normalize(vector); // Returns the normalized vectorUntil
-}
-
 // Converts a value of any type to a string
 // Template parameter:
 // T      - The type of the value to be converted
@@ -698,18 +710,25 @@ inline CameraType FromString<CameraType>(const std::string& input)
     return (it != enumMap.end()) ? it->second : CameraType::Perspective;
 }
 
-inline std::string FindSolutionPath(const std::string& solutionName) {
+inline std::string FindSolutionPath() {
     std::filesystem::path currentPath = std::filesystem::current_path();
 
-    while (!currentPath.empty()) {
-        std::filesystem::path solutionPath = currentPath / solutionName;
-        if (std::filesystem::exists(solutionPath)) {
-            return solutionPath.string();
+    while (true) {
+        for (const auto& entry : std::filesystem::directory_iterator(currentPath)) {
+            if (entry.is_regular_file() && entry.path().extension() == ".sln") {
+                return entry.path().string(); // Return first .sln file found
+            }
         }
-        currentPath = currentPath.parent_path();
+
+        std::filesystem::path parentPath = currentPath.parent_path();
+        if (parentPath == currentPath) {
+            break; // Reached root
+        }
+
+        currentPath = parentPath;
     }
 
-    return "";  // Not found
+    return ""; // No .sln found
 }
 
 inline std::string getProjectRoot()

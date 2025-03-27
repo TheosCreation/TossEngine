@@ -64,6 +64,9 @@
     <Filter Include="ImGuizmos">
       <UniqueIdentifier>{1dca7c9e-e694-4913-bf7c-9b2b9a77f70e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Math">
+      <UniqueIdentifier>{1c82ce27-ec51-4d1d-86c5-d653f5c2c8dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine.cpp">
@@ -246,6 +249,21 @@
     </ClCompile>
     <ClCompile Include="..\Dependencies\IMGUIZMO\ImGradient.cpp">
       <Filter>ImGuizmos</Filter>
+    </ClCompile>
+    <ClCompile Include="Mat4.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Mat3.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector4.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -475,6 +493,9 @@
       <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Mat4.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Mat3.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
   </ItemGroup>

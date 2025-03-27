@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Utils.h"
-#include "Math.h"
 #include "Rect.h"
 #include "Window.h"
 #include <map>

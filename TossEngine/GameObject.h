@@ -148,7 +148,6 @@ protected:
     GameObjectManager* m_gameObjectManager = nullptr; // Pointer to the GameObjectManager managing this GameObject.
 
     Component* selectedComponent = nullptr; 
-    Vector3 eulerAngles = Vector3(0.0f);
 private:
     size_t m_id = 0; // Unique identifier for the GameObject.
 };

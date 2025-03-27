@@ -345,13 +345,14 @@ Mat4 LightManager::getLightSpaceMatrix(uint index) const
     Mat4 projection = glm::ortho(-sceneExtent, sceneExtent, -sceneExtent, sceneExtent, 0.1f, 2000.0f);
 
     // Normalize the direction vector
-    Vector3 lightDirection = Normalize(light.Direction);
+    Vector3 lightDirection = light.Direction.Normalized();
 
     // Position the light far from the scene
     Vector3 lightPosition = -lightDirection * 450.0f; // Move the light far away along the direction
 
     // Define the view matrix for the directional light
-    Mat4 view = glm::lookAt(lightPosition, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+    //Mat4 view = glm::lookAt(static_cast<glm::vec3>(lightPosition), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    Mat4 view = LookAt(lightPosition, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
 
     // Combine the projection and view matrices to get the light-space matrix
     Mat4 lightSpaceMatrix = projection * view;

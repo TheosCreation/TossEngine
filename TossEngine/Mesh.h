@@ -55,5 +55,5 @@ public:
 
 private:
     VertexArrayObjectPtr m_vao; // The Vertex Array Object associated with this mesh.
-    std::vector<Mat4> m_instanceTransforms; //A vector of transformation matrices for each instance.
+    std::vector<Transform> m_instanceTransforms; //A vector of transformations for each instance.
 };

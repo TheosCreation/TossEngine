@@ -73,7 +73,7 @@ void Skybox::Render(UniformData data, RenderingPath renderPath)
     graphicsEngine.setShader(shader); // Set the shader for the skybox
 
     // Create a view matrix without translation for the skybox
-    Mat4 viewNoTranslationMatrix = glm::mat3(data.viewMatrix);
+    Mat4 viewNoTranslationMatrix = Mat3(data.viewMatrix);
     shader->setMat4("VPMatrix", data.projectionMatrix * viewNoTranslationMatrix); // Set the combined view-projection matrix
 
     // Configure graphics engine settings for rendering the skybox

@@ -325,14 +325,14 @@ void TossEditor::onUpdateInternal()
 
                     ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, availSize.x, availSize.y);
 
-                    glm::mat4 cameraView;
+                    Mat4 cameraView;
                     m_player->getCamera()->getViewMatrix(cameraView);
 
                     Mat4 projectionMat;
                     m_player->getCamera()->getProjectionMatrix(projectionMat);
 
                     Mat4 transformMat = gameObject->m_transform.GetMatrix();
-                    ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(projectionMat), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(transformMat));
+                    ImGuizmo::Manipulate(glm::value_ptr(cameraView.value), glm::value_ptr(projectionMat.value), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(transformMat.value));
                     if (ImGuizmo::IsUsing())
                     {
                         gameObject->m_transform.SetMatrix(transformMat);

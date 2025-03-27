@@ -163,28 +163,42 @@ void Mesh::OnInspectorGUI()
             initInstanceBuffer();
         }
 
-        ImGui::Separator();
+        bool m_instanceBufferDirty = false;
 
-        // Display transforms for each instance
+        ImGui::Separator();
         if (ImGui::TreeNode("Instance Transforms"))
         {
             int index = 0;
-            for (auto& transform : m_instanceTransforms)
+            for (Transform& transform : m_instanceTransforms)
             {
                 if (ImGui::TreeNode(("Instance " + std::to_string(index)).c_str()))
                 {
-                    // Display each transformation matrix elements
-                    for (int row = 0; row < 4; row++)
+                    if (ImGui::DragFloat3("Position", transform.position.Data(), 0.1f))
+                        m_instanceBufferDirty = true;
+                    // Convert from radians to degrees for display
+
+                    Vector3 eulerAngles = transform.rotation.ToEulerAngles().ToDegrees();
+                    if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
                     {
-                        ImGui::Text("%.2f %.2f %.2f %.2f",
-                            transform[row][0], transform[row][1],
-                            transform[row][2], transform[row][3]);
+                        // Convert the edited angles back to radians and update the quaternion
+                        transform.rotation = Quaternion(eulerAngles.ToRadians());
+                        m_instanceBufferDirty = true;
                     }
+
+                    if(ImGui::DragFloat3("Scale", transform.scale.Data(), 0.1f))
+                        m_instanceBufferDirty = true;
+
                     ImGui::TreePop();
                 }
                 index++;
             }
             ImGui::TreePop();
+        }
+
+        if (m_instanceBufferDirty)
+        {
+            initInstanceBuffer();
+            m_instanceBufferDirty = false;
         }
     }
 }
@@ -201,21 +215,24 @@ VertexArrayObjectPtr Mesh::getVertexArrayObject()
 
 void Mesh::addInstance(Vector3 position, Vector3 scale, Vector3 rotation)
 {
-    Mat4 transform = glm::identity<Mat4>();
-    transform = glm::translate(transform, position);
-
-    transform = glm::rotate(transform, glm::radians(rotation.x), Vector3(1.0f, 0.0f, 0.0f));
-    transform = glm::rotate(transform, glm::radians(rotation.y), Vector3(0.0f, 1.0f, 0.0f));
-    transform = glm::rotate(transform, glm::radians(rotation.z), Vector3(0.0f, 0.0f, 1.0f));
-
-    transform = glm::scale(transform, scale);
-
+    Transform transform;
+    transform.position = position;
+    transform.scale = scale;
+    transform.rotation = Quaternion(rotation);
     m_instanceTransforms.push_back(transform);
 }
 
 void Mesh::initInstanceBuffer()
 {
-    m_vao->initInstanceBuffer(m_instanceTransforms.data(), m_instanceTransforms.size());
+    std::vector<Mat4> matrices;
+    matrices.reserve(m_instanceTransforms.size());
+
+    for (const auto& transform : m_instanceTransforms)
+    {
+        matrices.push_back(transform.GetMatrix());
+    }
+
+    m_vao->initInstanceBuffer(matrices.data(), matrices.size());
 }
 
 int Mesh::getInstanceCount()
