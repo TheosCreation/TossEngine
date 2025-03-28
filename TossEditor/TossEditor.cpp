@@ -191,35 +191,35 @@ void TossEditor::onUpdateInternal()
     ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
     ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
     
-   // float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
-   // ImGuiViewport* viewport = ImGui::GetMainViewport();
-   // 
-   // ImVec2 dockPos = viewport->Pos;
-   // dockPos.y += menuBarHeight;  // Offset by the menu bar height
-   // 
-   // ImVec2 dockSize = viewport->Size;
-   // dockSize.y -= menuBarHeight; // Reduce the height accordingly
-   // 
-   // ImGui::SetNextWindowPos(dockPos, ImGuiCond_Always);
-   // ImGui::SetNextWindowSize(dockSize, ImGuiCond_Always);
-   // ImGui::SetNextWindowViewport(viewport->ID);
-   //
-   // ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-   //     ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking |
-   //     ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground;
-   //
-   // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-   // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-   // ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-   // ImGui::Begin("DockSpace", nullptr, window_flags);
-   // ImGui::PopStyleVar(3);
-   // 
-   // ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-   // const ImGuiWindowClass* window_class = nullptr;
-   // 
-   // ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-   // ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
-   // ImGui::End();
+    float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    
+    ImVec2 dockPos = viewport->Pos;
+    dockPos.y += menuBarHeight;  // Offset by the menu bar height
+    
+    ImVec2 dockSize = viewport->Size;
+    dockSize.y -= menuBarHeight; // Reduce the height accordingly
+    
+    ImGui::SetNextWindowPos(dockPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(dockSize, ImGuiCond_Always);
+    ImGui::SetNextWindowViewport(viewport->ID);
+   
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground;
+   
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("DockSpace", nullptr, window_flags);
+    ImGui::PopStyleVar(3);
+    
+    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+    const ImGuiWindowClass* window_class = nullptr;
+    
+    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
+    ImGui::End();
 
     if (ImGui::BeginMainMenuBar())
     {
@@ -320,7 +320,7 @@ void TossEditor::onUpdateInternal()
             {
                 if (auto gameObject = dynamic_cast<GameObject*>(selectedSelectable))
                 {
-                    ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
+                    ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
                     ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, availSize.x, availSize.y);
 
                     Mat4 cameraView;
