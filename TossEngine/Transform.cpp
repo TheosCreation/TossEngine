@@ -27,12 +27,16 @@ Transform::Transform(GameObject* attachedGameObject)
 }
 
 Mat4 Transform::GetMatrix() const
-{
-    Mat4 translationMatrix = position.ToTranslation();
-    Mat4 rotationMatrix = rotation.ToMat4();
-    Mat4 scaleMatrix = scale.ToScale();
-
+{ // Create translation, rotation, and scale matrices from local components.
+    Mat4 translationMatrix = localPosition.ToTranslation();
+    Mat4 rotationMatrix = localRotation.ToMat4();
+    Mat4 scaleMatrix = localScale.ToScale();
     return translationMatrix * rotationMatrix * scaleMatrix;
+    //Mat4 translationMatrix = position.ToTranslation();
+    //Mat4 rotationMatrix = rotation.ToMat4();
+    //Mat4 scaleMatrix = scale.ToScale();
+    //
+    //return translationMatrix * rotationMatrix * scaleMatrix;
 }
 
 void Transform::SetMatrix(const Mat4& matrix)

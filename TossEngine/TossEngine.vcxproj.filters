@@ -504,5 +504,8 @@
     <ClInclude Include="Transform.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
+    <ClInclude Include="JsonSerializer.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

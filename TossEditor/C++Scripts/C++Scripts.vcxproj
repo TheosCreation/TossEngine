@@ -73,15 +73,18 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>$(SolutionDir)Dependencies\GLFW;$(SolutionDir)Dependencies\GLEW;$(SolutionDir)Dependencies\FMOD\Lib;$(SolutionDir)Dependencies\REACTPHYSICS3D\Lib;$(SolutionDir)Dependencies\TOSSENGINE;$(LibraryPath)
 </LibraryPath>
-    <ExternalIncludePath>$(SolutionDir)Dependencies\STB;$(SolutionDir)Dependencies\tinyobjloader;$(SolutionDir)Dependencies\GLFW;$(SolutionDir)Dependencies\GLEW;$(SolutionDir)Dependencies\JSON;$(SolutionDir)Dependencies\GLM;$(SolutionDir)Dependencies\IMGUI;$(SolutionDir)Dependencies\FMOD\Include;$(SolutionDir)Dependencies\REACTPHYSICS3D;$(SolutionDir)Dependencies\TOSSENGINE;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)TossEngine</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(SolutionDir)/Dependencies/REFUREKU/include;$(SolutionDir)TossEngine/</ExternalIncludePath>
     <OutDir>$(SolutionDir)TossEditor</OutDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>$(SolutionDir)Dependencies\GLFW;$(SolutionDir)Dependencies\GLEW;$(SolutionDir)Dependencies\FMOD\Lib;$(SolutionDir)Dependencies\REACTPHYSICS3D\Lib;$(SolutionDir)Dependencies\TOSSENGINE;$(LibraryPath)
 </LibraryPath>
-    <ExternalIncludePath>$(SolutionDir)Dependencies\STB;$(SolutionDir)Dependencies\tinyobjloader;$(SolutionDir)Dependencies\GLFW;$(SolutionDir)Dependencies\GLEW;$(SolutionDir)Dependencies\JSON;$(SolutionDir)Dependencies\GLM;$(SolutionDir)Dependencies\IMGUI;$(SolutionDir)Dependencies\FMOD\Include;$(SolutionDir)Dependencies\REACTPHYSICS3D;$(SolutionDir)Dependencies\TOSSENGINE;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)TossEngine</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(SolutionDir)/Dependencies/REFUREKU/include;$(SolutionDir)TossEngine/</ExternalIncludePath>
     <OutDir>$(SolutionDir)TossEditor</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -119,6 +122,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,6 +145,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

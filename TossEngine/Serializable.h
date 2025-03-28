@@ -1,5 +1,5 @@
 #pragma once
-#include "Utils.h"
+#include "JsonSerializer.h"
 #include "ResourceManager.h"
 
 class Resource;
@@ -20,6 +20,13 @@ public:
             {"type", getClassName(typeid(*this))} // used to identify class type
         };
     }
+
+    //virtual json serialize() const {
+    //    return JsonSerializer::Serialize(this);
+    //}
+    //virtual void deserialize(const json& data) {
+    //    JsonSerializer::Deserialize(this, data);
+    //}
 
     // Deserialize the GameObject from JSON
     virtual void deserialize(const json& data) { }
