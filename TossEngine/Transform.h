@@ -30,6 +30,8 @@ struct TOSSENGINE_API Transform
     // Constructor initializes defaults and attaches GameObject
     Transform(GameObject* attachedGameObject);
 
+    Mat4 GetLocalMatrix() const;
+
     Mat4 GetMatrix() const;
 
     void SetMatrix(const Mat4& matrix);

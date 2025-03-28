@@ -191,35 +191,35 @@ void TossEditor::onUpdateInternal()
     ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
     ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
     
-    float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-    
-    ImVec2 dockPos = viewport->Pos;
-    dockPos.y += menuBarHeight;  // Offset by the menu bar height
-    
-    ImVec2 dockSize = viewport->Size;
-    dockSize.y -= menuBarHeight; // Reduce the height accordingly
-    
-    ImGui::SetNextWindowPos(dockPos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(dockSize, ImGuiCond_Always);
-    ImGui::SetNextWindowViewport(viewport->ID);
-
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking |
-        ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground;
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("DockSpace", nullptr, window_flags);
-    ImGui::PopStyleVar(3);
-    
-    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-    const ImGuiWindowClass* window_class = nullptr;
-    
-    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
-    ImGui::End();
+   // float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
+   // ImGuiViewport* viewport = ImGui::GetMainViewport();
+   // 
+   // ImVec2 dockPos = viewport->Pos;
+   // dockPos.y += menuBarHeight;  // Offset by the menu bar height
+   // 
+   // ImVec2 dockSize = viewport->Size;
+   // dockSize.y -= menuBarHeight; // Reduce the height accordingly
+   // 
+   // ImGui::SetNextWindowPos(dockPos, ImGuiCond_Always);
+   // ImGui::SetNextWindowSize(dockSize, ImGuiCond_Always);
+   // ImGui::SetNextWindowViewport(viewport->ID);
+   //
+   // ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+   //     ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking |
+   //     ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground;
+   //
+   // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+   // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+   // ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+   // ImGui::Begin("DockSpace", nullptr, window_flags);
+   // ImGui::PopStyleVar(3);
+   // 
+   // ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+   // const ImGuiWindowClass* window_class = nullptr;
+   // 
+   // ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+   // ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
+   // ImGui::End();
 
     if (ImGui::BeginMainMenuBar())
     {
@@ -299,16 +299,12 @@ void TossEditor::onUpdateInternal()
         // Get the available size for the Scene window.
         ImVec2 availSize = ImGui::GetContentRegionAvail();
 
-        // Convert to your Vector2 type (assuming Vector2 takes width and height).
-        Vector2 newSize(availSize.x, availSize.y);
         if (m_currentScene)
         {
+            Vector2 newSize(availSize.x, availSize.y);
             // Resize the scene's framebuffer to match the current window size.
-            if (m_currentScene)
-            {
-                m_player->getCamera()->setScreenArea(newSize);
-                m_currentScene->onResize(newSize);
-            }
+            m_player->getCamera()->setScreenArea(newSize);
+            m_currentScene->onResize(newSize);
 
             // Now update the scene rendering with the current camera.
             m_currentScene->onGraphicsUpdate(m_player->getCamera());
@@ -324,8 +320,7 @@ void TossEditor::onUpdateInternal()
             {
                 if (auto gameObject = dynamic_cast<GameObject*>(selectedSelectable))
                 {
-                    ImGuizmo::SetDrawlist();
-
+                    ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
                     ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, availSize.x, availSize.y);
 
                     Mat4 cameraView;
@@ -340,12 +335,75 @@ void TossEditor::onUpdateInternal()
                     {
                         gameObject->m_transform.SetMatrix(transformMat);
                     }
-
                 }
             }
         }
     }
-    ImGui::End();
+    ImGui::End(); 
+    
+    //ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    //{
+    //    // Get the available size for the Scene window.
+    //    ImVec2 availSize = ImGui::GetContentRegionAvail();
+
+    //    // Variables to store the child (viewport) window's screen coordinates.
+    //    ImVec2 childPos, childSize;
+
+    //    // Draw the scene texture inside a child window with no inputs.
+    //    ImGui::BeginChild("SceneViewport", availSize, false, ImGuiWindowFlags_NoInputs);
+    //    {
+    //        if (m_currentScene)
+    //        {
+    //            Vector2 newSize(availSize.x, availSize.y);
+    //            m_player->getCamera()->setScreenArea(newSize);
+    //            m_currentScene->onResize(newSize);
+    //            m_currentScene->onGraphicsUpdate(m_player->getCamera());
+    //            ImTextureID sceneViewTexture = (ImTextureID)m_sceneViewFrameBuffer->RenderTexture->getId();
+
+    //            ImGui::SetNextItemAllowOverlap();
+    //            ImGui::Image(sceneViewTexture, availSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
+    //        }
+    //        // Capture the child's screen coordinates right after drawing the image.
+    //        childPos = ImGui::GetItemRectMin();
+    //        childSize = ImGui::GetItemRectSize();
+    //    }
+    //    ImGui::EndChild();
+
+    //    // Force ImGuizmo to draw in the foreground.
+    //    ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
+    //    // Set the rect using the child window's (viewport's) coordinates.
+    //    ImGuizmo::SetRect(childPos.x, childPos.y, childSize.x, childSize.y);
+
+    //    // Now set up and render the gizmo.
+    //    if (selectedSelectable)
+    //    {
+    //        if (auto gameObject = dynamic_cast<GameObject*>(selectedSelectable))
+    //        {
+    //            Mat4 cameraView;
+    //            m_player->getCamera()->getViewMatrix(cameraView);
+
+    //            Mat4 projectionMat;
+    //            m_player->getCamera()->getProjectionMatrix(projectionMat);
+
+    //            Mat4 transformMat = gameObject->m_transform.GetMatrix();
+    //            ImGuizmo::Manipulate(glm::value_ptr(cameraView.value),
+    //                glm::value_ptr(projectionMat.value),
+    //                ImGuizmo::OPERATION::TRANSLATE,
+    //                ImGuizmo::LOCAL,
+    //                glm::value_ptr(transformMat.value));
+    //            if (ImGuizmo::IsUsing())
+    //            {
+    //                gameObject->m_transform.SetMatrix(transformMat);
+    //            }
+    //            if (ImGuizmo::IsOver())
+    //            {
+    //                Debug::Log("Yep");
+    //            }
+    //        }
+    //    }
+    //}
+    //ImGui::End();
+
 
     if (ImGui::Begin("SettingsAndBuild"))
     {

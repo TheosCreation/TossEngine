@@ -26,12 +26,22 @@ Transform::Transform(GameObject* attachedGameObject)
 {
 }
 
-Mat4 Transform::GetMatrix() const
-{ // Create translation, rotation, and scale matrices from local components.
+Mat4 Transform::GetLocalMatrix() const
+{
+    // Create translation, rotation, and scale matrices from local components.
     Mat4 translationMatrix = localPosition.ToTranslation();
     Mat4 rotationMatrix = localRotation.ToMat4();
     Mat4 scaleMatrix = localScale.ToScale();
     return translationMatrix * rotationMatrix * scaleMatrix;
+}
+
+Mat4 Transform::GetMatrix() const
+{
+    if (parent)
+        return parent->GetMatrix() * GetLocalMatrix();
+    else
+        return GetLocalMatrix();// Create translation, rotation, and scale matrices from local components.
+
     //Mat4 translationMatrix = position.ToTranslation();
     //Mat4 rotationMatrix = rotation.ToMat4();
     //Mat4 scaleMatrix = scale.ToScale();
@@ -63,13 +73,18 @@ void Transform::SetMatrix(const Mat4& matrix)
 
 void Transform::UpdateWorldTransform()
 {
+    Mat4 worldMatrix;
     if (parent)
     {
-        position = parent->position + (parent->rotation * (parent->scale * localPosition));
-        rotation = parent->rotation * localRotation;
-        rotation.Normalize();
-        scale = parent->scale * localScale;
+        worldMatrix = parent->GetMatrix() * GetLocalMatrix();
     }
+    else
+    {
+        worldMatrix = GetLocalMatrix();
+    }
+    // Update the world components by decomposing the worldMatrix.
+    // This function sets 'position', 'rotation', and 'scale' based on the matrix.
+    SetMatrix(worldMatrix);
 
     // Recursively update children
     for (Transform* child : children)

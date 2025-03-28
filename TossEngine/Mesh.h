@@ -57,6 +57,4 @@ public:
 private:
     VertexArrayObjectPtr m_vao; // The Vertex Array Object associated with this mesh.
     std::vector<Transform> m_instanceTransforms; //A vector of transformations for each instance.
-
-    Vector3 eulerAngles;//for inspector
 };

@@ -105,6 +105,7 @@ void EditorPlayer::Update(float deltaTime)
     Vector3 right = m_transform.GetRight();
     Vector3 up = m_transform.GetUp();
 
+    //since the editor players tranform doesnt get updated to use local space we can manipulate position directly
     if (inputManager.isKeyDown(Key::KeyW))
         m_transform.position += forward * adjustedMoveSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyS))

@@ -11,7 +11,7 @@ void Ship::onUpdate(float deltaTime)
     float z = m_radius * sin(angle);
 
     // Update the ship's position
-    m_owner->m_transform.position = Vector3(x, 50.0f, z);
+    m_owner->m_transform.localPosition = Vector3(x, 50.0f, z);
 
     // Make the ship face the direction it's moving by calculating the forward vector
     glm::vec3 forward = glm::normalize(glm::vec3(-sin(angle), 0.0f, cos(angle)));

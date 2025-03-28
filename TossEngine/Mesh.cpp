@@ -176,19 +176,19 @@ void Mesh::OnInspectorGUI()
             {
                 if (ImGui::TreeNode(("Instance " + std::to_string(index)).c_str()))
                 {
-                    if (ImGui::DragFloat3("Position", transform.position.Data(), 0.1f))
+                    if (ImGui::DragFloat3("Position", transform.localPosition.Data(), 0.1f))
                         m_instanceBufferDirty = true;
                     // Convert from radians to degrees for display
 
-                    eulerAngles = transform.rotation.ToEulerAngles().ToDegrees();
+                    static Vector3 eulerAngles = transform.localRotation.ToEulerAngles().ToDegrees();
                     if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
                     {
                         // Convert the edited angles back to radians and update the quaternion
-                        transform.rotation = Quaternion(eulerAngles.ToRadians());
+                        transform.localRotation = Quaternion(eulerAngles.ToRadians());
                         m_instanceBufferDirty = true;
                     }
 
-                    if(ImGui::DragFloat3("Scale", transform.scale.Data(), 0.1f))
+                    if(ImGui::DragFloat3("Scale", transform.localScale.Data(), 0.1f))
                         m_instanceBufferDirty = true;
 
                     ImGui::TreePop();
@@ -219,9 +219,9 @@ VertexArrayObjectPtr Mesh::getVertexArrayObject()
 void Mesh::addInstance(Vector3 position, Vector3 scale, Vector3 rotation)
 {
     Transform transform;
-    transform.position = position;
-    transform.scale = scale;
-    transform.rotation = Quaternion(rotation);
+    transform.localPosition = position;
+    transform.localScale = scale;
+    transform.localRotation = Quaternion(rotation);
     m_instanceTransforms.push_back(transform);
 }
 

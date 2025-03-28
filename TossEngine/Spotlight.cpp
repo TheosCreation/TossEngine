@@ -70,7 +70,7 @@ void Spotlight::onCreate()
 {
     // Configure point light properties
     SpotLightData spotLight;
-    spotLight.Position = m_owner->m_transform.position;
+    spotLight.Position = m_owner->m_transform.localPosition;
     spotLight.Direction = m_owner->m_transform.GetForward();
     spotLight.Color = Color::White;
     spotLight.SpecularStrength = 1.0f;
@@ -86,7 +86,7 @@ void Spotlight::onUpdate(float deltaTime)
 {
     if (m_owner)
     {
-        m_owner->getLightManager()->updateSpotLightPosition(m_lightId, m_owner->m_transform.position);
+        m_owner->getLightManager()->updateSpotLightPosition(m_lightId, m_owner->m_transform.localPosition);
         m_owner->getLightManager()->updateSpotLightDirection(m_lightId, m_owner->m_transform.GetForward());
     }
 }
@@ -94,7 +94,7 @@ void Spotlight::onUpdate(float deltaTime)
 void Spotlight::onUpdateInternal()
 {
 
-    m_owner->getLightManager()->updateSpotLightPosition(m_lightId, m_owner->m_transform.position);
+    m_owner->getLightManager()->updateSpotLightPosition(m_lightId, m_owner->m_transform.localPosition);
     m_owner->getLightManager()->updateDirectionalLightDirection(m_lightId, m_owner->m_transform.GetForward());
 }
 

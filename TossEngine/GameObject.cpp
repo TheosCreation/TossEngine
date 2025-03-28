@@ -97,17 +97,17 @@ void GameObject::OnInspectorGUI()
     ImGui::Text("Selected Object: %s", name.c_str());
     ImGui::Separator();
     ImGui::Text("Transform:");
-    ImGui::DragFloat3("Position", m_transform.position.Data(), 0.1f);
+    ImGui::DragFloat3("Position", m_transform.localPosition.Data(), 0.1f);
     // Convert from radians to degrees for display
 
-    eulerAngles = m_transform.rotation.ToEulerAngles().ToDegrees();
+    static Vector3 eulerAngles = m_transform.localRotation.ToEulerAngles().ToDegrees();
     if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
     {
         // Convert the edited angles back to radians and update the quaternion
-        m_transform.rotation = Quaternion(eulerAngles.ToRadians());
+        m_transform.localRotation = Quaternion(eulerAngles.ToRadians());
     }
 
-    ImGui::DragFloat3("Scale", m_transform.scale.Data(), 0.1f);
+    ImGui::DragFloat3("Scale", m_transform.localScale.Data(), 0.1f);
     for (auto& pair : m_components)
     {
         ImGui::Separator();
@@ -210,6 +210,8 @@ void GameObject::onUpdate(float deltaTime)
 
 void GameObject::onUpdateInternal()
 {
+    m_transform.UpdateWorldTransform();
+
     for (Component* component : componentsToDestroy)
     {
         // Compute the key using the dynamic type of the component.

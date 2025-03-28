@@ -5,7 +5,6 @@
 
 void PlayerController::onCreate()
 {
-    m_cam = m_owner->addComponent<Camera>();
 
     auto& resourceManager = ResourceManager::GetInstance();
     fireSound = resourceManager.createSound(SoundDesc(), "Fire", "Resources/Audio/fire.ogg");
@@ -16,6 +15,7 @@ void PlayerController::onCreate()
 void PlayerController::onStart()
 {
     m_rigidBody = m_owner->getComponent<Rigidbody>();
+    m_cam = m_owner->getComponentInChildren<Camera>();
 }
 
 void PlayerController::onUpdate(float deltaTime)
@@ -50,7 +50,8 @@ void PlayerController::onUpdate(float deltaTime)
     glm::quat pitchRotation = glm::angleAxis(glm::radians(m_pitch), glm::vec3(1.0f, 0.0f, 0.0f));
 
     // Combine yaw and pitch rotations and apply to player transform
-    m_owner->m_transform.rotation = yawRotation * pitchRotation;
+    m_owner->m_transform.localRotation = yawRotation;
+    m_cam->getOwner()->m_transform.localRotation = pitchRotation;
 
     // Toggle wireframe mode on/off
     if (inputManager.isKeyPressed(Key::Key0))

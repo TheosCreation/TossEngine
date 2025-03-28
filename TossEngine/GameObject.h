@@ -134,6 +134,31 @@ public:
         }
         return nullptr;
     }
+    
+    template <typename Component>
+    Component* getComponentInChildren()
+    {
+        // Check if this GameObject itself has the component.
+        if (Component* comp = getComponent<Component>()) {
+            return comp;
+        }
+
+        // Otherwise, loop over each child transform.
+        for (Transform* childTransform : m_transform.children)
+        {
+            // Assuming each Transform has a pointer back to its owning GameObject.
+            if (childTransform->gameObject)
+            {
+                // Recursively call getComponentInChildren on the child GameObject.
+                if (Component* comp = childTransform->gameObject->getComponentInChildren<Component>())
+                {
+                    return comp;
+                }
+            }
+        }
+
+        return nullptr;
+    }
 
     std::map<std::type_index, Component*>& getAllComponents() {
         return m_components;
@@ -150,6 +175,4 @@ protected:
     Component* selectedComponent = nullptr; 
 private:
     size_t m_id = 0; // Unique identifier for the GameObject.
-    
-    Vector3 eulerAngles;//for inspector
 };
