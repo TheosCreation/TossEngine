@@ -1,137 +1,141 @@
-#include "Rigidbody.h"
+ï»¿#include "Rigidbody.h"
 #include "GameObject.h"
-#include "GameObjectManager.h"
-#include "Scene.h"
+#include "Collider.h"
 
 Rigidbody::~Rigidbody()
 {
-	if (m_Body) {
-		m_Body->removeCollider(m_Collider); // Ensure collider is removed
+    if (m_Body) {
+        if (m_Collider) {
+            m_Body->removeCollider(m_Collider->GetCollider());
+        }
         Physics::GetInstance().GetWorld()->destroyRigidBody(m_Body);
-		m_Body = nullptr;
-		m_Collider = nullptr;
-	}
+        m_Body = nullptr;
+        m_Collider = nullptr;
+    }
 }
 
 json Rigidbody::serialize() const
 {
-	json colliderJson;
-    // Serialize using stored values
-    if (m_Collider) {
-        if (auto boxShape = dynamic_cast<rp3d::BoxShape*>(m_Collider->getCollisionShape())) {
-            colliderJson = {
-                {"type", "box"},
-                {"size", {m_boxColliderSize.x, m_boxColliderSize.y, m_boxColliderSize.z}}
-            };
-        }
-        else if (auto sphereShape = dynamic_cast<rp3d::SphereShape*>(m_Collider->getCollisionShape())) {
-            colliderJson = {
-                {"type", "sphere"},
-                {"radius", m_radius}
-            };
-        }
-        else if (auto capsuleShape = dynamic_cast<rp3d::CapsuleShape*>(m_Collider->getCollisionShape()))
-        {
-            colliderJson = {
-                {"type", "capsule"},
-                {"radius", m_radius},
-                {"height", m_height},
-            };
-        }
-    }
-
-	json data;
-	data["type"] = getClassName(typeid(*this));
-	data["bodyType"] = static_cast<int>(m_BodyType);
-	data["mass"] = m_Body ? m_Body->getMass() : 0.0f;
-	data["useGravity"] = m_Body ? m_Body->isGravityEnabled() : false;
-	data["collider"] = colliderJson; 
+    json data;
+    data["type"] = getClassName(typeid(*this)); // Store the component type
+    data["bodyType"] = static_cast<int>(m_BodyType);
+    data["mass"] = m_Body ? m_Body->getMass() : 0.0f;
+    data["useGravity"] = m_UseGravity;
     data["positionConstraints"] = positionAxisLocks;
     data["rotationConstraints"] = rotationAxisLocks;
 
-	return data;
+    return data;
 }
 
 void Rigidbody::deserialize(const json& data)
 {
-	if (data.contains("bodyType")) {
-
-		SetBodyType(static_cast<BodyType>(data["bodyType"].get<int>()));
-	}
-	if (data.contains("mass")) {
-		SetMass(data["mass"].get<float>());
-	}
-	if (data.contains("useGravity")) {
-		SetUseGravity(data["useGravity"].get<bool>());
-	}
-	if (data.contains("collider")) {
-		auto colliderData = data["collider"];
-		if (colliderData.contains("type")) {
-			std::string type = colliderData["type"].get<std::string>();
-
-			if (type == "box" && colliderData.contains("size")) {
-				auto size = colliderData["size"];
-				SetBoxCollider(Vector3(size[0], size[1], size[2]));
-			}
-			else if (type == "sphere" && colliderData.contains("radius")) {
-				SetSphereCollider(colliderData["radius"].get<float>());
-			}
-            else if (type == "capsule" && colliderData.contains("radius") && colliderData.contains("height")) {
-				SetCapsuleCollider(colliderData["radius"].get<float>(), colliderData["height"].get<float>());
-			}
-		}
-	}
-    
+    if (data.contains("bodyType")) 
+    {
+        SetBodyType(static_cast<BodyType>(data["bodyType"].get<int>()));
+    }
+    if (data.contains("mass")) {
+        SetMass(data["mass"].get<float>());
+    }
+    if (data.contains("useGravity")) {
+        SetUseGravity(data["useGravity"].get<bool>());
+    }
     if (data.contains("positionConstraints"))
         positionAxisLocks = data["positionConstraints"].get<std::array<bool, 3>>();
 
     if (data.contains("rotationConstraints"))
         rotationAxisLocks = data["rotationConstraints"].get<std::array<bool, 3>>();
+}
 
-	m_Body->setIsSleeping(false);
+void Rigidbody::OnInspectorGUI()
+{
+    ImGui::Text("Rigidbody Inspector - ID: %p", this);
+    ImGui::Separator();
+
+
+    // Body Type selector
+    static const char* bodyTypes[] = { "Static", "Kinematic", "Dynamic" };
+    int currentBodyType = static_cast<int>(m_BodyType);
+    if (ImGui::Combo("Body Type", &currentBodyType, bodyTypes, IM_ARRAYSIZE(bodyTypes)))
+    {
+        SetBodyType(static_cast<BodyType>(currentBodyType));
+    }
+
+    // Mass input
+    float mass = (m_Body) ? m_Body->getMass() : 0.0f;
+    if (ImGui::InputFloat("Mass", &mass, 0.1f, 1.0f, "%.2f"))
+    {
+        SetMass(mass);
+    }
+
+    // Gravity toggle
+    bool useGravity = m_UseGravity;
+    if (ImGui::Checkbox("Use Gravity", &useGravity))
+    {
+        SetUseGravity(useGravity);
+        m_UseGravity = useGravity;
+    }
+
+    if (ImGui::CollapsingHeader("Constraints", ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGui::Text("Position Locks");
+        ImGui::Checkbox("X##pos", &positionAxisLocks[0]);
+        ImGui::SameLine();
+        ImGui::Checkbox("Y##pos", &positionAxisLocks[1]);
+        ImGui::SameLine();
+        ImGui::Checkbox("Z##pos", &positionAxisLocks[2]);
+
+        ImGui::Text("Rotation Locks");
+        ImGui::Checkbox("X##rot", &rotationAxisLocks[0]);
+        ImGui::SameLine();
+        ImGui::Checkbox("Y##rot", &rotationAxisLocks[1]);
+        ImGui::SameLine();
+        ImGui::Checkbox("Z##rot", &rotationAxisLocks[2]);
+    }
 }
 
 void Rigidbody::onCreate()
 {
-	PhysicsWorld* world = Physics::GetInstance().GetWorld();
-	if (!world) return; // Early exit if world is null
+    PhysicsWorld* world = Physics::GetInstance().GetWorld();
+    if (!world) return; // Early exit if world is null
 
-	Transform transform = m_owner->m_transform;
+    Transform transform = m_owner->m_transform;
 
-	// Create rigid body at the GameObject’s position
+    // Create rigid body at the GameObjectï¿½s position
     rp3d::Transform bodyTransform(
         rp3d::Vector3(transform.localPosition.x, transform.localPosition.y, transform.localPosition.z),
-		rp3d::Quaternion(transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w)
-	);
+        rp3d::Quaternion(transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w)
+    );
 
-	// Create rigid body
-	m_Body = world->createRigidBody(bodyTransform);
-	//m_Body->setIsDebugEnabled(true);
+    // Create rigid body
+    m_Body = world->createRigidBody(bodyTransform);
+    //m_Body->setIsDebugEnabled(true);
 
-	// Apply the default body type
-	SetBodyType(m_BodyType);
+    // Apply the default body type
+    SetBodyType(m_BodyType);
+
+    m_Collider = m_owner->getComponent<Collider>();
+    if (m_Collider == nullptr)
+    {
+        m_owner->addComponent<Collider>();
+    }
 }
 
 void Rigidbody::onStart()
 {
-    if (m_Body) {
-        m_Body->setLinearLockAxisFactor(rp3d::Vector3(
-            positionAxisLocks[0] ? 0.0f : 1.0f,
-            positionAxisLocks[1] ? 0.0f : 1.0f,
-            positionAxisLocks[2] ? 0.0f : 1.0f
-        ));
-
-        m_Body->setAngularLockAxisFactor(rp3d::Vector3(
-            rotationAxisLocks[0] ? 0.0f : 1.0f,
-            rotationAxisLocks[1] ? 0.0f : 1.0f,
-            rotationAxisLocks[2] ? 0.0f : 1.0f
-        ));
+    if (m_Collider && m_Body)
+    {
+        rp3d::CollisionShape* shape = m_Collider->GetColliderShape();
+        if (shape)
+        {
+            m_Body->addCollider(shape, rp3d::Transform::identity()); // TODO need to add offsets for colliders
+        }
     }
+
+    m_Body->setIsSleeping(false);
 }
 
 void Rigidbody::onUpdate(float deltaTime)
 {
-    if (!m_Body) return;
+    if (!m_Body || m_BodyType == BodyType::STATIC) return;
 
     rp3d::Transform bodyTransform = m_Body->getTransform();
     rp3d::Vector3 position = bodyTransform.getPosition();
@@ -160,90 +164,90 @@ void Rigidbody::onUpdate(float deltaTime)
 
 void Rigidbody::SetBodyType(BodyType type)
 {
-	if (!m_Body) return;
-
-	m_BodyType = type;
-
-	switch (type) {
-	case BodyType::Static:
-		m_Body->setType(rp3d::BodyType::STATIC);
-		break;
-	case BodyType::Kinematic:
-		m_Body->setType(rp3d::BodyType::KINEMATIC);
-		break;
-	case BodyType::Dynamic:
-		m_Body->setType(rp3d::BodyType::DYNAMIC);
-		break;
-	}
+    if (m_Body) {
+        m_BodyType = type;
+        m_Body->setType(type);
+    }
 }
 
 void Rigidbody::SetMass(float mass)
 {
-	if (!m_Body) return;
-
-	m_Body->setMass(mass);
+    if (m_Body) {
+        m_Body->setMass(mass);
+    }
 }
 
 void Rigidbody::SetUseGravity(bool useGravity)
 {
-	if (!m_Body) return;
-
-	m_Body->enableGravity(useGravity);
-}
-
-void Rigidbody::SetBoxCollider(const Vector3& size) {
-    if (!m_Body) return;
-    m_boxColliderSize = size;
-
-    PhysicsCommon& physicsCommon = Physics::GetInstance().GetPhysicsCommon();
-
-    if (m_Collider) {
-        m_Body->removeCollider(m_Collider);
-        m_Collider = nullptr;
+    m_UseGravity = useGravity;
+    if (m_Body) {
+        m_Body->enableGravity(useGravity);
     }
-
-    rp3d::Vector3 boxSize = { size.x, size.y, size.z }; // half extents
-    rp3d::BoxShape* boxShape = physicsCommon.createBoxShape(boxSize);
-
-    m_Collider = m_Body->addCollider(boxShape, rp3d::Transform::identity());
 }
 
-void Rigidbody::SetSphereCollider(float radius) {
-    if (!m_Body) return;
-    m_radius = radius;
-
-    PhysicsCommon& physicsCommon = Physics::GetInstance().GetPhysicsCommon();
-
-    if (m_Collider) {
-        m_Body->removeCollider(m_Collider);
-        m_Collider = nullptr;
-    }
-
-    rp3d::SphereShape* sphereShape = physicsCommon.createSphereShape(radius);
-    m_Collider = m_Body->addCollider(sphereShape, rp3d::Transform::identity());
-}
-
-void Rigidbody::SetCapsuleCollider(float radius, float height)
+rp3d::RigidBody* Rigidbody::GetBody()
 {
-    if (!m_Body) return;
-    m_radius = radius; 
-    m_height = height;
-
-    PhysicsCommon& physicsCommon = Physics::GetInstance().GetPhysicsCommon();
-
-    if (m_Collider) {
-        m_Body->removeCollider(m_Collider);
-        m_Collider = nullptr;
-    }
-
-    rp3d::CapsuleShape* capsuleShape = physicsCommon.createCapsuleShape(radius, height);
-    m_Collider = m_Body->addCollider(capsuleShape, rp3d::Transform::identity());
+    return m_Body;
 }
 
-void Rigidbody::RemoveCollider()
+void Rigidbody::AddForce(const Vector3& force)
 {
-    if (m_Collider) {
-        m_Body->removeCollider(m_Collider);
-        m_Collider = nullptr;
+    if (m_Body) {
+        m_Body->applyWorldForceAtCenterOfMass(rp3d::Vector3(force.x, force.y, force.z));
+    }
+}
+
+void Rigidbody::AddTorque(const Vector3& torque)
+{
+    if (m_Body) {
+        m_Body->applyWorldForceAtCenterOfMass(rp3d::Vector3(torque.x, torque.y, torque.z));
+    }
+}
+
+Vector3 Rigidbody::GetLinearVelocity() const
+{
+    if (m_Body) {
+        rp3d::Vector3 vel = m_Body->getLinearVelocity();
+        return Vector3(vel.x, vel.y, vel.z);
+    }
+    return Vector3();
+}
+
+void Rigidbody::SetLinearVelocity(const Vector3& velocity)
+{
+    if (m_Body) {
+        m_Body->setLinearVelocity(rp3d::Vector3(velocity.x, velocity.y, velocity.z));
+    }
+}
+
+Vector3 Rigidbody::GetAngularVelocity() const
+{
+    if (m_Body) {
+        rp3d::Vector3 angVel = m_Body->getAngularVelocity();
+        return Vector3(angVel.x, angVel.y, angVel.z);
+    }
+    return Vector3();
+}
+
+void Rigidbody::SetAngularVelocity(const Vector3& velocity)
+{
+    if (m_Body) {
+        m_Body->setAngularVelocity(rp3d::Vector3(velocity.x, velocity.y, velocity.z));
+    }
+}
+
+void Rigidbody::SetPositionConstraints(bool lockX, bool lockY, bool lockZ)
+{
+    positionAxisLocks = { lockX, lockY, lockZ };
+    if (m_Body) {
+        m_Body->setLinearLockAxisFactor(rp3d::Vector3(lockX ? 0.0f : 1.0f, lockY ? 0.0f : 1.0f, lockZ ? 0.0f : 1.0f));
+    }
+}
+
+void Rigidbody::SetRotationConstraints(bool lockX, bool lockY, bool lockZ)
+{
+    rotationAxisLocks = { lockX, lockY, lockZ };
+    if (m_Body) {
+        m_Body->setAngularLockAxisFactor(rp3d::Vector3(lockX ? 0.0f : 1.0f, lockY ? 0.0f : 1.0f, lockZ ? 0.0f : 1.0f));
     }
 }

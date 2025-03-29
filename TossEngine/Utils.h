@@ -267,6 +267,13 @@ struct MaterialDesc
     std::vector<UniformBinding> uniformBindings;
 };
 
+struct PhysicsMaterialDesc
+{
+    float staticFriction = 0.5f;
+    float dynamicFriction = 0.7f;
+    float bounciness = 0.3f;
+};
+
 // Enum representing camera types
 enum class CameraType
 {

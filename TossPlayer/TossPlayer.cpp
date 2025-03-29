@@ -17,12 +17,15 @@ TossPlayer::TossPlayer()
 
     Vector2 windowSize = m_playerSettings->windowSize;
 
+
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, windowSize, "TossPlayer");
     tossEngine.LoadScripts();
 
     Physics::GetInstance().SetGravity(m_playerSettings->gravity);
+
+    AudioEngine::GetInstance().Init();
 
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     tossEngine.StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
@@ -42,7 +45,6 @@ TossPlayer::TossPlayer()
     inputManager.setScreenArea(windowSize);
 
     GeometryBuffer::GetInstance().Init(windowSize);
-    AudioEngine::GetInstance().Init();
 }
 
 TossPlayer::~TossPlayer()

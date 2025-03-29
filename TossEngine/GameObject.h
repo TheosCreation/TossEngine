@@ -115,6 +115,14 @@ public:
         component->setOwner(this);
         component->onCreate();
 
+        if (hasStarted)
+        {
+            component->onStart();
+            component->onLateStart();
+        }
+
+
+
         m_components.emplace(typeIndex, component);
 
         return static_cast<Component*>(m_components[typeIndex]);
@@ -169,10 +177,13 @@ public:
 protected:
     vector<Component*> componentsToDestroy;
     std::map<std::type_index, Component*> m_components;
+    bool hasStarted = false;
 
     GameObjectManager* m_gameObjectManager = nullptr; // Pointer to the GameObjectManager managing this GameObject.
 
     Component* selectedComponent = nullptr; 
 private:
     size_t m_id = 0; // Unique identifier for the GameObject.
+
+    Vector3 eulerAngles;
 };

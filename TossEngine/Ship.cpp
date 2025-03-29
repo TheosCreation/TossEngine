@@ -20,5 +20,5 @@ void Ship::onUpdate(float deltaTime)
     Quaternion shipRotation = QuaternionUtils::LookAt(forward, glm::vec3(0.0f, 1.0f, 0.0f));
 
     // Set the ship's rotation
-    m_owner->m_transform.rotation = shipRotation;
+    m_owner->m_transform.localRotation = shipRotation;
 }

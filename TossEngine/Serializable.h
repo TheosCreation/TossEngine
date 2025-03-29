@@ -13,7 +13,7 @@ class Sound;
 class TOSSENGINE_API Serializable
 {
 public:
-    // Serialize the GameObject to JSON
+    // Serialize to JSON
     virtual json serialize() const
     {
         return {
@@ -28,7 +28,7 @@ public:
     //    JsonSerializer::Deserialize(this, data);
     //}
 
-    // Deserialize the GameObject from JSON
+    // Deserialize from JSON
     virtual void deserialize(const json& data) { }
 
     template<typename Resource>

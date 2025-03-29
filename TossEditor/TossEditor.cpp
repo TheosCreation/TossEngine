@@ -339,71 +339,7 @@ void TossEditor::onUpdateInternal()
             }
         }
     }
-    ImGui::End(); 
-    
-    //ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-    //{
-    //    // Get the available size for the Scene window.
-    //    ImVec2 availSize = ImGui::GetContentRegionAvail();
-
-    //    // Variables to store the child (viewport) window's screen coordinates.
-    //    ImVec2 childPos, childSize;
-
-    //    // Draw the scene texture inside a child window with no inputs.
-    //    ImGui::BeginChild("SceneViewport", availSize, false, ImGuiWindowFlags_NoInputs);
-    //    {
-    //        if (m_currentScene)
-    //        {
-    //            Vector2 newSize(availSize.x, availSize.y);
-    //            m_player->getCamera()->setScreenArea(newSize);
-    //            m_currentScene->onResize(newSize);
-    //            m_currentScene->onGraphicsUpdate(m_player->getCamera());
-    //            ImTextureID sceneViewTexture = (ImTextureID)m_sceneViewFrameBuffer->RenderTexture->getId();
-
-    //            ImGui::SetNextItemAllowOverlap();
-    //            ImGui::Image(sceneViewTexture, availSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
-    //        }
-    //        // Capture the child's screen coordinates right after drawing the image.
-    //        childPos = ImGui::GetItemRectMin();
-    //        childSize = ImGui::GetItemRectSize();
-    //    }
-    //    ImGui::EndChild();
-
-    //    // Force ImGuizmo to draw in the foreground.
-    //    ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
-    //    // Set the rect using the child window's (viewport's) coordinates.
-    //    ImGuizmo::SetRect(childPos.x, childPos.y, childSize.x, childSize.y);
-
-    //    // Now set up and render the gizmo.
-    //    if (selectedSelectable)
-    //    {
-    //        if (auto gameObject = dynamic_cast<GameObject*>(selectedSelectable))
-    //        {
-    //            Mat4 cameraView;
-    //            m_player->getCamera()->getViewMatrix(cameraView);
-
-    //            Mat4 projectionMat;
-    //            m_player->getCamera()->getProjectionMatrix(projectionMat);
-
-    //            Mat4 transformMat = gameObject->m_transform.GetMatrix();
-    //            ImGuizmo::Manipulate(glm::value_ptr(cameraView.value),
-    //                glm::value_ptr(projectionMat.value),
-    //                ImGuizmo::OPERATION::TRANSLATE,
-    //                ImGuizmo::LOCAL,
-    //                glm::value_ptr(transformMat.value));
-    //            if (ImGuizmo::IsUsing())
-    //            {
-    //                gameObject->m_transform.SetMatrix(transformMat);
-    //            }
-    //            if (ImGuizmo::IsOver())
-    //            {
-    //                Debug::Log("Yep");
-    //            }
-    //        }
-    //    }
-    //}
-    //ImGui::End();
-
+    ImGui::End();
 
     if (ImGui::Begin("SettingsAndBuild"))
     {
@@ -960,9 +896,9 @@ void TossEditor::PerformSafeBuild()
         Debug::LogError("Could not locate sln | did not compile build", false);
         return;
     }
-    // frees up the dll to be read
-    TossEngine& tossEngine = TossEngine::GetInstance();
-    tossEngine.UnLoadScripts();
+
+    //TossEngine& tossEngine = TossEngine::GetInstance();
+    //tossEngine.UnLoadScripts();
 
     std::string command = std::string("cmd /C \"\"") + msBuildPath +
         "\" \"" + solutionPath +
@@ -977,7 +913,7 @@ void TossEditor::PerformSafeBuild()
         Debug::LogError("TossPlayer Project compilation failed.");
     }
 
-    tossEngine.LoadScripts();
+    //tossEngine.LoadScripts();
 }
 void TossEditor::PerformSafeDllReload()
 {

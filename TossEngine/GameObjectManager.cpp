@@ -74,7 +74,7 @@ void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
 	std::ifstream file(filePath);
 	if (!file.is_open())
 	{
-        Debug::LogError("Failed to open file game object manager: " + filePath, false);
+        Debug::LogError("Failed to open scene file at: " + filePath + ". Please open a new scene file", false);
 		return;
 	}
 

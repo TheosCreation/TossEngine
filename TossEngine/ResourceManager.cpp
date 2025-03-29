@@ -694,6 +694,12 @@ CoroutineTask ResourceManager::createResourcesFromDescs()
         createMaterial(shaderId, uniqueID);
     }
 
+    // Create Meshes
+    for (const auto& [uniqueID, meshDesc] : meshDescriptions)
+    {
+        createMesh(meshDesc, uniqueID);
+    }
+
     // Create Texture2D resources
     for (const auto& [uniqueID, filepath] : texture2DFilePaths)
     {

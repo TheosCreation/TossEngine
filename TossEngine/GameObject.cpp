@@ -86,8 +86,14 @@ void GameObject::deserialize(const json& data)
     {
         for (const auto& componentData : data["components"])
         {
-            std::string componentType = componentData["type"];
-            addComponent(componentType, componentData);
+            if (componentData.contains("type"))
+            {
+                addComponent(componentData["type"], componentData);
+            }
+            else
+            {
+                Debug::LogError("Error loading component on gameobject: " + name + ". As the component has no type");
+            }
         }
     }
 }
@@ -100,7 +106,7 @@ void GameObject::OnInspectorGUI()
     ImGui::DragFloat3("Position", m_transform.localPosition.Data(), 0.1f);
     // Convert from radians to degrees for display
 
-    static Vector3 eulerAngles = m_transform.localRotation.ToEulerAngles().ToDegrees();
+    eulerAngles = m_transform.localRotation.ToEulerAngles().ToDegrees();
     if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
     {
         // Convert the edited angles back to radians and update the quaternion
@@ -190,6 +196,8 @@ void GameObject::onLateStart()
     for (auto& pair : m_components) {
         pair.second->onLateStart();
     }
+
+    hasStarted = true;
 }
 
 void GameObject::onFixedUpdate(float fixedDeltaTime)
@@ -253,6 +261,13 @@ Component* GameObject::addComponent(string componentType, const json& data)
         {
             component->deserialize(data);
         }
+
+        if (hasStarted)
+        {
+            component->onStart();
+            component->onLateStart();
+        }
+
         m_components.emplace(std::type_index(typeid(*component)), component);
         return component;
     }

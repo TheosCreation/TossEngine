@@ -131,8 +131,7 @@
       <ProgramDatabaseFile>$(OutDir)DebugSymbols\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy /y "$(SolutionDir)TossEditor\C++Scripts.dll" "$(SolutionDir)TossPlayer"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -156,8 +155,7 @@
       <ProgramDatabaseFile>$(OutDir)DebugSymbols\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy /y "$(SolutionDir)TossEditor\C++Scripts.dll" "$(SolutionDir)TossPlayer"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

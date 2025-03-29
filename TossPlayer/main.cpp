@@ -1,3 +1,6 @@
+#include "TossPlayer.h"
+#include <Windows.h>
+
 /***
 Bachelor of Software Engineering
 Media Design School
@@ -8,11 +11,9 @@ File Name : main.cpp
 Description : The entry point of the application
 Author : Theo Morris
 Mail : theo.morris@mds.ac.nz
-**/
+***/
 
-#include "TossPlayer.h"
-
-int main()
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     try
     {
@@ -21,7 +22,7 @@ int main()
     }
     catch (const std::exception& e)
     {
-        std::wclog << e.what() << std::endl; // Log any exceptions that occur
+        MessageBoxA(NULL, e.what(), "Error", MB_ICONERROR | MB_OK); // Display error in a message box
         return -1; // Return -1 to indicate an error
     }
 

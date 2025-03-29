@@ -16,6 +16,13 @@ public:
 	string getName();
 	void setOwner(GameObject* gameObject);
 
+    virtual json serialize() const //do call Component::serialize() first when overriding this class
+    {
+        return {
+            {"type", getClassName(typeid(*this))} // used to identify component type
+        };
+    }
+
     /**
      * @brief Called when the component is created.
      * Can be overridden by derived classes to perform initialization.
