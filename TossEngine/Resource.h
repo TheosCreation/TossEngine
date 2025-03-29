@@ -47,6 +47,7 @@ public:
     void setUniqueID(const std::string& id);
 
 protected:
+    ResourceManager* m_resourceManager = nullptr;
     std::string m_path; // The file path of the resource
     std::string m_uniqueID;  // Unique identifier for the resource
 };

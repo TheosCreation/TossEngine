@@ -1,18 +1,19 @@
 #include "Collider.h"
 #include "GameObject.h"
 #include "Rigidbody.h"
-
-Collider::~Collider()
-{
-    if (m_Collider) {
-        m_Collider = nullptr;
-    }
-}
+#include "PhysicsMaterial.h"
 
 json Collider::serialize() const
 {
     json data;
     data["type"] = getClassName(typeid(*this)); // Store the component type
+
+    if (m_physicsMaterial)
+    {
+        data["physicsMaterial"] = m_physicsMaterial->getUniqueID();
+    }
+
+    data["isTrigger"] = m_isTrigger;
 
     if (m_Shape)
     {
@@ -40,7 +41,21 @@ json Collider::serialize() const
 
 void Collider::deserialize(const json& data)
 {
-    // Ensure "colliderType" is valid
+    if (data.contains("physicsMaterial"))
+    {
+        string id = data["physicsMaterial"];
+        PhysicsMaterialPtr physicsMaterial = ResourceManager::GetInstance().getPhysicsMaterial(id);
+        if (physicsMaterial)
+        {
+            m_physicsMaterial = physicsMaterial;
+        }
+    }
+
+    if (data.contains("isTrigger"))
+    {
+        m_isTrigger = data["isTrigger"];
+    }
+
     if (data.contains("colliderType") && !data["colliderType"].is_null())
     {
         int colliderType = data["colliderType"].get<int>();
@@ -78,6 +93,10 @@ void Collider::OnInspectorGUI()
 {
     ImGui::Text("Collider Inspector - ID: %p", this);
     ImGui::Separator();
+
+    ImGui::Checkbox("Is Trigger", &m_isTrigger);
+
+    ResourceSerializedField(m_physicsMaterial, "Physics Material");
 
     // List of shape types for the dropdown menu
     static const char* shapeTypes[] = { "Sphere", "Capsule", "Box" };
@@ -160,6 +179,7 @@ void Collider::onStart()
 
 void Collider::onCreate()
 {
+    m_physicsMaterial = Physics::GetInstance().GetDefaultPhysicsMaterial();
     SetBoxCollider(Vector3(1.0f, 1.0f, 1.0f)); // Default to Box Collider
 }
 
@@ -191,16 +211,22 @@ void Collider::SetCapsuleCollider(float radius, float height)
     m_Shape = Physics::GetInstance().GetPhysicsCommon().createCapsuleShape(scaledRadius, scaledHeight);
 }
 
-void Collider::RemoveCollider()
+void Collider::SetTrigger(bool trigger)
 {
-    if (m_Collider && m_Rigidbody)
-    {
-        m_Rigidbody->GetBody()->removeCollider(m_Collider);
-        m_Collider = nullptr;
-    }
+    m_isTrigger = trigger;
+}
+
+bool Collider::GetTrigger()
+{
+    return m_isTrigger;
 }
 
 rp3d::CollisionShapeType Collider::GetColliderType() const
 {
     return m_Shape ? m_Shape->getType() : rp3d::CollisionShapeType::CONVEX_POLYHEDRON;
+}
+
+PhysicsMaterialPtr Collider::GetPhysicsMaterial() const
+{
+    return m_physicsMaterial;
 }

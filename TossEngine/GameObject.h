@@ -6,6 +6,8 @@
 #include "GameObjectManager.h"
 #include "ISelectable.h"
 
+class Collider;
+
 /**
  * @class GameObject
  * @brief Represents an object for OpenGl with its own update and onCreate functions.
@@ -26,6 +28,7 @@ public:
     ~GameObject();
 
     string name = "GameObject";
+    string tag = "";
     Transform m_transform;
 
     // Serialize the GameObject to JSON
@@ -104,6 +107,9 @@ public:
      * @param deltaTime The time elapsed since the last frame.
      */
     virtual void onLateUpdate(float deltaTime);
+
+    void CallOnCollisionEnterCallbacks(Collider* other);
+    void CallOnCollisionExitCallbacks(Collider* other);
 
     // Add components to the game object
     template <typename Component>
@@ -185,5 +191,6 @@ protected:
 private:
     size_t m_id = 0; // Unique identifier for the GameObject.
 
+    char tagBuffer[128];
     Vector3 eulerAngles;
 };

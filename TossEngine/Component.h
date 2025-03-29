@@ -6,12 +6,11 @@
 #include <ImGuizmo.h>
 
 class GameObject;
+class Collider;
 
 class TOSSENGINE_API Component : public Serializable, public ISelectable
 {
 public:
-    //Component(const Component& other);
-    //
 	GameObject* getOwner();
 	string getName();
 	void setOwner(GameObject* gameObject);
@@ -51,6 +50,8 @@ public:
     virtual void OnInspectorGUI() 
     {
     }
+    virtual void onCollisionEnter(Collider* other) { }
+    virtual void onCollisionExit(Collider* other) { }
 
     bool Delete(bool deleteSelf = true);
     void Destroy(GameObject* objectToDestroy);

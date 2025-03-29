@@ -12,7 +12,7 @@ Mail : theo.morris@mds.ac.nz
 
 #include "Resource.h"
 
-Resource::Resource(const string& path, const string& uniqueId, ResourceManager* manager) : m_path(path), m_uniqueID(uniqueId)
+Resource::Resource(const string& path, const string& uniqueId, ResourceManager* manager) : m_path(path), m_uniqueID(uniqueId), m_resourceManager(manager)
 {
 }
 

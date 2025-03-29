@@ -16,6 +16,7 @@ Mail : theo.morris@mds.ac.nz
 #include "TextureCubeMap.h"
 #include "HeightMap.h"
 #include "Material.h"
+#include "PhysicsMaterial.h"
 #include "Sound.h"
 #include "AudioEngine.h"
 #include "Game.h"
@@ -91,6 +92,19 @@ MaterialPtr ResourceManager::getMaterial(const std::string& uniqueId)
         return createMaterial(it2->second, uniqueId);
 
     return MaterialPtr();
+}
+
+PhysicsMaterialPtr ResourceManager::getPhysicsMaterial(const std::string& uniqueId)
+{
+    auto it = m_mapResources.find(uniqueId);
+    if (it != m_mapResources.end())
+        return std::static_pointer_cast<PhysicsMaterial>(it->second);
+
+    auto it2 = physicsMaterialDescriptions.find(uniqueId);
+    if (it2 != physicsMaterialDescriptions.end())
+        return createPhysicsMaterial(it2->second, uniqueId);
+
+    return PhysicsMaterialPtr();
 }
 
 ShaderPtr ResourceManager::createShader(const ShaderDesc& desc, const std::string& uniqueID)
@@ -315,6 +329,14 @@ MaterialPtr ResourceManager::createMaterial(const string& shaderId, const std::s
     return materialPtr;
 }
 
+PhysicsMaterialPtr ResourceManager::createPhysicsMaterial(const PhysicsMaterialDesc& desc, const std::string& uniqueID)
+{
+    PhysicsMaterialPtr physicsMaterial = std::make_shared<PhysicsMaterial>(desc, uniqueID, this);
+    physicsMaterialDescriptions.emplace(uniqueID, desc);
+    m_mapResources.emplace(uniqueID, physicsMaterial);
+    return physicsMaterial;
+}
+
 void ResourceManager::deleteTexture(TexturePtr texture)
 {
     for (auto it = m_mapResources.begin(); it != m_mapResources.end(); ++it)
@@ -344,6 +366,16 @@ CoroutineTask ResourceManager::saveResourcesDescs(const std::string& filepath)
         data["shaders"][key] = {
             {"vertexShader", shaderDesc.vertexShaderFilePath},
             {"fragmentShader", shaderDesc.fragmentShaderFilePath}
+        };
+    }
+    
+    // Serialize physics descriptions properly
+    for (auto& [key, physicsDesc] : physicsMaterialDescriptions)
+    {
+        data["PhysicMaterials"][key] = {
+            {"staticFriction", physicsDesc.staticFriction},
+            {"dynamicFriction", physicsDesc.dynamicFriction},
+            {"bounciness", physicsDesc.bounciness}
         };
     }
     for (auto& [key, meshDesc] : meshDescriptions)
@@ -440,6 +472,19 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
             shaderDesc.vertexShaderFilePath = value["vertexShader"].get<std::string>();
             shaderDesc.fragmentShaderFilePath = value["fragmentShader"].get<std::string>();
             shaderDescriptions[key] = shaderDesc;
+        }
+    }
+
+    // Deserialize physics materials
+    if (data.contains("PhysicMaterials"))
+    {
+        for (auto& [key, value] : data["PhysicMaterials"].items())
+        {
+            PhysicsMaterialDesc physicsMaterialDesc;
+            physicsMaterialDesc.staticFriction = value["staticFriction"].get<float>();
+            physicsMaterialDesc.dynamicFriction = value["dynamicFriction"].get<float>();
+            physicsMaterialDesc.bounciness = value["bounciness"].get<float>();
+            physicsMaterialDescriptions[key] = physicsMaterialDesc;
         }
     }
 
@@ -587,71 +632,87 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
 
 }
 
-void ResourceManager::DeleteResource(ResourcePtr resource)
+void ResourceManager::DeleteResource(const std::string& uniqueId)
 {
-    if (!resource) return;
-
-    std::string id = resource->getUniqueID();
-
-    // Erase from resource map
+    // Find the resource by its uniqueId
     auto it = std::find_if(m_mapResources.begin(), m_mapResources.end(),
-        [&resource](const auto& pair) { return pair.second == resource; });
+        [&uniqueId](const auto& pair) { return pair.second->getUniqueID() == uniqueId; });
 
     if (it != m_mapResources.end()) {
+        // Found the resource, now delete it
+        auto resource = it->second; // Get the resource pointer
+
+        // Erase from resource map
         m_mapResources.erase(it);
-    }
 
-    // Deselect if selected
-    if (m_selectedResource == resource) {
-        m_selectedResource = nullptr;
-    }
+        // Deselect if selected
+        if (m_selectedResource == resource) {
+            m_selectedResource = nullptr;
+        }
 
-    // --- Remove from saved data ---
+        // Call the helper function to remove from the appropriate map based on the resource type
+        DeleteFromSavedData(resource, uniqueId);
+
+        // Optionally, you could log the deletion of the resource
+        Debug::Log("Deleted resource with ID: " + uniqueId);
+    }
+    else {
+        Debug::Log("Resource with ID: " + uniqueId + " not found.");
+    }
+}
+
+void ResourceManager::DeleteFromSavedData(const std::shared_ptr<Resource>& resource, const std::string& uniqueId)
+{
+    // For Shader
     if (std::dynamic_pointer_cast<Shader>(resource)) {
-        auto shaderIt = shaderDescriptions.find(id);
+        auto shaderIt = shaderDescriptions.find(uniqueId);
         if (shaderIt != shaderDescriptions.end()) {
             shaderDescriptions.erase(shaderIt);
-            Debug::Log("Deleted Shader: " + id);
+            Debug::Log("Deleted Shader: " + uniqueId);
         }
     }
+    // For Material
     else if (std::dynamic_pointer_cast<Material>(resource)) {
-        auto matIt = materialDescriptions.find(id);
+        auto matIt = materialDescriptions.find(uniqueId);
         if (matIt != materialDescriptions.end()) {
             materialDescriptions.erase(matIt);
-            Debug::Log("Deleted Material: " + id);
+            Debug::Log("Deleted Material: " + uniqueId);
         }
 
-        // Also remove any references TO this shader from other materials
+        // Remove any references to this shader from other materials
         for (auto& [matID, shaderID] : materialDescriptions) {
-            if (shaderID == id)
+            if (shaderID == uniqueId)
                 shaderID = ""; // or some fallback/default shader ID
         }
     }
+    // For Mesh
     else if (std::dynamic_pointer_cast<Mesh>(resource)) {
-        auto meshIt = meshDescriptions.find(id);
+        auto meshIt = meshDescriptions.find(uniqueId);
         if (meshIt != meshDescriptions.end()) {
             meshDescriptions.erase(meshIt);
-            Debug::Log("Deleted Mesh: " + id);
+            Debug::Log("Deleted Mesh: " + uniqueId);
         }
     }
+    // For Texture
     else if (std::dynamic_pointer_cast<Texture>(resource)) {
         // Remove from texture2D list
-        auto itTex = texture2DFilePaths.find(id);
+        auto itTex = texture2DFilePaths.find(uniqueId);
         if (itTex != texture2DFilePaths.end()) {
             texture2DFilePaths.erase(itTex);
-            Debug::Log("Deleted Texture2D: " + id);
+            Debug::Log("Deleted Texture2D: " + uniqueId);
         }
+
         // Remove as a cubemap key
-        auto cubeIt = cubemapTextureFilePaths.find(id);
+        auto cubeIt = cubemapTextureFilePaths.find(uniqueId);
         if (cubeIt != cubemapTextureFilePaths.end()) {
             cubemapTextureFilePaths.erase(cubeIt);
-            Debug::Log("Deleted Cubemap Texture: " + id);
+            Debug::Log("Deleted Cubemap Texture: " + uniqueId);
         }
 
         // Also remove from any cubemap references
         for (auto& [cubeID, facePaths] : cubemapTextureFilePaths) {
             for (auto& facePath : facePaths) {
-                if (facePath == id)
+                if (facePath == uniqueId)
                     facePath = ""; // or handle missing face logic
             }
         }
@@ -692,6 +753,12 @@ CoroutineTask ResourceManager::createResourcesFromDescs()
     for (const auto& [uniqueID, shaderId] : materialDescriptions)
     {
         createMaterial(shaderId, uniqueID);
+    }
+    
+    // Create Materials
+    for (const auto& [uniqueID, physicMaterialDesc] : physicsMaterialDescriptions)
+    {
+        createPhysicsMaterial(physicMaterialDesc, uniqueID);
     }
 
     // Create Meshes

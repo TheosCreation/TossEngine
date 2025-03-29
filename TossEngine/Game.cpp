@@ -173,7 +173,7 @@ void Game::SetScene(ScenePtr _scene, bool skipCreate)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
     // set the current scene to the new scene
-    m_currentScene = std::move(_scene);
+    m_currentScene = _scene;
     if (!skipCreate)
     {
         m_currentScene->onCreate();
@@ -193,6 +193,7 @@ void Game::onUpdate(float deltaTime)
 {
     auto& inputManager = InputManager::GetInstance();
     auto& audioEngine = AudioEngine::GetInstance();
+
     inputManager.onUpdate();
     m_currentScene->onUpdate(deltaTime);
     audioEngine.Update();

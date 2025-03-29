@@ -50,8 +50,7 @@ TossEditor::TossEditor()
     AudioEngine::GetInstance().Init();
 
 
-    m_sceneViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
-    m_gameViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+    m_sceneFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
 }
 
 TossEditor::~TossEditor()
@@ -105,7 +104,7 @@ void TossEditor::onCreate()
     if (!filePath.empty()) // If a file was selected
     {
         auto scene = std::make_shared<Scene>(filePath);
-        scene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
+        scene->SetWindowFrameBuffer(m_sceneFrameBuffer);
         OpenScene(scene);
     }
 
@@ -153,27 +152,25 @@ void TossEditor::onUpdateInternal()
 
     // Accumulate time
     m_accumulatedTime += deltaTime;
-    Physics::GetInstance().Update(deltaTime);
 
-    if (m_game != nullptr)
-    {
-        while (m_accumulatedTime >= m_fixedTimeStep)
-        {
-            float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
-            m_previousFixedUpdateTime = m_currentTime;
-            m_game->onFixedUpdate(fixedDeltaTime);
-            m_accumulatedTime -= m_fixedTimeStep;
-        }
-
-        // player update
-        //m_player->Update(deltaTime);
-        m_game->onUpdate(deltaTime);
-        m_game->onLateUpdate(deltaTime);
-    }
-    else if (m_currentScene)
+    if (m_currentScene)
     {
         InputManager& inputManager = InputManager::GetInstance();
-        inputManager.onUpdate();
+        if (m_game)
+        {
+            Physics::GetInstance().Update(deltaTime);
+            while (m_accumulatedTime >= m_fixedTimeStep)
+            {
+                float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
+                m_previousFixedUpdateTime = m_currentTime;
+                m_game->onFixedUpdate(fixedDeltaTime);
+                m_accumulatedTime -= m_fixedTimeStep;
+            }
+        }
+        else
+        {
+            inputManager.onUpdate();
+        }
 
         // player update
         m_player->Update(deltaTime);
@@ -182,7 +179,15 @@ void TossEditor::onUpdateInternal()
             m_currentScene->onUpdateInternal();
         }
 
-        inputManager.onLateUpdate();
+        if (m_game)
+        {
+            m_game->onUpdate(deltaTime);
+            m_game->onLateUpdate(deltaTime);
+        }
+        else
+        {
+            inputManager.onLateUpdate();
+        }
     }
 
 
@@ -246,10 +251,8 @@ void TossEditor::onUpdateInternal()
         {
             if (!m_game && m_currentScene)
             {
-                auto scene = std::make_shared<Scene>(m_currentScene->GetFilePath());
-                scene->SetWindowFrameBuffer(m_gameViewFrameBuffer);
                 m_game = new Game(m_projectSettings);
-                m_game->SetScene(scene);
+                m_game->SetScene(m_currentScene, true);
             }
         }
         ImGui::SameLine();
@@ -259,6 +262,15 @@ void TossEditor::onUpdateInternal()
             {
                 delete m_game;  // Clean up memory
                 m_game = nullptr;
+            }
+
+            string filePath = editorPreferences.lastKnownOpenScenePath;
+
+            if (!filePath.empty()) // If a file was selected
+            {
+                auto scene = std::make_shared<Scene>(filePath);
+                scene->SetWindowFrameBuffer(m_sceneFrameBuffer);
+                OpenScene(scene);
             }
         }
         ImGui::EndMainMenuBar();
@@ -283,7 +295,7 @@ void TossEditor::onUpdateInternal()
             m_game->onGraphicsUpdate();
 
             // Get the updated texture after rendering.
-            ImTextureID gameViewTexture = (ImTextureID)m_gameViewFrameBuffer->RenderTexture->getId();
+            ImTextureID gameViewTexture = (ImTextureID)m_sceneFrameBuffer->RenderTexture->getId();
 
             // Display the rendered scene scaled to the available region.
             ImGui::Image(gameViewTexture, availSize,
@@ -310,7 +322,7 @@ void TossEditor::onUpdateInternal()
             m_currentScene->onGraphicsUpdate(m_player->getCamera());
 
             // Get the updated texture after rendering.
-            ImTextureID sceneViewTexture = (ImTextureID)m_sceneViewFrameBuffer->RenderTexture->getId();
+            ImTextureID sceneViewTexture = (ImTextureID)m_sceneFrameBuffer->RenderTexture->getId();
 
             ImGui::SetNextItemAllowOverlap();
             // Display the rendered scene scaled to the available region.
@@ -571,6 +583,11 @@ void TossEditor::onUpdateInternal()
                 ImGui::CloseCurrentPopup();
             }
 
+            if (ImGui::MenuItem("Physics Material")) {
+                openPhysicsMaterialNextFrame = true;
+                ImGui::CloseCurrentPopup();
+            }
+
             ImGui::EndPopup();
         }
 
@@ -594,7 +611,7 @@ void TossEditor::onUpdateInternal()
                 }
 
                 if (ImGui::MenuItem("Delete")) {
-                    resourceManager.DeleteResource(resource);
+                    resourceManager.DeleteResource(uniqueID);
                     if (isSelected) {
                         resourceManager.SetSelectedResource(nullptr);
                         selectedSelectable = nullptr;
@@ -657,8 +674,7 @@ void TossEditor::onUpdateInternal()
         ImGui::OpenPopup("Enter Shader ID");
         openShaderPopupNextFrame = false;
     }
-
-    // Show the popup to name the shader
+    
     if (ImGui::BeginPopupModal("Enter Shader ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::InputText("Shader ID", shaderIDBuffer, sizeof(shaderIDBuffer));
 
@@ -681,6 +697,44 @@ void TossEditor::onUpdateInternal()
                 shaderVertPath.clear();
                 shaderFragPath.clear();
                 shaderIDBuffer[0] = '\0';
+
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel")) {
+            shaderVertPath.clear();
+            shaderFragPath.clear();
+            shaderIDBuffer[0] = '\0';
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
+
+    if (openPhysicsMaterialNextFrame) {
+        ImGui::OpenPopup("Enter Physics Material ID");
+        openPhysicsMaterialNextFrame = false;
+    }
+
+    // Show the popup to name the shader
+    if (ImGui::BeginPopupModal("Enter Physics Material ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::InputText("Physics Material ID", physicsMaterialIDBuffer, sizeof(physicsMaterialIDBuffer));
+
+        if (ImGui::Button("Create")) {
+            if (strlen(physicsMaterialIDBuffer) > 0) {
+                std::string physicsMaterialID = physicsMaterialIDBuffer;
+
+                PhysicsMaterialDesc desc;
+                resourceManager.createPhysicsMaterial(desc, physicsMaterialID);
+                Debug::Log("Created physics material: " + physicsMaterialID);
+
+                // Reset state
+                physicsMaterialIDBuffer[0] = '\0';
 
                 ImGui::CloseCurrentPopup();
             }
@@ -1003,7 +1057,7 @@ void TossEditor::OpenScene(shared_ptr<Scene> _scene)
 
     // set the current scene to the new scene
     m_currentScene = std::move(_scene);
-    m_currentScene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
+    m_currentScene->SetWindowFrameBuffer(m_sceneFrameBuffer);
     editorPreferences.lastKnownOpenScenePath = m_currentScene->GetFilePath();
     m_currentScene->onCreate();
     m_currentScene->onCreateLate();

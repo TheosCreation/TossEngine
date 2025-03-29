@@ -8,6 +8,7 @@
 #include <vector>
 
 class Vector3;
+class Rigidbody;
 
 using PhysicsWorld = reactphysics3d::PhysicsWorld;
 using Ray = reactphysics3d::Ray;
@@ -31,7 +32,7 @@ struct TOSSENGINE_API RaycastCallback : public reactphysics3d::RaycastCallback
     virtual reactphysics3d::decimal notifyRaycastHit(const RaycastInfo& info) override;
 };
 
-class TOSSENGINE_API Physics
+class TOSSENGINE_API Physics : public rp3d::CollisionCallback
 {
 public:
     static Physics& GetInstance()
@@ -50,6 +51,7 @@ public:
 
     PhysicsCommon& GetPhysicsCommon() { return m_commonSettings; }
     const PhysicsCommon& GetPhysicsCommon() const { return m_commonSettings; }
+    PhysicsMaterialPtr GetDefaultPhysicsMaterial();
 
     void SetGravity(const Vector3& gravity);
     Vector3 GetGravity() const { return m_gravity; }
@@ -62,12 +64,15 @@ public:
         // Placeholder: You can extend this with ImGui drawing or render lines manually with your debug renderer
     }
 
+    void onContact(const rp3d::CollisionCallback::CallbackData& data) override;
+
 private:
     Physics() = default;
     ~Physics() = default;
 
     PhysicsCommon m_commonSettings;
     PhysicsWorld* m_world = nullptr;
+    PhysicsMaterialPtr m_defaultPhysicsMaterial = nullptr;
 
-    Vector3 m_gravity = Vector3(0.0f, -9.81f, 0.0f); //can be adjusted at runtime in editor or ingame
+    Vector3 m_gravity = Vector3(0.0f, -9.81f, 0.0f);
 };

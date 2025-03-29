@@ -99,6 +99,8 @@ void TossPlayer::onUpdateInternal()
     float deltaTime = m_currentTime - m_previousTime;
     m_previousTime = m_currentTime;
 
+    Physics::GetInstance().Update(deltaTime);
+
     // Accumulate time
     m_accumulatedTime += deltaTime;
 
@@ -109,7 +111,6 @@ void TossPlayer::onUpdateInternal()
         m_game->onFixedUpdate(fixedDeltaTime);
         m_accumulatedTime -= m_fixedTimeStep;
     }
-    Physics::GetInstance().Update(deltaTime);
     m_game->onUpdate(deltaTime);
     m_game->onLateUpdate(deltaTime);
 

@@ -6,7 +6,8 @@ using BodyType = rp3d::BodyType;
 
 class Collider;
 
-class TOSSENGINE_API Rigidbody : public Component {
+class TOSSENGINE_API Rigidbody : public Component
+{
 public:
     Rigidbody() = default;
     ~Rigidbody();
@@ -25,6 +26,7 @@ public:
     void SetUseGravity(bool useGravity);
 
     rp3d::RigidBody* GetBody();
+    Collider* GetCollider();
 
     Vector3 GetLinearVelocity() const;
     void SetLinearVelocity(const Vector3& velocity);
@@ -38,6 +40,9 @@ public:
     void SetPositionConstraints(bool lockX, bool lockY, bool lockZ);
     void SetRotationConstraints(bool lockX, bool lockY, bool lockZ);
 
+	void OnCollisionEnter(Rigidbody* collidedRb);
+	void OnCollisionExit(Rigidbody* collidedRb);
+
 private:
     rp3d::RigidBody* m_Body = nullptr;
     Collider* m_Collider = nullptr; // Reference to separate Collider component
@@ -46,6 +51,7 @@ private:
 
     std::array<bool, 3> positionAxisLocks = { false, false, false };
     std::array<bool, 3> rotationAxisLocks = { false, false, false };
+
 };
 
 REGISTER_COMPONENT(Rigidbody);

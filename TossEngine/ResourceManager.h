@@ -39,6 +39,7 @@ public:
     TextureCubeMapPtr getCubemapTexture(const std::string& uniqueId);
     TexturePtr getTexture(const std::string& uniqueId);
     MaterialPtr getMaterial(const std::string& uniqueId);
+    PhysicsMaterialPtr getPhysicsMaterial(const std::string& uniqueId);
 
     // Methods to create various resources
     ShaderPtr createShader(const ShaderDesc& desc, const std::string& uniqueID);
@@ -50,6 +51,7 @@ public:
     HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
     SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath);
     MaterialPtr createMaterial(const string& shaderId, const std::string& uniqueID);
+    PhysicsMaterialPtr createPhysicsMaterial(const PhysicsMaterialDesc& desc, const std::string& uniqueID);
 
     void deleteTexture(TexturePtr texture);
     CoroutineTask saveResourcesDescs(const std::string& filepath);
@@ -64,7 +66,9 @@ public:
     ResourcePtr GetSelectedResource();
     void RenameResource(ResourcePtr resource, const std::string& newId);
 
-    void DeleteResource(ResourcePtr resource);
+    void DeleteResource(const std::string& uniqueId);
+
+    void DeleteFromSavedData(const std::shared_ptr<Resource>& resource, const std::string& uniqueId);
 
 protected:
     bool hasLoadedResources = false;
@@ -77,6 +81,7 @@ protected:
     std::unordered_map<std::string, vector<std::string>> cubemapTextureFilePaths;
     std::unordered_map<std::string, std::string> materialDescriptions;
     std::unordered_map<std::string, MeshDesc> meshDescriptions;
+    std::unordered_map<std::string, PhysicsMaterialDesc> physicsMaterialDescriptions;
 
 private:
     ResourceManager() = default;

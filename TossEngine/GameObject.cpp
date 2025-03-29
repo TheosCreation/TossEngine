@@ -61,6 +61,7 @@ json GameObject::serialize() const
         {"type", getClassName(typeid(*this))}, // Use typeid to get the class name
         {"id", m_id},
         {"name", name},
+        {"tag", tag},
         { "transform", m_transform.serialize() },
         {"components", componentsJson}
     };
@@ -71,6 +72,10 @@ void GameObject::deserialize(const json& data)
     if (data.contains("name"))
     {
         name = data["name"];
+    }
+    if (data.contains("tag"))
+    {
+        tag = data["tag"];
     }
     if (data.contains("transform"))
     {
@@ -101,6 +106,16 @@ void GameObject::deserialize(const json& data)
 void GameObject::OnInspectorGUI()
 {
     ImGui::Text("Selected Object: %s", name.c_str());
+
+     // You can define the size of the buffer based on your needs
+    strncpy_s(tagBuffer, tag.c_str(), sizeof(tagBuffer)); // Copy the existing tag into the buffer
+    tagBuffer[sizeof(tagBuffer) - 1] = '\0';
+
+    if(ImGui::InputText("Tag", tagBuffer, sizeof(tagBuffer)))
+    {
+        tag = std::string(tagBuffer);
+    }
+
     ImGui::Separator();
     ImGui::Text("Transform:");
     ImGui::DragFloat3("Position", m_transform.localPosition.Data(), 0.1f);
@@ -248,6 +263,20 @@ void GameObject::onUpdateInternal()
 
 void GameObject::onLateUpdate(float deltaTime)
 {
+}
+
+void GameObject::CallOnCollisionEnterCallbacks(Collider* other)
+{
+    for (auto& pair : m_components) {
+        pair.second->onCollisionEnter(other);
+    }
+}
+
+void GameObject::CallOnCollisionExitCallbacks(Collider* other)
+{
+    for (auto& pair : m_components) {
+        pair.second->onCollisionExit(other);
+    }
 }
 
 Component* GameObject::addComponent(string componentType, const json& data)

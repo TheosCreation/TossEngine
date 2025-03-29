@@ -8,6 +8,9 @@ public:
     // Constructor with parameters for setting material properties
     PhysicsMaterial(const PhysicsMaterialDesc& desc, const std::string& uniqueId, ResourceManager* manager);
 
+    void OnInspectorGUI() override;
+    bool Delete(bool deleteSelf = true) override;
+
     // Getter and setter for material properties
     float getStaticFriction() const { return m_staticFriction; }
     void setStaticFriction(float friction) { m_staticFriction = friction; }
@@ -24,7 +27,7 @@ public:
 
 private:
     // Properties of the material
-    float m_staticFriction;
-    float m_dynamicFriction;
-    float m_bounciness;
+    float m_staticFriction = 1.0f;
+    float m_dynamicFriction = 1.0f;
+    float m_bounciness = 1.0f;
 };

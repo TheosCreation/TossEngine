@@ -1,13 +1,11 @@
 ﻿#include "Rigidbody.h"
 #include "GameObject.h"
 #include "Collider.h"
+#include "PhysicsMaterial.h"
 
 Rigidbody::~Rigidbody()
 {
     if (m_Body) {
-        if (m_Collider) {
-            m_Body->removeCollider(m_Collider->GetCollider());
-        }
         Physics::GetInstance().GetWorld()->destroyRigidBody(m_Body);
         m_Body = nullptr;
         m_Collider = nullptr;
@@ -107,6 +105,7 @@ void Rigidbody::onCreate()
 
     // Create rigid body
     m_Body = world->createRigidBody(bodyTransform);
+    m_Body->setUserData(this);
     //m_Body->setIsDebugEnabled(true);
 
     // Apply the default body type
@@ -121,17 +120,40 @@ void Rigidbody::onCreate()
 
 void Rigidbody::onStart()
 {
-    if (m_Collider && m_Body)
-    {
-        rp3d::CollisionShape* shape = m_Collider->GetColliderShape();
-        if (shape)
-        {
-            m_Body->addCollider(shape, rp3d::Transform::identity()); // TODO need to add offsets for colliders
-        }
+    // Ensure m_Collider and m_Body are both valid
+    if (m_Collider == nullptr) {
+        Debug::LogError("Error: Collider is nullptr!");
+        return;
+    }
+    if (m_Body == nullptr) {
+        Debug::LogError("Error: Rigidbody Body is nullptr!");
+        return;
     }
 
+    // Retrieve the collider shape
+    rp3d::CollisionShape* shape = m_Collider->GetColliderShape();
+
+    // Set up collider material and other parameters
+    bool isTrigger = m_Collider->GetTrigger();
+    PhysicsMaterialPtr material = m_Collider->GetPhysicsMaterial();
+
+    // Add the collider to the body
+    rp3d::Collider* collider = m_Body->addCollider(shape, rp3d::Transform::identity());
+
+    //collider->setIsTrigger(true);
+    // Set the material properties
+    rp3d::Material colliderMaterial = collider->getMaterial();
+    colliderMaterial.setFrictionCoefficient(material->getDynamicFriction());
+    colliderMaterial.setBounciness(material->getBounciness());
+    
+    // Apply the updated material to the collider
+    collider->setMaterial(colliderMaterial);
+    
+
+    // Ensure the body is not sleeping when the simulation starts
     m_Body->setIsSleeping(false);
 }
+
 
 void Rigidbody::onUpdate(float deltaTime)
 {
@@ -188,6 +210,11 @@ void Rigidbody::SetUseGravity(bool useGravity)
 rp3d::RigidBody* Rigidbody::GetBody()
 {
     return m_Body;
+}
+
+Collider* Rigidbody::GetCollider()
+{
+    return m_Collider;
 }
 
 void Rigidbody::AddForce(const Vector3& force)
@@ -250,4 +277,16 @@ void Rigidbody::SetRotationConstraints(bool lockX, bool lockY, bool lockZ)
     if (m_Body) {
         m_Body->setAngularLockAxisFactor(rp3d::Vector3(lockX ? 0.0f : 1.0f, lockY ? 0.0f : 1.0f, lockZ ? 0.0f : 1.0f));
     }
+}
+
+void Rigidbody::OnCollisionEnter(Rigidbody* collidedRb)
+{
+    Collider* collider = collidedRb->GetCollider();
+    m_owner->CallOnCollisionEnterCallbacks(collider);
+}
+
+void Rigidbody::OnCollisionExit(Rigidbody* collidedRb)
+{
+    Collider* collider = collidedRb->GetCollider();
+    m_owner->CallOnCollisionExitCallbacks(collider);
 }

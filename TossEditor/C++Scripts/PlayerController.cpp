@@ -2,6 +2,7 @@
 #include "AudioEngine.h"
 #include "Camera.h"
 #include "Rigidbody.h"
+#include "Collider.h"
 
 void PlayerController::onCreate()
 {
@@ -67,10 +68,11 @@ void PlayerController::onUpdate(float deltaTime)
         }
     }
 
-    if (inputManager.isKeyPressed(Key::KeySpace) && jumpTimer <= 0)
+    if (inputManager.isKeyPressed(Key::KeySpace) && jumpTimer <= 0 && m_onGround)
     {
         m_rigidBody->AddForce(Vector3(0.0f, 1.0f, 0.0f) * m_jumpForce);
         jumpTimer = m_jumpCooldown;
+        m_onGround = false;
     }
     else
     {
@@ -84,6 +86,7 @@ void PlayerController::onUpdate(float deltaTime)
 
     Vector3 moveDirection(0.0f);
 
+    // Determine the move direction based on input
     if (inputManager.isKeyDown(Key::KeyW)) moveDirection += forward;
     if (inputManager.isKeyDown(Key::KeyS)) moveDirection -= forward;
     if (inputManager.isKeyDown(Key::KeyA)) moveDirection -= right;
@@ -97,20 +100,46 @@ void PlayerController::onUpdate(float deltaTime)
         Vector3 desiredVelocity = moveDirection * m_movementSpeed;
         Vector3 velocityChange = desiredVelocity - velocity;
 
-        // Limit acceleration
-        Vector3 accelerationStep = velocityChange.Normalized() * m_acceleration * deltaTime;
+        // If on the ground, set the linear velocity directly
+        if (m_onGround)
+        {
+            // Limit acceleration
+            Vector3 accelerationStep = velocityChange.Normalized() * m_acceleration * deltaTime;
 
-        // Don't overshoot
-        if (accelerationStep.Length() > velocityChange.Length())
-            accelerationStep = velocityChange;
+            // Don't overshoot
+            if (accelerationStep.Length() > velocityChange.Length())
+                accelerationStep = velocityChange;
 
-        m_rigidBody->SetLinearVelocity(velocity + accelerationStep);
+            m_rigidBody->SetLinearVelocity(velocity + accelerationStep);
+        }
+        else
+        {
+            // Limit acceleration
+            Vector3 accelerationStep = velocityChange.Normalized() * m_airAcceleration * deltaTime;
+
+            // Don't overshoot
+            if (accelerationStep.Length() > velocityChange.Length())
+                accelerationStep = velocityChange;
+
+            // If not on the ground, apply a force for movement
+            Vector3 force = accelerationStep;
+            m_rigidBody->AddForce(force);
+        }
     }
-    else
+}
+
+void PlayerController::onCollisionEnter(Collider* other)
+{
+    if (other->getOwner()->tag == "Ground")
     {
-        // Dampen velocity when no input
-        //velocity *= 0.9f;
-        m_rigidBody->SetLinearVelocity(velocity);
+        m_onGround = true;
     }
+}
 
+void PlayerController::onCollisionExit(Collider* other)
+{
+    if (other->getOwner()->tag == "Ground")
+    {
+        m_onGround = false;
+    }
 }
