@@ -10,7 +10,7 @@ void PlayerController::onCreate()
     auto& resourceManager = ResourceManager::GetInstance();
     fireSound = resourceManager.createSound(SoundDesc(), "Fire", "Resources/Audio/fire.ogg");
     auto& inputManager = InputManager::GetInstance();
-    inputManager.enablePlayMode(m_playMode);
+    inputManager.enablePlayMode(true);
 }
 
 void PlayerController::onStart()
@@ -24,17 +24,17 @@ void PlayerController::onUpdate(float deltaTime)
     auto& inputManager = InputManager::GetInstance();
     auto& audioEngine = AudioEngine::GetInstance();
     auto& tossEngine = TossEngine::GetInstance();
+    if (tossEngine.IsDebugMode() && inputManager.isKeyPressed(KeyF1))
+    {
+        inputManager.togglePlayMode();
+    }
+
+    if (!inputManager.isPlayModeEnabled()) return;
+
     if (inputManager.isKeyPressed(Key::Key1))
     {
         audioEngine.playSound(fireSound);
     }
-    if (tossEngine.IsDebugMode() && inputManager.isKeyPressed(KeyF1))
-    {
-        m_playMode = !m_playMode;
-        inputManager.enablePlayMode(m_playMode);
-    }
-
-    if (!m_playMode) return;
 
     float sensitivity = 0.1f;  // Sensitivity factor for mouse movement
     m_yaw -= inputManager.getMouseXAxis() * sensitivity;

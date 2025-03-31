@@ -4,6 +4,7 @@
 #include "TossEditor.h"
 #include "TossEngine.h"
 #include "Window.h"
+#include <imgui_internal.h>
 
 EditorPlayer::EditorPlayer(TossEditor* editor)
 {
@@ -47,15 +48,17 @@ void EditorPlayer::Update(float deltaTime)
         Editor->DeleteSelected();
     }
 
+    if (!inputManager.isGameModeEnabled())
+        return;
+
+
     if (!inputManager.isMouseDown(MouseButtonRight))
     {
-        m_playMode = false;
-        inputManager.enablePlayMode(m_playMode);
+        inputManager.enablePlayMode(false, false);
         return;
     }
     
-    m_playMode = true;
-    inputManager.enablePlayMode(m_playMode);
+    inputManager.enablePlayMode(true, false);
 
     float sensitivity = 0.1f;  // Sensitivity factor for mouse movement
     m_yaw -= inputManager.getMouseXAxis() * sensitivity;
@@ -72,7 +75,7 @@ void EditorPlayer::Update(float deltaTime)
     glm::quat pitchRotation = glm::angleAxis(glm::radians(m_pitch), glm::vec3(1.0f, 0.0f, 0.0f));
 
     // Combine yaw and pitch rotations and apply to player transform
-    m_transform.rotation = yawRotation * pitchRotation;
+    m_transform.localRotation = yawRotation * pitchRotation;
 
     Vector2 mouseScroll = inputManager.getMouseScroll();
     if (inputManager.isKeyDown(Key::KeyLeftControl))
@@ -107,19 +110,22 @@ void EditorPlayer::Update(float deltaTime)
 
     //since the editor players tranform doesnt get updated to use local space we can manipulate position directly
     if (inputManager.isKeyDown(Key::KeyW))
-        m_transform.position += forward * adjustedMoveSpeed * deltaTime;
+        m_transform.localPosition += forward * adjustedMoveSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyS))
-        m_transform.position -= forward * adjustedMoveSpeed * deltaTime;
+        m_transform.localPosition -= forward * adjustedMoveSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyA))
-        m_transform.position -= right * adjustedMoveSpeed * deltaTime;
+        m_transform.localPosition -= right * adjustedMoveSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyD))
-        m_transform.position += right * adjustedMoveSpeed * deltaTime;
+        m_transform.localPosition += right * adjustedMoveSpeed * deltaTime;
 
     // Handle input for player rotation
     if (inputManager.isKeyDown(Key::KeyQ))
-        m_transform.position -= up * m_movementSpeed * deltaTime;
+        m_transform.localPosition -= up * m_movementSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyE))
-        m_transform.position += up * m_movementSpeed * deltaTime;
+        m_transform.localPosition += up * m_movementSpeed * deltaTime;
+
+
+    m_transform.UpdateWorldTransform();
 }
 
 Camera* EditorPlayer::getCamera()

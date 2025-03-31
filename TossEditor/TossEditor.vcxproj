@@ -207,6 +207,7 @@
     <None Include="Resources\Shaders\Fragment\OldFilmRenderPass.frag" />
     <None Include="Resources\Shaders\Fragment\OutlineShader.frag" />
     <None Include="Resources\Shaders\Fragment\ParticleSystem.frag" />
+    <None Include="Resources\Shaders\Fragment\PhysicsShader.frag" />
     <None Include="Resources\Shaders\Fragment\QuadBlendingShader.frag" />
     <None Include="Resources\Shaders\Fragment\QuadShader.frag" />
     <None Include="Resources\Shaders\Fragment\RainFullRenderPass.frag" />
@@ -223,6 +224,7 @@
     <None Include="Resources\Shaders\Vertex\MeshShader.vert" />
     <None Include="Resources\Shaders\Vertex\OutlineShader.vert" />
     <None Include="Resources\Shaders\Vertex\ParticleSystem.vert" />
+    <None Include="Resources\Shaders\Vertex\PhysicsShader.vert" />
     <None Include="Resources\Shaders\Vertex\QuadShader.vert" />
     <None Include="Resources\Shaders\Vertex\ScreenQuad.vert" />
     <None Include="Resources\Shaders\Vertex\ShadowShader.vert" />

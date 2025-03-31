@@ -2,8 +2,8 @@
 #include "GraphicsEngine.h"
 #include "VertexArrayObject.h" 
 #include "Mesh.h"
-#include "Game.h"
 #include "Material.h"
+#include "TextureCubeMap.h"
 
 json Skybox::serialize() const
 {

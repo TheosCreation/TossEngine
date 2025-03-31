@@ -44,6 +44,7 @@ public:
      * @return A shared pointer to the created Vertex Array Object.
      */
     VertexArrayObjectPtr createVertexArrayObject(const VertexBufferDesc& vbDesc, const IndexBufferDesc& ibDesc);
+    void updateVertexArrayObject(const VertexArrayObjectPtr& vao, const void* vertexData, uint dataSize);
 
     /**
      * @brief Clears the screen with the specified color.
@@ -148,6 +149,8 @@ public:
      * @param instanceCount The number of instances to draw.
      */
     void drawIndexedTrianglesInstanced(const TriangleType& triangleType, uint indicesCount, int instanceCount);
+
+    void drawLines(const LineType& lineType, uint vertexCount, uint offset);
 
 private:
     bool isInitilized = false;

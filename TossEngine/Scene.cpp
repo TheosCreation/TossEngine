@@ -27,6 +27,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Camera.h"
 #include "Framebuffer.h"
 #include "Physics.h"
+#include "LightManager.h"
 
 Scene::Scene(const string& filePath)
 {
@@ -402,7 +403,6 @@ void Scene::onCreateLate()
     }
 }
 
-
 void Scene::onUpdate(float deltaTime)
 {
     if(deltaTime <= 0.0f) return;
@@ -427,7 +427,7 @@ void Scene::onLateUpdate(float deltaTime)
     m_gameObjectManager->onLateUpdate(deltaTime);
 }
 
-void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
+void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writeToFrameBuffer)
 {
     auto& tossEngine = TossEngine::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
@@ -508,6 +508,8 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         m_gameObjectManager->onTransparencyPass(uniformData);
         m_gameObjectManager->onSkyboxPass(uniformData);
 
+        Physics::GetInstance().DrawDebug(uniformData);
+
         m_postProcessingFramebuffer->UnBind();
     }
     
@@ -548,15 +550,17 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
         m_gameObjectManager->onTransparencyPass(uniformData);
         m_gameObjectManager->onSkyboxPass(uniformData);
 
+        Physics::GetInstance().DrawDebug(uniformData);
+
         m_postProcessingFramebuffer->UnBind();
     }
 
 
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the scene
 
-    if (m_windowFrameBuffer != nullptr)
+    if (writeToFrameBuffer != nullptr)
     {
-        m_windowFrameBuffer->Bind();
+        writeToFrameBuffer->Bind();
     }
 
     // Post processing 
@@ -564,9 +568,9 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride)
     m_SSRQ->SetMaterial(m_postProcessSSRQMaterial);
     m_SSRQ->Render(uniformData, RenderingPath::Forward);
 
-    if (m_windowFrameBuffer != nullptr)
+    if (writeToFrameBuffer != nullptr)
     {
-        m_windowFrameBuffer->UnBind();
+        writeToFrameBuffer->UnBind();
     }
 
     // ui canvas of some sort with the ui camera
@@ -583,11 +587,6 @@ void Scene::onResize(Vector2 size)
     }
     // resize the post processing frame buffer 
     m_postProcessingFramebuffer->onResize(size);
-
-    if (m_windowFrameBuffer != nullptr)
-    {
-        m_windowFrameBuffer->onResize(size);
-    }
 }
 
 LightManager* Scene::getLightManager()
@@ -614,23 +613,4 @@ void Scene::Save()
 string Scene::GetFilePath()
 {
     return m_filePath;
-}
-
-void Scene::SetWindowFrameBuffer(FramebufferPtr windowFrameBuffer)
-{
-    m_windowFrameBuffer = windowFrameBuffer;
-}
-
-Vector2 Scene::getFrameBufferSize()
-{
-    return Vector2(m_windowFrameBuffer->RenderTexture->getWidth(), m_windowFrameBuffer->RenderTexture->getHeight());
-}
-
-ImTextureID Scene::getRenderTexture()
-{
-    if (m_windowFrameBuffer->RenderTexture)
-    {
-        return (ImTextureID)m_windowFrameBuffer->RenderTexture->getId();
-    }
-    return ImTextureID();
 }

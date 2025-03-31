@@ -296,6 +296,11 @@ enum class TriangleType
     TriangleList = 0,   // Triangle list
     TriangleStrip,      // Triangle strip
     Points              // Points
+}; 
+
+enum class LineType {
+    Lines,       // Corresponds to GL_LINES
+    LineStrip    // Corresponds to GL_LINE_STRIP
 };
 
 // Enum representing cull types

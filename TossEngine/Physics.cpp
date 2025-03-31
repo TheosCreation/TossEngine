@@ -3,6 +3,8 @@
 #include "ResourceManager.h"
 #include "PhysicsMaterial.h"
 #include "Rigidbody.h"
+#include "GraphicsEngine.h"
+#include "Shader.h"
 
 reactphysics3d::decimal RaycastCallback::notifyRaycastHit(const RaycastInfo& info)
 {
@@ -54,6 +56,20 @@ PhysicsMaterialPtr Physics::GetDefaultPhysicsMaterial()
     return m_defaultPhysicsMaterial;
 }
 
+void Physics::SetDebug(bool debug)
+{
+    m_world->setIsDebugRenderingEnabled(debug);
+
+    // Get a reference to the debug renderer
+    reactphysics3d::DebugRenderer& debugRenderer = m_world->getDebugRenderer();
+
+    // Select the contact points and contact normals to be displayed
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_POINT, debug);
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_NORMAL, debug);
+
+    m_physicsDebugShader = ResourceManager::GetInstance().getShader("PhysicsDebug");
+}
+
 void Physics::SetGravity(const Vector3& gravity)
 {
     m_gravity = gravity;
@@ -62,6 +78,61 @@ void Physics::SetGravity(const Vector3& gravity)
     {
         m_world->setGravity(static_cast<rp3d::Vector3>(m_gravity));
     }
+}
+
+
+void Physics::DrawDebug(UniformData data)
+{// Retrieve the debug lines from the physics world.
+    reactphysics3d::DebugRenderer& debugRenderer = m_world->getDebugRenderer();
+    const auto& lines = debugRenderer.getLines();
+    
+
+    // Check if there are any lines.
+    if (debugRenderer.getNbLines() == 0)
+        return;
+
+    // Pack the debug lines' vertex data.
+    // Assume each DebugLine contains two points (point1 and point2),
+    // and each point is a Vector3 (x, y, z).
+    std::vector<float> vertexData;
+    vertexData.reserve(debugRenderer.getNbLines() * 6); // 2 vertices per line * 3 floats per vertex
+
+    for (unsigned int i = 0; i < debugRenderer.getNbLines(); i++) {
+        const auto& line = lines[i];
+        // First vertex of the line.
+        vertexData.push_back(line.point1.x);
+        vertexData.push_back(line.point1.y);
+        vertexData.push_back(line.point1.z);
+        // Second vertex of the line.
+        vertexData.push_back(line.point2.x);
+        vertexData.push_back(line.point2.y);
+        vertexData.push_back(line.point2.z);
+    }
+
+    // Set up the vertex buffer descriptor.
+    // Adjust the structure as required by your engine.
+    VertexBufferDesc vertexBuffer;
+    vertexBuffer.verticesList = vertexData.data();                           // Pointer to vertex data.
+    vertexBuffer.vertexSize = 3 * sizeof(float);                               // Each vertex has 3 floats (x, y, z).
+    vertexBuffer.listSize = static_cast<uint>(vertexData.size() * sizeof(float)); // Total size in bytes.
+
+    // Set up the vertex attribute for positions.
+    VertexAttribute positionAttribute;
+    positionAttribute.numElements = 3; // x, y, z.
+    vertexBuffer.attributesList = &positionAttribute;
+    vertexBuffer.attributesListSize = 1; // Only one attribute.
+    GraphicsEngine::GetInstance().setShader(m_physicsDebugShader);
+    m_physicsDebugShader->setMat4("VPMatrix", data.viewMatrix);
+    Debug::Log("Drawing");
+    // Create (or update) the VAO using your graphics engine.
+    VertexArrayObjectPtr vertexArray = GraphicsEngine::GetInstance().createVertexArrayObject(vertexBuffer);
+    GraphicsEngine::GetInstance().setVertexArrayObject(vertexArray);
+
+    // Finally, draw the lines.
+    // Since each line consists of 2 vertices, calculate the total vertex count:
+    uint vertexCount = static_cast<uint>(debugRenderer.getNbLines() * 2);
+    GraphicsEngine::GetInstance().drawLines(LineType::Lines, vertexCount, 0); // drawLines using GL_LINES internally.
+
 }
 
 RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, float maxDistance)

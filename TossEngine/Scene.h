@@ -15,7 +15,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Resizable.h"
 #include <imgui.h>
 
-class Game;
 class ComponentRegistry;
 class GameObjectManager;
 class Image;
@@ -73,7 +72,7 @@ public:
      * @brief Updates the graphics rendering mode.
      * Default rendering mode is deferred rendering.
      */
-    virtual void onGraphicsUpdate(Camera* cameraToRenderOverride = nullptr);
+    virtual void onGraphicsUpdate(Camera* cameraToRenderOverride = nullptr, FramebufferPtr writeToFrameBuffer = nullptr);
 
     /**
      * @brief Called every frame to update the game logic.
@@ -118,11 +117,6 @@ public:
     void Save();
     string GetFilePath();
 
-    void SetWindowFrameBuffer(FramebufferPtr windowFrameBuffer); // used to override the output window instead of using the default framebuffer
-
-    Vector2 getFrameBufferSize();
-    ImTextureID getRenderTexture();
-
 protected:
     bool m_initilized = false;
     string m_filePath = "";
@@ -143,7 +137,6 @@ protected:
 
     unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the GameObject system managing game entities. */
     FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
-    FramebufferPtr m_windowFrameBuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
     unique_ptr<Image> m_SSRQ;
 
     unique_ptr<LightManager> m_lightManager = nullptr;

@@ -87,6 +87,9 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(m_windowPtr, true);
     ImGui_ImplOpenGL3_Init("#version 460");

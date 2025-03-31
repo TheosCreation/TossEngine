@@ -3,7 +3,6 @@
 #include "EditorPreferences.h"
 #include "TossEngine.h"
 
-class Game;
 class Window;
 class Scene;
 class EditorPlayer;
@@ -71,7 +70,7 @@ private:
 	ProjectSettingsPtr m_projectSettings = nullptr;
 	TossPlayerSettingsPtr m_playerSettings = nullptr;
 	shared_ptr<Scene> m_currentScene = nullptr;
-	Game* m_game = nullptr;
+	bool m_gameRunning = false;
     ISelectable* selectedSelectable = nullptr;
     GameObject* renamingGameObject = nullptr;
     char renameBuffer[256] = "";
@@ -91,7 +90,7 @@ private:
 
     unique_ptr<EditorPlayer> m_player = nullptr;
     FramebufferPtr m_sceneFrameBuffer = nullptr;
-    //FramebufferPtr m_gameViewFrameBuffer = nullptr;
+    FramebufferPtr m_gameViewFrameBuffer = nullptr;
 
     float m_currentTime = 0.0f;
     float m_previousTime = 0.0f;

@@ -53,16 +53,14 @@ public:
     const PhysicsCommon& GetPhysicsCommon() const { return m_commonSettings; }
     PhysicsMaterialPtr GetDefaultPhysicsMaterial();
 
+    void SetDebug(bool debug);
     void SetGravity(const Vector3& gravity);
     Vector3 GetGravity() const { return m_gravity; }
 
 
     RaycastHit Raycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f);
 
-    void DrawDebug()
-    {
-        // Placeholder: You can extend this with ImGui drawing or render lines manually with your debug renderer
-    }
+    void DrawDebug(UniformData data);
 
     void onContact(const rp3d::CollisionCallback::CallbackData& data) override;
 
@@ -73,6 +71,8 @@ private:
     PhysicsCommon m_commonSettings;
     PhysicsWorld* m_world = nullptr;
     PhysicsMaterialPtr m_defaultPhysicsMaterial = nullptr;
+    uint vertexCount = 0;
+    ShaderPtr m_physicsDebugShader = nullptr;
 
     Vector3 m_gravity = Vector3(0.0f, -9.81f, 0.0f);
 };

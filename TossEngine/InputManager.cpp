@@ -113,9 +113,13 @@ void InputManager::resetMouseScroll()
 	scrollY = 0.0;
 }
 
-void InputManager::enablePlayMode(bool enable)
+void InputManager::enablePlayMode(bool enable, bool alsoChangeGameplayMode)
 {
 	m_playEnable = enable;
+    if (alsoChangeGameplayMode)
+    {
+        m_gameMode = enable;
+    }
 
 	if (enable) {
 		glfwSetInputMode(WindowPtr, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -124,6 +128,21 @@ void InputManager::enablePlayMode(bool enable)
 	else {
 		glfwSetInputMode(WindowPtr, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
+}
+
+void InputManager::togglePlayMode(bool alsoChangeGameplayMode)
+{
+    enablePlayMode(!m_playEnable, alsoChangeGameplayMode);
+}
+
+bool InputManager::isPlayModeEnabled() const
+{
+    return m_playEnable;
+}
+
+bool InputManager::isGameModeEnabled() const
+{
+    return m_gameMode;
 }
 
 void InputManager::setScreenArea(const Vector2& area)
@@ -205,15 +224,15 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
     {
         ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 
-        ImGuiWindow* hoveredWindow = ImGui::GetCurrentContext()->HoveredWindow;
-        std::string name = hoveredWindow ? hoveredWindow->Name : "";
+       // ImGuiWindow* hoveredWindow = ImGui::GetCurrentContext()->HoveredWindow;
+        //std::string name = hoveredWindow ? hoveredWindow->Name : "";
 
         // Allow input for Scene window or if interacting with gizmo
-        if (name != "Scene" && name != "Game" && !ImGuizmo::IsOver() && !ImGuizmo::IsUsing())
-        {
-            currentMouseStates[translatedButton] = false;
-            return;
-        }
+        //if (name != "Scene" && name != "Game" && !ImGuizmo::IsOver() && !ImGuizmo::IsUsing())
+        //{
+        //    currentMouseStates[translatedButton] = false;
+        //    return;
+        //}
     }
 
 	if (action == GLFW_PRESS && !currentMouseStates[translatedButton]) {

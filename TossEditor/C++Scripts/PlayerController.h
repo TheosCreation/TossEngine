@@ -36,7 +36,6 @@ private:
     float m_fov = 90.0f; // Fov for the camera
     float m_maxFov = 120.0f; // Maximum fov for the camera
     float m_zoomSpeed = 0.5f; // Speed of zooming
-    bool m_playMode = true; // Flag for locking the cursor
     bool m_wireframeMode = false; // Flag for wireframe mode
     bool m_onGround = false;
 

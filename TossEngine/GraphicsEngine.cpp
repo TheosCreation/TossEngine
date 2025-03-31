@@ -51,6 +51,23 @@ VertexArrayObjectPtr GraphicsEngine::createVertexArrayObject(const VertexBufferD
     return std::make_shared<VertexArrayObject>(vbDesc, ibDesc);
 }
 
+void GraphicsEngine::updateVertexArrayObject(const VertexArrayObjectPtr& vao, const void* vertexData, uint dataSize)
+{
+    // Bind the VAO (assumes your VAO encapsulates its VBO(s))
+    glBindVertexArray(vao->getId());
+
+    // Bind the vertex buffer object associated with the VAO.
+    // This assumes you have a way to retrieve the VBO handle from your VAO abstraction.
+    glBindBuffer(GL_ARRAY_BUFFER, vao->getId());
+
+    // Update the buffer data. We're assuming the buffer has been allocated with enough space.
+    glBufferSubData(GL_ARRAY_BUFFER, 0, dataSize, vertexData);
+
+    // Unbind the buffer and VAO for cleanliness.
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
 void GraphicsEngine::clear(const glm::vec4& color, bool clearDepth, bool clearStencil)
 {
     glClearColor(color.x, color.y, color.z, color.w);
@@ -74,9 +91,6 @@ void GraphicsEngine::clear(const glm::vec4& color, bool clearDepth, bool clearSt
 
 void GraphicsEngine::createImGuiFrame()
 {
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame(); 
@@ -336,3 +350,21 @@ void GraphicsEngine::drawIndexedTrianglesInstanced(const TriangleType& triangleT
     }
     glDrawElementsInstanced(glTriType, indicesCount, GL_UNSIGNED_INT, nullptr, instanceCount);
 }
+
+void GraphicsEngine::drawLines(const LineType& lineType, uint vertexCount, uint offset)
+{
+    GLenum glLineType = GL_LINES; // Default to GL_LINES
+    switch (lineType)
+    {
+    case LineType::Lines:
+        glLineType = GL_LINES;
+        break;
+    case LineType::LineStrip:
+        glLineType = GL_LINE_STRIP;
+        break;
+    default:
+        break;
+    }
+    glDrawArrays(glLineType, offset, vertexCount);
+}
+

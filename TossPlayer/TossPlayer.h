@@ -1,7 +1,6 @@
 #pragma once
 #include "Resizable.h"
 
-class Game;
 class Scene;
 
 class TossPlayer : public Resizable
@@ -30,10 +29,11 @@ protected:
      * @brief Called when the player is quitting.
      */
     void onQuit();
+    void SetScene(ScenePtr _scene, bool skipCreate);
 
 private:
     TossPlayerSettingsPtr m_playerSettings = nullptr;
-	Game* m_game = nullptr;
+	ScenePtr m_currentScene = nullptr;
     bool abort = false;
 
     float m_currentTime = 0.0f;

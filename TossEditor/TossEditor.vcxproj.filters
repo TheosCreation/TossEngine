@@ -239,5 +239,11 @@
     <None Include="Resources\Shaders\Vertex\TerrainShader.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Resources\Shaders\Vertex\PhysicsShader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\Fragment\PhysicsShader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

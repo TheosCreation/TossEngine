@@ -1,11 +1,11 @@
 #include "TossPlayer.h"
 #include "TossEngine.h"
 #include "Window.h"
-#include "Game.h"
 #include "TossPlayerSettings.h"
 #include "GraphicsEngine.h"
 #include "ISelectable.h"
 #include <imgui.h>
+#include <glfw3.h>
 
 TossPlayer::TossPlayer()
 {
@@ -22,6 +22,8 @@ TossPlayer::TossPlayer()
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, windowSize, "TossPlayer");
     tossEngine.LoadScripts();
+
+    initRandomSeed();
 
     Physics::GetInstance().SetGravity(m_playerSettings->gravity);
 
@@ -80,8 +82,7 @@ void TossPlayer::run()
 void TossPlayer::onCreate()
 {
     auto scene = std::make_shared<Scene>(m_playerSettings->firstSceneToOpen);
-    m_game = new Game(m_playerSettings);
-    m_game->SetScene(scene);
+    SetScene(scene, false);
 }
 
 void TossPlayer::onCreateLate()
@@ -91,46 +92,68 @@ void TossPlayer::onCreateLate()
 
 void TossPlayer::onUpdateInternal()
 {
-    TossEngine& tossEngine = TossEngine::GetInstance();
-    GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
+    auto& tossEngine = TossEngine::GetInstance();
 
     // delta time
     m_currentTime = tossEngine.GetTime();
     float deltaTime = m_currentTime - m_previousTime;
     m_previousTime = m_currentTime;
 
-    Physics::GetInstance().Update(deltaTime);
-
     // Accumulate time
     m_accumulatedTime += deltaTime;
 
+    // Perform updates
     while (m_accumulatedTime >= m_fixedTimeStep)
     {
         float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
         m_previousFixedUpdateTime = m_currentTime;
-        m_game->onFixedUpdate(fixedDeltaTime);
+        m_currentScene->onFixedUpdate(fixedDeltaTime);
         m_accumulatedTime -= m_fixedTimeStep;
     }
-    m_game->onUpdate(deltaTime);
-    m_game->onLateUpdate(deltaTime);
 
-    graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
-    m_game->onGraphicsUpdate();
-    
+    m_currentScene->onUpdate(deltaTime);
+    m_currentScene->onLateUpdate(deltaTime);
+
+    double RenderTime_Begin = (double)glfwGetTime();
+
+    m_currentScene->onGraphicsUpdate();
+
+    double RenderTime_End = (double)glfwGetTime();
+
     // Render to window
     tossEngine.GetWindow()->present();
 }
 
 void TossPlayer::onQuit()
 {
-    m_game->getScene()->onQuit();
+    m_currentScene->onQuit();
+}
+
+void TossPlayer::SetScene(ScenePtr _scene, bool skipCreate)
+{
+    // if there is a current scene, call onQuit
+    if (m_currentScene != nullptr)
+    {
+        m_currentScene->onQuit();
+    }
+
+    // set the current scene to the new scene
+    m_currentScene = _scene;
+    if (!skipCreate)
+    {
+        m_currentScene->onCreate();
+        m_currentScene->onCreateLate();
+    }
+
+    m_currentScene->onStart();
+    m_currentScene->onLateStart();
 }
 
 void TossPlayer::onResize(Vector2 size)
 {
     Resizable::onResize(size);
 
-    m_game->onResize(size);
+    m_currentScene->onResize(size);
 
     GeometryBuffer::GetInstance().Resize(size);
 }

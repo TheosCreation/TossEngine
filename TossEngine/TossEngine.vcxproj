@@ -267,7 +267,6 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Co
     <ClCompile Include="TextureCubeMap.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectManager.cpp" />
-    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LightManager.cpp" />
@@ -345,7 +344,6 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Co
     <ClInclude Include="TextureCubeMap.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectManager.h" />
-    <ClInclude Include="Game.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LightManager.h" />

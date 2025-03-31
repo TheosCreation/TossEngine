@@ -1,6 +1,5 @@
 #include "TossEditor.h"
 #include "Window.h"
-#include "Game.h"
 #include "ProjectSettings.h"
 #include "TossPlayerSettings.h"
 #include "GraphicsEngine.h"
@@ -11,6 +10,7 @@
 #include "Camera.h"
 #include <imgui.h>
 #include <ImGuizmo.h>
+#include <glfw3.h>
 
 TossEditor::TossEditor()
 {
@@ -29,6 +29,7 @@ TossEditor::TossEditor()
     m_projectSettings->LoadFromFile("ProjectSettings.json");
 
     Physics::GetInstance().SetGravity(m_projectSettings->gravity);
+    Physics::GetInstance().SetDebug(true);
 
     m_playerSettings = std::make_unique<TossPlayerSettings>();
     m_playerSettings->LoadFromFile("PlayerSettings.json");
@@ -51,6 +52,7 @@ TossEditor::TossEditor()
 
 
     m_sceneFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+    m_gameViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
 }
 
 TossEditor::~TossEditor()
@@ -104,7 +106,6 @@ void TossEditor::onCreate()
     if (!filePath.empty()) // If a file was selected
     {
         auto scene = std::make_shared<Scene>(filePath);
-        scene->SetWindowFrameBuffer(m_sceneFrameBuffer);
         OpenScene(scene);
     }
 
@@ -156,38 +157,28 @@ void TossEditor::onUpdateInternal()
     if (m_currentScene)
     {
         InputManager& inputManager = InputManager::GetInstance();
-        if (m_game)
+        inputManager.onUpdate();
+        if (m_gameRunning)
         {
             Physics::GetInstance().Update(deltaTime);
             while (m_accumulatedTime >= m_fixedTimeStep)
             {
                 float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
                 m_previousFixedUpdateTime = m_currentTime;
-                m_game->onFixedUpdate(fixedDeltaTime);
+                m_currentScene->onFixedUpdate(fixedDeltaTime);
                 m_accumulatedTime -= m_fixedTimeStep;
             }
         }
-        else
-        {
-            inputManager.onUpdate();
-        }
-
         // player update
         m_player->Update(deltaTime);
-        if (canUpdateInternal)
-        {
-            m_currentScene->onUpdateInternal();
-        }
+        m_currentScene->onUpdateInternal();
 
-        if (m_game)
+        if (m_gameRunning)
         {
-            m_game->onUpdate(deltaTime);
-            m_game->onLateUpdate(deltaTime);
+            m_currentScene->onUpdate(deltaTime);
+            m_currentScene->onLateUpdate(deltaTime);
         }
-        else
-        {
-            inputManager.onLateUpdate();
-        }
+        inputManager.onLateUpdate();
     }
 
 
@@ -210,7 +201,7 @@ void TossEditor::onUpdateInternal()
     ImGui::SetNextWindowViewport(viewport->ID);
    
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground;
    
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -221,10 +212,11 @@ void TossEditor::onUpdateInternal()
     
     ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
     const ImGuiWindowClass* window_class = nullptr;
-    
+
     ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
     ImGui::End();
+
 
     if (ImGui::BeginMainMenuBar())
     {
@@ -249,32 +241,40 @@ void TossEditor::onUpdateInternal()
         ImGui::SameLine(0, 200);
         if (ImGui::Button("Play"))
         {
-            if (!m_game && m_currentScene)
+            if (!m_gameRunning)
             {
-                m_game = new Game(m_projectSettings);
-                m_game->SetScene(m_currentScene, true);
+                Save();
+
+                if (m_currentScene)
+                {
+                    m_gameRunning = true;
+                    m_currentScene->onStart();
+                    m_currentScene->onLateStart();
+                }
             }
         }
         ImGui::SameLine();
         if (ImGui::Button("Stop"))
         {
-            if (m_game)
+            //clean up
+            if (m_gameRunning)
             {
-                delete m_game;  // Clean up memory
-                m_game = nullptr;
-            }
+                m_gameRunning = false;
 
-            string filePath = editorPreferences.lastKnownOpenScenePath;
+                string filePath = editorPreferences.lastKnownOpenScenePath;
 
-            if (!filePath.empty()) // If a file was selected
-            {
-                auto scene = std::make_shared<Scene>(filePath);
-                scene->SetWindowFrameBuffer(m_sceneFrameBuffer);
-                OpenScene(scene);
+                if (!filePath.empty()) // If a file was selected
+                {
+                    auto scene = std::make_shared<Scene>(filePath);
+                    OpenScene(scene);
+                }
+                selectedSelectable = nullptr;
             }
         }
         ImGui::EndMainMenuBar();
     }
+
+    Debug::DrawConsole();
 
     ImGui::Begin("Game", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     {
@@ -283,26 +283,21 @@ void TossEditor::onUpdateInternal()
 
         // Convert to your Vector2 type (assuming Vector2 takes width and height).
         Vector2 newSize(availSize.x, availSize.y);
-        if (m_game != nullptr)
-        {
-            // Resize the scene's framebuffer to match the current window size.
-            if (m_game)
-            {
-                m_game->onResize(newSize);
-            }
+        // Resize the scene's framebuffer to match the current window size.
+        m_currentScene->onResize(newSize);
 
-            // Now update the scene rendering with the current camera.
-            m_game->onGraphicsUpdate();
+        m_gameViewFrameBuffer->onResize(newSize);
+        // Now update the scene rendering with the current camera.
+        m_currentScene->onGraphicsUpdate(nullptr, m_gameViewFrameBuffer);
 
-            // Get the updated texture after rendering.
-            ImTextureID gameViewTexture = (ImTextureID)m_sceneFrameBuffer->RenderTexture->getId();
+        // Get the updated texture after rendering.
+        ImTextureID gameViewTexture = (ImTextureID)m_gameViewFrameBuffer->RenderTexture->getId();
 
-            // Display the rendered scene scaled to the available region.
-            ImGui::Image(gameViewTexture, availSize,
-                ImVec2{ 0.f, 1.f },  // UV0
-                ImVec2{ 1.f, 0.f }   // UV1 (flipped vertically if needed)
-            );
-        }
+        // Display the rendered scene scaled to the available region.
+        ImGui::Image(gameViewTexture, availSize,
+            ImVec2{ 0.f, 1.f },  // UV0
+            ImVec2{ 1.f, 0.f }   // UV1 (flipped vertically if needed)
+        );
     }
     ImGui::End();
     
@@ -314,12 +309,14 @@ void TossEditor::onUpdateInternal()
         if (m_currentScene)
         {
             Vector2 newSize(availSize.x, availSize.y);
+
             // Resize the scene's framebuffer to match the current window size.
             m_player->getCamera()->setScreenArea(newSize);
             m_currentScene->onResize(newSize);
+            m_sceneFrameBuffer->onResize(newSize);
 
             // Now update the scene rendering with the current camera.
-            m_currentScene->onGraphicsUpdate(m_player->getCamera());
+            m_currentScene->onGraphicsUpdate(m_player->getCamera(), m_sceneFrameBuffer);
 
             // Get the updated texture after rendering.
             ImTextureID sceneViewTexture = (ImTextureID)m_sceneFrameBuffer->RenderTexture->getId();
@@ -787,15 +784,17 @@ void TossEditor::onUpdateInternal()
         ImGui::EndPopup();
     }
 
-    Debug::DrawConsole();
-
     graphicsEngine.renderImGuiFrame();
     
     
     double RenderTime_End = (double)glfwGetTime();
-    
+
     // Render to window
     tossEngine.GetWindow()->present();
+
+    ImGui::UpdatePlatformWindows();
+    ImGui::RenderPlatformWindowsDefault();
+
 }
 
 void TossEditor::onLateUpdateInternal()
@@ -1000,7 +999,6 @@ void TossEditor::PerformSafeDllReload()
 void TossEditor::onResize(Vector2 size)
 {
     Resizable::onResize(size);
-
     editorPreferences.windowSize = size;
 }
 
@@ -1057,7 +1055,6 @@ void TossEditor::OpenScene(shared_ptr<Scene> _scene)
 
     // set the current scene to the new scene
     m_currentScene = std::move(_scene);
-    m_currentScene->SetWindowFrameBuffer(m_sceneFrameBuffer);
     editorPreferences.lastKnownOpenScenePath = m_currentScene->GetFilePath();
     m_currentScene->onCreate();
     m_currentScene->onCreateLate();

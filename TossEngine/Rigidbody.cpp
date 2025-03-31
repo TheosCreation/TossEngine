@@ -106,7 +106,7 @@ void Rigidbody::onCreate()
     // Create rigid body
     m_Body = world->createRigidBody(bodyTransform);
     m_Body->setUserData(this);
-    //m_Body->setIsDebugEnabled(true);
+    m_Body->setIsDebugEnabled(true);
 
     // Apply the default body type
     SetBodyType(m_BodyType);

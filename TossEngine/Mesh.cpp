@@ -17,7 +17,6 @@ Mail : theo.morris@mds.ac.nz
 
 #include <filesystem>
 #include "VertexMesh.h"
-#include "Game.h"
 #include "GraphicsEngine.h"
 
 Mesh::Mesh(const MeshDesc& desc, const string& uniqueId, ResourceManager* manager) : Resource(desc.filePath, uniqueId, manager)

@@ -105,7 +105,11 @@ public:
      * @brief Enables or disables play mode, which hides the cursor and locks it at the center of the screen.
      * @param enable True to enable play mode, false to disable.
      */
-    void enablePlayMode(bool enable);
+    void enablePlayMode(bool enable, bool alsoChangeGameplayMode = true);
+    void togglePlayMode(bool alsoChangeGameplayMode = true);
+
+    bool isPlayModeEnabled() const;
+    bool isGameModeEnabled() const;
 
 
     /**
@@ -162,6 +166,7 @@ private:
     GLFWwindow* WindowPtr = nullptr; // Pointer to the GLFW window
 
     bool m_playEnable = false; // Indicates whether play mode is enabled
+    bool m_gameMode = false;
     Vector2 m_oldMousePos{}; // Previous mouse position
     Vector2 m_screenArea; // Screen area for cursor locking
     Vector2 m_deltaMouse{}; // Mouse movement delta

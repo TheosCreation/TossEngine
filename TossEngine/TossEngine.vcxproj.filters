@@ -72,9 +72,6 @@
     <ClCompile Include="GraphicsEngine.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="VertexArrayObject.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
@@ -281,9 +278,6 @@
     </ClInclude>
     <ClInclude Include="GraphicsEngine.h">
       <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="VertexArrayObject.h">
       <Filter>Header Files\Graphics</Filter>
