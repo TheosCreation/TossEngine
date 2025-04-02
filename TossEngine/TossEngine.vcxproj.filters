@@ -501,7 +501,7 @@
     <ClInclude Include="Physics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JsonSerializer.h">
+    <ClInclude Include="JsonUtility.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Transform.h">

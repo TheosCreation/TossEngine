@@ -54,10 +54,6 @@ TossEditor::TossEditor()
 
     m_sceneFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
-
-
-
-	//JsonUtility::OpenJsonFile("TestClass2.json");
 }
 
 TossEditor::~TossEditor()
