@@ -18,6 +18,7 @@ public:
     virtual void OnInspectorGUI() override;
 
     void onCreate() override;
+    void onLateCreate() override;
     void onStart() override;
     void onUpdate(float deltaTime) override;
 
@@ -48,6 +49,10 @@ private:
     Collider* m_Collider = nullptr; // Reference to separate Collider component
     BodyType m_BodyType = BodyType::DYNAMIC;
     bool m_UseGravity = true;
+
+
+    void UpdatePositionConstraints();
+    void UpdateRotationConstraints();
 
     std::array<bool, 3> positionAxisLocks = { false, false, false };
     std::array<bool, 3> rotationAxisLocks = { false, false, false };

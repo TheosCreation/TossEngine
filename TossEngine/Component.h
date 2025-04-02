@@ -3,7 +3,6 @@
 #include "ISelectable.h"
 #include "ComponentRegistry.h"
 #include <imgui.h>
-#include <ImGuizmo.h>
 
 class GameObject;
 class Collider;
@@ -27,6 +26,13 @@ public:
      * Can be overridden by derived classes to perform initialization.
      */
     virtual void onCreate() {
+    }
+
+    /**
+     * @brief Called when the component is created and after deserilization
+     * Can be overridden by derived classes to perform initialization.
+     */
+    virtual void onLateCreate() {
     }
 
     virtual void onStart() {

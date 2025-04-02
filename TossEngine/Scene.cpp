@@ -74,6 +74,7 @@ void Scene::reload()
 void Scene::onCreate()
 {
     auto& graphicsEngine = GraphicsEngine::GetInstance();
+    Physics::GetInstance().LoadWorld();
 
     auto& resourceManager = ResourceManager::GetInstance();
     TossEngine::GetInstance().StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
@@ -508,7 +509,10 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         m_gameObjectManager->onTransparencyPass(uniformData);
         m_gameObjectManager->onSkyboxPass(uniformData);
 
-        Physics::GetInstance().DrawDebug(uniformData);
+        if (cameraToRenderOverride)
+        {
+            Physics::GetInstance().DrawDebug(uniformData);
+        }
 
         m_postProcessingFramebuffer->UnBind();
     }
@@ -526,23 +530,6 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         graphicsEngine.setViewport(tossEngine.GetWindow()->getInnerSize());
 
         m_postProcessingFramebuffer->Bind();
-
-        // trying to get debug to show physics
-        //graphicsEngine.setFaceCulling(CullType::BackFace);
-        //graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
-        //graphicsEngine.setDepthFunc(DepthType::Less);
-        //graphicsEngine.setShader(shader);
-        //
-        //
-        //// Render the physics debug
-        //rp3d::DebugRenderer& debugRenderer = m_PhysicsWorld->getDebugRenderer();
-        //auto debugLines = debugRenderer.getLines();
-        //
-        //// Retrieve the instance of the graphics engine
-        //graphicsEngine.setVertexArrayObject(debugLines);
-        //
-        //// Draw the mesh to update the shadow map
-        //graphicsEngine.drawLines(debugLines->getNumIndices());
         
         m_gameObjectManager->Render(uniformData);
 
@@ -550,7 +537,10 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         m_gameObjectManager->onTransparencyPass(uniformData);
         m_gameObjectManager->onSkyboxPass(uniformData);
 
-        Physics::GetInstance().DrawDebug(uniformData);
+        if (cameraToRenderOverride)
+        {
+            Physics::GetInstance().DrawDebug(uniformData);
+        }
 
         m_postProcessingFramebuffer->UnBind();
     }
@@ -602,6 +592,7 @@ GameObjectManager* Scene::getObjectManager()
 void Scene::onQuit()
 {
     m_gameObjectManager->clearGameObjects();
+    Physics::GetInstance().UnLoadWorld();
 }
 
 void Scene::Save()

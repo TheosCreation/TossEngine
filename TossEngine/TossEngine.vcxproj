@@ -43,13 +43,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -151,8 +151,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies/MONO/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(SolutionDir)Dependencies\REFUREKU\Generator\RefurekuGenerator.exe" "$(SolutionDir)RefurekuSettings.toml"
+</Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -195,8 +195,8 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Co
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies/MONO/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(SolutionDir)Dependencies\REFUREKU\Generator\RefurekuGenerator.exe" "$(SolutionDir)RefurekuSettings.toml"
+</Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -263,6 +263,8 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Co
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Spotlight.cpp" />
     <ClCompile Include="TerrianGameObject.cpp" />
+    <ClCompile Include="TestClass.cpp" />
+    <ClCompile Include="TestClass2.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureCubeMap.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -298,6 +300,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Co
     <ClInclude Include="..\Dependencies\IMGUI\imstb_rectpack.h" />
     <ClInclude Include="..\Dependencies\IMGUI\imstb_textedit.h" />
     <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h" />
+    <ClInclude Include="..\Dependencies\STB\stb_image.h" />
     <ClInclude Include="All.h" />
     <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="Camera.h" />
@@ -309,12 +312,14 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Co
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="GeometryBuffer.h" />
-    <ClInclude Include="JsonSerializer.h" />
+    <ClInclude Include="JsonUtility.h" />
     <ClInclude Include="Mat3.h" />
     <ClInclude Include="Mat4.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="PhysicsMaterial.h" />
     <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="TestClass.h" />
+    <ClInclude Include="TestClass2.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="HeightMap.h" />

@@ -74,6 +74,11 @@ public:
      * Can be overridden by derived classes to perform initialization.
      */
     virtual void onCreate();
+    /**
+     * @brief Called when the GameObject after components have been serialized.
+     * Can be overridden by derived classes to perform initialization.
+     */
+    virtual void onLateCreate();
 
     /**
      * @brief Called when the game is started right before the first update frame.
@@ -119,17 +124,19 @@ public:
         std::type_index typeIndex(typeid(Component)); 
 
         component->setOwner(this);
+        m_components.emplace(typeIndex, component);
         component->onCreate();
+
+        if (m_finishedCreation)
+        {
+            component->onLateCreate();
+        }
 
         if (hasStarted)
         {
             component->onStart();
             component->onLateStart();
         }
-
-
-
-        m_components.emplace(typeIndex, component);
 
         return static_cast<Component*>(m_components[typeIndex]);
     }
@@ -193,4 +200,5 @@ private:
 
     char tagBuffer[128];
     Vector3 eulerAngles;
+    bool m_finishedCreation = false;
 };

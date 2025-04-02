@@ -135,6 +135,13 @@ struct Vertex
     Vector3 normal;     // The normal vector at the vertex used for lighting calculations (x, y, z)
 };
 
+// Structure representing a vertex in 3D space
+struct DebugVertex
+{
+    Vector3 position;   // The 3D position of the vertex (x, y, z)
+    Vector3 color;   // The color of the vertex
+};
+
 // Struct representing a vertex attribute
 struct VertexAttribute
 {

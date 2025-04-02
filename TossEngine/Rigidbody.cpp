@@ -60,7 +60,7 @@ void Rigidbody::OnInspectorGUI()
 
     // Mass input
     float mass = (m_Body) ? m_Body->getMass() : 0.0f;
-    if (ImGui::InputFloat("Mass", &mass, 0.1f, 1.0f, "%.2f"))
+    if (ImGui::DragFloat("Mass", &mass, 0.1f, 0.1f, 10.0f))
     {
         SetMass(mass);
     }
@@ -106,15 +106,21 @@ void Rigidbody::onCreate()
     // Create rigid body
     m_Body = world->createRigidBody(bodyTransform);
     m_Body->setUserData(this);
-    m_Body->setIsDebugEnabled(true);
+    if (Physics::GetInstance().GetDebug())
+    {
+        m_Body->setIsDebugEnabled(true);
+    }
 
     // Apply the default body type
     SetBodyType(m_BodyType);
+}
 
+void Rigidbody::onLateCreate()
+{
     m_Collider = m_owner->getComponent<Collider>();
     if (m_Collider == nullptr)
     {
-        m_owner->addComponent<Collider>();
+        m_Collider = m_owner->addComponent<Collider>();
     }
 }
 
@@ -130,25 +136,8 @@ void Rigidbody::onStart()
         return;
     }
 
-    // Retrieve the collider shape
-    rp3d::CollisionShape* shape = m_Collider->GetColliderShape();
-
-    // Set up collider material and other parameters
-    bool isTrigger = m_Collider->GetTrigger();
-    PhysicsMaterialPtr material = m_Collider->GetPhysicsMaterial();
-
-    // Add the collider to the body
-    rp3d::Collider* collider = m_Body->addCollider(shape, rp3d::Transform::identity());
-
-    //collider->setIsTrigger(true);
-    // Set the material properties
-    rp3d::Material colliderMaterial = collider->getMaterial();
-    colliderMaterial.setFrictionCoefficient(material->getDynamicFriction());
-    colliderMaterial.setBounciness(material->getBounciness());
-    
-    // Apply the updated material to the collider
-    collider->setMaterial(colliderMaterial);
-    
+    UpdatePositionConstraints();
+    UpdateRotationConstraints();
 
     // Ensure the body is not sleeping when the simulation starts
     m_Body->setIsSleeping(false);
@@ -266,17 +255,13 @@ void Rigidbody::SetAngularVelocity(const Vector3& velocity)
 void Rigidbody::SetPositionConstraints(bool lockX, bool lockY, bool lockZ)
 {
     positionAxisLocks = { lockX, lockY, lockZ };
-    if (m_Body) {
-        m_Body->setLinearLockAxisFactor(rp3d::Vector3(lockX ? 0.0f : 1.0f, lockY ? 0.0f : 1.0f, lockZ ? 0.0f : 1.0f));
-    }
+    UpdatePositionConstraints();
 }
 
 void Rigidbody::SetRotationConstraints(bool lockX, bool lockY, bool lockZ)
 {
     rotationAxisLocks = { lockX, lockY, lockZ };
-    if (m_Body) {
-        m_Body->setAngularLockAxisFactor(rp3d::Vector3(lockX ? 0.0f : 1.0f, lockY ? 0.0f : 1.0f, lockZ ? 0.0f : 1.0f));
-    }
+    UpdateRotationConstraints();
 }
 
 void Rigidbody::OnCollisionEnter(Rigidbody* collidedRb)
@@ -289,4 +274,18 @@ void Rigidbody::OnCollisionExit(Rigidbody* collidedRb)
 {
     Collider* collider = collidedRb->GetCollider();
     m_owner->CallOnCollisionExitCallbacks(collider);
+}
+
+void Rigidbody::UpdatePositionConstraints()
+{
+    if (m_Body) {
+        m_Body->setLinearLockAxisFactor(rp3d::Vector3(positionAxisLocks[0] ? 0.0f : 1.0f, positionAxisLocks[1] ? 0.0f : 1.0f, positionAxisLocks[2] ? 0.0f : 1.0f));
+    }
+}
+
+void Rigidbody::UpdateRotationConstraints()
+{
+    if (m_Body) {
+        m_Body->setAngularLockAxisFactor(rp3d::Vector3(rotationAxisLocks[0] ? 0.0f : 1.0f, rotationAxisLocks[1] ? 0.0f : 1.0f, rotationAxisLocks[2] ? 0.0f : 1.0f));
+    }
 }

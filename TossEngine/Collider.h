@@ -16,10 +16,12 @@ public:
 
     void onStart() override;
     void onCreate() override;
+    void onLateCreate() override;
 
     void SetBoxCollider(const Vector3& size);
     void SetSphereCollider(float radius);
     void SetCapsuleCollider(float radius, float height);
+    void UpdateRP3Collider();
     void SetTrigger(bool trigger);
     bool GetTrigger();
 
@@ -28,11 +30,14 @@ public:
     PhysicsMaterialPtr GetPhysicsMaterial() const;
 
 private:
+    rp3d::Collider* m_Collider = nullptr;
     rp3d::CollisionShape* m_Shape = nullptr;
     Vector3 m_boxColliderSize = Vector3(1.0f);
     float m_radius = 1.0f;
     float m_height = 1.0f;
     bool m_isTrigger = false;
+
+    float m_newFieldTest = 1.0f;
 
     Rigidbody* m_Rigidbody = nullptr;
     PhysicsMaterialPtr m_physicsMaterial = nullptr;

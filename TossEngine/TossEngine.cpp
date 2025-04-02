@@ -21,8 +21,6 @@ void TossEngine::Init()
 
     m_scriptLoader = new ScriptLoader();
     coroutineThread = std::thread(&TossEngine::CoroutineRunner, this);
-
-    Physics::GetInstance().Init();
 }
 
 void TossEngine::LoadGenericResources()

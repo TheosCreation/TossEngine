@@ -58,6 +58,7 @@ bool GameObjectManager::createGameObjectInternal(GameObject* gameObject)
 	gameObject->setId(newId);
 	gameObject->setGameObjectManager(this);
 	gameObject->onCreate();
+	gameObject->onLateCreate();
 
 	m_gameObjects[newId] = std::move(gameObject);
 
@@ -78,7 +79,7 @@ void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
 		return;
 	}
 
-	nlohmann::json sceneData;
+	json sceneData;
 	try
 	{
 		file >> sceneData;
@@ -102,6 +103,7 @@ void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
 		gameObject->setGameObjectManager(this);
 		gameObject->onCreate();
 		gameObject->deserialize(gameObjectData);  // Loads data into the object
+        gameObject->onLateCreate();
 
 		size_t id = gameObject->getId();
 		if (id == 0) id = m_nextAvailableId++;
