@@ -12,6 +12,7 @@
 #include <ImGuizmo.h>
 #include <glfw3.h>
 
+
 TossEditor::TossEditor()
 {
     editorPreferences.LoadFromFile("EditorPreferences.json");
@@ -53,6 +54,10 @@ TossEditor::TossEditor()
 
     m_sceneFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+
+
+
+	//JsonUtility::OpenJsonFile("TestClass2.json");
 }
 
 TossEditor::~TossEditor()
@@ -180,7 +185,6 @@ void TossEditor::onUpdateInternal()
         }
         inputManager.onLateUpdate();
     }
-
 
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
     graphicsEngine.createImGuiFrame();
@@ -454,7 +458,7 @@ void TossEditor::onUpdateInternal()
         }
 
         // Option to change the window size (assumed to have x and y components)
-        int windowSize[2] = { m_playerSettings->windowSize.x, m_playerSettings->windowSize.y };
+        int windowSize[2] = { (int)m_playerSettings->windowSize.x, (int)m_playerSettings->windowSize.y };
         if (ImGui::InputInt2("Game Resolution", windowSize))
         {
             m_playerSettings->windowSize.x = windowSize[0];

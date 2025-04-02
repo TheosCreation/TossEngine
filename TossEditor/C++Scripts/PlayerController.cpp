@@ -4,6 +4,18 @@
 #include "Rigidbody.h"
 #include "Collider.h"
 
+void PlayerController::OnInspectorGUI()
+{
+    ImGui::Text("Player Controller Inspector - ID: %p", this);
+    ImGui::Separator();
+
+    ImGui::DragFloat("Movement Speed", &m_movementSpeed, 0.1f);
+    ImGui::DragFloat("Acceleration", &m_acceleration, 0.1f);
+    ImGui::DragFloat("Air Acceleration", &m_airAcceleration, 0.1f);
+    ImGui::DragFloat("Jump Force", &m_jumpForce, 1.0f);
+    ImGui::DragFloat("Jump Cooldown", &m_jumpForce, 0.1f, 0.1f, 2.0f);
+}
+
 void PlayerController::onCreate()
 {
 
