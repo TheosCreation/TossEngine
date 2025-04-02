@@ -25,6 +25,16 @@ void Physics::Update(float deltaTime)
         m_world->update(deltaTime);
         m_world->testCollision(*this);
     }
+
+    // Update raycast debug entries lifetime
+    for (auto it = m_raycastDebugEntries.begin(); it != m_raycastDebugEntries.end(); )
+    {
+        it->lifetime -= deltaTime;
+        if (it->lifetime <= 0)
+            it = m_raycastDebugEntries.erase(it);
+        else
+            ++it;
+    }
 }
 
 void Physics::CleanUp()
@@ -89,10 +99,9 @@ void Physics::SetGravity(const Vector3& gravity)
     }
 }
 
-
 void Physics::DrawDebug(UniformData data)
 {
-    // Retrieve debug data
+    // Retrieve debug data from ReactPhysics3D
     reactphysics3d::DebugRenderer& debugRenderer = m_world->getDebugRenderer();
     const auto& lines = debugRenderer.getLines();
     const auto& triangles = debugRenderer.getTriangles();
@@ -100,19 +109,32 @@ void Physics::DrawDebug(UniformData data)
     // Prepare vertex vectors for lines and triangles
     std::vector<DebugVertex> lineVertices;
     for (const auto& line : lines) {
-        // Convert color for first vertex
+        // First vertex of the line
         DebugVertex v1;
         v1.position = glm::vec3(line.point1.x, line.point1.y, line.point1.z);
         v1.color = glm::vec3(((line.color1 >> 16) & 0xFF) / 255.0f,
             ((line.color1 >> 8) & 0xFF) / 255.0f,
             ((line.color1) & 0xFF) / 255.0f);
 
-        // Convert color for second vertex
+        // Second vertex of the line
         DebugVertex v2;
         v2.position = glm::vec3(line.point2.x, line.point2.y, line.point2.z);
         v2.color = glm::vec3(((line.color2 >> 16) & 0xFF) / 255.0f,
             ((line.color2 >> 8) & 0xFF) / 255.0f,
             ((line.color2) & 0xFF) / 255.0f);
+
+        lineVertices.push_back(v1);
+        lineVertices.push_back(v2);
+    }
+
+    // Add raycast debug lines (using a distinct color, e.g., green)
+    for (const auto& ray : m_raycastDebugEntries) {
+        DebugVertex v1, v2;
+        v1.position = glm::vec3(ray.origin.x, ray.origin.y, ray.origin.z);
+        v1.color = glm::vec3(0.0f, 1.0f, 0.0f);  // green color
+
+        v2.position = glm::vec3(ray.endPoint.x, ray.endPoint.y, ray.endPoint.z);
+        v2.color = glm::vec3(0.0f, 1.0f, 0.0f);  // green color
 
         lineVertices.push_back(v1);
         lineVertices.push_back(v2);
@@ -149,28 +171,29 @@ void Physics::DrawDebug(UniformData data)
     glBindBuffer(GL_ARRAY_BUFFER, VBO_tris);
     glBufferData(GL_ARRAY_BUFFER, triVertices.size() * sizeof(DebugVertex), triVertices.data(), GL_DYNAMIC_DRAW);
 
+    // Set the shader and VP matrix
     GraphicsEngine::GetInstance().setShader(debugShader);
     debugShader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
 
     glDisable(GL_DEPTH_TEST);
 
-    // Draw lines
+    // Draw lines (including raycasts)
     glBindVertexArray(VAO_lines);
     glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(lineVertices.size()));
 
-    // Draw collider wireframe
+    // Draw collider wireframes
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glBindVertexArray(VAO_tris);
     glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(triVertices.size()));
 
-    // Re-enable depth testing
+    // Re-enable depth testing and restore polygon fill mode
     glEnable(GL_DEPTH_TEST);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
 
     // Clean up
     glBindVertexArray(0);
     glUseProgram(0);
+
 }
 
 RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, float maxDistance)
@@ -192,6 +215,13 @@ RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, flo
     {
         hitResult.collider = static_cast<Collider*>(callback.collider);
         hitResult.rigidbody = static_cast<Rigidbody*>(callback.rigidbody);
+    }
+
+    if (isDebug)
+    {
+        Vector3 endPoint = hitResult.hasHit ? hitResult.point : (origin + direction * maxDistance);
+        float initialLifetime = 1.0f;
+        m_raycastDebugEntries.push_back({ origin, endPoint });
     }
 
     return hitResult;
@@ -281,5 +311,6 @@ void Physics::UnLoadWorld()
     {
         m_commonSettings.destroyPhysicsWorld(m_world);
         m_world = nullptr;
+        m_raycastDebugEntries.clear();
     }
 }

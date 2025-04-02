@@ -37,6 +37,12 @@ struct TOSSENGINE_API RaycastCallback : public reactphysics3d::RaycastCallback
     virtual reactphysics3d::decimal notifyRaycastHit(const RaycastInfo& info) override;
 };
 
+struct TOSSENGINE_API RaycastDebugEntry {
+    Vector3 origin;
+    Vector3 endPoint;
+    float lifetime = 1.0f;
+};
+
 class TOSSENGINE_API Physics : public rp3d::CollisionCallback
 {
 public:
@@ -78,12 +84,14 @@ private:
     bool isDebug = false;
     PhysicsWorld* m_world = nullptr;
     PhysicsMaterialPtr m_defaultPhysicsMaterial = nullptr;
+    Vector3 m_gravity = Vector3(0.0f, -9.81f, 0.0f);
+
     uint vertexCount = 0;
     ShaderPtr debugShader = nullptr;
     uint VBO_lines;
     uint VAO_lines;
     uint VBO_tris;
-    uint VAO_tris;
+    uint VAO_tris; 
+    vector<RaycastDebugEntry> m_raycastDebugEntries;
 
-    Vector3 m_gravity = Vector3(0.0f, -9.81f, 0.0f);
 };
