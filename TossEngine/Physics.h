@@ -9,6 +9,7 @@
 
 class Vector3;
 class Rigidbody;
+class Collider;
 
 using PhysicsWorld = reactphysics3d::PhysicsWorld;
 using Ray = reactphysics3d::Ray;
@@ -21,6 +22,8 @@ struct TOSSENGINE_API RaycastHit
     Vector3 point;
     Vector3 normal;
     float distance = 0.0f;
+    Collider* collider = nullptr;
+    Rigidbody* rigidbody = nullptr;
 };
 
 struct TOSSENGINE_API RaycastCallback : public reactphysics3d::RaycastCallback
@@ -28,6 +31,8 @@ struct TOSSENGINE_API RaycastCallback : public reactphysics3d::RaycastCallback
     bool hit = false;
     Vector3 point;
     Vector3 normal;
+    void* collider;
+    void* rigidbody;
 
     virtual reactphysics3d::decimal notifyRaycastHit(const RaycastInfo& info) override;
 };

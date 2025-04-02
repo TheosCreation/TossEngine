@@ -3,6 +3,7 @@
 #include "ResourceManager.h"
 #include "PhysicsMaterial.h"
 #include "Rigidbody.h"
+#include "Collider.h"
 #include "GraphicsEngine.h"
 #include "Shader.h"
 
@@ -11,6 +12,9 @@ reactphysics3d::decimal RaycastCallback::notifyRaycastHit(const RaycastInfo& inf
     hit = true;
     point = info.worldPoint;
     normal = info.worldNormal;
+    collider = info.collider->getUserData();
+    rigidbody = info.body->getUserData();
+    
     return info.hitFraction;
 }
 
@@ -183,6 +187,12 @@ RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, flo
     hitResult.point = Vector3(callback.point);
     hitResult.normal = Vector3(callback.normal);
     hitResult.distance = callback.hit ? Vector3::Distance(origin, hitResult.point) : maxDistance;
+
+    if (callback.hit)
+    {
+        hitResult.collider = static_cast<Collider*>(callback.collider);
+        hitResult.rigidbody = static_cast<Rigidbody*>(callback.rigidbody);
+    }
 
     return hitResult;
 }

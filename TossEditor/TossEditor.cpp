@@ -268,7 +268,8 @@ void TossEditor::onUpdateInternal()
                     auto scene = std::make_shared<Scene>(filePath);
                     OpenScene(scene);
                 }
-                selectedSelectable->OnDeSelect();
+                if(selectedSelectable != nullptr) selectedSelectable->OnDeSelect();
+                
                 selectedSelectable = nullptr;
             }
         }

@@ -67,6 +67,14 @@ void PlayerController::onUpdate(float deltaTime)
     m_cam->getOwner()->m_transform.localRotation = pitchRotation;
 
     // Toggle wireframe mode on/off
+    if (inputManager.isKeyPressed(Key::KeyR))
+    {
+        RaycastHit hit = Physics::GetInstance().Raycast(m_cam->getOwner()->m_transform.position, m_cam->getOwner()->m_transform.GetForward());
+        if (hit.hasHit)
+        {
+            Debug::Log(hit.collider->getOwner()->name);
+        }
+    }
     if (inputManager.isKeyPressed(Key::Key0))
     {
         m_wireframeMode = !m_wireframeMode;
