@@ -10,6 +10,8 @@ class GameObject;
 class Component;
 class ISelectable;
 class FileWatcher;
+class TestClass;
+class TestClass2;
 
 class TossEditor : public Resizable
 {
@@ -97,4 +99,7 @@ private:
     float m_previousFixedUpdateTime = 0; //The previous fixedUpdate frame time
     const float m_fixedTimeStep = 1.0f / 60.0f; // Fixed time step (60 FPS)
     float m_accumulatedTime = 0; //The current frame's time
+
+    TestClass* testClass;
+    TestClass2* testClass2;
 };

@@ -415,3 +415,4 @@ C++Scripts/TossEngine.dll
 C++Scripts/TossEngine.exp
 Dependencies/TOSSENGINE/C++Scripts.dll
 TossEditor/C++Scripts.dll
+*.rfkh.h

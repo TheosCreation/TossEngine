@@ -12,6 +12,8 @@ public:
     PlayerController() = default;
     ~PlayerController() = default;
 
+    virtual void OnInspectorGUI() override;
+
     virtual void onCreate() override;
     virtual void onStart() override;
     virtual void onUpdate(float deltaTime) override;
@@ -24,7 +26,7 @@ private:
 
     float m_movementSpeed = 35.0f; // Movement speed of the movable object
     float m_acceleration = 50.0f;
-    float m_airAcceleration = 2000.0f;
+    float m_airAcceleration = 10000.0f;
     float m_jumpForce = 1000.0f;
     float m_jumpCooldown = 0.5f;
 

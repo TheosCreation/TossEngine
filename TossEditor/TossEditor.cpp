@@ -12,6 +12,10 @@
 #include <ImGuizmo.h>
 #include <glfw3.h>
 
+#include "TestClass.h"
+#include "TestClass2.h"
+
+
 TossEditor::TossEditor()
 {
     editorPreferences.LoadFromFile("EditorPreferences.json");
@@ -53,6 +57,21 @@ TossEditor::TossEditor()
 
     m_sceneFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+
+
+    //testClass = new TestClass();
+    //json data = JsonUtility::OpenJsonFile("TestClass.json");
+    //testClass->Deserialize(data);
+    //
+    //Debug::Log(ToString(testClass->_intField));
+
+
+	testClass2 = new TestClass2();
+	json data2 = JsonUtility::OpenJsonFile("TestClass2.json");
+    testClass2->Deserialize(data2);
+
+	Debug::Log(ToString(testClass2->_intField5));
+	Debug::Log(ToString(testClass2->_intField2));
 }
 
 TossEditor::~TossEditor()
@@ -180,7 +199,6 @@ void TossEditor::onUpdateInternal()
         }
         inputManager.onLateUpdate();
     }
-
 
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
     graphicsEngine.createImGuiFrame();
@@ -454,7 +472,7 @@ void TossEditor::onUpdateInternal()
         }
 
         // Option to change the window size (assumed to have x and y components)
-        int windowSize[2] = { m_playerSettings->windowSize.x, m_playerSettings->windowSize.y };
+        int windowSize[2] = { (int)m_playerSettings->windowSize.x, (int)m_playerSettings->windowSize.y };
         if (ImGui::InputInt2("Game Resolution", windowSize))
         {
             m_playerSettings->windowSize.x = windowSize[0];
@@ -843,6 +861,12 @@ void TossEditor::onQuit()
     m_editorRunning.store(false);
     TossEngine::GetInstance().StartCoroutine(ResourceManager::GetInstance().saveResourcesDescs("Resources/Resources.json"));
     editorPreferences.SaveToFile("EditorPreferences.json");
+
+    json data = testClass->Serialize();
+    JsonUtility::SaveJsonFile("TestClass.json", data);
+
+    json data2 = testClass2->Serialize();
+    JsonUtility::SaveJsonFile("TestClass2.json", data2);
 }
 
 void TossEditor::ShowGameObjectNode(GameObject* gameObject)
