@@ -3,7 +3,6 @@
 #include "ISelectable.h"
 #include "ComponentRegistry.h"
 #include <imgui.h>
-#include <ImGuizmo.h>
 
 class GameObject;
 class Collider;
@@ -11,9 +10,9 @@ class Collider;
 class TOSSENGINE_API Component : public Serializable, public ISelectable
 {
 public:
-	GameObject* getOwner();
-	string getName();
-	void setOwner(GameObject* gameObject);
+    GameObject* getOwner();
+    string getName();
+    void setOwner(GameObject* gameObject);
 
     virtual json serialize() const //do call Component::serialize() first when overriding this class
     {
@@ -26,32 +25,32 @@ public:
      * @brief Called when the component is created.
      * Can be overridden by derived classes to perform initialization.
      */
-    virtual void onCreate() {
-    }
+    virtual void onCreate() {}
 
-    virtual void onStart() {
-    }
+    /**
+     * @brief Called when the component is created and after deserilization
+     * Can be overridden by derived classes to perform initialization.
+     */
+    virtual void onLateCreate() {}
 
-    virtual void onLateStart() {
-    }
+    virtual void onStart() {}
 
-    virtual void onUpdate(float deltaTime) {
-    }
+    virtual void onLateStart() {}
 
-    virtual void onUpdateInternal() {
-    }
+    virtual void onUpdate(float deltaTime) {}
 
-    virtual void onFixedUpdate(float fixedDeltaTime) {
-    }
+    virtual void onUpdateInternal() {}
 
-    virtual void onDestroy() {
-    }
+    virtual void onFixedUpdate(float fixedDeltaTime) {}
 
-    virtual void OnInspectorGUI() 
-    {
-    }
-    virtual void onCollisionEnter(Collider* other) { }
-    virtual void onCollisionExit(Collider* other) { }
+    virtual void onDestroy() { }
+
+    virtual void OnInspectorGUI(){}
+    virtual void OnGameObjectSelected(){}
+    virtual void OnGameObjectDeSelected() {}
+
+    virtual void onCollisionEnter(Collider* other) {}
+    virtual void onCollisionExit(Collider* other) {}
 
     bool Delete(bool deleteSelf = true);
     void Destroy(GameObject* objectToDestroy);
@@ -64,5 +63,5 @@ public:
     virtual void onLateUpdate(float deltaTime) {}
 
 protected:
-	GameObject* m_owner = nullptr;
+    GameObject* m_owner = nullptr;
 };

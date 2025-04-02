@@ -39,6 +39,8 @@ public:
 
     virtual void OnInspectorGUI() override;
 
+    virtual void OnSelect() override;
+    virtual void OnDeSelect() override;
     /**
      * @brief Gets the unique identifier of the GameObject.
      * @return The unique identifier of the GameObject.
@@ -74,6 +76,11 @@ public:
      * Can be overridden by derived classes to perform initialization.
      */
     virtual void onCreate();
+    /**
+     * @brief Called when the GameObject after components have been serialized.
+     * Can be overridden by derived classes to perform initialization.
+     */
+    virtual void onLateCreate();
 
     /**
      * @brief Called when the game is started right before the first update frame.
@@ -116,20 +123,22 @@ public:
     Component* addComponent()
     {
         auto component = new Component();
-        std::type_index typeIndex(typeid(Component)); 
+        std::type_index typeIndex(typeid(Component));
 
         component->setOwner(this);
+        m_components.emplace(typeIndex, component);
         component->onCreate();
+
+        if (m_finishedCreation)
+        {
+            component->onLateCreate();
+        }
 
         if (hasStarted)
         {
             component->onStart();
             component->onLateStart();
         }
-
-
-
-        m_components.emplace(typeIndex, component);
 
         return static_cast<Component*>(m_components[typeIndex]);
     }
@@ -148,7 +157,7 @@ public:
         }
         return nullptr;
     }
-    
+
     template <typename Component>
     Component* getComponentInChildren()
     {
@@ -187,10 +196,11 @@ protected:
 
     GameObjectManager* m_gameObjectManager = nullptr; // Pointer to the GameObjectManager managing this GameObject.
 
-    Component* selectedComponent = nullptr; 
+    Component* selectedComponent = nullptr;
 private:
     size_t m_id = 0; // Unique identifier for the GameObject.
 
     char tagBuffer[128];
     Vector3 eulerAngles;
+    bool m_finishedCreation = false;
 };

@@ -40,9 +40,9 @@ GameObject::GameObject(const GameObject& other) : m_transform(this)
 
 GameObject::~GameObject()
 {
-	for (auto& pair : m_components) {
-		pair.second->onDestroy();
-	}
+    for (auto& pair : m_components) {
+        pair.second->onDestroy();
+    }
     for (auto& pair : m_components)
     {
         delete pair.second; // Free allocated memory
@@ -67,7 +67,7 @@ json GameObject::serialize() const
     };
 }
 
-void GameObject::deserialize(const json& data) 
+void GameObject::deserialize(const json& data)
 {
     if (data.contains("name"))
     {
@@ -107,11 +107,11 @@ void GameObject::OnInspectorGUI()
 {
     ImGui::Text("Selected Object: %s", name.c_str());
 
-     // You can define the size of the buffer based on your needs
+    // You can define the size of the buffer based on your needs
     strncpy_s(tagBuffer, tag.c_str(), sizeof(tagBuffer)); // Copy the existing tag into the buffer
     tagBuffer[sizeof(tagBuffer) - 1] = '\0';
 
-    if(ImGui::InputText("Tag", tagBuffer, sizeof(tagBuffer)))
+    if (ImGui::InputText("Tag", tagBuffer, sizeof(tagBuffer)))
     {
         tag = std::string(tagBuffer);
     }
@@ -185,18 +185,43 @@ void GameObject::OnInspectorGUI()
     }
 }
 
+void GameObject::OnSelect()
+{
+    for (auto& pair : m_components)
+    {
+        pair.second->OnGameObjectSelected();
+    }
+}
+
+
+void GameObject::OnDeSelect()
+{
+    for (auto& pair : m_components)
+    {
+        pair.second->OnGameObjectDeSelected();
+    }
+}
+
 size_t GameObject::getId()
 {
-	return m_id;
+    return m_id;
 }
 
 void GameObject::setId(size_t id)
 {
-	m_id = id;
+    m_id = id;
 }
 
 void GameObject::onCreate()
 {
+}
+
+void GameObject::onLateCreate()
+{
+    for (auto& pair : m_components) {
+        pair.second->onLateCreate();
+    }
+    m_finishedCreation = true;
 }
 
 void GameObject::onStart()
@@ -285,10 +310,15 @@ Component* GameObject::addComponent(string componentType, const json& data)
     if (component)
     {
         component->setOwner(this);
+        m_components.emplace(std::type_index(typeid(*component)), component);
         component->onCreate();
         if (data != nullptr)
         {
             component->deserialize(data);
+        }
+        if (m_finishedCreation)
+        {
+            component->onLateCreate();
         }
 
         if (hasStarted)
@@ -297,7 +327,6 @@ Component* GameObject::addComponent(string componentType, const json& data)
             component->onLateStart();
         }
 
-        m_components.emplace(std::type_index(typeid(*component)), component);
         return component;
     }
     else
@@ -328,8 +357,8 @@ bool GameObject::tryDeleteSelectedComponent()
 
 void GameObject::setGameObjectManager(GameObjectManager* gameObjectManager)
 {
-	// Set the GameObjectManager managing this GameObject
-	m_gameObjectManager = gameObjectManager;
+    // Set the GameObjectManager managing this GameObject
+    m_gameObjectManager = gameObjectManager;
 }
 
 bool GameObject::Delete(bool deleteSelf)
@@ -349,7 +378,7 @@ bool GameObject::Delete(bool deleteSelf)
 
 GameObjectManager* GameObject::getGameObjectManager()
 {
-	return m_gameObjectManager;
+    return m_gameObjectManager;
 }
 
 LightManager* GameObject::getLightManager()

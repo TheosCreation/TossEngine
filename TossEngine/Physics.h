@@ -41,8 +41,6 @@ public:
         return instance;
     }
 
-    void Init();
-
     void Update(float deltaTime);
 
     void CleanUp();
@@ -54,6 +52,7 @@ public:
     PhysicsMaterialPtr GetDefaultPhysicsMaterial();
 
     void SetDebug(bool debug);
+    bool GetDebug();
     void SetGravity(const Vector3& gravity);
     Vector3 GetGravity() const { return m_gravity; }
 
@@ -63,16 +62,23 @@ public:
     void DrawDebug(UniformData data);
 
     void onContact(const rp3d::CollisionCallback::CallbackData& data) override;
+    void LoadWorld();
+    void UnLoadWorld();
 
 private:
     Physics() = default;
     ~Physics() = default;
 
     PhysicsCommon m_commonSettings;
+    bool isDebug = false;
     PhysicsWorld* m_world = nullptr;
     PhysicsMaterialPtr m_defaultPhysicsMaterial = nullptr;
     uint vertexCount = 0;
-    ShaderPtr m_physicsDebugShader = nullptr;
+    ShaderPtr debugShader = nullptr;
+    uint VBO_lines;
+    uint VAO_lines;
+    uint VBO_tris;
+    uint VAO_tris;
 
     Vector3 m_gravity = Vector3(0.0f, -9.81f, 0.0f);
 };

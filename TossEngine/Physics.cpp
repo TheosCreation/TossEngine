@@ -14,25 +14,6 @@ reactphysics3d::decimal RaycastCallback::notifyRaycastHit(const RaycastInfo& inf
     return info.hitFraction;
 }
 
-void Physics::Init()
-{
-    if (m_world)
-    {
-        m_commonSettings.destroyPhysicsWorld(m_world);
-        m_world = nullptr;
-    }
-
-    PhysicsMaterialDesc physicsMaterialDesc; //full defaults set in the code atm
-    m_defaultPhysicsMaterial = std::make_shared<PhysicsMaterial>(physicsMaterialDesc, "DefaultPhysicsMaterial", nullptr);
-    
-    rp3d::PhysicsWorld::WorldSettings settings;
-    settings.gravity = static_cast<rp3d::Vector3>(m_gravity);
-    settings.defaultPositionSolverNbIterations = 20;  // Default is usually 6
-    settings.defaultVelocitySolverNbIterations = 10;  // Default is usually 4
-    m_world = m_commonSettings.createPhysicsWorld(settings);
-}
-
-
 void Physics::Update(float deltaTime)
 {
     if (m_world)
@@ -58,16 +39,40 @@ PhysicsMaterialPtr Physics::GetDefaultPhysicsMaterial()
 
 void Physics::SetDebug(bool debug)
 {
-    m_world->setIsDebugRenderingEnabled(debug);
+    isDebug = debug;
 
-    // Get a reference to the debug renderer
-    reactphysics3d::DebugRenderer& debugRenderer = m_world->getDebugRenderer();
 
-    // Select the contact points and contact normals to be displayed
-    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_POINT, debug);
-    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_NORMAL, debug);
 
-    m_physicsDebugShader = ResourceManager::GetInstance().getShader("PhysicsDebug");
+    debugShader = ResourceManager::GetInstance().getShader("PhysicsDebug");
+
+    glGenVertexArrays(1, &VAO_lines);
+    glGenBuffers(1, &VBO_lines);
+
+    glGenVertexArrays(1, &VAO_tris);
+    glGenBuffers(1, &VBO_tris);
+
+    // Setup for lines VAO
+    glBindVertexArray(VAO_lines);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_lines);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), (void*)offsetof(DebugVertex, position));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), (void*)offsetof(DebugVertex, color));
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
+
+    // Setup for triangles VAO
+    glBindVertexArray(VAO_tris);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_tris);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), (void*)offsetof(DebugVertex, position));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), (void*)offsetof(DebugVertex, color));
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
+}
+
+bool Physics::GetDebug()
+{
+    return isDebug;
 }
 
 void Physics::SetGravity(const Vector3& gravity)
@@ -82,57 +87,86 @@ void Physics::SetGravity(const Vector3& gravity)
 
 
 void Physics::DrawDebug(UniformData data)
-{// Retrieve the debug lines from the physics world.
+{
+    // Retrieve debug data
     reactphysics3d::DebugRenderer& debugRenderer = m_world->getDebugRenderer();
     const auto& lines = debugRenderer.getLines();
-    
+    const auto& triangles = debugRenderer.getTriangles();
 
-    // Check if there are any lines.
-    if (debugRenderer.getNbLines() == 0)
-        return;
+    // Prepare vertex vectors for lines and triangles
+    std::vector<DebugVertex> lineVertices;
+    for (const auto& line : lines) {
+        // Convert color for first vertex
+        DebugVertex v1;
+        v1.position = glm::vec3(line.point1.x, line.point1.y, line.point1.z);
+        v1.color = glm::vec3(((line.color1 >> 16) & 0xFF) / 255.0f,
+            ((line.color1 >> 8) & 0xFF) / 255.0f,
+            ((line.color1) & 0xFF) / 255.0f);
 
-    // Pack the debug lines' vertex data.
-    // Assume each DebugLine contains two points (point1 and point2),
-    // and each point is a Vector3 (x, y, z).
-    std::vector<float> vertexData;
-    vertexData.reserve(debugRenderer.getNbLines() * 6); // 2 vertices per line * 3 floats per vertex
+        // Convert color for second vertex
+        DebugVertex v2;
+        v2.position = glm::vec3(line.point2.x, line.point2.y, line.point2.z);
+        v2.color = glm::vec3(((line.color2 >> 16) & 0xFF) / 255.0f,
+            ((line.color2 >> 8) & 0xFF) / 255.0f,
+            ((line.color2) & 0xFF) / 255.0f);
 
-    for (unsigned int i = 0; i < debugRenderer.getNbLines(); i++) {
-        const auto& line = lines[i];
-        // First vertex of the line.
-        vertexData.push_back(line.point1.x);
-        vertexData.push_back(line.point1.y);
-        vertexData.push_back(line.point1.z);
-        // Second vertex of the line.
-        vertexData.push_back(line.point2.x);
-        vertexData.push_back(line.point2.y);
-        vertexData.push_back(line.point2.z);
+        lineVertices.push_back(v1);
+        lineVertices.push_back(v2);
     }
 
-    // Set up the vertex buffer descriptor.
-    // Adjust the structure as required by your engine.
-    VertexBufferDesc vertexBuffer;
-    vertexBuffer.verticesList = vertexData.data();                           // Pointer to vertex data.
-    vertexBuffer.vertexSize = 3 * sizeof(float);                               // Each vertex has 3 floats (x, y, z).
-    vertexBuffer.listSize = static_cast<uint>(vertexData.size() * sizeof(float)); // Total size in bytes.
+    std::vector<DebugVertex> triVertices;
+    for (const auto& tri : triangles) {
+        DebugVertex v1, v2, v3;
+        v1.position = glm::vec3(tri.point1.x, tri.point1.y, tri.point1.z);
+        v1.color = glm::vec3(((tri.color1 >> 16) & 0xFF) / 255.0f,
+            ((tri.color1 >> 8) & 0xFF) / 255.0f,
+            ((tri.color1) & 0xFF) / 255.0f);
 
-    // Set up the vertex attribute for positions.
-    VertexAttribute positionAttribute;
-    positionAttribute.numElements = 3; // x, y, z.
-    vertexBuffer.attributesList = &positionAttribute;
-    vertexBuffer.attributesListSize = 1; // Only one attribute.
-    GraphicsEngine::GetInstance().setShader(m_physicsDebugShader);
-    m_physicsDebugShader->setMat4("VPMatrix", data.viewMatrix);
-    Debug::Log("Drawing");
-    // Create (or update) the VAO using your graphics engine.
-    VertexArrayObjectPtr vertexArray = GraphicsEngine::GetInstance().createVertexArrayObject(vertexBuffer);
-    GraphicsEngine::GetInstance().setVertexArrayObject(vertexArray);
+        v2.position = glm::vec3(tri.point2.x, tri.point2.y, tri.point2.z);
+        v2.color = glm::vec3(((tri.color2 >> 16) & 0xFF) / 255.0f,
+            ((tri.color2 >> 8) & 0xFF) / 255.0f,
+            ((tri.color2) & 0xFF) / 255.0f);
 
-    // Finally, draw the lines.
-    // Since each line consists of 2 vertices, calculate the total vertex count:
-    uint vertexCount = static_cast<uint>(debugRenderer.getNbLines() * 2);
-    GraphicsEngine::GetInstance().drawLines(LineType::Lines, vertexCount, 0); // drawLines using GL_LINES internally.
+        v3.position = glm::vec3(tri.point3.x, tri.point3.y, tri.point3.z);
+        v3.color = glm::vec3(((tri.color3 >> 16) & 0xFF) / 255.0f,
+            ((tri.color3 >> 8) & 0xFF) / 255.0f,
+            ((tri.color3) & 0xFF) / 255.0f);
 
+        triVertices.push_back(v1);
+        triVertices.push_back(v2);
+        triVertices.push_back(v3);
+    }
+
+    // Update the VBO for lines
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_lines);
+    glBufferData(GL_ARRAY_BUFFER, lineVertices.size() * sizeof(DebugVertex), lineVertices.data(), GL_DYNAMIC_DRAW);
+
+    // Update the VBO for triangles
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_tris);
+    glBufferData(GL_ARRAY_BUFFER, triVertices.size() * sizeof(DebugVertex), triVertices.data(), GL_DYNAMIC_DRAW);
+
+    GraphicsEngine::GetInstance().setShader(debugShader);
+    debugShader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
+
+    glDisable(GL_DEPTH_TEST);
+
+    // Draw lines
+    glBindVertexArray(VAO_lines);
+    glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(lineVertices.size()));
+
+    // Draw collider wireframe
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glBindVertexArray(VAO_tris);
+    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(triVertices.size()));
+
+    // Re-enable depth testing
+    glEnable(GL_DEPTH_TEST);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+
+    // Clean up
+    glBindVertexArray(0);
+    glUseProgram(0);
 }
 
 RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, float maxDistance)
@@ -204,5 +238,38 @@ void Physics::onContact(const rp3d::CollisionCallback::CallbackData& data)
                 std::cerr << "Invalid body detected in contact pair." << std::endl;
             }
         }
+    }
+}
+
+void Physics::LoadWorld()
+{
+    PhysicsMaterialDesc physicsMaterialDesc; //full defaults set in the code atm
+    m_defaultPhysicsMaterial = std::make_shared<PhysicsMaterial>(physicsMaterialDesc, "DefaultPhysicsMaterial", nullptr);
+
+    rp3d::PhysicsWorld::WorldSettings settings;
+    settings.gravity = static_cast<rp3d::Vector3>(m_gravity);
+    settings.defaultPositionSolverNbIterations = 20;  // Default is usually 6
+    settings.defaultVelocitySolverNbIterations = 10;  // Default is usually 4
+    m_world = m_commonSettings.createPhysicsWorld(settings);
+
+
+    m_world->setIsDebugRenderingEnabled(isDebug);
+
+    // Get a reference to the debug renderer
+    reactphysics3d::DebugRenderer& debugRenderer = m_world->getDebugRenderer();
+
+    // Select the contact points and contact normals to be displayed
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_POINT, isDebug);
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_NORMAL, isDebug);
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLISION_SHAPE, isDebug);
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLIDER_AABB, isDebug);
+}
+
+void Physics::UnLoadWorld()
+{
+    if (m_world)
+    {
+        m_commonSettings.destroyPhysicsWorld(m_world);
+        m_world = nullptr;
     }
 }

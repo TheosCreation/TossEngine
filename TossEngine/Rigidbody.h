@@ -15,9 +15,12 @@ public:
     json serialize() const override;
     void deserialize(const json& data) override;
 
-    virtual void OnInspectorGUI() override;
+    void OnInspectorGUI() override;
+    void OnGameObjectSelected() override;
+    void OnGameObjectDeSelected() override;
 
     void onCreate() override;
+    void onLateCreate() override;
     void onStart() override;
     void onUpdate(float deltaTime) override;
 
@@ -40,14 +43,18 @@ public:
     void SetPositionConstraints(bool lockX, bool lockY, bool lockZ);
     void SetRotationConstraints(bool lockX, bool lockY, bool lockZ);
 
-	void OnCollisionEnter(Rigidbody* collidedRb);
-	void OnCollisionExit(Rigidbody* collidedRb);
+    void OnCollisionEnter(Rigidbody* collidedRb);
+    void OnCollisionExit(Rigidbody* collidedRb);
 
 private:
     rp3d::RigidBody* m_Body = nullptr;
     Collider* m_Collider = nullptr; // Reference to separate Collider component
     BodyType m_BodyType = BodyType::DYNAMIC;
     bool m_UseGravity = true;
+
+
+    void UpdatePositionConstraints();
+    void UpdateRotationConstraints();
 
     std::array<bool, 3> positionAxisLocks = { false, false, false };
     std::array<bool, 3> rotationAxisLocks = { false, false, false };

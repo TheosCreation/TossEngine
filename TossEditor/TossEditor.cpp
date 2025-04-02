@@ -268,6 +268,7 @@ void TossEditor::onUpdateInternal()
                     auto scene = std::make_shared<Scene>(filePath);
                     OpenScene(scene);
                 }
+                selectedSelectable->OnDeSelect();
                 selectedSelectable = nullptr;
             }
         }
@@ -596,7 +597,9 @@ void TossEditor::onUpdateInternal()
             bool isSelected = (resource == resourceManager.GetSelectedResource());
 
             if (ImGui::Selectable(uniqueID.c_str(), isSelected)) {
+                if (selectedSelectable != nullptr) selectedSelectable->OnDeSelect();
                 selectedSelectable = resource.get();
+                selectedSelectable->OnSelect();
                 resourceManager.SetSelectedResource(resource);
             }
 
@@ -854,7 +857,9 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
     bool open = ImGui::TreeNodeEx(gameObject->name.c_str(), flags);
     if (ImGui::IsItemClicked())
     {
+        if (selectedSelectable != nullptr) selectedSelectable->OnDeSelect();
         selectedSelectable = gameObject;
+        selectedSelectable->OnSelect();
     }
 
     if (ImGui::BeginDragDropSource())

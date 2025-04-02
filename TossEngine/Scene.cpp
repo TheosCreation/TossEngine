@@ -33,7 +33,7 @@ Scene::Scene(const string& filePath)
 {
     m_filePath = filePath;
 
-    auto& tossEngine = TossEngine::GetInstance(); 
+    auto& tossEngine = TossEngine::GetInstance();
 
     m_lightManager = std::make_unique<LightManager>();
     m_postProcessingFramebuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
@@ -52,7 +52,7 @@ Scene::Scene(const Scene& other)
     m_postProcessingFramebuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
 
     // Copy GameObjectManager (requires a proper copy constructor or Clone() function)
-     
+
     m_gameObjectManager = std::make_unique<GameObjectManager>(this);
     //m_gameObjectManager = std::make_unique<GameObjectManager>(*other.m_gameObjectManager);
     m_SSRQ = std::make_unique<Image>();
@@ -67,13 +67,14 @@ void Scene::reload()
 {
     m_gameObjectManager->clearGameObjects();
     m_lightManager->clearLights();
-    onCreate(); 
+    onCreate();
     onCreateLate();
 }
 
 void Scene::onCreate()
 {
     auto& graphicsEngine = GraphicsEngine::GetInstance();
+    Physics::GetInstance().LoadWorld();
 
     auto& resourceManager = ResourceManager::GetInstance();
     TossEngine::GetInstance().StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
@@ -192,7 +193,7 @@ void Scene::onCreate()
     //skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Back.png");
     //skyboxCubeMapTextureFilePaths.push_back("Resources/Textures/RedEclipse/Front.png");
     //TextureCubeMapPtr skyBoxTexture = resourceManager.createCubeMapTextureFromFile(skyboxCubeMapTextureFilePaths);
-    
+
 
     //Texture2DPtr heightMapTexture = resourceManager.createTexture2DFromFile("Resources/Textures/Heightmap0.jpg");
     //Texture2DPtr shipReflectiveMap = resourceManager.createTexture2DFromFile("Resources/Textures/ReflectionMap_White.png");
@@ -235,7 +236,7 @@ void Scene::onCreate()
     //m_terrain->setShadowShader(m_shadowShader);
     //m_terrain->setGeometryShader(m_terrainGeometryShader);
     //
-    
+
     //Creating skybox object
    //{
    //    auto skyboxObject = m_gameObjectManager->createGameObject<GameObject>();
@@ -405,7 +406,7 @@ void Scene::onCreateLate()
 
 void Scene::onUpdate(float deltaTime)
 {
-    if(deltaTime <= 0.0f) return;
+    if (deltaTime <= 0.0f) return;
 
     m_gameObjectManager->onUpdate(deltaTime);
 }
@@ -419,7 +420,7 @@ void Scene::onFixedUpdate(float fixedDeltaTime)
 {
     if (fixedDeltaTime <= 0.0f) return;
 
-    m_gameObjectManager->onFixedUpdate(fixedDeltaTime); 
+    m_gameObjectManager->onFixedUpdate(fixedDeltaTime);
 }
 
 void Scene::onLateUpdate(float deltaTime)
@@ -464,7 +465,7 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
             }
         }
     }
-    
+
     // Example of Defered Rendering Pipeline
     if (graphicsEngine.getRenderingPath() == RenderingPath::Deferred)
     {
@@ -508,11 +509,14 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         m_gameObjectManager->onTransparencyPass(uniformData);
         m_gameObjectManager->onSkyboxPass(uniformData);
 
-        Physics::GetInstance().DrawDebug(uniformData);
+        if (cameraToRenderOverride)
+        {
+            Physics::GetInstance().DrawDebug(uniformData);
+        }
 
         m_postProcessingFramebuffer->UnBind();
     }
-    
+
     // Example of Forward Rendering Pipeline
     if (graphicsEngine.getRenderingPath() == RenderingPath::Forward)
     {
@@ -527,30 +531,16 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
 
         m_postProcessingFramebuffer->Bind();
 
-        // trying to get debug to show physics
-        //graphicsEngine.setFaceCulling(CullType::BackFace);
-        //graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
-        //graphicsEngine.setDepthFunc(DepthType::Less);
-        //graphicsEngine.setShader(shader);
-        //
-        //
-        //// Render the physics debug
-        //rp3d::DebugRenderer& debugRenderer = m_PhysicsWorld->getDebugRenderer();
-        //auto debugLines = debugRenderer.getLines();
-        //
-        //// Retrieve the instance of the graphics engine
-        //graphicsEngine.setVertexArrayObject(debugLines);
-        //
-        //// Draw the mesh to update the shadow map
-        //graphicsEngine.drawLines(debugLines->getNumIndices());
-        
         m_gameObjectManager->Render(uniformData);
 
         // Render the transparent objects after
         m_gameObjectManager->onTransparencyPass(uniformData);
         m_gameObjectManager->onSkyboxPass(uniformData);
 
-        Physics::GetInstance().DrawDebug(uniformData);
+        if (cameraToRenderOverride)
+        {
+            Physics::GetInstance().DrawDebug(uniformData);
+        }
 
         m_postProcessingFramebuffer->UnBind();
     }
@@ -602,6 +592,7 @@ GameObjectManager* Scene::getObjectManager()
 void Scene::onQuit()
 {
     m_gameObjectManager->clearGameObjects();
+    Physics::GetInstance().UnLoadWorld();
 }
 
 void Scene::Save()
