@@ -51,6 +51,8 @@ public:
 
     virtual void onCollisionEnter(Collider* other) {}
     virtual void onCollisionExit(Collider* other) {}
+    virtual void onTriggerEnter(Collider* other) {}
+    virtual void onTriggerExit(Collider* other) {}
 
     bool Delete(bool deleteSelf = true);
     void Destroy(GameObject* objectToDestroy);

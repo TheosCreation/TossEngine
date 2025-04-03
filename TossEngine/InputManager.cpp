@@ -202,9 +202,9 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
 {
 	Key translatedKey = static_cast<Key>(key);
 
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 	if (ImGui::GetIO().WantCaptureKeyboard)
 	{
-		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 	}
 
 	if (action == GLFW_PRESS && !currentKeyStates[translatedKey]) {
@@ -219,20 +219,10 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
 {
 	MouseButton translatedButton = static_cast<MouseButton>(button);
 
+    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 
     if (ImGui::GetIO().WantCaptureMouse)
     {
-        ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-
-       // ImGuiWindow* hoveredWindow = ImGui::GetCurrentContext()->HoveredWindow;
-        //std::string name = hoveredWindow ? hoveredWindow->Name : "";
-
-        // Allow input for Scene window or if interacting with gizmo
-        //if (name != "Scene" && name != "Game" && !ImGuizmo::IsOver() && !ImGuizmo::IsUsing())
-        //{
-        //    currentMouseStates[translatedButton] = false;
-        //    return;
-        //}
     }
 
 	if (action == GLFW_PRESS && !currentMouseStates[translatedButton]) {
@@ -242,9 +232,3 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
 		currentMouseStates[translatedButton] = false;
 	}
 }
-
-//void InputManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-//{
-//	currentMouseX = xpos;
-//	currentMouseY = ypos;
-//}

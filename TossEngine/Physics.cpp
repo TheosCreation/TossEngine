@@ -23,7 +23,6 @@ void Physics::Update(float deltaTime)
     if (m_world)
     {
         m_world->update(deltaTime);
-        m_world->testCollision(*this);
     }
 
     // Update raycast debug entries lifetime
@@ -220,65 +219,148 @@ RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, flo
     if (isDebug)
     {
         Vector3 endPoint = hitResult.hasHit ? hitResult.point : (origin + direction * maxDistance);
-        float initialLifetime = 1.0f;
         m_raycastDebugEntries.push_back({ origin, endPoint });
     }
 
     return hitResult;
 }
 
-void Physics::onContact(const rp3d::CollisionCallback::CallbackData& data)
-{// Get the number of contact pairs
-    int nbContactPairs = data.getNbContactPairs();
+void Physics::onContact(const rp3d::CollisionCallback::CallbackData& data) {
+    // Build a set for current active collision pairs.
+    std::unordered_set<CollisionPair> currentCollisionPairs;
 
-    // Log if no contact pairs are found
+    int nbContactPairs = data.getNbContactPairs();
     if (nbContactPairs == 0) {
-        std::cerr << "No contact pairs detected." << std::endl;
+        return;
     }
 
-    // Iterate over all the contact pairs
+    // Process each contact pair.
     for (int i = 0; i < nbContactPairs; i++) {
         const rp3d::CollisionCallback::ContactPair& contactPair = data.getContactPair(i);
-
-        // Get the number of contact points for the contact pair
         int nbContactPoints = contactPair.getNbContactPoints();
 
-        // If there are no contact points, log the failure
+        // If no contact points, skip processing this pair.
         if (nbContactPoints == 0) {
-            std::cerr << "Contact pair " << i << " has no contact points!" << std::endl;
+            continue;
         }
 
-        // Proceed only if there are contact points
-        if (nbContactPoints > 0) {
-            // Get the colliders involved in the collision
-            rp3d::Collider* collider1 = contactPair.getCollider1();
-            rp3d::Collider* collider2 = contactPair.getCollider2();
+        // Retrieve the colliders.
+        rp3d::Collider* collider1 = contactPair.getCollider1();
+        rp3d::Collider* collider2 = contactPair.getCollider2();
 
-            // Get the Rigidbody associated with the colliders
+        // Create a CollisionPair and add it to the current set.
+        CollisionPair currentPair{ collider1, collider2 };
+        currentCollisionPairs.insert(currentPair);
+
+        // Get the bodies from the colliders.
+        rp3d::Body* body1 = collider1->getBody();
+        rp3d::Body* body2 = collider2->getBody();
+
+        if (body1 && body2) {
+            // Retrieve the custom Rigidbody components.
+            Rigidbody* customRigidbody1 = static_cast<Rigidbody*>(body1->getUserData());
+            Rigidbody* customRigidbody2 = static_cast<Rigidbody*>(body2->getUserData());
+
+            // Only call OnCollisionEnter if this collision pair is new.
+            if (m_previousCollisionPairs.find(currentPair) == m_previousCollisionPairs.end()) {
+                if (customRigidbody1) {
+                    customRigidbody1->OnCollisionEnter(customRigidbody2);
+                }
+                if (customRigidbody2) {
+                    customRigidbody2->OnCollisionEnter(customRigidbody1);
+                }
+            }
+        }
+        else {
+            std::cerr << "Invalid body detected in contact pair." << std::endl;
+        }
+    }
+
+    // Detect collision exit events:
+    // For any pair that was active in the previous frame but not in the current one, call OnCollisionExit.
+    for (const auto& previousPair : m_previousCollisionPairs) {
+        if (currentCollisionPairs.find(previousPair) == currentCollisionPairs.end()) {
+            rp3d::Collider* collider1 = previousPair.collider1;
+            rp3d::Collider* collider2 = previousPair.collider2;
+
             rp3d::Body* body1 = collider1->getBody();
             rp3d::Body* body2 = collider2->getBody();
 
-            // Check if the bodies are valid
             if (body1 && body2) {
-                // Get the custom Rigidbody components from the bodies
                 Rigidbody* customRigidbody1 = static_cast<Rigidbody*>(body1->getUserData());
                 Rigidbody* customRigidbody2 = static_cast<Rigidbody*>(body2->getUserData());
 
-                // If a custom Rigidbody exists for the first body, call OnCollisionEnter
                 if (customRigidbody1) {
-                    customRigidbody1->OnCollisionEnter(customRigidbody2); // Pass the collision object if needed
+                    customRigidbody1->OnCollisionExit(customRigidbody2);
                 }
-
-                // If a custom Rigidbody exists for the second body, call OnCollisionEnter
                 if (customRigidbody2) {
-                    customRigidbody2->OnCollisionEnter(customRigidbody1); // Pass the collision object if needed
+                    customRigidbody2->OnCollisionExit(customRigidbody1);
                 }
-            }
-            else {
-                std::cerr << "Invalid body detected in contact pair." << std::endl;
             }
         }
     }
+
+    // Update the stored collision pairs for the next simulation step.
+    m_previousCollisionPairs = currentCollisionPairs;
+}
+
+void Physics::onTrigger(const rp3d::OverlapCallback::CallbackData& data) {
+    // Create a set to hold the current trigger pairs.
+    std::unordered_set<TriggerPair> currentTriggerPairs;
+
+    int nbOverlapPairs = data.getNbOverlappingPairs();
+    for (int i = 0; i < nbOverlapPairs; i++) {
+        const rp3d::OverlapCallback::OverlapPair& overlapPair = data.getOverlappingPair(i);
+        rp3d::Collider* collider1 = overlapPair.getCollider1();
+        rp3d::Collider* collider2 = overlapPair.getCollider2();
+
+        // Construct the trigger pair.
+        TriggerPair pair{ collider1, collider2 };
+        currentTriggerPairs.insert(pair);
+
+        // If this pair was not present last frame, it's a new trigger event.
+        if (m_previousTriggerPairs.find(pair) == m_previousTriggerPairs.end()) {
+            rp3d::Body* body1 = collider1->getBody();
+            rp3d::Body* body2 = collider2->getBody();
+
+            if (body1 && body2) {
+                Rigidbody* customRigidbody1 = static_cast<Rigidbody*>(body1->getUserData());
+                Rigidbody* customRigidbody2 = static_cast<Rigidbody*>(body2->getUserData());
+
+                if (customRigidbody1 && collider1->getIsTrigger()) {
+                    customRigidbody1->OnTriggerEnter(customRigidbody2);
+                }
+                if (customRigidbody2 && collider2->getIsTrigger()) {
+                    customRigidbody2->OnTriggerEnter(customRigidbody1);
+                }
+            }
+        }
+    }
+
+    // Now check for pairs that were present last frame but are not in the current frame.
+    for (const auto& pair : m_previousTriggerPairs) {
+        if (currentTriggerPairs.find(pair) == currentTriggerPairs.end()) {
+            rp3d::Collider* collider1 = pair.collider1;
+            rp3d::Collider* collider2 = pair.collider2;
+            rp3d::Body* body1 = collider1->getBody();
+            rp3d::Body* body2 = collider2->getBody();
+
+            if (body1 && body2) {
+                Rigidbody* customRigidbody1 = static_cast<Rigidbody*>(body1->getUserData());
+                Rigidbody* customRigidbody2 = static_cast<Rigidbody*>(body2->getUserData());
+
+                if (customRigidbody1 && collider1->getIsTrigger()) {
+                    customRigidbody1->OnTriggerExit(customRigidbody2);
+                }
+                if (customRigidbody2 && collider2->getIsTrigger()) {
+                    customRigidbody2->OnTriggerExit(customRigidbody1);
+                }
+            }
+        }
+    }
+
+    // Update the stored trigger pairs for the next simulation step.
+    m_previousTriggerPairs = currentTriggerPairs;
 }
 
 void Physics::LoadWorld()
@@ -291,6 +373,7 @@ void Physics::LoadWorld()
     settings.defaultPositionSolverNbIterations = 20;  // Default is usually 6
     settings.defaultVelocitySolverNbIterations = 10;  // Default is usually 4
     m_world = m_commonSettings.createPhysicsWorld(settings);
+    m_world->setEventListener(this);
 
 
     m_world->setIsDebugRenderingEnabled(isDebug);
@@ -312,5 +395,8 @@ void Physics::UnLoadWorld()
         m_commonSettings.destroyPhysicsWorld(m_world);
         m_world = nullptr;
         m_raycastDebugEntries.clear();
+
+        m_previousTriggerPairs.clear();
+        m_previousCollisionPairs.clear();
     }
 }

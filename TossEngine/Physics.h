@@ -6,6 +6,7 @@
 
 #include "Utils.h"
 #include <vector>
+#include <unordered_set>
 
 class Vector3;
 class Rigidbody;
@@ -43,7 +44,52 @@ struct TOSSENGINE_API RaycastDebugEntry {
     float lifetime = 1.0f;
 };
 
-class TOSSENGINE_API Physics : public rp3d::CollisionCallback
+struct TriggerPair {
+    rp3d::Collider* collider1;
+    rp3d::Collider* collider2;
+
+    bool operator==(const TriggerPair& other) const {
+        return (collider1 == other.collider1 && collider2 == other.collider2) ||
+            (collider1 == other.collider2 && collider2 == other.collider1);
+    }
+};
+
+// Custom hash function for TriggerPair.
+namespace std {
+    template <>
+    struct hash<TriggerPair> {
+        std::size_t operator()(const TriggerPair& pair) const {
+            auto h1 = std::hash<rp3d::Collider*>()(pair.collider1);
+            auto h2 = std::hash<rp3d::Collider*>()(pair.collider2);
+            return h1 ^ h2;
+        }
+    };
+}
+// A structure representing a collision pair (order independent)
+struct CollisionPair {
+    rp3d::Collider* collider1;
+    rp3d::Collider* collider2;
+
+    // Define equality as order independent.
+    bool operator==(const CollisionPair& other) const {
+        return (collider1 == other.collider1 && collider2 == other.collider2) ||
+            (collider1 == other.collider2 && collider2 == other.collider1);
+    }
+};
+
+// Custom hash function for CollisionPair.
+namespace std {
+    template <>
+    struct hash<CollisionPair> {
+        std::size_t operator()(const CollisionPair& pair) const {
+            // Combine the hash of both pointers. The XOR approach is simple but effective.
+            auto h1 = std::hash<rp3d::Collider*>()(pair.collider1);
+            auto h2 = std::hash<rp3d::Collider*>()(pair.collider2);
+            return h1 ^ h2;
+        }
+    };
+}
+class TOSSENGINE_API Physics : public rp3d::EventListener
 {
 public:
     static Physics& GetInstance()
@@ -73,6 +119,7 @@ public:
     void DrawDebug(UniformData data);
 
     void onContact(const rp3d::CollisionCallback::CallbackData& data) override;
+    void onTrigger(const rp3d::OverlapCallback::CallbackData& data) override;
     void LoadWorld();
     void UnLoadWorld();
 
@@ -85,6 +132,9 @@ private:
     PhysicsWorld* m_world = nullptr;
     PhysicsMaterialPtr m_defaultPhysicsMaterial = nullptr;
     Vector3 m_gravity = Vector3(0.0f, -9.81f, 0.0f);
+
+    std::unordered_set<TriggerPair> m_previousTriggerPairs;
+    std::unordered_set<CollisionPair> m_previousCollisionPairs;
 
     uint vertexCount = 0;
     ShaderPtr debugShader = nullptr;

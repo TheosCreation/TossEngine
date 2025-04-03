@@ -117,6 +117,8 @@ public:
 
     void CallOnCollisionEnterCallbacks(Collider* other);
     void CallOnCollisionExitCallbacks(Collider* other);
+    void CallOnTriggerEnterCallbacks(Collider* other);
+    void CallOnTriggerExitCallbacks(Collider* other);
 
     // Add components to the game object
     template <typename Component>

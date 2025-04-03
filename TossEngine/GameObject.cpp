@@ -304,6 +304,20 @@ void GameObject::CallOnCollisionExitCallbacks(Collider* other)
     }
 }
 
+void GameObject::CallOnTriggerEnterCallbacks(Collider* other)
+{
+    for (auto& pair : m_components) {
+        pair.second->onTriggerEnter(other);
+    }
+}
+
+void GameObject::CallOnTriggerExitCallbacks(Collider* other)
+{
+    for (auto& pair : m_components) {
+        pair.second->onTriggerExit(other);
+    }
+}
+
 Component* GameObject::addComponent(string componentType, const json& data)
 {
     auto component = ComponentRegistry::GetInstance().createComponent(componentType);

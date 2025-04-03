@@ -248,6 +248,7 @@ void Collider::UpdateRP3Collider()
     }
 
     m_Collider = rb->addCollider(m_Shape, rp3d::Transform::identity());
+    m_Collider->setIsTrigger(m_isTrigger);
     m_Collider->setUserData(this);
 }
 
