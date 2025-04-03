@@ -195,27 +195,43 @@ void Physics::DrawDebug(UniformData data)
 
 }
 
-RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, float maxDistance)
+RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, float maxDistance, LayerBit hitLayers)
 {
     Ray ray(static_cast<rp3d::Vector3>(origin), static_cast<rp3d::Vector3>(direction));
 
     RaycastHit hitResult;
     RaycastCallback callback;
 
-    m_world->raycast(ray, &callback);
+    m_world->raycast(ray, &callback, hitLayers);
 
-    // Fill out result manually
-    hitResult.hasHit = callback.hit;
-    hitResult.point = Vector3(callback.point);
-    hitResult.normal = Vector3(callback.normal);
-    hitResult.distance = callback.hit ? Vector3::Distance(origin, hitResult.point) : maxDistance;
-
+    // If a hit occurred, compute the distance.
     if (callback.hit)
     {
+        float distance = Vector3::Distance(origin, Vector3(callback.point));
+        // If the hit is farther than maxDistance, treat it as a miss.
+        if (distance > maxDistance)
+        {
+            callback.hit = false;
+        }
+    }
+
+    // Populate the hit result.
+    hitResult.hasHit = callback.hit;
+    if (callback.hit)
+    {
+        hitResult.point = Vector3(callback.point);
+        hitResult.normal = Vector3(callback.normal);
+        hitResult.distance = Vector3::Distance(origin, hitResult.point);
         hitResult.collider = static_cast<Collider*>(callback.collider);
         hitResult.rigidbody = static_cast<Rigidbody*>(callback.rigidbody);
     }
+    else
+    {
+        // No valid hit within maxDistance.
+        hitResult.distance = maxDistance;
+    }
 
+    // Debug visualization.
     if (isDebug)
     {
         Vector3 endPoint = hitResult.hasHit ? hitResult.point : (origin + direction * maxDistance);

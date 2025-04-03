@@ -5,6 +5,7 @@
 #pragma warning(pop)
 
 #include "Utils.h"
+#include "LayerManager.h"
 #include <vector>
 #include <unordered_set>
 
@@ -114,7 +115,7 @@ public:
     Vector3 GetGravity() const { return m_gravity; }
 
 
-    RaycastHit Raycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f);
+    RaycastHit Raycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f, LayerBit hitLayers = 0xFFFFFFFF);
 
     void DrawDebug(UniformData data);
 

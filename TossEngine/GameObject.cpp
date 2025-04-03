@@ -61,6 +61,7 @@ json GameObject::serialize() const
         {"type", getClassName(typeid(*this))}, // Use typeid to get the class name
         {"id", m_id},
         {"name", name},
+        {"layer", m_layer},
         {"tag", tag},
         { "transform", m_transform.serialize() },
         {"components", componentsJson}
@@ -72,6 +73,10 @@ void GameObject::deserialize(const json& data)
     if (data.contains("name"))
     {
         name = data["name"];
+    }
+    if (data.contains("layer"))
+    {
+        m_layer = data["layer"];
     }
     if (data.contains("tag"))
     {
@@ -114,6 +119,45 @@ void GameObject::OnInspectorGUI()
     if (ImGui::InputText("Tag", tagBuffer, sizeof(tagBuffer)))
     {
         tag = std::string(tagBuffer);
+    }
+    
+    // Retrieve available layers from the LayerManager.
+    LayerManager& layerManager = LayerManager::GetInstance();
+    const auto& availableLayers = layerManager.GetLayers();
+
+    // Build a vector of all available layer names.
+    std::vector<std::string> allLayerNames;
+    for (const auto& pair : availableLayers) {
+        allLayerNames.push_back(pair.first);
+    }
+
+    // If no layer is set, default to "Default".
+    if (m_layer.empty()) {
+        m_layer = "Default";
+    }
+
+    // Find the index of the currently selected layer.
+    int selectedIndex = 0;
+    for (int i = 0; i < allLayerNames.size(); i++) {
+        if (allLayerNames[i] == m_layer) {
+            selectedIndex = i;
+            break;
+        }
+    }
+
+    // Display the combo box using the currently selected layer as the preview.
+    if (ImGui::BeginCombo("Layer", m_layer.c_str())) {
+        for (int i = 0; i < allLayerNames.size(); i++) {
+            bool isSelected = (selectedIndex == i);
+            if (ImGui::Selectable(allLayerNames[i].c_str(), isSelected)) {
+                m_layer = allLayerNames[i];
+                selectedIndex = i;
+            }
+            if (isSelected) {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
     }
 
     ImGui::Separator();
@@ -205,6 +249,11 @@ void GameObject::OnDeSelect()
 size_t GameObject::getId()
 {
     return m_id;
+}
+
+LayerBit GameObject::getLayer()
+{
+    return LayerManager::GetInstance().GetLayer(m_layer);
 }
 
 void GameObject::setId(size_t id)

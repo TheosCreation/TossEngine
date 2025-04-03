@@ -5,6 +5,7 @@
 
 class Mat4;
 class Quaternion;
+class Vector2;
 class Vector4;
 
 class TOSSENGINE_API Vector3 {
@@ -16,6 +17,7 @@ public:
     constexpr Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
     Vector3(const glm::vec3& vec) : x(vec.x), y(vec.y), z(vec.z) {}
     Vector3(const reactphysics3d::Vector3& vec) : x(vec.x), y(vec.y), z(vec.z) {}
+    Vector3(const Vector2& vec);
 
     float* Data() { return &x; }
     const float* Data() const {
@@ -50,6 +52,12 @@ public:
     operator glm::vec3() const { return glm::vec3(x, y, z); }
 
     operator reactphysics3d::Vector3() const { return reactphysics3d::Vector3(x, y, z); }
+
+    operator std::string() const {
+        std::ostringstream oss;
+        oss << "(" << x << ", " << y << ", " << z << ")";
+        return oss.str();
+    }
 
     Vector3 operator-() const {
         return Vector3(-x, -y, -z);

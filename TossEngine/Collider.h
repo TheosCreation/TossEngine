@@ -37,7 +37,8 @@ private:
     float m_height = 1.0f;
     bool m_isTrigger = false;
 
-    float m_newFieldTest = 1.0f;
+    float m_newFieldTest = 1.0f; 
+    vector<std::string> m_layerNames;
 
     Rigidbody* m_Rigidbody = nullptr;
     PhysicsMaterialPtr m_physicsMaterial = nullptr;

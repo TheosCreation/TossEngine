@@ -13,6 +13,8 @@ json Collider::serialize() const
         data["physicsMaterial"] = m_physicsMaterial->getUniqueID();
     }
 
+    data["layerNames"] = m_layerNames;
+
     data["isTrigger"] = m_isTrigger;
 
     if (m_Shape)
@@ -46,6 +48,13 @@ void Collider::deserialize(const json& data)
         if (physicsMaterial)
         {
             m_physicsMaterial = physicsMaterial;
+        }
+    }
+
+    if (data.contains("layerNames")) {
+        m_layerNames = data["layerNames"].get<std::vector<std::string>>();
+        if (m_Rigidbody != nullptr) {
+            UpdateRP3Collider();
         }
     }
 
@@ -95,6 +104,24 @@ void Collider::OnInspectorGUI()
     ImGui::Checkbox("Is Trigger", &m_isTrigger);
 
     ResourceSerializedField(m_physicsMaterial, "Physics Material");
+
+    // Get available layers from the LayerManager.
+    LayerManager& layerManager = LayerManager::GetInstance();
+    const auto& layers = layerManager.GetLayers();
+
+    // Build a vector copy of available layer names.
+    std::vector<std::string> layerNames;
+    for (const auto& pair : layers) {
+        layerNames.push_back(pair.first);
+    }
+
+    if (LayerSerializeField("Include Layers", m_layerNames))
+    {
+        if (m_Rigidbody != nullptr) {
+            UpdateRP3Collider();
+        }
+    }
+    ImGui::Separator();
 
     // List of shape types for the dropdown menu
     static const char* shapeTypes[] = { "Sphere", "Capsule", "Box" };
@@ -250,6 +277,22 @@ void Collider::UpdateRP3Collider()
     m_Collider = rb->addCollider(m_Shape, rp3d::Transform::identity());
     m_Collider->setIsTrigger(m_isTrigger);
     m_Collider->setUserData(this);
+
+    // Ensure there is always at least the "Default" layer.
+    if (m_layerNames.empty()) {
+        m_layerNames.push_back("Default");
+    }
+
+    LayerManager& layerManager = LayerManager::GetInstance();
+    unsigned short maskBits = 0;
+    for (const auto& layerName : m_layerNames) {
+        maskBits |= static_cast<unsigned short>(layerManager.GetLayer(layerName));
+    }
+
+    // Use the owner's layer as the category bits.
+    m_Collider->setCollisionCategoryBits(m_owner->getLayer());
+    // Set the collision mask bits based on the selected layers.
+    m_Collider->setCollideWithMaskBits(maskBits);
 }
 
 

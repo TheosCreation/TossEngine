@@ -48,6 +48,13 @@ void EditorPlayer::Update(float deltaTime)
         Editor->DeleteSelected();
     }
 
+    if (inputManager.isMousePressed(MouseButtonLeft))
+    {
+        Vector2 mousePosition = inputManager.getMousePosition();
+
+        Debug::Log(m_cam->screenToWorldPoint(mousePosition));
+    }
+
     if (!inputManager.isGameModeEnabled())
         return;
 

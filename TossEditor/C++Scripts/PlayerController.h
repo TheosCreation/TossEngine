@@ -1,6 +1,5 @@
 #pragma once
 #include <TossEngine.h>
-#include <All.h>
 
 class Camera;
 class Rigidbody;
@@ -12,11 +11,13 @@ public:
     PlayerController() = default;
     ~PlayerController() = default;
 
-    virtual void OnInspectorGUI() override;
+    void OnInspectorGUI() override;
 
     virtual void onCreate() override;
     virtual void onStart() override;
     virtual void onUpdate(float deltaTime) override;
+    json serialize() const override;
+    void deserialize(const json& data) override;
 
     void onCollisionEnter(Collider* other) override;
     void onCollisionExit(Collider* other) override;
@@ -40,6 +41,8 @@ private:
     float m_zoomSpeed = 0.5f; // Speed of zooming
     bool m_wireframeMode = false; // Flag for wireframe mode
     bool m_onGround = false;
+
+    vector<std::string> m_layerNames;
 
     Camera* m_cam = nullptr; // Pointer to the main camera
     Rigidbody* m_rigidBody = nullptr; // Pointer to the rigidbody

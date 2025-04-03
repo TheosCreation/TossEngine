@@ -1,6 +1,11 @@
 #include "Vector3.h"
+#include "Vector2.h"
 #include "Mat4.h"
 #include "Quaternion.h"
+
+Vector3::Vector3(const Vector2& vec) : x(vec.x), y(vec.y), z(0.0f)
+{
+}
 
 Mat4 Vector3::ToTranslation() const
 {

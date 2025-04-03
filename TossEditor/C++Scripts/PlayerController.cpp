@@ -6,18 +6,24 @@
 
 void PlayerController::OnInspectorGUI()
 {
-    ImGui::Text("Player Controller Inspector - ID: %p", this);
-    ImGui::Separator();
+    Component::OnInspectorGUI();
 
-    ImGui::DragFloat("Movement Speed", &m_movementSpeed, 0.1f);
-    ImGui::DragFloat("Acceleration", &m_acceleration, 0.1f);
-    ImGui::DragFloat("Air Acceleration", &m_airAcceleration, 0.1f);
-    ImGui::DragFloat("Jump Force", &m_jumpForce, 1.0f);
-    ImGui::DragFloat("Jump Cooldown", &m_jumpForce, 0.1f, 0.1f, 2.0f);
+    FloatSlider("Movement Speed", m_movementSpeed, 0.1f);
+    FloatSlider("Acceleration", m_acceleration, 0.1f);
+    FloatSlider("Air Acceleration", m_airAcceleration, 0.1f);
+    FloatSlider("Jump Force", m_jumpForce, 1.0f);
+    FloatSlider("Jump Cooldown", m_jumpForce, 0.1f, 0.1f, 2.0f);
+
+    vector<std::string> layers = m_layerNames;
+    if (LayerSerializeField("Raycast hit layers", layers))
+    {
+        m_layerNames = layers;
+    }
 }
 
 void PlayerController::onCreate()
 {
+    m_layerNames.push_back("Default");
 
     auto& resourceManager = ResourceManager::GetInstance();
     fireSound = resourceManager.createSound(SoundDesc(), "Fire", "Resources/Audio/fire.ogg");
@@ -69,7 +75,12 @@ void PlayerController::onUpdate(float deltaTime)
     // Toggle wireframe mode on/off
     if (inputManager.isKeyPressed(Key::KeyR))
     {
-        RaycastHit hit = Physics::GetInstance().Raycast(m_cam->getOwner()->m_transform.position, m_cam->getOwner()->m_transform.GetForward());
+        unsigned short maskBits = 0;
+        for (const auto& layerName : m_layerNames) {
+            maskBits |= static_cast<unsigned short>(LayerManager::GetInstance().GetLayer(layerName));
+        }
+
+        RaycastHit hit = Physics::GetInstance().Raycast(m_cam->getOwner()->m_transform.position, m_cam->getOwner()->m_transform.GetForward(), 1000.0f, maskBits);
         if (hit.hasHit)
         {
             Debug::Log(hit.collider->getOwner()->name);
@@ -145,6 +156,22 @@ void PlayerController::onUpdate(float deltaTime)
             Vector3 force = accelerationStep;
             m_rigidBody->AddForce(force);
         }
+    }
+}
+
+json PlayerController::serialize() const
+{
+    json data;
+    data["type"] = getClassName(typeid(*this)); // Store the component type
+    data["layerNames"] = m_layerNames;
+
+    return data;
+}
+
+void PlayerController::deserialize(const json& data)
+{
+    if (data.contains("layerNames")) {
+        m_layerNames = data["layerNames"].get<std::vector<std::string>>();
     }
 }
 

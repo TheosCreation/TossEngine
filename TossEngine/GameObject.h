@@ -5,6 +5,7 @@
 #include "Component.h"
 #include "GameObjectManager.h"
 #include "ISelectable.h"
+#include "LayerManager.h"
 
 class Collider;
 
@@ -29,6 +30,7 @@ public:
 
     string name = "GameObject";
     string tag = "";
+    string m_layer = "Default";
     Transform m_transform;
 
     // Serialize the GameObject to JSON
@@ -46,6 +48,7 @@ public:
      * @return The unique identifier of the GameObject.
      */
     size_t getId();
+    LayerBit getLayer();
 
     /**
      * @brief Sets the unique identifier of the GameObject.

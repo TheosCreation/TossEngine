@@ -141,6 +141,7 @@ void TossEditor::Exit()
 void TossEditor::onUpdateInternal()
 {
     TossEngine& tossEngine = TossEngine::GetInstance();
+    InputManager& inputManager = InputManager::GetInstance();
     GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
     ResourceManager& resourceManager = ResourceManager::GetInstance();
 
@@ -157,7 +158,6 @@ void TossEditor::onUpdateInternal()
 
     if (m_currentScene)
     {
-        InputManager& inputManager = InputManager::GetInstance();
         inputManager.onUpdate();
         if (m_gameRunning)
         {
@@ -311,14 +311,14 @@ void TossEditor::onUpdateInternal()
         if (m_currentScene)
         {
             Vector2 newSize(availSize.x, availSize.y);
-
+            Camera* camera = m_player->getCamera();
             // Resize the scene's framebuffer to match the current window size.
-            m_player->getCamera()->setScreenArea(newSize);
+            camera->setScreenArea(newSize);
             m_currentScene->onResize(newSize);
             m_sceneFrameBuffer->onResize(newSize);
 
             // Now update the scene rendering with the current camera.
-            m_currentScene->onGraphicsUpdate(m_player->getCamera(), m_sceneFrameBuffer);
+            m_currentScene->onGraphicsUpdate(camera, m_sceneFrameBuffer);
 
             // Get the updated texture after rendering.
             ImTextureID sceneViewTexture = (ImTextureID)m_sceneFrameBuffer->RenderTexture->getId();
@@ -379,6 +379,81 @@ void TossEditor::onUpdateInternal()
         }
 
         ImGui::Separator();
+
+        // --- Layer Manager Settings ---
+        if (ImGui::CollapsingHeader("Layer Manager Settings"))
+        {
+            // Retrieve the singleton instance.
+            LayerManager& layerManager = LayerManager::GetInstance();
+            const auto& layers = layerManager.GetLayers();
+
+            ImGui::Text("Current Layers:");
+
+            // Create a vector copy of the keys to iterate safely.
+            std::vector<std::string> layerNames;
+            for (const auto& pair : layers)
+            {
+                layerNames.push_back(pair.first);
+            }
+
+            // Iterate over the copied list of layer names.
+            for (const auto& name : layerNames)
+            {
+                ImGui::PushID(name.c_str());
+                // Display the layer name and its bit value.
+                ImGui::Text("%s : 0x%04X", name.c_str(), layers.at(name));
+
+                bool deleteClicked = false;
+                if (name != "Default")
+                {
+                    ImGui::SameLine();
+                    if (ImGui::SmallButton("Delete"))
+                    {
+                        deleteClicked = true;
+                    }
+                }
+                ImGui::PopID();
+
+                if (deleteClicked)
+                {
+                    // Remove the layer from the actual container.
+                    if (layerManager.RemoveLayer(name))
+                    {
+                        Debug::Log("Layer deleted: " + name);
+                    }
+                    else
+                    {
+                        Debug::LogWarning("Failed to delete layer: " + name);
+                    }
+                    // Break out of the loop after a deletion to avoid further iteration over an outdated list.
+                    break;
+                }
+            }
+
+            // Input for a new layer name.
+            static char newLayerName[128] = "";
+            ImGui::InputText("New Layer Name", newLayerName, IM_ARRAYSIZE(newLayerName));
+
+            // Button to add the new layer.
+            if (ImGui::Button("Add Layer"))
+            {
+                if (strlen(newLayerName) > 0)
+                {
+                    try {
+                        layerManager.GetLayer(newLayerName);
+                        Debug::Log("Added new layer: " + std::string(newLayerName));
+                        // Clear the text after adding.
+                        newLayerName[0] = '\0';
+                    }
+                    catch (const std::exception& e)
+                    {
+                        Debug::LogError("Error adding layer: " + std::string(e.what()));
+                    }
+                }
+            }
+        }
+        ImGui::Separator();
+
         ImGui::Text("Player Settings");
 
         ImGui::Text("All Scene File Paths:");
@@ -1026,6 +1101,9 @@ void TossEditor::Save()
     {
         m_currentScene->Save();
     }
+    LayerManager& layerManager = LayerManager::GetInstance();
+    json data = layerManager.serialize(); 
+    JsonUtility::SaveJsonFile("LayerManager.json", data);
 }
 
 void TossEditor::OpenSceneViaFileSystem()

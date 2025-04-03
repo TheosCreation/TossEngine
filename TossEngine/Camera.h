@@ -87,6 +87,13 @@ public:
     Vector3 getPosition();
     Vector3 getFacingDirection();
 
+    /**
+     * @brief Gets a position in world space from a screen position from this camera.
+     * @param position A 2D screen space point in pixels, plus a z coordinate for the distance from the camera in world units. The lower left pixel of the screen is (0,0). The upper right pixel of the screen is (screen width in pixels - 1, screen height in pixels - 1)..
+     */
+    Vector3 screenToWorldPoint(Vector3 position);
+    Vector3 screenToWorldPoint(Vector2 position);
+
 private:
     /**
      * @brief Computes the projection matrix based on camera parameters.
@@ -106,7 +113,7 @@ private:
     float m_fov = 90.0f;                //The field of view (FOV) angle.
     const float radius = 10.0f;         //The radius of the camera's orbit.
     CameraType m_type = CameraType::Perspective;  //The type of the camera (Perspective or Orthographic).
-    Rect m_screenArea;                   //The screen area of the camera.
+    Vector4 m_screenArea;                   //The screen area of the camera.
 };
 
 REGISTER_COMPONENT(Camera);

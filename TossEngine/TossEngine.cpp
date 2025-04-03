@@ -22,6 +22,12 @@ void TossEngine::Init()
     m_scriptLoader = new ScriptLoader();
     coroutineThread = std::thread(&TossEngine::CoroutineRunner, this);
 
+    LayerManager& layerManager = LayerManager::GetInstance();
+    json data = JsonUtility::OpenJsonFile("LayerManager.json");
+    if (!data.empty())
+    {
+        layerManager.deserialize(data);
+    }
 }
 
 void TossEngine::LoadGenericResources()

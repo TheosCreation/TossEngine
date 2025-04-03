@@ -45,7 +45,12 @@ public:
 
     virtual void onDestroy() { }
 
-    virtual void OnInspectorGUI(){}
+    virtual void OnInspectorGUI()
+    {
+        string inspectorName = getClassName(typeid(*this)) + " Inspector - ID: %p";
+        ImGui::Text(inspectorName.c_str(), this);
+        ImGui::Separator();
+    }
     virtual void OnGameObjectSelected(){}
     virtual void OnGameObjectDeSelected() {}
 

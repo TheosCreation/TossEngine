@@ -41,6 +41,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Framebuffer.h"
 #include "GameObject.h"
 #include "GameObjectManager.h"
+#include "LayerManager.h"
 #include "Renderer.h"
 
 #include "AudioEngine.h"
@@ -48,3 +49,4 @@ Mail : theo.morris@mds.ac.nz
 
 #include "CoroutineTask.h"
 #include "JsonUtility.h"
+#include <imgui.h>
