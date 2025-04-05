@@ -5,7 +5,6 @@
 #include "GraphicsEngine.h"
 #include "EditorPlayer.h"
 #include "ISelectable.h"
-#include "ScriptLoader.h"
 #include "FileWatcher.h"
 #include "Camera.h"
 #include <imgui.h>
@@ -107,6 +106,11 @@ void TossEditor::onCreate()
     if (!filePath.empty()) // If a file was selected
     {
         auto scene = std::make_shared<Scene>(filePath);
+        OpenScene(scene);
+    }
+    else
+    {
+        auto scene = std::make_shared<Scene>("Scenes/Scene.json");
         OpenScene(scene);
     }
 
@@ -222,6 +226,11 @@ void TossEditor::onUpdateInternal()
     {
         if (ImGui::BeginMenu("File"))
         {
+            if (ImGui::MenuItem("New", "CTRL+N"))
+            {
+                CreateSceneFileViaFileSystem();
+            }
+            ImGui::Separator();
             if (ImGui::MenuItem("Open", "CTRL+0"))
             {
                 OpenSceneViaFileSystem();
@@ -646,6 +655,16 @@ void TossEditor::onUpdateInternal()
                 ImGui::CloseCurrentPopup();
             }
 
+            if (ImGui::MenuItem("Material")) {
+                openMaterialPopupNextFrame = true;
+                ImGui::CloseCurrentPopup();
+            }
+            
+            if (ImGui::MenuItem("Cubemap Texture")) {
+                openCubeMapPopupNextFrame = true;
+                ImGui::CloseCurrentPopup();
+            }
+
             if (ImGui::MenuItem("Shader")) {
                 shaderVertPath = TossEngine::GetInstance().openFileDialog("*.vert");
                 if (!shaderVertPath.empty()) {
@@ -702,7 +721,154 @@ void TossEditor::onUpdateInternal()
     }
     ImGui::End();
 
-    // In the same frame, open the popup if flagged
+    // In the same frame, open the popups if flagged
+    if (openMaterialPopupNextFrame) {
+        ImGui::OpenPopup("Select Shader");
+        openMaterialPopupNextFrame = false;
+    }
+    static char materialNameBuffer[64] = ""; // buffer for entering the material name
+
+    if (ImGui::BeginPopupModal("Select Shader", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        std::string previewLabel = (shader) ? shader->getUniqueID() : "None";
+
+        if (ImGui::BeginCombo("Shader", previewLabel.c_str()))
+        {
+            bool noneSelected = (shader == nullptr);
+            if (ImGui::Selectable("None", noneSelected))
+            {
+                shader = nullptr;
+                resourceManager.SetSelectedResource(nullptr);
+            }
+
+            auto& resources = resourceManager.GetAllResources();
+            for (const auto& [id, resource] : resources)
+            {
+                auto casted = std::dynamic_pointer_cast<Shader>(resource);
+                if (casted)
+                {
+                    bool isSelected = (shader && shader->getUniqueID() == id);
+                    if (ImGui::Selectable(id.c_str(), isSelected))
+                    {
+                        shader = casted;
+                    }
+
+                    if (isSelected)
+                        ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
+
+        ImGui::Spacing();
+        ImGui::InputText("Material Name", materialNameBuffer, IM_ARRAYSIZE(materialNameBuffer));
+
+        // Only enable the Create button if valid inputs are present
+        bool canCreate = shader && strlen(materialNameBuffer) > 0;
+        if (!canCreate)
+            ImGui::BeginDisabled();
+
+        if (ImGui::Button("Create Material"))
+        {
+            std::string name = materialNameBuffer;
+            MaterialDesc materialDesc;
+            materialDesc.shaderId = shader->getUniqueID();
+            if (resourceManager.createMaterial(materialDesc, name))
+            {
+                Debug::Log("Created material: " + name + " using shader: " + shader->getUniqueID());
+                ImGui::CloseCurrentPopup();
+                materialNameBuffer[0] = '\0'; // Clear input field after creation
+            }
+            else
+            {
+                Debug::LogError("Failed to create material: " + name);
+            }
+        }
+
+        if (!canCreate)
+            ImGui::EndDisabled();
+
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel"))
+        {
+            ImGui::CloseCurrentPopup();
+            materialNameBuffer[0] = '\0';
+        }
+
+        ImGui::EndPopup();
+    }
+
+    static char cubemapNameBuffer[64] = "NewCubemap";
+    static bool filesSelected = false;  // To track if the files are selected
+    static std::vector<std::string> cubemapFilePaths;  // Store file paths for the cubemap faces
+
+    if (openCubeMapPopupNextFrame)
+    {
+        ImGui::OpenPopup("Create Cubemap Texture");
+        openCubeMapPopupNextFrame = false;
+    }
+
+    if (ImGui::BeginPopupModal("Create Cubemap Texture", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::InputText("Cubemap Name", cubemapNameBuffer, IM_ARRAYSIZE(cubemapNameBuffer));
+
+        // If files aren't selected yet, allow the user to pick files
+        if (!filesSelected)
+        {
+            // Ensure we don't call the file dialog multiple times in a frame
+            if (cubemapFilePaths.size() < 6)
+            {
+                // Loop to select all 6 faces
+                for (int i = cubemapFilePaths.size(); i < 6; ++i)
+                {
+                    std::string filePath = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;");
+                    if (!filePath.empty())
+                    {
+                        std::filesystem::path root = getProjectRoot();
+                        std::filesystem::path relativePath = std::filesystem::relative(filePath, root);
+                        cubemapFilePaths.push_back(relativePath.string());  // Store selected file path
+                    }
+                    else
+                    {
+                        break;  // Stop file selection if user cancels
+                    }
+                }
+
+                // If all 6 faces have been selected, set filesSelected to true
+                if (cubemapFilePaths.size() == 6)
+                {
+                    filesSelected = true;
+                }
+            }
+        }
+
+        if (ImGui::Button("Create") && cubemapFilePaths.size() == 6)
+        {
+            std::string name = cubemapNameBuffer;
+            
+
+            // Call the function to create the cubemap
+            resourceManager.createCubeMapTextureFromFile(cubemapFilePaths, name);
+
+            Debug::Log("Created Cubemap Texture: " + name);
+            ImGui::CloseCurrentPopup(); // Close the popup on success
+            // Clear buffer
+            cubemapNameBuffer[0] = '\0'; // Reset name input buffer
+            // Clear file paths and reset the selection state for next use
+            cubemapFilePaths.clear();
+            filesSelected = false;
+        }
+
+        // Make sure the "Cancel" button works
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
     if (openMeshPopupNextFrame) {
         ImGui::OpenPopup("Enter Mesh ID");
         openMeshPopupNextFrame = false;
@@ -1104,6 +1270,10 @@ void TossEditor::Save()
     LayerManager& layerManager = LayerManager::GetInstance();
     json data = layerManager.serialize(); 
     JsonUtility::SaveJsonFile("LayerManager.json", data);
+}
+
+void TossEditor::CreateSceneFileViaFileSystem()
+{
 }
 
 void TossEditor::OpenSceneViaFileSystem()

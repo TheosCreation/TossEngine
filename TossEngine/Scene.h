@@ -33,7 +33,7 @@ public:
     /**
      * @brief Constructor for the Scene class.
      *
-     * @param game A pointer to the Game instance, allowing access to game-wide functionalities.
+     * @param filePath A filepath to save the scene to when saving or loading
      */
     Scene(const string& filePath);
 
@@ -125,22 +125,9 @@ protected:
     MaterialPtr m_deferredSSRQMaterial = nullptr;
     MaterialPtr m_postProcessSSRQMaterial = nullptr;
 
-    ShaderPtr m_solidColorMeshShader = nullptr; /**< @brief Shader for rendering solid color meshes. */
-    ShaderPtr m_particleSystemShader = nullptr; /**< @brief Shader for rendering particle systems. */
-    ShaderPtr m_shadowShader = nullptr; /**< @brief Shader for rendering shadows. */
-    ShaderPtr m_shadowInstancedShader = nullptr; /**< @brief Shader for rendering instanced shadows. */
-    ShaderPtr m_meshGeometryShader = nullptr; /**< @brief Shader for rendering mesh geometries. */
-    // ShaderPtr m_meshLightingShader = nullptr; // Shader for lighting meshes.
-    ShaderPtr m_instancedmeshGeometryShader = nullptr; /**< @brief Shader for rendering instanced meshes. */
-    ShaderPtr m_terrainGeometryShader = nullptr; /**< @brief Shader for rendering terrain geometries. */
-    ShaderPtr m_computeShader = nullptr; /**< @brief Shader for compute operations. */
-
-    unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the GameObject system managing game entities. */
+    unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the GameObject system managing game objects. */
     FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
     unique_ptr<Image> m_SSRQ;
 
     unique_ptr<LightManager> m_lightManager = nullptr;
-
-    Player* m_player;
-
 };

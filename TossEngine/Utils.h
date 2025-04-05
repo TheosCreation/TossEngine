@@ -273,7 +273,8 @@ struct UniformBinding {
 
 struct MaterialDesc
 {
-    std::vector<UniformBinding> uniformBindings;
+    string shaderId;
+    json serializedData;
 };
 
 struct PhysicsMaterialDesc

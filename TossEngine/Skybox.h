@@ -30,8 +30,7 @@ public:
     {
         Renderer::OnInspectorGUI();
 
-        ResourceSerializedField(m_mesh, "Mesh");
-        ResourceSerializedField(m_texture, "CubeMapTexture");
+        ResourceAssignableField(m_mesh, "Mesh");
     }
 
     /**
@@ -41,13 +40,10 @@ public:
 
     void Render(UniformData data, RenderingPath renderPath) override;
 
-    TexturePtr getTexture();
-    void setTexture(TexturePtr texture);
     void setMesh(MeshPtr mesh);
 
 private:
     MeshPtr m_mesh;
-    TexturePtr m_texture;
 }; 
 
 REGISTER_COMPONENT(Skybox);

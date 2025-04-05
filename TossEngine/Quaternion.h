@@ -40,4 +40,6 @@ public:
 
     // Rotate a vector
     Vector3 operator*(const Vector3& v) const;
+
+    static Quaternion FromEuler(Vector3 eulerAngles);
 };

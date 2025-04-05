@@ -103,7 +103,7 @@ void Collider::OnInspectorGUI()
 
     ImGui::Checkbox("Is Trigger", &m_isTrigger);
 
-    ResourceSerializedField(m_physicsMaterial, "Physics Material");
+    ResourceAssignableField(m_physicsMaterial, "Physics Material");
 
     // Get available layers from the LayerManager.
     LayerManager& layerManager = LayerManager::GetInstance();
@@ -115,7 +115,7 @@ void Collider::OnInspectorGUI()
         layerNames.push_back(pair.first);
     }
 
-    if (LayerSerializeField("Include Layers", m_layerNames))
+    if (LayerDropdownField("Include Layers", m_layerNames))
     {
         if (m_Rigidbody != nullptr) {
             UpdateRP3Collider();

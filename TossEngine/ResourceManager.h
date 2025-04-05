@@ -36,7 +36,7 @@ public:
 
     ShaderPtr getShader(const std::string& uniqueId);
     MeshPtr getMesh(const std::string& uniqueId, bool createIfNotFound = true);
-    TextureCubeMapPtr getCubemapTexture(const std::string& uniqueId);
+    TextureCubeMapPtr getTextureCubeMap(const std::string& uniqueId);
     TexturePtr getTexture(const std::string& uniqueId);
     MaterialPtr getMaterial(const std::string& uniqueId);
     PhysicsMaterialPtr getPhysicsMaterial(const std::string& uniqueId);
@@ -50,7 +50,7 @@ public:
     MeshPtr createMesh(MeshDesc desc, const string& uniqueId);
     HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
     SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath);
-    MaterialPtr createMaterial(const string& shaderId, const std::string& uniqueID);
+    MaterialPtr createMaterial(const MaterialDesc& materialDesc, const std::string& uniqueID);
     PhysicsMaterialPtr createPhysicsMaterial(const PhysicsMaterialDesc& desc, const std::string& uniqueID);
 
     void deleteTexture(TexturePtr texture);
@@ -73,15 +73,15 @@ public:
 protected:
     bool hasLoadedResources = false;
     bool hasCreatedResources = false;
-    std::map<std::string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
+    std::map<string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
     ResourcePtr m_selectedResource = nullptr; // for editor use
 
-    std::unordered_map<std::string, ShaderDesc> shaderDescriptions;
-    std::unordered_map<std::string, std::string> texture2DFilePaths;
-    std::unordered_map<std::string, vector<std::string>> cubemapTextureFilePaths;
-    std::unordered_map<std::string, std::string> materialDescriptions;
-    std::unordered_map<std::string, MeshDesc> meshDescriptions;
-    std::unordered_map<std::string, PhysicsMaterialDesc> physicsMaterialDescriptions;
+    std::unordered_map<string, ShaderDesc> shaderDescriptions;
+    std::unordered_map<string, string> texture2DFilePaths;
+    std::unordered_map<string, vector<string>> cubemapTextureFilePaths;
+    std::unordered_map<string, MaterialDesc> materialDescs;
+    std::unordered_map<string, MeshDesc> meshDescriptions;
+    std::unordered_map<string, PhysicsMaterialDesc> physicsMaterialDescriptions;
 
 private:
     ResourceManager() = default;

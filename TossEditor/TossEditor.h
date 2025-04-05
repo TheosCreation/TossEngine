@@ -28,6 +28,7 @@ public:
 
     void DeleteSelected();
 
+    void CreateSceneFileViaFileSystem();
     void OpenSceneViaFileSystem();
     void OpenScene(shared_ptr<Scene> _scene);
 
@@ -87,6 +88,10 @@ private:
 
     char physicsMaterialIDBuffer[256] = "";
     bool openPhysicsMaterialNextFrame = false;
+
+    bool openCubeMapPopupNextFrame = false;
+    bool openMaterialPopupNextFrame = false;
+    ShaderPtr shader;
 
     unique_ptr<EditorPlayer> m_player = nullptr;
     FramebufferPtr m_sceneFrameBuffer = nullptr;

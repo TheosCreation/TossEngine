@@ -54,11 +54,11 @@ public:
      * @return A pointer to the created GameObject.
      */
     template <typename T>
-    T* createGameObject()
+    T* createGameObject(string name = "")
     {
         static_assert(std::is_base_of<GameObject, T>::value, "T must derive from Game Object class");
         auto e = new T();
-        if (createGameObjectInternal(e))
+        if (createGameObjectInternal(e, name))
             return e;
         return nullptr;
     }
@@ -68,6 +68,9 @@ public:
      * @param GameObject Pointer to the GameObject to remove.
      */
     void removeGameObject(GameObject* gameObject);
+
+    void loadGameObjects(const json& data);
+    json saveGameObjects();
 
     void loadGameObjectsFromFile(const std::string& filePath);
     void saveGameObjectsToFile(const std::string& filePath);
@@ -118,7 +121,8 @@ private:
      * @param id The type ID of the GameObject.
      * @return True if the GameObject was created successfully, false otherwise.
      */
-    bool createGameObjectInternal(GameObject* gameObject);
+    bool createGameObjectInternal(GameObject* gameObject, string name = "");
+    string getGameObjectNameAvaliable(string currentName);
     
 
     /**

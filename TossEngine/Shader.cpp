@@ -50,8 +50,8 @@ bool Shader::Delete(bool deleteSelf)
     return false;
 }
 
-MaterialDesc Shader::getBindings() const {
-    MaterialDesc desc;
+vector<UniformBinding> Shader::getBindings() const {
+    vector<UniformBinding> bindings;
 
     // Query the number of active uniforms in the shader program.
     GLint uniformCount = 0;
@@ -74,10 +74,10 @@ MaterialDesc Shader::getBindings() const {
         binding.size = size;
 
         // Add the binding to the MaterialDesc.
-        desc.uniformBindings.push_back(binding);
+        bindings.push_back(binding);
     }
 
-    return desc;
+    return bindings;
 }
 
 void Shader::Attach(const std::string& filePath, const ShaderType& type)

@@ -27,3 +27,8 @@ Vector3 Quaternion::operator*(const Vector3& v) const
     glm::vec3 rotated = static_cast<glm::quat>(*this) * static_cast<glm::vec3>(v);
     return Vector3(rotated);
 }
+
+Quaternion Quaternion::FromEuler(Vector3 eulerAngles)
+{
+    return Quaternion(eulerAngles);
+}

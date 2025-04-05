@@ -17,6 +17,7 @@ Mail : theo.morris@mds.ac.nz
 #include "RigidBody.h"
 #include "Image.h"
 #include "Skybox.h"
+#include "TextureCubeMap.h"
 
 GameObjectManager::GameObjectManager()
 {
@@ -49,12 +50,15 @@ Scene* GameObjectManager::getScene()
     return m_scene;
 }
 
-bool GameObjectManager::createGameObjectInternal(GameObject* gameObject)
+bool GameObjectManager::createGameObjectInternal(GameObject* gameObject, string name)
 {
     if (!gameObject)
         return false;
 
+    name = getGameObjectNameAvaliable(name);
+
     size_t newId = m_nextAvailableId++;
+    gameObject->name = name;
     gameObject->setId(newId);
     gameObject->setGameObjectManager(this);
     gameObject->onCreate();
@@ -65,9 +69,80 @@ bool GameObjectManager::createGameObjectInternal(GameObject* gameObject)
     return true;
 }
 
+string GameObjectManager::getGameObjectNameAvaliable(string currentName)
+{
+    // Step 1: Default to "NewGameObject" if name is empty
+    if (currentName.empty()) {
+        currentName = "NewGameObject";
+    }
+
+    // Step 2: Collect all names of root GameObjects
+    std::unordered_set<std::string> existingNames;
+    for (const auto& pair : m_gameObjects)
+    {
+        GameObject* gameObject = pair.second;
+        if (gameObject->m_transform.parent == nullptr)
+        {
+            existingNames.insert(gameObject->name);
+        }
+    }
+
+    // Step 3: Check if currentName is available
+    if (existingNames.find(currentName) == existingNames.end()) {
+        return currentName;
+    }
+
+    // Step 4: Append (1), (2), ... until we find an available name
+    int index = 1;
+    std::string candidateName;
+    do {
+        candidateName = currentName + " (" + std::to_string(index++) + ")";
+    } while (existingNames.find(candidateName) != existingNames.end());
+
+    return candidateName;
+}
+
 void GameObjectManager::removeGameObject(GameObject* gameObject)
 {
     m_gameObjectsToDestroy.push_back(gameObject->getId());
+}
+
+void GameObjectManager::loadGameObjects(const json& data)
+{
+    if (!data.contains("gameobjects") || !data["gameobjects"].is_array())
+    {
+        Debug::LogError("Error: JSON does not contain a valid 'gameobjects' array!", false);
+        return;
+    }
+
+    for (const auto& gameObjectData : data["gameobjects"])
+    {
+        auto gameObject = new GameObject();
+        // Initialize the GameObject
+        gameObject->setGameObjectManager(this);
+        gameObject->onCreate();
+        gameObject->deserialize(gameObjectData);  // Loads data into the object
+        gameObject->onLateCreate();
+
+        size_t id = gameObject->getId();
+        if (id == 0) id = m_nextAvailableId++;
+
+        gameObject->setId(id);
+        m_gameObjects[id] = std::move(gameObject);
+    }
+}
+
+json GameObjectManager::saveGameObjects()
+{
+    json data;
+    data["gameobjects"] = json::array();
+
+    for (const auto& pair : m_gameObjects)
+    {
+        data["gameobjects"].push_back(pair.second->serialize());
+    }
+
+    return data;
 }
 
 void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
@@ -265,7 +340,7 @@ TexturePtr GameObjectManager::getSkyBoxTexture()
     {
         if (Skybox* skybox = pair.second->getComponent<Skybox>())
         {
-            return skybox->getTexture();
+            return skybox->GetMaterial()->GetBinding("Texture_Skybox");
         }
     }
 }

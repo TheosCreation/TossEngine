@@ -19,12 +19,12 @@ public:
 		// Display the material from the base Renderer component.
 		Renderer::OnInspectorGUI();
 
-        ResourceSerializedField(m_mesh, "Mesh");
-        ResourceSerializedField(m_shader, "Shader");
-        ResourceSerializedField(m_geometryShader, "Geometry Shader");
-        ResourceSerializedField(m_shadowShader, "Shadow Shader");
-        ResourceSerializedField(m_texture, "Texture");
-        ResourceSerializedField(m_reflectiveMap, "Reflective Map");
+        ResourceAssignableField(m_mesh, "Mesh");
+        ResourceAssignableField(m_shader, "Shader");
+        ResourceAssignableField(m_geometryShader, "Geometry Shader");
+        ResourceAssignableField(m_shadowShader, "Shadow Shader");
+        ResourceAssignableField(m_texture, "Texture");
+        ResourceAssignableField(m_reflectiveMap, "Reflective Map");
 
 		ImGui::DragFloat("Shininess", &m_shininess, 0.1f);
 		ImGui::DragFloat("Aplha", &m_alpha, 0.1f, 0.0f, 1.0f);

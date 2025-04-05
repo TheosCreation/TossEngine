@@ -163,7 +163,7 @@ public:
         glUniform1ui(glGetUniformLocation(m_programId, name.c_str()), value);
     }
 
-    MaterialDesc getBindings() const;
+    vector<UniformBinding> getBindings() const;
 
 private:
     /**

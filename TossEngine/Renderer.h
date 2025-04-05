@@ -7,10 +7,11 @@ class TOSSENGINE_API Renderer : public Component
 public:
 	virtual void Render(UniformData data, RenderingPath renderPath) {}
 	void SetMaterial(const MaterialPtr& material);
+    MaterialPtr GetMaterial() const;
 
 	virtual void OnInspectorGUI() override 
 	{
-        ResourceSerializedField(m_material, "Material");
+        ResourceAssignableField(m_material, "Material");
 	}
 
 protected:

@@ -3,13 +3,13 @@
 
 class JsonUtility {
 public:
-    static json OpenJsonFile(const std::string& filePath)
+    static json OpenJsonFile(const std::string& filePath, bool ignoreWarnings = false)
     {
         json data;
         std::ifstream file(filePath);
         if (!file.is_open())
         {
-            Debug::LogWarning("Failed to load json file at: " + filePath + ". Please verify if the file exists and is valid");
+            if(!ignoreWarnings) Debug::LogWarning("Failed to load json file at: " + filePath + ". Please verify if the file exists and is valid");
             return data;
         }
         try
@@ -18,23 +18,24 @@ public:
         }
         catch (const std::exception& e)
         {
-            Debug::LogWarning("Failed to parse JSON file: " + (string)e.what());
+            if (!ignoreWarnings) Debug::LogWarning("Failed to parse JSON file: " + (string)e.what());
             return data;
         }
 
         return data;
     }
 
-    static void SaveJsonFile(const std::string& filePath, json data)
+    static bool SaveJsonFile(const std::string& filePath, json data, bool ignoreWarnings = false)
     {
         std::ofstream file(filePath);
         if (!file.is_open())
         {
-            Debug::LogWarning("Failed to open file for writing: " + filePath);
-            return;
+            if (!ignoreWarnings) Debug::LogWarning("Failed to open file for writing: " + filePath);
+            return false;
         }
 
         file << data.dump(4); // Pretty-print JSON with indentation
         file.close();
+        return true;
     }
 };

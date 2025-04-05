@@ -8,14 +8,14 @@ void PlayerController::OnInspectorGUI()
 {
     Component::OnInspectorGUI();
 
-    FloatSlider("Movement Speed", m_movementSpeed, 0.1f);
-    FloatSlider("Acceleration", m_acceleration, 0.1f);
-    FloatSlider("Air Acceleration", m_airAcceleration, 0.1f);
-    FloatSlider("Jump Force", m_jumpForce, 1.0f);
-    FloatSlider("Jump Cooldown", m_jumpForce, 0.1f, 0.1f, 2.0f);
+    FloatSliderField("Movement Speed", m_movementSpeed, 0.1f);
+    FloatSliderField("Acceleration", m_acceleration, 0.1f);
+    FloatSliderField("Air Acceleration", m_airAcceleration, 0.1f);
+    FloatSliderField("Jump Force", m_jumpForce, 1.0f);
+    FloatSliderField("Jump Cooldown", m_jumpForce, 0.1f, 0.1f, 2.0f);
 
     vector<std::string> layers = m_layerNames;
-    if (LayerSerializeField("Raycast hit layers", layers))
+    if (LayerDropdownField("Raycast hit layers", layers))
     {
         m_layerNames = layers;
     }

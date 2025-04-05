@@ -54,7 +54,7 @@ MeshPtr ResourceManager::getMesh(const std::string& uniqueId, bool createIfNotFo
     return nullptr;
 }
 
-TextureCubeMapPtr ResourceManager::getCubemapTexture(const std::string& uniqueId)
+TextureCubeMapPtr ResourceManager::getTextureCubeMap(const std::string& uniqueId)
 {
     auto it = m_mapResources.find(uniqueId);
     if (it != m_mapResources.end())
@@ -86,8 +86,8 @@ MaterialPtr ResourceManager::getMaterial(const std::string& uniqueId)
     if (it != m_mapResources.end())
         return std::static_pointer_cast<Material>(it->second);
 
-    auto it2 = materialDescriptions.find(uniqueId);
-    if (it2 != materialDescriptions.end())
+    auto it2 = materialDescs.find(uniqueId);
+    if (it2 != materialDescs.end())
         return createMaterial(it2->second, uniqueId);
 
     return MaterialPtr();
@@ -319,11 +319,12 @@ SoundPtr ResourceManager::createSound(const SoundDesc& desc, const std::string& 
     return soundPtr;
 }
 
-MaterialPtr ResourceManager::createMaterial(const string& shaderId, const std::string& uniqueID)
+MaterialPtr ResourceManager::createMaterial(const MaterialDesc& materialDesc, const std::string& uniqueID)
 {
-    ShaderPtr shader = getShader(shaderId);
+    ShaderPtr shader = getShader(materialDesc.shaderId);
     MaterialPtr materialPtr = std::make_shared<Material>(shader, uniqueID, this);
-    materialDescriptions.emplace(uniqueID, shaderId);
+    if (!materialDesc.serializedData.empty()) materialPtr->deserialize(materialDesc.serializedData);
+    materialDescs.emplace(uniqueID, materialDesc);
     m_mapResources.emplace(uniqueID, materialPtr);
     return materialPtr;
 }
@@ -407,9 +408,10 @@ CoroutineTask ResourceManager::saveResourcesDescs(const std::string& filepath)
 
 
     // Serialize material descriptions correctly
-    for (auto& [key, shaderId] : materialDescriptions)
+    for (auto& [key, shaderId] : materialDescs)
     {
-        data["materials"][key] = shaderId;
+        MaterialPtr material = getMaterial(key);
+        data["materials"][key] = material->serialize();
     }
 
     // Serialize texture2D file paths
@@ -457,7 +459,7 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
 
     // Clear existing data to prevent duplication
     shaderDescriptions.clear();
-    materialDescriptions.clear();
+    materialDescs.clear();
     texture2DFilePaths.clear();
     cubemapTextureFilePaths.clear();
     meshDescriptions.clear();
@@ -490,9 +492,16 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
     // Deserialize materials
     if (data.contains("materials"))
     {
-        for (auto& [key, value] : data["materials"].items())
-        {
-            materialDescriptions[key] = value.get<std::string>();
+        for (auto& [uniqueID, materialJson] : data["materials"].items()) {
+
+            MaterialDesc materialDesc;
+            // Get shader ID first (you should've stored this in serialize)
+            if (materialJson.contains("shader")) 
+            {
+                materialDesc.shaderId = materialJson["shader"];
+            }
+            materialDesc.serializedData = materialJson;
+            materialDescs[uniqueID] = materialDesc;
         }
     }
 
@@ -582,17 +591,11 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
         }
     }
     else if (std::dynamic_pointer_cast<Material>(resource)) {
-        auto matIt = materialDescriptions.find(oldId);
-        if (matIt != materialDescriptions.end()) {
-            materialDescriptions[newId] = matIt->second;
-            materialDescriptions.erase(matIt);
+        auto materialIt = materialDescs.find(oldId);
+        if (materialIt != materialDescs.end()) {
+            materialDescs[newId] = materialIt->second;
+            materialDescs.erase(materialIt);
             Debug::Log("Material renamed from '" + oldId + "' to '" + newId + "'");
-        }
-
-        // Also update any material that references this shader ID
-        for (auto& [matID, shaderID] : materialDescriptions) {
-            if (shaderID == oldId)
-                shaderID = newId;
         }
     }
     else if (std::dynamic_pointer_cast<Mesh>(resource)) {
@@ -672,16 +675,10 @@ void ResourceManager::DeleteFromSavedData(const std::shared_ptr<Resource>& resou
     }
     // For Material
     else if (std::dynamic_pointer_cast<Material>(resource)) {
-        auto matIt = materialDescriptions.find(uniqueId);
-        if (matIt != materialDescriptions.end()) {
-            materialDescriptions.erase(matIt);
+        auto materialIt = materialDescs.find(uniqueId);
+        if (materialIt != materialDescs.end()) {
+            materialDescs.erase(materialIt);
             Debug::Log("Deleted Material: " + uniqueId);
-        }
-
-        // Remove any references to this shader from other materials
-        for (auto& [matID, shaderID] : materialDescriptions) {
-            if (shaderID == uniqueId)
-                shaderID = ""; // or some fallback/default shader ID
         }
     }
     // For Mesh
@@ -749,12 +746,12 @@ CoroutineTask ResourceManager::createResourcesFromDescs()
     }
 
     // Create Materials
-    for (const auto& [uniqueID, shaderId] : materialDescriptions)
+    for (const auto& [uniqueID, materialDesc] : materialDescs)
     {
-        createMaterial(shaderId, uniqueID);
+        createMaterial(materialDesc, uniqueID);
     }
     
-    // Create Materials
+    // Create Physics Materials
     for (const auto& [uniqueID, physicMaterialDesc] : physicsMaterialDescriptions)
     {
         createPhysicsMaterial(physicMaterialDesc, uniqueID);
