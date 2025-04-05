@@ -57,7 +57,7 @@ void DirectionalLight::onCreate()
     m_lightId = m_owner->getLightManager()->createDirectionalLight(directionalLight1);
 }
 
-void DirectionalLight::onUpdate(float deltaTime)
+void DirectionalLight::onUpdate()
 {
     if (m_owner)
     {

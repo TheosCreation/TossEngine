@@ -44,6 +44,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Mat4.h"
 #include "Mat3.h"
 #include "Transform.h"
+#include "Time.h"
 
 
 using json = nlohmann::json; // will be using json to serialize classes and save GameObject objects and all

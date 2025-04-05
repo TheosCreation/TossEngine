@@ -107,6 +107,7 @@ struct TOSSENGINE_API Transform
         parent = newParent;
         if (parent)
         {
+            localPosition = parent->GetMatrix().Inverse() * position;
             parent->children.push_back(this);
         }
     }

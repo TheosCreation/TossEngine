@@ -125,11 +125,9 @@ void Scene::onCreateLate()
     }
 }
 
-void Scene::onUpdate(float deltaTime)
+void Scene::onUpdate()
 {
-    if (deltaTime <= 0.0f) return;
-
-    m_gameObjectManager->onUpdate(deltaTime);
+    m_gameObjectManager->onUpdate();
 }
 
 void Scene::onUpdateInternal()
@@ -144,9 +142,9 @@ void Scene::onFixedUpdate(float fixedDeltaTime)
     m_gameObjectManager->onFixedUpdate(fixedDeltaTime);
 }
 
-void Scene::onLateUpdate(float deltaTime)
+void Scene::onLateUpdate()
 {
-    m_gameObjectManager->onLateUpdate(deltaTime);
+    m_gameObjectManager->onLateUpdate();
 }
 
 void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writeToFrameBuffer)

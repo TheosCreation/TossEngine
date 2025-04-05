@@ -53,6 +53,8 @@ TossEditor::TossEditor()
 
     m_sceneFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+
+    Time::TimeScale = 0.0f;
 }
 
 TossEditor::~TossEditor()
@@ -153,19 +155,20 @@ void TossEditor::onUpdateInternal()
 
     // delta time
     m_currentTime = tossEngine.GetTime();
-    float deltaTime = m_currentTime - m_previousTime;
+    float deltaTimeInternal = m_currentTime - m_previousTime;
+    Time::UpdateDeltaTime(deltaTimeInternal);
     m_previousTime = m_currentTime;
 
 
     // Accumulate time
-    m_accumulatedTime += deltaTime;
+    m_accumulatedTime += deltaTimeInternal;
 
     if (m_currentScene)
     {
         inputManager.onUpdate();
         if (m_gameRunning)
         {
-            Physics::GetInstance().Update(deltaTime);
+            Physics::GetInstance().Update();
             while (m_accumulatedTime >= m_fixedTimeStep)
             {
                 float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
@@ -175,13 +178,13 @@ void TossEditor::onUpdateInternal()
             }
         }
         // player update
-        m_player->Update(deltaTime);
+        m_player->Update(deltaTimeInternal);
         m_currentScene->onUpdateInternal();
 
         if (m_gameRunning)
         {
-            m_currentScene->onUpdate(deltaTime);
-            m_currentScene->onLateUpdate(deltaTime);
+            m_currentScene->onUpdate();
+            m_currentScene->onLateUpdate();
         }
         inputManager.onLateUpdate();
     }
@@ -256,6 +259,7 @@ void TossEditor::onUpdateInternal()
 
                 if (m_currentScene)
                 {
+                    Time::TimeScale = 1.0f;
                     m_gameRunning = true;
                     m_currentScene->onStart();
                     m_currentScene->onLateStart();
@@ -269,6 +273,7 @@ void TossEditor::onUpdateInternal()
             if (m_gameRunning)
             {
                 m_gameRunning = false;
+                Time::TimeScale = 0.0f;
 
                 string filePath = editorPreferences.lastKnownOpenScenePath;
 

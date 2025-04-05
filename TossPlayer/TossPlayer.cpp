@@ -96,11 +96,11 @@ void TossPlayer::onUpdateInternal()
 
     // delta time
     m_currentTime = tossEngine.GetTime();
-    float deltaTime = m_currentTime - m_previousTime;
+    Time::UpdateDeltaTime(m_currentTime - m_previousTime);
     m_previousTime = m_currentTime;
 
     // Accumulate time
-    m_accumulatedTime += deltaTime;
+    m_accumulatedTime += Time::DeltaTime;
 
     // Perform updates
     while (m_accumulatedTime >= m_fixedTimeStep)
@@ -111,8 +111,8 @@ void TossPlayer::onUpdateInternal()
         m_accumulatedTime -= m_fixedTimeStep;
     }
 
-    m_currentScene->onUpdate(deltaTime);
-    m_currentScene->onLateUpdate(deltaTime);
+    m_currentScene->onUpdate();
+    m_currentScene->onLateUpdate();
 
     double RenderTime_Begin = (double)glfwGetTime();
 

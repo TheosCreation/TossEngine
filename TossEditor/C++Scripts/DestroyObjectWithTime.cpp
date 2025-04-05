@@ -22,9 +22,9 @@ void DestroyObjectWithTime::onStart()
 	Debug::Log("Destroy object called detroyobjectwithtime script");
 }
 
-void DestroyObjectWithTime::onUpdate(float deltaTime)
+void DestroyObjectWithTime::onUpdate()
 {
-	elapsedTime += deltaTime;
+	elapsedTime += Time::DeltaTime;
 	if (elapsedTime > lifeTime)
 	{
 		elapsedTime = -100;

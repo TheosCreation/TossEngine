@@ -79,7 +79,7 @@ public:
      *
      * @param deltaTime The time elapsed since the last update in seconds.
      */
-    virtual void onUpdate(float deltaTime);
+    virtual void onUpdate();
     virtual void onUpdateInternal();
 
     /**
@@ -95,7 +95,7 @@ public:
      *
      * @param deltaTime The time elapsed since the last update in seconds.
      */
-    virtual void onLateUpdate(float deltaTime);
+    virtual void onLateUpdate();
 
     /**
      * @brief Called when the window is resized.

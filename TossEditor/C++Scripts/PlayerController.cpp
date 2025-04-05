@@ -27,17 +27,17 @@ void PlayerController::onCreate()
 
     auto& resourceManager = ResourceManager::GetInstance();
     fireSound = resourceManager.createSound(SoundDesc(), "Fire", "Resources/Audio/fire.ogg");
-    auto& inputManager = InputManager::GetInstance();
-    inputManager.enablePlayMode(true);
 }
 
 void PlayerController::onStart()
 {
     m_rigidBody = m_owner->getComponent<Rigidbody>();
     m_cam = m_owner->getComponentInChildren<Camera>();
+    auto& inputManager = InputManager::GetInstance();
+    inputManager.enablePlayMode(true);
 }
 
-void PlayerController::onUpdate(float deltaTime)
+void PlayerController::onUpdate()
 {
     auto& inputManager = InputManager::GetInstance();
     auto& audioEngine = AudioEngine::GetInstance();
@@ -107,7 +107,7 @@ void PlayerController::onUpdate(float deltaTime)
     }
     else
     {
-        jumpTimer -= deltaTime;
+        jumpTimer -= Time::DeltaTime;
     }
 
 
@@ -135,7 +135,7 @@ void PlayerController::onUpdate(float deltaTime)
         if (m_onGround)
         {
             // Limit acceleration
-            Vector3 accelerationStep = velocityChange.Normalized() * m_acceleration * deltaTime;
+            Vector3 accelerationStep = velocityChange.Normalized() * m_acceleration * Time::DeltaTime;
 
             // Don't overshoot
             if (accelerationStep.Length() > velocityChange.Length())
@@ -146,7 +146,7 @@ void PlayerController::onUpdate(float deltaTime)
         else
         {
             // Limit acceleration
-            Vector3 accelerationStep = velocityChange.Normalized() * m_airAcceleration * deltaTime;
+            Vector3 accelerationStep = velocityChange.Normalized() * m_airAcceleration * Time::DeltaTime;
 
             // Don't overshoot
             if (accelerationStep.Length() > velocityChange.Length())

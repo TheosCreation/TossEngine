@@ -18,17 +18,17 @@ reactphysics3d::decimal RaycastCallback::notifyRaycastHit(const RaycastInfo& inf
     return info.hitFraction;
 }
 
-void Physics::Update(float deltaTime)
+void Physics::Update()
 {
     if (m_world)
     {
-        m_world->update(deltaTime);
+        m_world->update(Time::DeltaTime);
     }
 
     // Update raycast debug entries lifetime
     for (auto it = m_raycastDebugEntries.begin(); it != m_raycastDebugEntries.end(); )
     {
-        it->lifetime -= deltaTime;
+        it->lifetime -= Time::DeltaTime;
         if (it->lifetime <= 0)
             it = m_raycastDebugEntries.erase(it);
         else
@@ -102,6 +102,8 @@ void Physics::DrawDebug(UniformData data)
 {
     // Retrieve debug data from ReactPhysics3D
     reactphysics3d::DebugRenderer& debugRenderer = m_world->getDebugRenderer();
+    debugRenderer.reset();
+    debugRenderer.computeDebugRenderingPrimitives(*m_world);
     const auto& lines = debugRenderer.getLines();
     const auto& triangles = debugRenderer.getTriangles();
 

@@ -52,10 +52,10 @@ void EditorPlayer::Update(float deltaTime)
     {
         Vector2 mousePosition = inputManager.getMousePosition();
 
-        Debug::Log(m_cam->screenToWorldPoint(mousePosition));
+        //Debug::Log(m_cam->screenToWorldPoint(mousePosition));
     }
 
-    if (!inputManager.isGameModeEnabled())
+    if (inputManager.isGameModeEnabled())
         return;
 
 

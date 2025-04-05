@@ -15,7 +15,7 @@ public:
 
     virtual void onCreate() override;
     virtual void onStart() override;
-    virtual void onUpdate(float deltaTime) override;
+    virtual void onUpdate() override;
     json serialize() const override;
     void deserialize(const json& data) override;
 

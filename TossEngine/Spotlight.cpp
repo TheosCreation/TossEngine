@@ -82,7 +82,7 @@ void Spotlight::onCreate()
     m_lightId = m_owner->getLightManager()->createSpotLight(spotLight);
 }
 
-void Spotlight::onUpdate(float deltaTime)
+void Spotlight::onUpdate()
 {
     if (m_owner)
     {

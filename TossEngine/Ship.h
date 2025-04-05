@@ -7,7 +7,7 @@ public:
     Ship() = default;
     ~Ship() = default;
 
-    virtual void onUpdate(float deltaTime) override;
+    virtual void onUpdate() override;
 
 private:
     float m_elapsedSeconds = 0.0f;

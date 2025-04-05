@@ -69,7 +69,7 @@ void PointLight::onCreate()
     m_lightId = m_owner->getLightManager()->createPointLight(pointLight);
 }
 
-void PointLight::onUpdate(float deltaTime)
+void PointLight::onUpdate()
 {
     // Ensure the light updates its position if the owner moves
     if (m_owner)

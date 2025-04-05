@@ -37,7 +37,7 @@ public:
 
     virtual void onLateStart() {}
 
-    virtual void onUpdate(float deltaTime) {}
+    virtual void onUpdate() {}
 
     virtual void onUpdateInternal() {}
 
@@ -67,7 +67,7 @@ public:
      * Can be overridden by derived classes to implement custom behavior.
      * @param deltaTime The time elapsed since the last frame.
      */
-    virtual void onLateUpdate(float deltaTime) {}
+    virtual void onLateUpdate() {}
 
 protected:
     GameObject* m_owner = nullptr;

@@ -82,10 +82,10 @@ public:
      * @brief Updates the GameObject system.
      * @param deltaTime The time elapsed since the last update.
      */
-    void onUpdate(float deltaTime);
+    void onUpdate();
     void onUpdateInternal();
 
-    void onLateUpdate(float deltaTime);
+    void onLateUpdate();
     void onShadowPass(int index);
     void Render(UniformData _data);
     void onTransparencyPass(UniformData _data);

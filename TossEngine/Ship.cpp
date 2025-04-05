@@ -1,9 +1,9 @@
 #include "Ship.h"
 #include "GameObject.h"
 
-void Ship::onUpdate(float deltaTime)
+void Ship::onUpdate()
 {
-    m_elapsedSeconds += deltaTime;
+    m_elapsedSeconds += Time::DeltaTime;
 
     // Calculate the position on the circular path
     float angle = m_elapsedSeconds * m_speed; // Angle in radians

@@ -14,6 +14,8 @@ public:
     Mat4(const glm::mat4& m) : value(m) {}
     Mat4(const Mat3& mat);
 
+    Mat4 Inverse();
+
     operator glm::mat4() const { return value; }
 
     Mat4 operator*(const Mat4& other) const {
@@ -24,6 +26,8 @@ public:
         value *= other.value;
         return *this;
     }
+    Vector3 operator*(const Vector3& vector) const;
+
 
     static Mat4 Translate(const Vector3& translation);
 

@@ -17,7 +17,7 @@ public:
     virtual void OnInspectorGUI() override;
 
     virtual void onCreate() override;
-    virtual void onUpdate(float deltaTime) override;
+    virtual void onUpdate() override;
     virtual void onUpdateInternal() override;
 
 

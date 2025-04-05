@@ -259,6 +259,9 @@
     <ClCompile Include="AudioEngine.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rect.h">
@@ -502,6 +505,9 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="LayerManager.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>

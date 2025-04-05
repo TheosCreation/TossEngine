@@ -22,7 +22,9 @@ public:
     void onCreate() override;
     void onLateCreate() override;
     void onStart() override;
-    void onUpdate(float deltaTime) override;
+    void onUpdate() override;
+    void onUpdateInternal() override;
+    void UpdateBodyTransform();
 
     void SetBodyType(BodyType type);
     void SetMass(float mass);

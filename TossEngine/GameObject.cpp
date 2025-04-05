@@ -296,17 +296,19 @@ void GameObject::onFixedUpdate(float fixedDeltaTime)
     }
 }
 
-void GameObject::onUpdate(float deltaTime)
+void GameObject::onUpdate()
 {
     m_transform.UpdateWorldTransform();
 
     for (auto& pair : m_components) {
-        pair.second->onUpdate(deltaTime);
+        pair.second->onUpdate();
     }
 }
 
 void GameObject::onUpdateInternal()
 {
+    if (Time::TimeScale != 0.0f) return;
+
     m_transform.UpdateWorldTransform();
 
     for (Component* component : componentsToDestroy)
@@ -318,7 +320,6 @@ void GameObject::onUpdateInternal()
         auto it = m_components.find(key);
         if (it != m_components.end() && it->second == component)
         {
-            // Optionally, call a cleanup method (e.g. onDestroy) if your component defines one.
             component->onDestroy();
 
             // Remove the component from the container.
@@ -335,8 +336,16 @@ void GameObject::onUpdateInternal()
     }
 }
 
-void GameObject::onLateUpdate(float deltaTime)
+void GameObject::onLateUpdate()
 {
+}
+
+void GameObject::onDestroy()
+{
+    for (auto& pair : m_components) 
+    {
+        pair.second->onDestroy();
+    }
 }
 
 void GameObject::CallOnCollisionEnterCallbacks(Collider* other)

@@ -114,14 +114,12 @@ void Rigidbody::onCreate()
     Transform transform = m_owner->m_transform;
 
     // Create rigid body at the GameObject�s position
-    rp3d::Transform bodyTransform(
-        rp3d::Vector3(transform.localPosition.x, transform.localPosition.y, transform.localPosition.z),
-        rp3d::Quaternion(transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w)
-    );
+    rp3d::Transform bodyTransform;
 
     // Create rigid body
     m_Body = world->createRigidBody(bodyTransform);
     m_Body->setUserData(this);
+    UpdateBodyTransform();
 
     // Apply the default body type
     SetBodyType(m_BodyType);
@@ -156,9 +154,13 @@ void Rigidbody::onStart()
 }
 
 
-void Rigidbody::onUpdate(float deltaTime)
+void Rigidbody::onUpdate()
 {
-    if (!m_Body || m_BodyType == BodyType::STATIC) return;
+    if (!m_Body || m_BodyType == BodyType::STATIC)
+    {
+        UpdateBodyTransform();
+    }
+    
 
     rp3d::Transform bodyTransform = m_Body->getTransform();
     rp3d::Vector3 position = bodyTransform.getPosition();
@@ -183,6 +185,27 @@ void Rigidbody::onUpdate(float deltaTime)
     if (!rotationAxisLocks[2]) currentEuler.z = newEuler.z;
 
     m_owner->m_transform.localRotation = Quaternion(currentEuler);
+}
+
+void Rigidbody::onUpdateInternal()
+{
+    if (Time::TimeScale == 0.0f)
+    {
+        UpdateBodyTransform();
+    }
+}
+
+void Rigidbody::UpdateBodyTransform()
+{
+    if (m_Body)
+    {
+        Transform transform = m_owner->m_transform;
+        rp3d::Transform bodyTransform(
+            rp3d::Vector3(transform.localPosition.x, transform.localPosition.y, transform.localPosition.z),
+            rp3d::Quaternion(transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w)
+        );
+        m_Body->setTransform(bodyTransform);
+    }
 }
 
 void Rigidbody::SetBodyType(BodyType type)

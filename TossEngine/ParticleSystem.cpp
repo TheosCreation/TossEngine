@@ -72,14 +72,14 @@ void ParticleSystem::onCreate()
 	glBindVertexArray(0);
 }
 
-void ParticleSystem::onUpdate(float deltaTime)
+void ParticleSystem::onUpdate()
 {
 	if (!isPlaying) return;
 
-	m_elapsedTime += deltaTime;
+	m_elapsedTime += Time::DeltaTime;
 	// Update particle properties (e.g., velocity and position) even if emission is stopped
-	Vector3 Gravity = Vector3(0.0f, -9.8f, 0.0f) * deltaTime;
-	VelocityLifeChange = Vector4(Gravity, deltaTime);
+	Vector3 Gravity = Vector3(0.0f, -9.8f, 0.0f) * Time::DeltaTime;
+	VelocityLifeChange = Vector4(Gravity, Time::DeltaTime);
 
 	// Stop emitting new particles if the elapsed time exceeds the duration
 	if (isEmitting && m_elapsedTime > m_duration)

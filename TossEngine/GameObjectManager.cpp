@@ -226,13 +226,13 @@ void GameObjectManager::onLateStart()
 }
 
 
-void GameObjectManager::onUpdate(float deltaTime)
+void GameObjectManager::onUpdate()
 {
     onUpdateInternal();
 
     for (const auto& pair : m_gameObjects)
     {
-        pair.second->onUpdate(deltaTime);
+        pair.second->onUpdate();
     }
 }
 
@@ -240,6 +240,7 @@ void GameObjectManager::onUpdateInternal()
 {
     for (size_t gameObjectId : m_gameObjectsToDestroy)
     {
+        m_gameObjects[gameObjectId]->onDestroy();
         m_gameObjects.erase(gameObjectId);  // Directly erase by ID
     }
     m_gameObjectsToDestroy.clear();
@@ -250,11 +251,11 @@ void GameObjectManager::onUpdateInternal()
     }
 }
 
-void GameObjectManager::onLateUpdate(float deltaTime)
+void GameObjectManager::onLateUpdate()
 {
     for (const auto& pair : m_gameObjects)
     {
-        pair.second->onLateUpdate(deltaTime);
+        pair.second->onLateUpdate();
     }
 }
 

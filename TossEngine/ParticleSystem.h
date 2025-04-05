@@ -35,7 +35,7 @@ public:
      * @param deltaTime The time elapsed since the last update, used for updating
      *                  the particle positions and lifetimes.
      */
-    void onUpdate(float deltaTime) override;
+    void onUpdate() override;
 
     /**
      * @brief Renders the particles using the specified uniform data.

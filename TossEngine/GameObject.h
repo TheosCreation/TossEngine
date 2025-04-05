@@ -107,7 +107,7 @@ public:
      * Can be overridden by derived classes to implement custom behavior.
      * @param deltaTime The time elapsed since the last frame.
      */
-    virtual void onUpdate(float deltaTime);
+    virtual void onUpdate();
 
     void onUpdateInternal();
 
@@ -116,7 +116,8 @@ public:
      * Can be overridden by derived classes to implement custom behavior.
      * @param deltaTime The time elapsed since the last frame.
      */
-    virtual void onLateUpdate(float deltaTime);
+    virtual void onLateUpdate();
+    virtual void onDestroy();
 
     void CallOnCollisionEnterCallbacks(Collider* other);
     void CallOnCollisionExitCallbacks(Collider* other);

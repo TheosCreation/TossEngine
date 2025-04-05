@@ -99,7 +99,7 @@ public:
         return instance;
     }
 
-    void Update(float deltaTime);
+    void Update();
 
     void CleanUp();
 

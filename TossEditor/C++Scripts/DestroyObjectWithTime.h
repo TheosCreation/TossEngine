@@ -10,7 +10,7 @@ public:
 
 
 	void onStart() override;
-	void onUpdate(float deltaTime) override;
+	void onUpdate() override;
 	void OnInspectorGUI() override;
     json serialize() const override;
     void deserialize(const json& data) override;
