@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Rigidbody.h"
 #include "Collider.h"
+#include "GroundCheck.h"
 
 void PlayerController::OnInspectorGUI()
 {
@@ -12,7 +13,7 @@ void PlayerController::OnInspectorGUI()
     FloatSliderField("Acceleration", m_acceleration, 0.1f);
     FloatSliderField("Air Acceleration", m_airAcceleration, 0.1f);
     FloatSliderField("Jump Force", m_jumpForce, 1.0f);
-    FloatSliderField("Jump Cooldown", m_jumpForce, 0.1f, 0.1f, 2.0f);
+    FloatSliderField("Jump Cooldown", m_jumpCooldown, 0.1f, 0.1f, 2.0f);
 
     vector<std::string> layers = m_layerNames;
     if (LayerDropdownField("Raycast hit layers", layers))
@@ -32,6 +33,7 @@ void PlayerController::onCreate()
 void PlayerController::onStart()
 {
     m_rigidBody = m_owner->getComponent<Rigidbody>();
+    m_groundCheck = m_owner->getComponentInChildren<GroundCheck>();
     m_cam = m_owner->getComponentInChildren<Camera>();
     auto& inputManager = InputManager::GetInstance();
     inputManager.enablePlayMode(true);
@@ -99,11 +101,10 @@ void PlayerController::onUpdate()
         }
     }
 
-    if (inputManager.isKeyPressed(Key::KeySpace) && jumpTimer <= 0 && m_onGround)
+    if (inputManager.isKeyPressed(Key::KeySpace) && jumpTimer <= 0 )
     {
         m_rigidBody->AddForce(Vector3(0.0f, 1.0f, 0.0f) * m_jumpForce);
         jumpTimer = m_jumpCooldown;
-        m_onGround = false;
     }
     else
     {
@@ -132,7 +133,7 @@ void PlayerController::onUpdate()
         Vector3 velocityChange = desiredVelocity - velocity;
 
         // If on the ground, set the linear velocity directly
-        if (m_onGround)
+        if (m_groundCheck->isGrounded)
         {
             // Limit acceleration
             Vector3 accelerationStep = velocityChange.Normalized() * m_acceleration * Time::DeltaTime;
@@ -172,21 +173,5 @@ void PlayerController::deserialize(const json& data)
 {
     if (data.contains("layerNames")) {
         m_layerNames = data["layerNames"].get<std::vector<std::string>>();
-    }
-}
-
-void PlayerController::onCollisionEnter(Collider* other)
-{
-    if (other->getOwner()->tag == "Ground")
-    {
-        m_onGround = true;
-    }
-}
-
-void PlayerController::onCollisionExit(Collider* other)
-{
-    if (other->getOwner()->tag == "Ground")
-    {
-        m_onGround = false;
     }
 }

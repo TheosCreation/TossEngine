@@ -1,12 +1,7 @@
 #include "Component.h"
 #include "GameObject.h"
-#include "GameObjectManager.h"
 
-//Component::Component(const Component& other)
-//{
-//}
-
-GameObject* Component::getOwner()
+GameObject* Component::getOwner() const
 {
     return m_owner;
 }

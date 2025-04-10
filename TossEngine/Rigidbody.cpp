@@ -315,18 +315,6 @@ void Rigidbody::OnCollisionExit(Rigidbody* collidedRb)
     m_owner->CallOnCollisionExitCallbacks(collider);
 }
 
-void Rigidbody::OnTriggerEnter(Rigidbody* collidedRb)
-{
-    Collider* collider = collidedRb->GetCollider();
-    m_owner->CallOnTriggerEnterCallbacks(collider);
-}
-
-void Rigidbody::OnTriggerExit(Rigidbody* collidedRb)
-{
-    Collider* collider = collidedRb->GetCollider();
-    m_owner->CallOnTriggerExitCallbacks(collider);
-}
-
 void Rigidbody::UpdatePositionConstraints()
 {
     if (m_Body) {

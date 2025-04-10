@@ -68,3 +68,12 @@ bool ISelectable::LayerDropdownField(const string& name, vector<string>& value)
     }
     return false;
 }
+
+bool ISelectable::BoolCheckboxField(const string& name, bool& value)
+{
+    if(ImGui::Checkbox(name.c_str(), &value))
+    {
+        return true;
+    }
+    return false;
+}

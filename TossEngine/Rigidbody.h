@@ -47,8 +47,6 @@ public:
 
     void OnCollisionEnter(Rigidbody* collidedRb);
     void OnCollisionExit(Rigidbody* collidedRb);
-    void OnTriggerEnter(Rigidbody* collidedRb);
-    void OnTriggerExit(Rigidbody* collidedRb);
 
 private:
     rp3d::RigidBody* m_Body = nullptr;

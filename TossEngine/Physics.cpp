@@ -336,18 +336,16 @@ void Physics::onTrigger(const rp3d::OverlapCallback::CallbackData& data) {
 
         // If this pair was not present last frame, it's a new trigger event.
         if (m_previousTriggerPairs.find(pair) == m_previousTriggerPairs.end()) {
-            rp3d::Body* body1 = collider1->getBody();
-            rp3d::Body* body2 = collider2->getBody();
 
-            if (body1 && body2) {
-                Rigidbody* customRigidbody1 = static_cast<Rigidbody*>(body1->getUserData());
-                Rigidbody* customRigidbody2 = static_cast<Rigidbody*>(body2->getUserData());
+            if (collider1 && collider2) {
 
-                if (customRigidbody1 && collider1->getIsTrigger()) {
-                    customRigidbody1->OnTriggerEnter(customRigidbody2);
+                Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
+                Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
+                if (customCollider1->GetTrigger()) {
+                    customCollider1->OnTriggerEnter(customCollider2);
                 }
-                if (customRigidbody2 && collider2->getIsTrigger()) {
-                    customRigidbody2->OnTriggerEnter(customRigidbody1);
+                if (customCollider2->GetTrigger()) {
+                    customCollider2->OnTriggerEnter(customCollider1);
                 }
             }
         }
@@ -358,18 +356,19 @@ void Physics::onTrigger(const rp3d::OverlapCallback::CallbackData& data) {
         if (currentTriggerPairs.find(pair) == currentTriggerPairs.end()) {
             rp3d::Collider* collider1 = pair.collider1;
             rp3d::Collider* collider2 = pair.collider2;
-            rp3d::Body* body1 = collider1->getBody();
-            rp3d::Body* body2 = collider2->getBody();
 
-            if (body1 && body2) {
-                Rigidbody* customRigidbody1 = static_cast<Rigidbody*>(body1->getUserData());
-                Rigidbody* customRigidbody2 = static_cast<Rigidbody*>(body2->getUserData());
+            if (collider1 && collider2) {
+                Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
+                Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
 
-                if (customRigidbody1 && collider1->getIsTrigger()) {
-                    customRigidbody1->OnTriggerExit(customRigidbody2);
-                }
-                if (customRigidbody2 && collider2->getIsTrigger()) {
-                    customRigidbody2->OnTriggerExit(customRigidbody1);
+                if (customCollider1 && customCollider2) {
+
+                    if (customCollider1->GetTrigger()) {
+                        customCollider1->OnTriggerExit(customCollider2);
+                    }
+                    if (customCollider2->GetTrigger()) {
+                        customCollider2->OnTriggerExit(customCollider1);
+                    }
                 }
             }
         }

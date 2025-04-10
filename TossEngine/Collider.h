@@ -6,9 +6,6 @@ class Rigidbody;
 
 class TOSSENGINE_API Collider : public Component {
 public:
-    Collider() = default;
-    ~Collider() = default;
-
     json serialize() const override;
     void deserialize(const json& data) override;
 
@@ -23,7 +20,9 @@ public:
     void SetCapsuleCollider(float radius, float height);
     void UpdateRP3Collider();
     void SetTrigger(bool trigger);
-    bool GetTrigger();
+    bool GetTrigger() const;
+    void OnTriggerEnter(Collider* otherCollider) const;
+    void OnTriggerExit(Collider* otherCollider) const;
 
     rp3d::CollisionShape* GetColliderShape() const { return m_Shape; }
     rp3d::CollisionShapeType GetColliderType() const;
@@ -37,7 +36,6 @@ private:
     float m_height = 1.0f;
     bool m_isTrigger = false;
 
-    float m_newFieldTest = 1.0f; 
     vector<std::string> m_layerNames;
 
     Rigidbody* m_Rigidbody = nullptr;

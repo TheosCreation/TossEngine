@@ -109,8 +109,10 @@ public:
         return false;
     }
     
-    bool FloatSliderField(const string& name, float& value, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
+    static bool FloatSliderField(const string& name, float& value, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
 
-    bool LayerDropdownField(const string& name, vector<string>& value);
+    static bool LayerDropdownField(const string& name, vector<string>& value);
+
+    static bool BoolCheckboxField(const string& name, bool& value);
 };
 

@@ -301,9 +301,19 @@ void Collider::SetTrigger(bool trigger)
     m_isTrigger = trigger;
 }
 
-bool Collider::GetTrigger()
+bool Collider::GetTrigger() const
 {
     return m_isTrigger;
+}
+
+void Collider::OnTriggerEnter(Collider* otherCollider) const
+{
+    m_owner->CallOnTriggerEnterCallbacks(otherCollider);
+}
+
+void Collider::OnTriggerExit(Collider* otherCollider) const
+{
+    m_owner->CallOnTriggerExitCallbacks(otherCollider);
 }
 
 rp3d::CollisionShapeType Collider::GetColliderType() const

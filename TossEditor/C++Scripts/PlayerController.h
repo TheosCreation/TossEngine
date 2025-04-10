@@ -4,13 +4,11 @@
 class Camera;
 class Rigidbody;
 class Collider;
+class GroundCheck;
 
 class PlayerController : public Component
 {
 public:
-    PlayerController() = default;
-    ~PlayerController() = default;
-
     void OnInspectorGUI() override;
 
     virtual void onCreate() override;
@@ -19,12 +17,7 @@ public:
     json serialize() const override;
     void deserialize(const json& data) override;
 
-    void onCollisionEnter(Collider* other) override;
-    void onCollisionExit(Collider* other) override;
-
 private:
-    float m_elapsedSeconds = 0.0f; // Elapsed time in seconds
-
     float m_movementSpeed = 35.0f; // Movement speed of the movable object
     float m_acceleration = 50.0f;
     float m_airAcceleration = 10000.0f;
@@ -35,17 +28,13 @@ private:
 
     float m_yaw = 0.0f; // Yaw angle for rotation of the camera
     float m_pitch = 0.0f; // Pitch angle for rotation of the camera
-    float m_minFov = 1.0f; // Minimum fov for the camera
-    float m_fov = 90.0f; // Fov for the camera
-    float m_maxFov = 120.0f; // Maximum fov for the camera
-    float m_zoomSpeed = 0.5f; // Speed of zooming
     bool m_wireframeMode = false; // Flag for wireframe mode
-    bool m_onGround = false;
 
     vector<std::string> m_layerNames;
 
     Camera* m_cam = nullptr; // Pointer to the main camera
     Rigidbody* m_rigidBody = nullptr; // Pointer to the rigidbody
+    GroundCheck* m_groundCheck = nullptr; // Pointer to the groundCheck
     SoundPtr fireSound = nullptr;
 };
 

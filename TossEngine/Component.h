@@ -10,11 +10,11 @@ class Collider;
 class TOSSENGINE_API Component : public Serializable, public ISelectable
 {
 public:
-    GameObject* getOwner();
+    GameObject* getOwner() const;
     string getName();
     void setOwner(GameObject* gameObject);
 
-    virtual json serialize() const //do call Component::serialize() first when overriding this class
+    virtual json serialize() const override
     {
         return {
             {"type", getClassName(typeid(*this))} // used to identify component type
@@ -28,7 +28,7 @@ public:
     virtual void onCreate() {}
 
     /**
-     * @brief Called when the component is created and after deserilization
+     * @brief Called when the component is created and after deserialization
      * Can be overridden by derived classes to perform initialization.
      */
     virtual void onLateCreate() {}
@@ -45,7 +45,7 @@ public:
 
     virtual void onDestroy() { }
 
-    virtual void OnInspectorGUI()
+    virtual void OnInspectorGUI() override
     {
         string inspectorName = getClassName(typeid(*this)) + " Inspector - ID: %p";
         ImGui::Text(inspectorName.c_str(), this);
@@ -59,13 +59,12 @@ public:
     virtual void onTriggerEnter(Collider* other) {}
     virtual void onTriggerExit(Collider* other) {}
 
-    bool Delete(bool deleteSelf = true);
-    void Destroy(GameObject* objectToDestroy);
+    virtual bool Delete(bool deleteSelf = true) override;
+    static void Destroy(GameObject* objectToDestroy);
 
     /**
      * @brief Called every frame after all Update functions have been called.
      * Can be overridden by derived classes to implement custom behavior.
-     * @param deltaTime The time elapsed since the last frame.
      */
     virtual void onLateUpdate() {}
 

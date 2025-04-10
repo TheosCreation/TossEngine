@@ -364,6 +364,7 @@ void GameObject::CallOnCollisionExitCallbacks(Collider* other)
 
 void GameObject::CallOnTriggerEnterCallbacks(Collider* other)
 {
+    Debug::Log("Enter");
     for (auto& pair : m_components) {
         pair.second->onTriggerEnter(other);
     }
@@ -371,6 +372,7 @@ void GameObject::CallOnTriggerEnterCallbacks(Collider* other)
 
 void GameObject::CallOnTriggerExitCallbacks(Collider* other)
 {
+    Debug::Log("Exit");
     for (auto& pair : m_components) {
         pair.second->onTriggerExit(other);
     }

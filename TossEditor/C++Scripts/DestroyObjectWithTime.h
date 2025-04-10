@@ -4,11 +4,6 @@
 class DestroyObjectWithTime : public Component
 {
 public:
-	DestroyObjectWithTime() = default;
-	~DestroyObjectWithTime() = default;
-
-
-
 	void onStart() override;
 	void onUpdate() override;
 	void OnInspectorGUI() override;
