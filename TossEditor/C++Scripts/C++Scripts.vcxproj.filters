@@ -66,6 +66,9 @@
     <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImGradient.cpp">
       <Filter>ImGuizmos</Filter>
     </ClCompile>
+    <ClCompile Include="GroundCheck.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DestroyObjectWithTime.h">
@@ -118,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Dependencies\IMGUIZMO\ImCurveEdit.h">
       <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="GroundCheck.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

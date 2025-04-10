@@ -16,6 +16,23 @@ public:
 
     Mat4 Inverse();
 
+    std::string ToString() const
+    {
+        std::ostringstream oss;
+        oss << "[\n";
+        for (int i = 0; i < 4; ++i) {
+            oss << "  [ ";
+            for (int j = 0; j < 4; ++j) {
+                oss << value[i][j] << " ";
+            }
+            oss << "]";
+            if (i != 3)
+                oss << "\n";
+        }
+        oss << "\n]";
+        return oss.str();
+    }
+
     operator glm::mat4() const { return value; }
 
     Mat4 operator*(const Mat4& other) const {

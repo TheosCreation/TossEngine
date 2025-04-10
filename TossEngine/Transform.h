@@ -4,6 +4,7 @@
 #include "Vector3.h"
 #include "Quaternion.h"
 #include "Mat4.h"
+#include "Debug.h"
 #include <nlohmann\json.hpp>
 
 class GameObject;
@@ -97,8 +98,10 @@ struct TOSSENGINE_API Transform
         return rotation * Vector3(0.0f, 1.0f, 0.0f);
     }
 
-    void SetParent(Transform* newParent)
+    void SetParent(Transform* newParent, bool keepWorldOffset = true)
     {
+        Mat4 worldMatrix = GetMatrix();
+
         if (parent)
         {
             parent->RemoveChild(this);
@@ -107,7 +110,24 @@ struct TOSSENGINE_API Transform
         parent = newParent;
         if (parent)
         {
-            localPosition = parent->GetMatrix().Inverse() * position;
+            if (keepWorldOffset)
+            {
+                Mat4 parentWorld = parent->GetMatrix();
+
+                Mat4 parentInverse = parentWorld.Inverse();
+
+                Mat4 localMatrix = parentInverse * worldMatrix;
+
+                localPosition = Vector3::ExtractTranslation(localMatrix);
+                localScale = Vector3::ExtractScale(localMatrix);
+                localRotation = Quaternion::ExtractRotation(localMatrix);
+            }
+            else
+            {
+                localPosition = Vector3(0.0f, 0.0f, 0.0f);
+                localRotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+                localScale = Vector3(1.0f, 1.0f, 1.0f);
+            }
             parent->children.push_back(this);
         }
     }

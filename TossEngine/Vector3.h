@@ -38,6 +38,9 @@ public:
         return glm::distance(static_cast<glm::vec3>(a), static_cast<glm::vec3>(b));
     }
 
+    static Vector3 ExtractTranslation(const Mat4& m);
+    static Vector3 ExtractScale(const Mat4& m);
+
     Mat4 ToTranslation() const;
     Mat4 ToScale() const; 
 
@@ -47,6 +50,13 @@ public:
 
     Vector3 ToRadians() const {
         return Vector3(glm::radians(static_cast<glm::vec3>(*this)));
+    }
+
+    std::string ToString() const
+    {
+        std::ostringstream oss;
+        oss << "(" << x << ", " << y << ", " << z << ")";
+        return oss.str();
     }
 
     operator glm::vec3() const { return glm::vec3(x, y, z); }

@@ -14,8 +14,8 @@ public:
     Quaternion(const glm::quat& q) : w(q.w), x(q.x), y(q.y), z(q.z) {}
     Quaternion(const Vector3& eulerAngles);
 
-    // Cast to glm::quat
-    operator glm::quat() const { return glm::quat(w, x, y, z); }
+
+    static Quaternion ExtractRotation(const Mat4& mat);
 
     // Convert to Mat4
     Mat4 ToMat4() const;
@@ -32,6 +32,16 @@ public:
         glm::quat q = glm::normalize(static_cast<glm::quat>(*this));
         return Quaternion(q);
     }
+    
+    std::string ToString() const
+    {
+        std::ostringstream oss;
+        oss << "(" << w << ", " << x << ", " << y << ", " << z << ")";
+        return oss.str();
+    }
+
+    // Cast to glm::quat
+    operator glm::quat() const { return glm::quat(w, x, y, z); }
 
     // Multiply (concatenate) quaternions
     Quaternion operator*(const Quaternion& other) const {

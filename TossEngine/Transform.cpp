@@ -41,12 +41,6 @@ Mat4 Transform::GetMatrix() const
         return parent->GetMatrix() * GetLocalMatrix();
     else
         return GetLocalMatrix();// Create translation, rotation, and scale matrices from local components.
-
-    //Mat4 translationMatrix = position.ToTranslation();
-    //Mat4 rotationMatrix = rotation.ToMat4();
-    //Mat4 scaleMatrix = scale.ToScale();
-    //
-    //return translationMatrix * rotationMatrix * scaleMatrix;
 }
 
 void Transform::SetMatrix(const Mat4& matrix)
@@ -76,15 +70,15 @@ void Transform::UpdateWorldTransform()
     Mat4 worldMatrix;
     if (parent)
     {
-        worldMatrix = parent->GetMatrix() * GetLocalMatrix();
+        worldMatrix = parent->GetMatrix() * GetLocalMatrix(); 
+        SetMatrix(worldMatrix);
     }
     else
     {
-        worldMatrix = GetLocalMatrix();
+        position = localPosition;
+        rotation = localRotation;
+        scale = localScale;
     }
-    // Update the world components by decomposing the worldMatrix.
-    // This function sets 'position', 'rotation', and 'scale' based on the matrix.
-    SetMatrix(worldMatrix);
 
     // Recursively update children
     for (Transform* child : children)
@@ -108,6 +102,28 @@ nlohmann::json Transform::serialize() const
 
 void Transform::deserialize(const nlohmann::json& data)
 {
+    if (data.contains("parent") && data["parent"] != 0)
+    {
+        size_t parentID = data["parent"].get<size_t>();
+
+        if (gameObject != nullptr)
+        {
+            auto& gameObjects = gameObject->getGameObjectManager()->m_gameObjects;
+            auto it = gameObjects.find(parentID);
+            if (it != gameObjects.end())
+            {
+                // Set the parent transform safely
+                SetParent(&it->second->m_transform, false);
+                Debug::Log("Parent Set");
+            }
+            else
+            {
+                // Handle the case where parentID is invalid/not found
+                SetParent(nullptr);
+            }
+        }
+    }
+
     if (data.contains("position"))
         position = Vector3(data["position"][0], data["position"][1], data["position"][2]);
 
@@ -126,27 +142,5 @@ void Transform::deserialize(const nlohmann::json& data)
     if (data.contains("localScale"))
         localScale = Vector3(data["localScale"][0], data["localScale"][1], data["localScale"][2]);
 
-    if (data.contains("parent") && data["parent"] != 0)
-    {
-        size_t parentID = data["parent"].get<size_t>();
-
-        if (gameObject != nullptr)
-        {
-            auto& gameObjects = gameObject->getGameObjectManager()->m_gameObjects;
-            auto it = gameObjects.find(parentID);
-            if (it != gameObjects.end())
-            {
-                // Set the parent transform safely
-                SetParent(&it->second->m_transform);
-                Debug::Log("Parent Set");
-            }
-            else
-            {
-                // Handle the case where parentID is invalid/not found
-                SetParent(nullptr);
-            }
-        }
-    }
     
-    UpdateWorldTransform();
 }

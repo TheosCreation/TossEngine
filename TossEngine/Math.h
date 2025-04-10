@@ -18,6 +18,8 @@ Mail : theo.morris@mds.ac.nz
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
+#include <sstream>
+#include <string>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <gtx/component_wise.hpp>

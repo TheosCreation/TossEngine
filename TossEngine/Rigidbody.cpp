@@ -199,10 +199,14 @@ void Rigidbody::UpdateBodyTransform()
 {
     if (m_Body)
     {
-        Transform transform = m_owner->m_transform;
+        Mat4 worldMatrix = m_owner->m_transform.GetMatrix();
+
+        Vector3 worldTranslation = Vector3::ExtractTranslation(worldMatrix);
+        Quaternion worldRotation = Quaternion::ExtractRotation(worldMatrix);
+
         rp3d::Transform bodyTransform(
-            rp3d::Vector3(transform.localPosition.x, transform.localPosition.y, transform.localPosition.z),
-            rp3d::Quaternion(transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w)
+            rp3d::Vector3(worldTranslation.x, worldTranslation.y, worldTranslation.z),
+            rp3d::Quaternion(worldRotation.x, worldRotation.y, worldRotation.z, worldRotation.w)
         );
         m_Body->setTransform(bodyTransform);
     }

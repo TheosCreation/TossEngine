@@ -23,6 +23,13 @@ public:
         v = glm::normalize(v);
         return Vector2(v);
     }
+    
+    std::string ToString() const
+    {
+        std::ostringstream oss;
+        oss << "(" << x << ", " << y << ")";
+        return oss.str();
+    }
 
     operator glm::vec2() const { return glm::vec2(x, y); }
     
