@@ -43,6 +43,7 @@ Mail : theo.morris@mds.ac.nz
 #include "GameObjectManager.h"
 #include "LayerManager.h"
 #include "Renderer.h"
+#include "DebugDraw.h"
 
 #include "AudioEngine.h"
 #include "GeometryBuffer.h"

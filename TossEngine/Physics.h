@@ -138,7 +138,6 @@ private:
     std::unordered_set<CollisionPair> m_previousCollisionPairs;
 
     uint vertexCount = 0;
-    ShaderPtr debugShader = nullptr;
     uint VBO_lines;
     uint VAO_lines;
     uint VBO_tris;

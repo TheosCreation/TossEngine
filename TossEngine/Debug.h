@@ -24,7 +24,9 @@ public:
     static void DrawConsole(bool* p_open = nullptr) {
         s_imguiLogger.Draw("Console Log", p_open);
     }
+
 private:
+
     // Helper function to format and print messages
     static void PrintMessage(const std::string& message, const std::string& type) {
         std::string fullMessage = "[" + type + "] " + message;

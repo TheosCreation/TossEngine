@@ -6,6 +6,7 @@
 #include "Collider.h"
 #include "GraphicsEngine.h"
 #include "Shader.h"
+#include "DebugDraw.h"
 
 reactphysics3d::decimal RaycastCallback::notifyRaycastHit(const RaycastInfo& info)
 {
@@ -53,10 +54,6 @@ PhysicsMaterialPtr Physics::GetDefaultPhysicsMaterial()
 void Physics::SetDebug(bool debug)
 {
     isDebug = debug;
-
-
-
-    debugShader = ResourceManager::GetInstance().getShader("PhysicsDebug");
 
     glGenVertexArrays(1, &VAO_lines);
     glGenBuffers(1, &VBO_lines);
@@ -172,9 +169,10 @@ void Physics::DrawDebug(UniformData data)
     glBindBuffer(GL_ARRAY_BUFFER, VBO_tris);
     glBufferData(GL_ARRAY_BUFFER, triVertices.size() * sizeof(DebugVertex), triVertices.data(), GL_DYNAMIC_DRAW);
 
+    ShaderPtr shader = DebugDraw::GetInstance().GetShader();
     // Set the shader and VP matrix
-    GraphicsEngine::GetInstance().setShader(debugShader);
-    debugShader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
+    GraphicsEngine::GetInstance().setShader(shader);
+    shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
 
     glDisable(GL_DEPTH_TEST);
 

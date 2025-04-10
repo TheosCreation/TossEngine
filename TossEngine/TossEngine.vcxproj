@@ -228,6 +228,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentRegistry.cpp" />
     <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="FileWatcher.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
@@ -303,6 +304,7 @@
     <ClInclude Include="ComponentRegistry.h" />
     <ClInclude Include="CoroutineTask.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="GeometryBuffer.h" />
