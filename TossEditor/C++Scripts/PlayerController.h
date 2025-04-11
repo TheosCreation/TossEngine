@@ -19,9 +19,9 @@ public:
 
 private:
     float m_movementSpeed = 35.0f; // Movement speed of the movable object
-    float m_acceleration = 50.0f;
+    float m_acceleration = 200.0f;
     float m_airAcceleration = 10000.0f;
-    float m_jumpForce = 1000.0f;
+    float m_jumpForce = 2000.0f;
     float m_jumpCooldown = 0.5f;
 
     float jumpTimer = 0.0f;

@@ -247,6 +247,7 @@
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PhysicsMaterial.cpp" />
     <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="Prefab.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Resizable.cpp" />
@@ -314,6 +315,7 @@
     <ClInclude Include="Mat4.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="PhysicsMaterial.h" />
+    <ClInclude Include="Prefab.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />

@@ -163,13 +163,15 @@ void GameObject::OnInspectorGUI()
     ImGui::Separator();
     ImGui::Text("Transform:");
     ImGui::DragFloat3("Position", m_transform.localPosition.Data(), 0.1f);
-    // Convert from radians to degrees for display
 
-    eulerAngles = m_transform.localRotation.ToEulerAngles().ToDegrees();
     if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
     {
         // Convert the edited angles back to radians and update the quaternion
         m_transform.localRotation = Quaternion(eulerAngles.ToRadians());
+    }
+    else
+    {
+        eulerAngles = m_transform.localRotation.ToEulerAngles().ToDegrees();
     }
 
     ImGui::DragFloat3("Scale", m_transform.localScale.Data(), 0.1f);
@@ -348,21 +350,21 @@ void GameObject::onDestroy()
     }
 }
 
-void GameObject::CallOnCollisionEnterCallbacks(Collider* other)
+void GameObject::CallOnCollisionEnterCallbacks(Collider* other) const
 {
     for (auto& pair : m_components) {
         pair.second->onCollisionEnter(other);
     }
 }
 
-void GameObject::CallOnCollisionExitCallbacks(Collider* other)
+void GameObject::CallOnCollisionExitCallbacks(Collider* other) const
 {
     for (auto& pair : m_components) {
         pair.second->onCollisionExit(other);
     }
 }
 
-void GameObject::CallOnTriggerEnterCallbacks(Collider* other)
+void GameObject::CallOnTriggerEnterCallbacks(Collider* other) const
 {
     Debug::Log("Enter");
     for (auto& pair : m_components) {
@@ -370,7 +372,7 @@ void GameObject::CallOnTriggerEnterCallbacks(Collider* other)
     }
 }
 
-void GameObject::CallOnTriggerExitCallbacks(Collider* other)
+void GameObject::CallOnTriggerExitCallbacks(Collider* other) const
 {
     Debug::Log("Exit");
     for (auto& pair : m_components) {

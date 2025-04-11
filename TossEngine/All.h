@@ -30,6 +30,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Texture2D.h"
 #include "TextureCubeMap.h"
 #include "HeightMap.h"
+#include "Prefab.h"
 
 #include "GameObjectManager.h"
 #include "GameObject.h"

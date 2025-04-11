@@ -119,10 +119,10 @@ public:
     virtual void onLateUpdate();
     virtual void onDestroy();
 
-    void CallOnCollisionEnterCallbacks(Collider* other);
-    void CallOnCollisionExitCallbacks(Collider* other);
-    void CallOnTriggerEnterCallbacks(Collider* other);
-    void CallOnTriggerExitCallbacks(Collider* other);
+    void CallOnCollisionEnterCallbacks(Collider* other) const;
+    void CallOnCollisionExitCallbacks(Collider* other) const;
+    void CallOnTriggerEnterCallbacks(Collider* other) const;
+    void CallOnTriggerExitCallbacks(Collider* other) const;
 
     // Add components to the game object
     template <typename Component>

@@ -52,6 +52,7 @@ public:
     SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath);
     MaterialPtr createMaterial(const MaterialDesc& materialDesc, const std::string& uniqueID);
     PhysicsMaterialPtr createPhysicsMaterial(const PhysicsMaterialDesc& desc, const std::string& uniqueID);
+    PrefabPtr createPrefab(const string& id);
 
     void deleteTexture(TexturePtr texture);
     CoroutineTask saveResourcesDescs(const std::string& filepath);

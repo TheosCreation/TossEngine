@@ -21,9 +21,9 @@ public:
 
 	void onResize(Vector2 size) override;
     void onMaximize(int maximized) override;
-	
-	void Undo();
-	void Save();
+
+    void Undo();
+	void Save() const;
     void Exit();
 
     void DeleteSelected();
@@ -83,8 +83,10 @@ private:
     bool openShaderPopupNextFrame = false;
 
     std::string meshFilepath;
-    char meshIDBuffer[256] = "";
+    char iDBuffer[256] = "";
     bool openMeshPopupNextFrame = false;
+
+    bool openPrefabPopupNextFrame = false;
 
     char physicsMaterialIDBuffer[256] = "";
     bool openPhysicsMaterialNextFrame = false;

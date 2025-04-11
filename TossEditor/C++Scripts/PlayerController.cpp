@@ -101,7 +101,7 @@ void PlayerController::onUpdate()
         }
     }
 
-    if (inputManager.isKeyPressed(Key::KeySpace) && jumpTimer <= 0 )
+    if (inputManager.isKeyPressed(Key::KeySpace) && jumpTimer <= 0 && m_groundCheck->isGrounded)
     {
         m_rigidBody->AddForce(Vector3(0.0f, 1.0f, 0.0f) * m_jumpForce);
         jumpTimer = m_jumpCooldown;
@@ -165,6 +165,11 @@ json PlayerController::serialize() const
     json data;
     data["type"] = getClassName(typeid(*this)); // Store the component type
     data["layerNames"] = m_layerNames;
+    data["movementSpeed"] = m_movementSpeed;
+    data["acceleration"] = m_acceleration;
+    data["airAcceleration"] = m_airAcceleration;
+    data["jumpForce"] = m_jumpForce;
+    data["jumpCooldown"] = m_jumpCooldown;
 
     return data;
 }
@@ -173,5 +178,25 @@ void PlayerController::deserialize(const json& data)
 {
     if (data.contains("layerNames")) {
         m_layerNames = data["layerNames"].get<std::vector<std::string>>();
+    }
+
+    if (data.contains("movementSpeed")) {
+        m_movementSpeed = data["movementSpeed"].get<float>();
+    }
+
+    if (data.contains("acceleration")) {
+        m_acceleration = data["acceleration"].get<float>();
+    }
+
+    if (data.contains("airAcceleration")) {
+        m_airAcceleration = data["airAcceleration"].get<float>();
+    }
+
+    if (data.contains("jumpForce")) {
+        m_jumpForce = data["jumpForce"].get<float>();
+    }
+
+    if (data.contains("jumpCooldown")) {
+        m_jumpCooldown = data["jumpCooldown"].get<float>();
     }
 }

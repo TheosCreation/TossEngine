@@ -23,6 +23,7 @@ Mail : theo.morris@mds.ac.nz
 #include <fstream>
 
 #define STB_IMAGE_IMPLEMENTATION
+#include "Prefab.h"
 #include "stb_image.h"
 
 ShaderPtr ResourceManager::getShader(const std::string& uniqueId)
@@ -335,6 +336,25 @@ PhysicsMaterialPtr ResourceManager::createPhysicsMaterial(const PhysicsMaterialD
     physicsMaterialDescriptions.emplace(uniqueID, desc);
     m_mapResources.emplace(uniqueID, physicsMaterial);
     return physicsMaterial;
+}
+
+PrefabPtr ResourceManager::createPrefab(const string& id)
+{
+    // Create a 2D texture using the graphics engine.
+    PrefabPtr prefabPtr = std::make_shared<Prefab>(id, this);
+    if (!prefabPtr)
+    {
+        Debug::LogError("Prefab not generated", false);
+    }
+
+    if (prefabPtr)
+    {
+        m_mapResources.emplace(id, prefabPtr);
+        prefabPtr->name = id;
+        return prefabPtr;
+    }
+
+    return PrefabPtr();
 }
 
 void ResourceManager::deleteTexture(TexturePtr texture)

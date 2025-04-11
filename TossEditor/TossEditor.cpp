@@ -19,7 +19,7 @@ TossEditor::TossEditor()
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, editorPreferences.windowSize, "TossEditor", editorPreferences.maximized);
-    tossEngine.ReloadScripts(); //recompiles and loads scripts
+    tossEngine.ReloadScripts(); //recompile and loads scripts
 
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     tossEngine.StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
@@ -678,6 +678,11 @@ void TossEditor::onUpdateInternal()
                 ImGui::CloseCurrentPopup();
             }
 
+            if (ImGui::MenuItem("Prefab")) {
+                openPrefabPopupNextFrame = true;
+                ImGui::CloseCurrentPopup();
+            }
+
             if (ImGui::MenuItem("Material")) {
                 openMaterialPopupNextFrame = true;
                 ImGui::CloseCurrentPopup();
@@ -892,6 +897,42 @@ void TossEditor::onUpdateInternal()
         ImGui::EndPopup();
     }
 
+    if (openPrefabPopupNextFrame) {
+        ImGui::OpenPopup("Enter Prefab ID");
+        openPrefabPopupNextFrame = false;
+    }
+
+    if (ImGui::BeginPopupModal("Enter Prefab ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) 
+    {
+        ImGui::InputText("Prefab ID", iDBuffer, sizeof(iDBuffer));
+
+        if (ImGui::Button("Create")) {
+            if (strlen(iDBuffer) > 0) {
+                std::string prefabID = iDBuffer;
+
+                resourceManager.createPrefab(prefabID);
+
+                Debug::Log("Created prefab: " + prefabID);
+
+                // Reset state
+                iDBuffer[0] = '\0';
+
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel")) {
+            meshFilepath.clear();
+            iDBuffer[0] = '\0';
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
     if (openMeshPopupNextFrame) {
         ImGui::OpenPopup("Enter Mesh ID");
         openMeshPopupNextFrame = false;
@@ -899,11 +940,11 @@ void TossEditor::onUpdateInternal()
 
     // Show the popup to name the shader
     if (ImGui::BeginPopupModal("Enter Mesh ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::InputText("Mesh ID", meshIDBuffer, sizeof(meshIDBuffer));
+        ImGui::InputText("Mesh ID", iDBuffer, sizeof(iDBuffer));
 
         if (ImGui::Button("Create")) {
-            if (strlen(meshIDBuffer) > 0) {
-                std::string meshId = meshIDBuffer;
+            if (strlen(iDBuffer) > 0) {
+                std::string meshId = iDBuffer;
                 std::filesystem::path root = getProjectRoot();
                 std::filesystem::path relativeMeshPath = std::filesystem::relative(meshFilepath, root);
 
@@ -916,7 +957,7 @@ void TossEditor::onUpdateInternal()
 
                 // Reset state
                 meshFilepath.clear();
-                meshIDBuffer[0] = '\0';
+                iDBuffer[0] = '\0';
 
                 ImGui::CloseCurrentPopup();
             }
@@ -926,7 +967,7 @@ void TossEditor::onUpdateInternal()
 
         if (ImGui::Button("Cancel")) {
             meshFilepath.clear();
-            meshIDBuffer[0] = '\0';
+            iDBuffer[0] = '\0';
 
             ImGui::CloseCurrentPopup();
         }
@@ -1282,7 +1323,7 @@ void TossEditor::Undo()
 {
 }
 
-void TossEditor::Save()
+void TossEditor::Save() const
 {
     m_projectSettings->SaveToFile("ProjectSettings.json");
     m_playerSettings->SaveToFile("PlayerSettings.json");

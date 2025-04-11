@@ -19,4 +19,7 @@ private:
     std::vector<std::string> m_Items;
     std::mutex m_mutex;
     bool m_ScrollToBottom = false;
+    bool m_Collapse = false;
+    bool m_NeedsCollapseRecompute = true;
+    std::vector<std::string> m_CollapsedItems;
 };

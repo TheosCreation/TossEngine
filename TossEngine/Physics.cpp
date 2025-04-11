@@ -327,16 +327,12 @@ void Physics::onTrigger(const rp3d::OverlapCallback::CallbackData& data) {
     int nbOverlapPairs = data.getNbOverlappingPairs();
     for (int i = 0; i < nbOverlapPairs; i++) {
         const rp3d::OverlapCallback::OverlapPair& overlapPair = data.getOverlappingPair(i);
+        auto eventType = overlapPair.getEventType();
         rp3d::Collider* collider1 = overlapPair.getCollider1();
         rp3d::Collider* collider2 = overlapPair.getCollider2();
 
-        // Construct the trigger pair.
-        TriggerPair pair{ collider1, collider2 };
-        currentTriggerPairs.insert(pair);
-
-        // If this pair was not present last frame, it's a new trigger event.
-        if (m_previousTriggerPairs.find(pair) == m_previousTriggerPairs.end()) {
-
+        if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapStart) {
+            // Trigger enter logic
             if (collider1 && collider2) {
 
                 Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
@@ -349,33 +345,22 @@ void Physics::onTrigger(const rp3d::OverlapCallback::CallbackData& data) {
                 }
             }
         }
-    }
-
-    // Now check for pairs that were present last frame but are not in the current frame.
-    for (const auto& pair : m_previousTriggerPairs) {
-        if (currentTriggerPairs.find(pair) == currentTriggerPairs.end()) {
-            rp3d::Collider* collider1 = pair.collider1;
-            rp3d::Collider* collider2 = pair.collider2;
-
+        else if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapExit) {
+            // Trigger exit logic
             if (collider1 && collider2) {
+
                 Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
                 Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
-
-                if (customCollider1 && customCollider2) {
-
-                    if (customCollider1->GetTrigger()) {
-                        customCollider1->OnTriggerExit(customCollider2);
-                    }
-                    if (customCollider2->GetTrigger()) {
-                        customCollider2->OnTriggerExit(customCollider1);
-                    }
+                if (customCollider1->GetTrigger()) {
+                    customCollider1->OnTriggerExit(customCollider2);
+                }
+                if (customCollider2->GetTrigger()) {
+                    customCollider2->OnTriggerExit(customCollider1);
                 }
             }
         }
     }
 
-    // Update the stored trigger pairs for the next simulation step.
-    m_previousTriggerPairs = currentTriggerPairs;
 }
 
 void Physics::LoadWorld()
