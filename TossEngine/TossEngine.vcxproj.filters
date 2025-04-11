@@ -486,9 +486,6 @@
     <ClInclude Include="Mat3.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Physics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="JsonUtility.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
@@ -514,6 +511,9 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="DebugDraw.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>

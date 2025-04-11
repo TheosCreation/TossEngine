@@ -437,6 +437,8 @@ void GameObject::setGameObjectManager(GameObjectManager* gameObjectManager)
 
 bool GameObject::Delete(bool deleteSelf)
 {
+    // If there's a selected component and we're not deleting the game object itself,
+    // delete only the component.
     if (selectedComponent != nullptr && !deleteSelf)
     {
         selectedComponent->Delete();
@@ -445,17 +447,28 @@ bool GameObject::Delete(bool deleteSelf)
     }
     else
     {
+        // Make a copy of the children list since deleting children might modify the original vector.
+        std::vector<Transform*> childrenCopy = m_transform.children;
+        for (Transform* childTransform : childrenCopy)
+        {
+            if (childTransform && childTransform->gameObject)
+            {
+                // Recursively delete the child game object.
+                childTransform->gameObject->Delete(true);
+            }
+        }
+        // Remove this game object from the game object manager.
         m_gameObjectManager->removeGameObject(this);
         return true;
     }
 }
 
-GameObjectManager* GameObject::getGameObjectManager()
+GameObjectManager* GameObject::getGameObjectManager() const
 {
     return m_gameObjectManager;
 }
 
-LightManager* GameObject::getLightManager()
+LightManager* GameObject::getLightManager() const
 {
     return m_gameObjectManager->getScene()->getLightManager();
 }

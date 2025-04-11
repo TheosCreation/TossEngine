@@ -60,8 +60,8 @@ public:
      * @brief Gets the GameObjectManager that manages this GameObject.
      * @return A pointer to the GameObjectManager.
      */
-    GameObjectManager* getGameObjectManager();
-    LightManager* getLightManager();
+    GameObjectManager* getGameObjectManager() const;
+    LightManager* getLightManager() const;
 
     /**
      * @brief Sets the GameObjectManager that manages this GameObject.

@@ -156,7 +156,7 @@ void Rigidbody::onStart()
 
 void Rigidbody::onUpdate()
 {
-    if (!m_Body || m_BodyType == BodyType::STATIC)
+    if (!m_Body || m_BodyType == BodyType::STATIC || (m_BodyType == BodyType::KINEMATIC && m_Collider->GetTrigger()))
     {
         UpdateBodyTransform();
     }

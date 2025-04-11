@@ -21,6 +21,14 @@ void ImGuiLogger::Draw(const char* title, bool* p_open)
         return;
     }
 
+    // Add a button to clear the log
+    if (ImGui::Button("Clear"))
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_Items.clear();
+    }
+
+    // Begin child region for scrolling logs
     if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar))
     {
         std::lock_guard<std::mutex> lock(m_mutex);

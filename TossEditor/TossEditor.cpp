@@ -545,11 +545,11 @@ void TossEditor::onUpdateInternal()
         }
 
         // Option to change the window size (assumed to have x and y components)
-        int windowSize[2] = { (int)m_playerSettings->windowSize.x, (int)m_playerSettings->windowSize.y };
+        int windowSize[2] = { static_cast<int>(m_playerSettings->windowSize.x), static_cast<int>(m_playerSettings->windowSize.y) };
         if (ImGui::InputInt2("Game Resolution", windowSize))
         {
-            m_playerSettings->windowSize.x = windowSize[0];
-            m_playerSettings->windowSize.y = windowSize[1];
+            m_playerSettings->windowSize.x = static_cast<float>(windowSize[0]);
+            m_playerSettings->windowSize.y = static_cast<float>(windowSize[1]);
         }
 
 
@@ -593,6 +593,24 @@ void TossEditor::onUpdateInternal()
                 }
             }
         }
+
+        // Add a drop target over the entire hierarchy window.
+        ImVec2 windowSize = ImGui::GetContentRegionAvail();
+        ImGui::InvisibleButton("HierarchyDropArea", windowSize);
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
+            {
+                GameObject* droppedGameObject = *(GameObject**)payload->Data;
+                // Only remove parent if it is not already a root.
+                if (droppedGameObject && droppedGameObject->m_transform.parent != nullptr)
+                {
+                    droppedGameObject->m_transform.SetParent(nullptr);
+                }
+            }
+            ImGui::EndDragDropTarget();
+        }
+
         ImGui::End();
     }
 
@@ -601,7 +619,7 @@ void TossEditor::onUpdateInternal()
         ImGui::OpenPopup("Rename GameObject");
     }
     // Place the modal popup outside of any window blocks
-    if (ImGui::BeginPopupModal("Rename GameObject", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal("Rename GameObject", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         ImGui::InputText("New name", renameBuffer, sizeof(renameBuffer));
         if (ImGui::Button("OK"))
@@ -1123,7 +1141,7 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
             GameObject* droppedGameObject = *(GameObject**)payload->Data;
             if (droppedGameObject != gameObject)
             {
-                droppedGameObject->m_transform.SetParent(&gameObject->m_transform);
+                droppedGameObject->m_transform.SetParent(&gameObject->m_transform, false);
             }
         }
         ImGui::EndDragDropTarget();
