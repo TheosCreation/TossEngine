@@ -13,13 +13,16 @@ public:
     virtual bool Delete(bool deleteSelf = true) { return false;  }
 
     //helper function to keep ui looking the same and easy to change
-    template<typename Resource>
-    void ResourceAssignableField(std::shared_ptr<Resource>& resourcePtr, std::string fieldName)
+    template<typename T>
+    void ResourceAssignableField(std::shared_ptr<T>& resourcePtr, std::string fieldName)
     {
+        static_assert(std::is_base_of<Resource, T>::value, "T must derive from Resource");
         ResourceManager& resourceManager = ResourceManager::GetInstance();
-        std::string label = (resourcePtr)
+
+
+        std::string label = (resourcePtr && resourcePtr.get())
             ? (fieldName + ": " + resourcePtr->getUniqueID())
-            : fieldName + ": None";
+            : (fieldName + ": None");
 
         if (ImGui::BeginTable((fieldName + "Table").c_str(), 2, ImGuiTableFlags_SizingStretchProp))
         {
@@ -49,12 +52,13 @@ public:
                 auto& resources = resourceManager.GetAllResources();
                 for (const auto& [id, resource] : resources)
                 {
-                    if (std::dynamic_pointer_cast<Resource>(resource))
+                    auto casted = std::dynamic_pointer_cast<T>(resource);
+                    if (casted)
                     {
                         bool isSelected = (resourcePtr && resourcePtr->getUniqueID() == id);
                         if (ImGui::Selectable(id.c_str(), isSelected))
                         {
-                            resourcePtr = std::dynamic_pointer_cast<Resource>(resource);
+                            resourcePtr = casted;
                             resourceManager.SetSelectedResource(resourcePtr);
                         }
                     }
@@ -65,13 +69,15 @@ public:
         }
     }
 
-    template<typename Resource>
-    bool ResourceDropdownField(std::shared_ptr<Resource>& resourcePtr, const std::string& fieldName)
+    template<typename T>
+    bool ResourceDropdownField(std::shared_ptr<T>& resourcePtr, const std::string& fieldName)
     {
+        static_assert(std::is_base_of<Resource, T>::value, "T must derive from Resource");
+
         ResourceManager& resourceManager = ResourceManager::GetInstance();
-
+        
         std::string previewLabel = (resourcePtr) ? resourcePtr->getUniqueID() : "None";
-
+        
         if (ImGui::BeginCombo(fieldName.c_str(), previewLabel.c_str()))
         {
             // Option: None
@@ -81,13 +87,13 @@ public:
                 resourcePtr = nullptr;
                 resourceManager.SetSelectedResource(nullptr);
             }
-
+        
             // List all resources of the correct type
             auto& resources = resourceManager.GetAllResources();
             for (const auto& [id, resource] : resources)
             {
                 // Only include resources that match the requested type
-                auto casted = std::dynamic_pointer_cast<Resource>(resource);
+                auto casted = std::dynamic_pointer_cast<T>(resource);
                 if (casted)
                 {
                     bool isSelected = (resourcePtr && resourcePtr->getUniqueID() == id);
@@ -96,13 +102,13 @@ public:
                         resourcePtr = casted;
                         resourceManager.SetSelectedResource(resourcePtr);
                     }
-
+        
                     // Highlight the selected item
                     if (isSelected)
                         ImGui::SetItemDefaultFocus();
                 }
             }
-
+        
             ImGui::EndCombo();
             return true;
         }
@@ -115,4 +121,3 @@ public:
 
     static bool BoolCheckboxField(const string& name, bool& value);
 };
-

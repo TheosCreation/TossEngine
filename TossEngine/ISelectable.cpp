@@ -1,6 +1,7 @@
 #include "ISelectable.h"
 #include "LayerManager.h"
-#include "Resource.h"
+#include "Material.h"
+#include "Prefab.h"
 
 bool ISelectable::FloatSliderField(const std::string& name, float& value, float speed, float min, float max)
 {
@@ -10,7 +11,6 @@ bool ISelectable::FloatSliderField(const std::string& name, float& value, float 
     }
     return false;
 }
-
 
 static std::string GetSelectedLayersString(const std::vector<std::string>& selectedLayers) {
     if (selectedLayers.empty()) {

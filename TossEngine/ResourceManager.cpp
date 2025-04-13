@@ -18,12 +18,12 @@ Mail : theo.morris@mds.ac.nz
 #include "Material.h"
 #include "PhysicsMaterial.h"
 #include "Sound.h"
+#include "Prefab.h"
 #include "AudioEngine.h"
 #include <filesystem>
 #include <fstream>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "Prefab.h"
 #include "stb_image.h"
 
 ShaderPtr ResourceManager::getShader(const std::string& uniqueId)
@@ -105,6 +105,19 @@ PhysicsMaterialPtr ResourceManager::getPhysicsMaterial(const std::string& unique
         return createPhysicsMaterial(it2->second, uniqueId);
 
     return PhysicsMaterialPtr();
+}
+
+PrefabPtr ResourceManager::getPrefab(const std::string& uniqueId)
+{
+    auto it = m_mapResources.find(uniqueId);
+    if (it != m_mapResources.end())
+        return std::static_pointer_cast<Prefab>(it->second);
+
+    auto it2 = m_prefabDescs.find(uniqueId);
+    if (it2 != m_prefabDescs.end())
+        return createPrefab(uniqueId, it2->second);
+
+    return PrefabPtr();
 }
 
 ShaderPtr ResourceManager::createShader(const ShaderDesc& desc, const std::string& uniqueID)
@@ -338,23 +351,18 @@ PhysicsMaterialPtr ResourceManager::createPhysicsMaterial(const PhysicsMaterialD
     return physicsMaterial;
 }
 
-PrefabPtr ResourceManager::createPrefab(const string& id)
+PrefabPtr ResourceManager::createPrefab(const string& id, const json& data)
 {
     // Create a 2D texture using the graphics engine.
     PrefabPtr prefabPtr = std::make_shared<Prefab>(id, this);
-    if (!prefabPtr)
+    m_mapResources.emplace(id, prefabPtr);
+    prefabPtr->name = id;
+    if (!data.empty())
     {
-        Debug::LogError("Prefab not generated", false);
+        prefabPtr->deserialize(data);
     }
-
-    if (prefabPtr)
-    {
-        m_mapResources.emplace(id, prefabPtr);
-        prefabPtr->name = id;
-        return prefabPtr;
-    }
-
-    return PrefabPtr();
+    m_prefabDescs.emplace(id, data);
+    return prefabPtr;
 }
 
 void ResourceManager::deleteTexture(TexturePtr texture)
@@ -427,6 +435,13 @@ CoroutineTask ResourceManager::saveResourcesDescs(const std::string& filepath)
     }
 
 
+    // Serialize prefab data correctly
+    for (auto& [key, desc] : m_prefabDescs)
+    {
+        PrefabPtr prefab = getPrefab(key);
+        data["prefabs"][key] = prefab->serialize();
+    }
+
     // Serialize material descriptions correctly
     for (auto& [key, shaderId] : materialDescs)
     {
@@ -480,6 +495,7 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
     // Clear existing data to prevent duplication
     shaderDescriptions.clear();
     materialDescs.clear();
+    m_prefabDescs.clear();
     texture2DFilePaths.clear();
     cubemapTextureFilePaths.clear();
     meshDescriptions.clear();
@@ -509,13 +525,20 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
         }
     }
 
+    // Deserialize prefabs
+    if (data.contains("prefabs"))
+    {
+        for (auto& [uniqueID, prefabJson] : data["prefabs"].items()) {
+            m_prefabDescs[uniqueID] = prefabJson;
+        }
+    }
+
     // Deserialize materials
     if (data.contains("materials"))
     {
         for (auto& [uniqueID, materialJson] : data["materials"].items()) {
 
             MaterialDesc materialDesc;
-            // Get shader ID first (you should've stored this in serialize)
             if (materialJson.contains("shader")) 
             {
                 materialDesc.shaderId = materialJson["shader"];
@@ -610,6 +633,14 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
             Debug::Log("Shader renamed from '" + oldId + "' to '" + newId + "'");
         }
     }
+    else if (std::dynamic_pointer_cast<Prefab>(resource)) {
+        auto prefabIt = m_prefabDescs.find(oldId);
+        if (prefabIt != m_prefabDescs.end()) {
+            m_prefabDescs[newId] = prefabIt->second;
+            m_prefabDescs.erase(prefabIt);
+            Debug::Log("Prefab renamed from '" + oldId + "' to '" + newId + "'");
+        }
+    }
     else if (std::dynamic_pointer_cast<Material>(resource)) {
         auto materialIt = materialDescs.find(oldId);
         if (materialIt != materialDescs.end()) {
@@ -693,6 +724,14 @@ void ResourceManager::DeleteFromSavedData(const std::shared_ptr<Resource>& resou
             Debug::Log("Deleted Shader: " + uniqueId);
         }
     }
+    // For Prefab
+    else if (std::dynamic_pointer_cast<Prefab>(resource)) {
+        auto prefabIt = m_prefabDescs.find(uniqueId);
+        if (prefabIt != m_prefabDescs.end()) {
+            m_prefabDescs.erase(prefabIt);
+            Debug::Log("Deleted Prefab: " + uniqueId);
+        }
+    }
     // For Material
     else if (std::dynamic_pointer_cast<Material>(resource)) {
         auto materialIt = materialDescs.find(uniqueId);
@@ -763,6 +802,12 @@ CoroutineTask ResourceManager::createResourcesFromDescs()
     for (const auto& [uniqueID, shaderDesc] : shaderDescriptions)
     {
         createShader(shaderDesc, uniqueID);
+    }
+
+    // Create Prefabs
+    for (const auto& [uniqueID, prefabData] : m_prefabDescs)
+    {
+        createPrefab(uniqueID, prefabData);
     }
 
     // Create Materials

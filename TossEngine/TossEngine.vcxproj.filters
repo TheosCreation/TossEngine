@@ -256,9 +256,6 @@
     <ClCompile Include="AudioEngine.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Time.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DebugDraw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -266,7 +263,10 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="Prefab.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -520,7 +520,7 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Prefab.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Resource</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

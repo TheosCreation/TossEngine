@@ -10,7 +10,7 @@ class TOSSENGINE_API Rigidbody : public Component
 {
 public:
     Rigidbody() = default;
-    ~Rigidbody();
+    virtual ~Rigidbody();
 
     json serialize() const override;
     void deserialize(const json& data) override;

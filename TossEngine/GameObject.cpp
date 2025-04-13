@@ -200,7 +200,11 @@ void GameObject::OnInspectorGUI()
         }
         if (open)
         {
-            comp->OnInspectorGUI();
+            if (comp)
+            {
+
+                comp->OnInspectorGUI();
+            }
             ImGui::TreePop();
         }
     }

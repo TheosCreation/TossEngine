@@ -40,6 +40,7 @@ public:
     TexturePtr getTexture(const std::string& uniqueId);
     MaterialPtr getMaterial(const std::string& uniqueId);
     PhysicsMaterialPtr getPhysicsMaterial(const std::string& uniqueId);
+    PrefabPtr getPrefab(const std::string& uniqueId);
 
     // Methods to create various resources
     ShaderPtr createShader(const ShaderDesc& desc, const std::string& uniqueID);
@@ -52,7 +53,7 @@ public:
     SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath);
     MaterialPtr createMaterial(const MaterialDesc& materialDesc, const std::string& uniqueID);
     PhysicsMaterialPtr createPhysicsMaterial(const PhysicsMaterialDesc& desc, const std::string& uniqueID);
-    PrefabPtr createPrefab(const string& id);
+    PrefabPtr createPrefab(const string& id, const json& data = nullptr);
 
     void deleteTexture(TexturePtr texture);
     CoroutineTask saveResourcesDescs(const std::string& filepath);
@@ -83,6 +84,7 @@ protected:
     std::unordered_map<string, MaterialDesc> materialDescs;
     std::unordered_map<string, MeshDesc> meshDescriptions;
     std::unordered_map<string, PhysicsMaterialDesc> physicsMaterialDescriptions;
+    std::unordered_map<string, json> m_prefabDescs;
 
 private:
     ResourceManager() = default;

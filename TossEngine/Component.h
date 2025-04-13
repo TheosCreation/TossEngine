@@ -2,6 +2,8 @@
 #include "Serializable.h"
 #include "ISelectable.h"
 #include "ComponentRegistry.h"
+#include "ResourceManager.h"
+#include "Resource.h"
 #include <imgui.h>
 
 class GameObject;
@@ -10,6 +12,9 @@ class Collider;
 class TOSSENGINE_API Component : public Serializable, public ISelectable
 {
 public:
+    Component() = default;
+    virtual ~Component() = default;
+
     GameObject* getOwner() const;
     string getName();
     void setOwner(GameObject* gameObject);

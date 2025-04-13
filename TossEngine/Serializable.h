@@ -4,7 +4,6 @@
 class TOSSENGINE_API Serializable
 {
 public:
-    virtual ~Serializable() = default;
     // Serialize to JSON
     virtual json serialize() const
     {

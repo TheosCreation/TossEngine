@@ -172,6 +172,7 @@
     <ClCompile Include="..\..\Dependencies\IMGUI\imgui_tables.cpp" />
     <ClCompile Include="..\..\Dependencies\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="GroundCheck.cpp" />
+    <ClCompile Include="Gun.cpp" />
     <ClCompile Include="PlayerController.cpp">
       <SubType>
       </SubType>
@@ -196,6 +197,7 @@
     <ClInclude Include="..\..\Dependencies\IMGUI\imstb_textedit.h" />
     <ClInclude Include="..\..\Dependencies\IMGUI\imstb_truetype.h" />
     <ClInclude Include="GroundCheck.h" />
+    <ClInclude Include="Gun.h" />
     <ClInclude Include="PlayerController.h">
       <SubType>
       </SubType>

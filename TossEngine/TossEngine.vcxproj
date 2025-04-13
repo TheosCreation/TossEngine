@@ -159,7 +159,8 @@
       </Command>
     </CustomBuildStep>
     <PostBuildEvent>
-      <Command>xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor"</Command>
+      <Command>xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/C++Scripts"
+xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
