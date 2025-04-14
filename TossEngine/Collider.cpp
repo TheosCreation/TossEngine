@@ -43,12 +43,7 @@ void Collider::deserialize(const json& data)
 {
     if (data.contains("physicsMaterial"))
     {
-        string id = data["physicsMaterial"];
-        PhysicsMaterialPtr physicsMaterial = ResourceManager::GetInstance().getPhysicsMaterial(id);
-        if (physicsMaterial)
-        {
-            m_physicsMaterial = physicsMaterial;
-        }
+        m_physicsMaterial = ResourceManager::GetInstance().getPhysicsMaterial(data["physicsMaterial"].get<string>());
     }
 
     if (data.contains("layerNames")) {
@@ -206,6 +201,7 @@ void Collider::onStart()
 
 void Collider::onCreate()
 {
+    m_physicsMaterial = Physics::GetInstance().GetDefaultPhysicsMaterial();
 }
 
 void Collider::onLateCreate()
@@ -216,7 +212,6 @@ void Collider::onLateCreate()
         m_Rigidbody->SetBodyType(BodyType::STATIC);
     }
 
-    m_physicsMaterial = Physics::GetInstance().GetDefaultPhysicsMaterial();
     if (m_Shape == nullptr)
     {
         SetBoxCollider(Vector3(1.0f, 1.0f, 1.0f)); // Default to Box Collider

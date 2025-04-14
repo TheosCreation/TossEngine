@@ -18,28 +18,28 @@ public:
     {
         static_assert(std::is_base_of<Resource, T>::value, "T must derive from Resource");
         ResourceManager& resourceManager = ResourceManager::GetInstance();
-
-
+        
+        
         std::string label = (resourcePtr && resourcePtr.get())
             ? (fieldName + ": " + resourcePtr->getUniqueID())
             : (fieldName + ": None");
-
+        
         if (ImGui::BeginTable((fieldName + "Table").c_str(), 2, ImGuiTableFlags_SizingStretchProp))
         {
             ImGui::TableNextRow();
-
+        
             ImGui::TableSetColumnIndex(0);
             if (ImGui::Selectable(label.c_str()))
             {
                 resourceManager.SetSelectedResource(resourcePtr);
             }
-
+        
             ImGui::TableSetColumnIndex(1);
             if (ImGui::SmallButton("+"))
             {
                 ImGui::OpenPopup((fieldName + "Dropdown").c_str());
             }
-
+        
             if (ImGui::BeginPopup((fieldName + "Dropdown").c_str()))
             {
                 bool noneSelected = (resourcePtr == nullptr);
@@ -48,7 +48,7 @@ public:
                     resourcePtr = nullptr;
                     resourceManager.SetSelectedResource(nullptr);
                 }
-
+        
                 auto& resources = resourceManager.GetAllResources();
                 for (const auto& [id, resource] : resources)
                 {

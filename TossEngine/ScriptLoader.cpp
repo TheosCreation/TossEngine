@@ -15,17 +15,36 @@ void ScriptLoader::reloadDLL()
     loadDLL();
 }
 
+typedef void (*SetImGuiContextFunc)(ImGuiContext*);
+
 void ScriptLoader::loadDLL()
 {
     scriptsDll = LoadLibrary(L"C++Scripts.dll");
     if (scriptsDll)
     {
         Debug::Log("Scripts DLL loaded.");
+
+        SetImGuiContextFunc setImGuiContext = reinterpret_cast<SetImGuiContextFunc>(
+            GetProcAddress(scriptsDll, "SetImGuiContext")
+            );
+        if (setImGuiContext)
+        {
+            // Pass the host application's current ImGui context
+            ImGuiContext* mainContext = ImGui::GetCurrentContext();
+            setImGuiContext(mainContext);
+            Debug::Log("ImGui context set in DLL.");
+        }
+        else
+        {
+            DWORD errorCode = GetLastError();
+            string errorMessage = "Failed to find SetImGuiContext. Win32 Error Code: " + ToString(errorCode);
+            Debug::LogError(errorMessage, false);
+        }
     }
     else
     {
         DWORD errorCode = GetLastError();
-        string errorMessage = "Failed to load C++Scripts.dll. Win32 Error Code: " + errorCode;
+        string errorMessage = "Failed to load C++Scripts.dll. Win32 Error Code: " + ToString(errorCode);
         Debug::LogError(errorMessage, false);
     }
 }

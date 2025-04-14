@@ -54,7 +54,7 @@ protected:
     void ShowGameObjectNode(GameObject* gameObject);
 
     void LoadWatchAndCompileScripts();
-    void PerformSafeBuild();
+    static void PerformSafeBuild();
     void PerformSafeDllReload();
 
 private:

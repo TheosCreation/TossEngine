@@ -23,13 +23,14 @@ Mesh::Mesh(const MeshDesc& desc, const string& uniqueId, ResourceManager* manage
 {
     tinyobj::attrib_t attribs;
     std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials; //unused but my gun model imports materials lets try to see if that works
     
     std::string warn;
     std::string err;
     
     auto inputfile = std::filesystem::path(desc.filePath).string();
     
-    bool res = tinyobj::LoadObj(&attribs, &shapes, nullptr, &warn, &err, inputfile.c_str(), nullptr);
+    bool res = tinyobj::LoadObj(&attribs, &shapes, &materials, &warn, &err, inputfile.c_str(), nullptr);
 
     // Log any warnings if they exist
     if (!warn.empty()) {
@@ -179,12 +180,23 @@ void Mesh::OnInspectorGUI()
                         m_instanceBufferDirty = true;
                     // Convert from radians to degrees for display
 
-                    static Vector3 eulerAngles = transform.localRotation.ToEulerAngles().ToDegrees();
                     if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
                     {
                         // Convert the edited angles back to radians and update the quaternion
                         transform.localRotation = Quaternion(eulerAngles.ToRadians());
                         m_instanceBufferDirty = true;
+                    }
+
+
+                    if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
+                    {
+                        transform.localRotation = Quaternion(eulerAngles.ToRadians());
+                        m_instanceBufferDirty = true;
+                    }
+                    else
+                    {
+                        eulerAngles = transform.localRotation.Normalized().ToEulerAngles().ToDegrees();
+
                     }
 
                     if(ImGui::DragFloat3("Scale", transform.localScale.Data(), 0.1f))
@@ -224,7 +236,7 @@ void Mesh::addInstance(Vector3 position, Vector3 scale, Vector3 rotation)
     m_instanceTransforms.push_back(transform);
 }
 
-void Mesh::initInstanceBuffer()
+void Mesh::initInstanceBuffer() const
 {
     if (m_instanceTransforms.empty()) return;
 
@@ -239,7 +251,7 @@ void Mesh::initInstanceBuffer()
     m_vao->initInstanceBuffer(matrices.data(), matrices.size());
 }
 
-int Mesh::getInstanceCount()
+int Mesh::getInstanceCount() const
 {
     return static_cast<int>(m_instanceTransforms.size());
 }

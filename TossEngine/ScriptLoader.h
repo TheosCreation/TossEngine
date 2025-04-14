@@ -11,7 +11,7 @@ public:
 
     void unloadDLL();
     void loadDLL();
-    void CompileScriptsProject();
+    static void CompileScriptsProject();
 
 private:
 

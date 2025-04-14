@@ -38,56 +38,62 @@ public:
     /**
      * @brief Checks if the specified key is currently being held down.
      * @param key The key to check.
+     * @param checkPlayMode
      * @return True if the key is down, false otherwise.
      */
-    bool isKeyDown(Key key);
+    bool isKeyDown(Key key, bool checkPlayMode = true) const;
 
     /**
      * @brief Checks if the specified key was pressed.
      * @param key The key to check.
+     * @param checkPlayMode
      * @return True if the key was pressed, false otherwise.
      */
-    bool isKeyPressed(Key key);
+    bool isKeyPressed(Key key, bool checkPlayMode = true) const;
 
     /**
      * @brief Checks if the specified key is currently not being held down.
      * @param key The key to check.
+     * @param checkPlayMode
      * @return True if the key is up, false otherwise.
      */
-    bool isKeyUp(Key key);
+    bool isKeyUp(Key key, bool checkPlayMode = true) const;
 
     /**
      * @brief Checks if the specified mouse button is currently being held down.
      * @param button The mouse button to check.
+     * @param checkPlayMode
      * @return True if the mouse button is down, false otherwise.
      */
-    bool isMouseDown(MouseButton button);
+    bool isMouseDown(MouseButton button, bool checkPlayMode = true) const;
 
     /**
      * @brief Checks if the specified mouse button was pressed.
      * @param button The mouse button to check.
+     * @param checkPlayMode
      * @return True if the mouse button was pressed, false otherwise.
      */
-    bool isMousePressed(MouseButton button);
+    bool isMousePressed(MouseButton button, bool checkPlayMode = true) const;
 
     /**
      * @brief Checks if the specified mouse button is currently not being held down.
      * @param button The mouse button to check.
+     * @param checkPlayMode
      * @return True if the mouse button is up, false otherwise.
      */
-    bool isMouseUp(MouseButton button);
+    bool isMouseUp(MouseButton button, bool checkPlayMode = true) const;
 
     /**
      * @brief Returns the current mouse movement along the x-axis.
      * @return The mouse movement along the x-axis: -1 (left), 1 (right).
      */
-    float getMouseXAxis();
+    float getMouseXAxis(bool checkPlayMode = true) const;
 
     /**
      * @brief Returns the current mouse movement along the y-axis.
      * @return The mouse movement along the y-axis: -1 (bottom), 1 (top).
      */
-    float getMouseYAxis();
+    float getMouseYAxis(bool checkPlayMode = true) const;
 
     /**
      * @brief Returns the current mouse position as a vector2.

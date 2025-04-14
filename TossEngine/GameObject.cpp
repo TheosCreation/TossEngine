@@ -163,7 +163,7 @@ void GameObject::OnInspectorGUI()
     ImGui::Separator();
     ImGui::Text("Transform:");
     ImGui::DragFloat3("Position", m_transform.localPosition.Data(), 0.1f);
-
+    
     if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
     {
         // Convert the edited angles back to radians and update the quaternion
@@ -171,7 +171,8 @@ void GameObject::OnInspectorGUI()
     }
     else
     {
-        eulerAngles = m_transform.localRotation.ToEulerAngles().ToDegrees();
+        eulerAngles = m_transform.localRotation.Normalized().ToEulerAngles().ToDegrees();
+
     }
 
     ImGui::DragFloat3("Scale", m_transform.localScale.Data(), 0.1f);
@@ -370,7 +371,6 @@ void GameObject::CallOnCollisionExitCallbacks(Collider* other) const
 
 void GameObject::CallOnTriggerEnterCallbacks(Collider* other) const
 {
-    Debug::Log("Enter");
     for (auto& pair : m_components) {
         pair.second->onTriggerEnter(other);
     }
@@ -378,7 +378,6 @@ void GameObject::CallOnTriggerEnterCallbacks(Collider* other) const
 
 void GameObject::CallOnTriggerExitCallbacks(Collider* other) const
 {
-    Debug::Log("Exit");
     for (auto& pair : m_components) {
         pair.second->onTriggerExit(other);
     }
@@ -386,8 +385,7 @@ void GameObject::CallOnTriggerExitCallbacks(Collider* other) const
 
 Component* GameObject::addComponent(string componentType, const json& data)
 {
-    auto component = ComponentRegistry::GetInstance().createComponent(componentType);
-    if (component)
+    if (auto component = ComponentRegistry::GetInstance().createComponent(componentType))
     {
         component->setOwner(this);
         m_components.emplace(std::type_index(typeid(*component)), component);

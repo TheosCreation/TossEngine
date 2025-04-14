@@ -83,7 +83,7 @@ void Scene::onCreate()
     m_deferredSSRQMaterial = resourceManager.createMaterial(MaterialDesc{ "SSQLightingShader" }, "DeferredSSRQMaterial");
     m_postProcessSSRQMaterial = resourceManager.createMaterial(MaterialDesc{ "DefaultFullscreenShader" }, "PostProcessSSRQMaterial");
 
-    json sceneJson =  JsonUtility::OpenJsonFile(m_filePath, true);
+    json sceneJson = JsonUtility::OpenJsonFile(m_filePath, true);
     if (!sceneJson.empty())
     {
         m_gameObjectManager->loadGameObjectsFromFile(m_filePath);

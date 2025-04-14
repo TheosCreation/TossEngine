@@ -1,5 +1,5 @@
 #pragma once
-#include "TossEngine.h"
+#include <TossEngine.h>
 
 class Gun : public Component
 {
@@ -10,8 +10,10 @@ public:
     void onUpdate() override;
 
 private:
-    //float fireRate = 0.1f;
+    float m_fireRate = 0.1f;
     PrefabPtr m_projectile = nullptr;
+
+    float shootTimer = 0.0f;
 };
 
 REGISTER_COMPONENT(Gun);

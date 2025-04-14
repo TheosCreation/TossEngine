@@ -56,44 +56,60 @@ void InputManager::Init(TossPlayerSettingsPtr& playerSettings)
     isInitilized = true;
 }
 
-bool InputManager::isKeyDown(Key key)
+bool InputManager::isKeyDown(Key key, bool checkPlayMode) const
 {
+    if (checkPlayMode && !isPlayModeEnabled()) return false;
+
 	return currentKeyStates[key];
 }
 
-bool InputManager::isKeyPressed(Key key)
+bool InputManager::isKeyPressed(Key key, bool checkPlayMode) const
 {
+    if (checkPlayMode && !isPlayModeEnabled()) return false;
+
 	// Return true if the key is currently pressed but was not pressed in the previous frame
 	return currentKeyStates[key] && !previousKeyStates[key];
 }
 
-bool InputManager::isKeyUp(Key key)
+bool InputManager::isKeyUp(Key key, bool checkPlayMode) const
 {
+    if (checkPlayMode && !isPlayModeEnabled()) return false;
+
 	return !currentKeyStates[key];
 }
 
-bool InputManager::isMouseDown(MouseButton button)
+bool InputManager::isMouseDown(MouseButton button, bool checkPlayMode) const
 {
+    if (checkPlayMode && !isPlayModeEnabled()) return false;
+
 	return currentMouseStates[button];
 }
 
-bool InputManager::isMousePressed(MouseButton button)
+bool InputManager::isMousePressed(MouseButton button, bool checkPlayMode) const
 {
+    if (checkPlayMode && !isPlayModeEnabled()) return false;
+
 	return currentMouseStates[button] && !previousMouseStates[button];
 }
 
-bool InputManager::isMouseUp(MouseButton button)
+bool InputManager::isMouseUp(MouseButton button, bool checkPlayMode) const
 {
+    if (checkPlayMode && !isPlayModeEnabled()) return false;
+
 	return !currentMouseStates[button];
 }
 
-float InputManager::getMouseXAxis()
+float InputManager::getMouseXAxis(bool checkPlayMode) const
 {
+    if (checkPlayMode && !isPlayModeEnabled()) return false;
+
 	return m_deltaMouse.x;
 }
 
-float InputManager::getMouseYAxis()
+float InputManager::getMouseYAxis(bool checkPlayMode) const
 {
+    if (checkPlayMode && !isPlayModeEnabled()) return false;
+
 	return m_deltaMouse.y;
 }
 

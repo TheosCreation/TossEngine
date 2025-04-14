@@ -47,9 +47,9 @@ public:
 
     void addInstance(Vector3 position, Vector3 scale, Vector3 rotation);
 
-    void initInstanceBuffer();
+    void initInstanceBuffer() const;
 
-    int getInstanceCount();
+    int getInstanceCount() const;
     std::vector<Transform> getInstanceTransforms() const;
 
     void clearInstances();
@@ -57,4 +57,6 @@ public:
 private:
     VertexArrayObjectPtr m_vao; // The Vertex Array Object associated with this mesh.
     std::vector<Transform> m_instanceTransforms; //A vector of transformations for each instance.
+
+    Vector3 eulerAngles;
 };

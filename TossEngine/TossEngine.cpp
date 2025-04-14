@@ -106,17 +106,17 @@ void TossEngine::CleanUp()
     glfwTerminate();
 }
 
-void TossEngine::UnLoadScripts()
+void TossEngine::UnLoadScripts() const
 {
     m_scriptLoader->unloadDLL();
 }
 
-void TossEngine::LoadScripts()
+void TossEngine::LoadScripts() const
 {
     m_scriptLoader->loadDLL();
 }
 
-void TossEngine::ReloadScripts()
+void TossEngine::ReloadScripts() const
 {
     m_scriptLoader->reloadDLL();
 }

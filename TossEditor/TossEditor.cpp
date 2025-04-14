@@ -19,7 +19,7 @@ TossEditor::TossEditor()
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, editorPreferences.windowSize, "TossEditor", editorPreferences.maximized);
-    tossEngine.ReloadScripts(); //recompile and loads scripts
+    tossEngine.LoadScripts(); //recompile and loads scripts
 
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     tossEngine.StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
@@ -1156,18 +1156,37 @@ void TossEditor::onQuit()
 
 void TossEditor::ShowGameObjectNode(GameObject* gameObject)
 {
-    ImGuiTreeNodeFlags flags = (gameObject->m_transform.children.empty() ? ImGuiTreeNodeFlags_Leaf : 0);
+    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+    if (gameObject->m_transform.children.empty())
+        flags |= ImGuiTreeNodeFlags_Leaf;
     if (gameObject == selectedSelectable)
         flags |= ImGuiTreeNodeFlags_Selected;
 
+    // Create the tree node, which draws the arrow and the label.
     bool open = ImGui::TreeNodeEx(gameObject->name.c_str(), flags);
+
+    // Get the bounding rectangle for this item to determine where the arrow is drawn.
+    ImVec2 itemMin = ImGui::GetItemRectMin();
+    // Typically, the arrow is about one frame height wide.
+    float arrowWidth = ImGui::GetFrameHeight();
+
+    // If the tree node was clicked...
     if (ImGui::IsItemClicked())
     {
-        if (selectedSelectable != nullptr) selectedSelectable->OnDeSelect();
-        selectedSelectable = gameObject;
-        selectedSelectable->OnSelect();
+        // Check if the click was outside of the arrow region.
+        // That is, if the mouse's x position is farther right than the arrow's width,
+        // then treat the click as a selection of the game object.
+        if (ImGui::GetIO().MousePos.x > itemMin.x + arrowWidth)
+        {
+            // Deselect the previous selection if any.
+            if (selectedSelectable != nullptr)
+                selectedSelectable->OnDeSelect();
+            selectedSelectable = gameObject;
+            selectedSelectable->OnSelect();
+        }
     }
 
+    // Drag and drop source: allow dragging this game object.
     if (ImGui::BeginDragDropSource())
     {
         ImGui::SetDragDropPayload("DND_GAMEOBJECT", &gameObject, sizeof(GameObject*));
@@ -1175,11 +1194,12 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
         ImGui::EndDragDropSource();
     }
 
+    // Drag and drop target: allow accepting a dropped game object.
     if (ImGui::BeginDragDropTarget())
     {
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
         {
-            GameObject* droppedGameObject = *(GameObject**)payload->Data;
+            GameObject* droppedGameObject = *static_cast<GameObject**>(payload->Data);
             if (droppedGameObject != gameObject)
             {
                 droppedGameObject->m_transform.SetParent(&gameObject->m_transform, false);
@@ -1188,6 +1208,7 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
         ImGui::EndDragDropTarget();
     }
 
+    // Context menu (right-click) for renaming/deleting.
     if (ImGui::BeginPopupContextItem())
     {
         if (ImGui::MenuItem("Rename"))
@@ -1199,9 +1220,7 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
         if (ImGui::MenuItem("Delete"))
         {
             if (gameObject->m_transform.parent)
-            {
                 gameObject->m_transform.SetParent(nullptr);
-            }
             gameObject->Delete();
             if (selectedSelectable == gameObject)
                 selectedSelectable = nullptr;
@@ -1209,6 +1228,7 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
         ImGui::EndPopup();
     }
 
+    // If the node is expanded, recursively show its children.
     if (open)
     {
         for (Transform* child : gameObject->m_transform.children)
@@ -1217,7 +1237,6 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
         }
         ImGui::TreePop();
     }
-
 }
 
 

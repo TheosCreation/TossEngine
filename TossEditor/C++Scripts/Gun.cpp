@@ -4,9 +4,10 @@ json Gun::serialize() const
 {
     json data;
     data["type"] = getClassName(typeid(*this)); // Store the component type
+    data["fireRate"] = m_fireRate;
     if (m_projectile)
     {
-        data["projectilePrefab"] = m_projectile->getId();
+        data["projectilePrefab"] = m_projectile->getUniqueID();
     }
 
     return data;
@@ -14,9 +15,15 @@ json Gun::serialize() const
 
 void Gun::deserialize(const json& data)
 {
+    if (data.contains("fireRate"))
+    {
+        m_fireRate = data["fireRate"].get<float>();
+    }
+
     if (data.contains("projectilePrefab"))
     {
-        m_projectile = ResourceManager::GetInstance().getPrefab(data["projectilePrefab"].get<string>());
+        ResourceManager& resourceManager = ResourceManager::GetInstance();
+        m_projectile = resourceManager.getPrefab(data["projectilePrefab"].get<string>());
     }
 }
 
@@ -24,10 +31,23 @@ void Gun::OnInspectorGUI()
 {
     Component::OnInspectorGUI();
 
-    ResourceDropdownField(m_projectile, "Projectile");
+    FloatSliderField("FireRate", m_fireRate);
+    ResourceAssignableField(m_projectile, "Projectile");
 }
 
 void Gun::onUpdate()
 {
+    auto& inputManager = InputManager::GetInstance();
+    if(inputManager.isMouseDown(MouseButtonLeft) && shootTimer <= 0.0f)
+    {
+        shootTimer = m_fireRate;
+        Debug::Log("Shot Fired");
 
+
+        m_owner->getGameObjectManager()->createGameObject<GameObject>();
+    }
+    else
+    {
+        shootTimer -= Time::DeltaTime;
+    }
 }
