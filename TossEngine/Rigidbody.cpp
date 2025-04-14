@@ -212,6 +212,15 @@ void Rigidbody::UpdateBodyTransform()
     }
 }
 
+void Rigidbody::onDestroy()
+{
+    if (m_Body) {
+        Physics::GetInstance().GetWorld()->destroyRigidBody(m_Body);
+        m_Body = nullptr;
+        m_Collider = nullptr;
+    }
+}
+
 void Rigidbody::SetBodyType(BodyType type)
 {
     if (m_Body) {

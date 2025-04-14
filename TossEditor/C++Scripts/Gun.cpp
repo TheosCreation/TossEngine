@@ -43,8 +43,8 @@ void Gun::onUpdate()
         shootTimer = m_fireRate;
         Debug::Log("Shot Fired");
 
-
-        m_owner->getGameObjectManager()->createGameObject<GameObject>();
+        //this is how id create a empty game object but i want to create one from the prefab m_projectile
+        m_owner->getGameObjectManager()->Instatiate(m_projectile);
     }
     else
     {

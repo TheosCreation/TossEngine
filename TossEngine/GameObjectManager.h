@@ -20,6 +20,7 @@ Mail : theo.morris@mds.ac.nz
 
 // Forward declarations of classes
 class Camera;
+class Prefab;
 
 /**
  * @class GameObjectManager
@@ -62,6 +63,9 @@ public:
             return e;
         return nullptr;
     }
+
+    GameObject* Instatiate(PrefabPtr prefab, Transform* parent = nullptr, Vector3 positionalOffset = Vector3(0.0f), Quaternion rotationOffset = Quaternion());
+    GameObject* Instatiate(PrefabPtr prefab, Vector3 position, Quaternion rotation);
 
     /**
      * @brief Removes an GameObject from the system.

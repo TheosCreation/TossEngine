@@ -18,6 +18,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Image.h"
 #include "Skybox.h"
 #include "TextureCubeMap.h"
+#include "Prefab.h"
 
 GameObjectManager::GameObjectManager()
 {
@@ -50,6 +51,36 @@ Scene* GameObjectManager::getScene()
     return m_scene;
 }
 
+GameObject* GameObjectManager::Instatiate(PrefabPtr prefab, Transform* parent, Vector3 positionalOffset, Quaternion rotationOffset)
+{
+    GameObject* newObject = prefab->Instantiate();
+    if (!newObject)
+    {
+        Debug::LogError("Failed to instantiate prefab.", false);
+        return nullptr;
+    }
+
+    // Set parent if provided (update local transform accordingly)
+    if (parent != nullptr)
+    {
+        newObject->m_transform.SetParent(parent, false);
+    }
+
+    newObject->m_transform.localPosition = positionalOffset;
+    newObject->m_transform.localRotation = rotationOffset;
+    if (createGameObjectInternal(newObject, prefab->name))
+    {
+        return newObject;
+    }
+
+    return nullptr;
+}
+
+GameObject* GameObjectManager::Instatiate(PrefabPtr prefab, Vector3 position, Quaternion rotation)
+{
+    return Instatiate(prefab, nullptr, position, rotation);
+}
+
 bool GameObjectManager::createGameObjectInternal(GameObject* gameObject, string name)
 {
     if (!gameObject)
@@ -64,7 +95,7 @@ bool GameObjectManager::createGameObjectInternal(GameObject* gameObject, string 
     gameObject->onCreate();
     gameObject->onLateCreate();
 
-    m_gameObjects[newId] = std::move(gameObject);
+    m_gameObjects[newId] = gameObject;
 
     return true;
 }

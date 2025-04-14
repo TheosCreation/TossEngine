@@ -25,6 +25,7 @@ public:
     void onUpdate() override;
     void onUpdateInternal() override;
     void UpdateBodyTransform();
+    void onDestroy() override;
 
     void SetBodyType(BodyType type);
     void SetMass(float mass);

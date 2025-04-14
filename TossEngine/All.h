@@ -52,3 +52,6 @@ Mail : theo.morris@mds.ac.nz
 #include "CoroutineTask.h"
 #include "JsonUtility.h"
 #include <imgui.h>
+
+#include "Rigidbody.h"
+#include "Collider.h"

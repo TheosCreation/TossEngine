@@ -843,3 +843,16 @@ CoroutineTask ResourceManager::createResourcesFromDescs()
     hasCreatedResources = true;
     co_return;
 }
+
+void ResourceManager::onUpdateInternal()
+{
+    for (auto& [key, resource] : m_mapResources)
+    {
+        // Check if the resource is of type Prefab
+        PrefabPtr prefabPtr = std::dynamic_pointer_cast<Prefab>(resource);
+        if (prefabPtr)
+        {
+            prefabPtr->onUpdateInternal();
+        }
+    }
+}

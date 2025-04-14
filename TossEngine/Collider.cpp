@@ -43,7 +43,11 @@ void Collider::deserialize(const json& data)
 {
     if (data.contains("physicsMaterial"))
     {
-        m_physicsMaterial = ResourceManager::GetInstance().getPhysicsMaterial(data["physicsMaterial"].get<string>());
+        string id = data["physicsMaterial"].get<string>();
+        if (!id.empty())
+        {
+            m_physicsMaterial = ResourceManager::GetInstance().getPhysicsMaterial(id);
+        }
     }
 
     if (data.contains("layerNames")) {
@@ -201,7 +205,6 @@ void Collider::onStart()
 
 void Collider::onCreate()
 {
-    m_physicsMaterial = Physics::GetInstance().GetDefaultPhysicsMaterial();
 }
 
 void Collider::onLateCreate()
@@ -210,6 +213,11 @@ void Collider::onLateCreate()
     if (m_Rigidbody == nullptr) {
         m_Rigidbody = m_owner->addComponent<Rigidbody>();
         m_Rigidbody->SetBodyType(BodyType::STATIC);
+    }
+
+    if (m_physicsMaterial == nullptr)
+    {
+        m_physicsMaterial = Physics::GetInstance().GetDefaultPhysicsMaterial();
     }
 
     if (m_Shape == nullptr)

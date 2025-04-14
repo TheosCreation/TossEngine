@@ -61,6 +61,7 @@ public:
     void ClearInstancesFromMeshes();
 
     CoroutineTask createResourcesFromDescs();
+    void onUpdateInternal();
 
     bool IsResourceLoaded(const std::string& uniqueId) const;
     std::map<std::string, ResourcePtr>& GetAllResources() { return m_mapResources; }

@@ -150,7 +150,7 @@ public:
     }
 
     Component* addComponent(string componentType, const json& data = nullptr);
-    void removeComponent(Component* component);
+    virtual void removeComponent(Component* component);
 
     template <typename Component>
     Component* getComponent()

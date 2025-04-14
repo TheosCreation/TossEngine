@@ -162,6 +162,7 @@ void TossEditor::onUpdateInternal()
 
     // Accumulate time
     m_accumulatedTime += deltaTimeInternal;
+    resourceManager.onUpdateInternal();
 
     if (m_currentScene)
     {
