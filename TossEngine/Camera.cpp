@@ -129,12 +129,12 @@ void Camera::setTargetPosition(Vector3 newTargetPosition)
 	m_targetPosition = newTargetPosition;
 }
 
-Vector3 Camera::getPosition()
+Vector3 Camera::getPosition() const
 {
 	return m_owner->m_transform.position;
 }
 
-Vector3 Camera::getFacingDirection()
+Vector3 Camera::getFacingDirection() const
 {
 	return m_owner->m_transform.GetForward();
 }

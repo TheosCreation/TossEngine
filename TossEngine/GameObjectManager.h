@@ -32,7 +32,7 @@ public:
     /**
      * @brief Default constructor for the GameObjectManager class.
      */
-    GameObjectManager();
+    GameObjectManager() = default;
 
     /**
      * @brief Constructor for the GameObjectManager class with a scene pointer.
@@ -45,9 +45,9 @@ public:
     /**
      * @brief Destructor for the GameObjectManager class.
      */
-    ~GameObjectManager();
+    ~GameObjectManager() = default;
 
-    Scene* getScene();
+    Scene* getScene() const;
 
     /**
      * @brief Creates an GameObject of type T.
@@ -64,8 +64,8 @@ public:
         return nullptr;
     }
 
-    GameObject* Instatiate(PrefabPtr prefab, Transform* parent = nullptr, Vector3 positionalOffset = Vector3(0.0f), Quaternion rotationOffset = Quaternion());
-    GameObject* Instatiate(PrefabPtr prefab, Vector3 position, Quaternion rotation);
+    GameObject* Instatiate(PrefabPtr prefab, Transform* parent = nullptr, Vector3 positionalOffset = Vector3(0.0f), Quaternion rotationOffset = Quaternion(), bool hasStarted = true);
+    GameObject* Instatiate(PrefabPtr prefab, Vector3 position, Quaternion rotation, bool hasStarted = true);
 
     /**
      * @brief Removes an GameObject from the system.
@@ -74,13 +74,13 @@ public:
     void removeGameObject(GameObject* gameObject);
 
     void loadGameObjects(const json& data);
-    json saveGameObjects();
+    json saveGameObjects() const;
 
     void loadGameObjectsFromFile(const std::string& filePath);
-    void saveGameObjectsToFile(const std::string& filePath);
+    void saveGameObjectsToFile(const std::string& filePath) const;
 
-    void onStart();
-    void onLateStart();
+    void onStart() const;
+    void onLateStart() const;
 
     /**
      * @brief Updates the GameObject system.
@@ -89,8 +89,8 @@ public:
     void onUpdate();
     void onUpdateInternal();
 
-    void onLateUpdate();
-    void onShadowPass(int index);
+    void onLateUpdate() const;
+    void onShadowPass(int index) const;
     void Render(UniformData _data) const;
     void onTransparencyPass(UniformData _data) const;
     void onSkyboxPass(UniformData _data) const;
@@ -106,7 +106,7 @@ public:
      */
     std::vector<Camera*> getCameras() const;
     
-    TexturePtr getSkyBoxTexture();
+    TexturePtr getSkyBoxTexture() const;
 
     /**
     * @brief Map of game objects categorized by type ID.

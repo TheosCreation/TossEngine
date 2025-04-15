@@ -53,6 +53,7 @@ public:
     SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath);
     MaterialPtr createMaterial(const MaterialDesc& materialDesc, const std::string& uniqueID);
     PhysicsMaterialPtr createPhysicsMaterial(const PhysicsMaterialDesc& desc, const std::string& uniqueID);
+    PhysicsMaterialPtr createPhysicsMaterial(const std::string& uniqueID, const json& data = nullptr);
     PrefabPtr createPrefab(const string& id, const json& data = nullptr);
 
     void deleteTexture(TexturePtr texture);
@@ -67,6 +68,7 @@ public:
     std::map<std::string, ResourcePtr>& GetAllResources() { return m_mapResources; }
     void SetSelectedResource(ResourcePtr selectedResource);
     ResourcePtr GetSelectedResource();
+    ResourcePtr GetResourceByUniqueID(const std::string& id);
     void RenameResource(ResourcePtr resource, const std::string& newId);
 
     void DeleteResource(const std::string& uniqueId);
@@ -85,7 +87,7 @@ protected:
     std::unordered_map<string, vector<string>> cubemapTextureFilePaths;
     std::unordered_map<string, MaterialDesc> materialDescs;
     std::unordered_map<string, MeshDesc> meshDescriptions;
-    std::unordered_map<string, PhysicsMaterialDesc> physicsMaterialDescriptions;
+    std::unordered_map<string, json> physicsMaterialDescriptions;
     std::unordered_map<string, json> m_prefabDescs;
 
 private:

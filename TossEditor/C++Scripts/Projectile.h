@@ -8,6 +8,7 @@ public:
     json serialize() const override;
     void deserialize(const json& data) override;
     void onStart() override;
+    void onTriggerEnter(Collider* other) override;
 private:
     float m_projectileSpeed = 20.0f;
     Rigidbody* m_rigidBody = nullptr;

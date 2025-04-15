@@ -102,7 +102,7 @@ PhysicsMaterialPtr ResourceManager::getPhysicsMaterial(const std::string& unique
 
     auto it2 = physicsMaterialDescriptions.find(uniqueId);
     if (it2 != physicsMaterialDescriptions.end())
-        return createPhysicsMaterial(it2->second, uniqueId);
+        return createPhysicsMaterial(uniqueId, it2->second);
 
     return PhysicsMaterialPtr();
 }
@@ -346,7 +346,18 @@ MaterialPtr ResourceManager::createMaterial(const MaterialDesc& materialDesc, co
 PhysicsMaterialPtr ResourceManager::createPhysicsMaterial(const PhysicsMaterialDesc& desc, const std::string& uniqueID)
 {
     PhysicsMaterialPtr physicsMaterial = std::make_shared<PhysicsMaterial>(desc, uniqueID, this);
-    physicsMaterialDescriptions.emplace(uniqueID, desc);
+    physicsMaterialDescriptions.emplace(uniqueID, physicsMaterial->serialize());
+    m_mapResources.emplace(uniqueID, physicsMaterial);
+    return physicsMaterial;
+}
+
+PhysicsMaterialPtr ResourceManager::createPhysicsMaterial(const std::string& uniqueID, const json& data)
+{
+    PhysicsMaterialPtr physicsMaterial = std::make_shared<PhysicsMaterial>(PhysicsMaterialDesc(), uniqueID, this);
+    if (!data.empty())
+    {
+        physicsMaterial->deserialize(data);
+    }
     m_mapResources.emplace(uniqueID, physicsMaterial);
     return physicsMaterial;
 }
@@ -400,14 +411,13 @@ CoroutineTask ResourceManager::saveResourcesDescs(const std::string& filepath)
     }
     
     // Serialize physics descriptions properly
+
     for (auto& [key, physicsDesc] : physicsMaterialDescriptions)
     {
-        data["PhysicMaterials"][key] = {
-            {"staticFriction", physicsDesc.staticFriction},
-            {"dynamicFriction", physicsDesc.dynamicFriction},
-            {"bounciness", physicsDesc.bounciness}
-        };
+        PhysicsMaterialPtr material = getPhysicsMaterial(key);
+        data["PhysicMaterials"][key] = material->serialize();
     }
+
     for (auto& [key, meshDesc] : meshDescriptions)
     {
         json instancesJson = json::array();
@@ -517,13 +527,8 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
     // Deserialize physics materials
     if (data.contains("PhysicMaterials"))
     {
-        for (auto& [key, value] : data["PhysicMaterials"].items())
-        {
-            PhysicsMaterialDesc physicsMaterialDesc;
-            physicsMaterialDesc.staticFriction = value["staticFriction"].get<float>();
-            physicsMaterialDesc.dynamicFriction = value["dynamicFriction"].get<float>();
-            physicsMaterialDesc.bounciness = value["bounciness"].get<float>();
-            physicsMaterialDescriptions[key] = physicsMaterialDesc;
+        for (auto& [uniqueID, physicMaterialJson] : data["PhysicMaterials"].items()) {
+            physicsMaterialDescriptions[uniqueID] = physicMaterialJson;
         }
     }
 
@@ -602,6 +607,15 @@ bool ResourceManager::IsResourceLoaded(const std::string& uniqueId) const
 ResourcePtr ResourceManager::GetSelectedResource()
 {
     return m_selectedResource;
+}
+
+ResourcePtr ResourceManager::GetResourceByUniqueID(const std::string& id)
+{
+    if (m_mapResources.find(id) != m_mapResources.end())
+    {
+        return m_mapResources[id];
+    }
+    return ResourcePtr();
 }
 
 void ResourceManager::RenameResource(ResourcePtr resource, const std::string& newId)
@@ -826,7 +840,7 @@ CoroutineTask ResourceManager::createResourcesFromDescs()
     // Create Physics Materials
     for (const auto& [uniqueID, physicMaterialDesc] : physicsMaterialDescriptions)
     {
-        createPhysicsMaterial(physicMaterialDesc, uniqueID);
+        createPhysicsMaterial(uniqueID, physicMaterialDesc);
     }
 
     // Create Meshes

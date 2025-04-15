@@ -23,13 +23,13 @@ void Physics::Update()
 {
     if (m_world)
     {
-        m_world->update(Time::FixedDeltaTime);
+        m_world->update(Time::DeltaTime);
     }
 
     // Update raycast debug entries lifetime
     for (auto it = m_raycastDebugEntries.begin(); it != m_raycastDebugEntries.end(); )
     {
-        it->lifetime -= Time::FixedDeltaTime;
+        it->lifetime -= Time::DeltaTime;
         if (it->lifetime <= 0)
             it = m_raycastDebugEntries.erase(it);
         else

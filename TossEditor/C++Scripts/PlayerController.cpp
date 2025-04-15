@@ -9,6 +9,7 @@ void PlayerController::OnInspectorGUI()
 {
     Component::OnInspectorGUI();
 
+    IntSliderField("Health", m_health);
     FloatSliderField("Movement Speed", m_movementSpeed, 0.1f);
     FloatSliderField("Acceleration", m_acceleration, 0.1f);
     FloatSliderField("Air Acceleration", m_airAcceleration, 0.1f);
@@ -133,7 +134,7 @@ void PlayerController::onFixedUpdate()
         moveDirection = moveDirection.Normalized();
 
         // Accelerate toward direction
-        Vector3 desiredVelocity = Vector3(moveDirection.x * m_movementSpeed, velocity.y, moveDirection.z * m_movementSpeed);
+        Vector3 desiredVelocity = moveDirection * m_movementSpeed;
         Vector3 velocityChange = desiredVelocity - velocity;
 
         // If on the ground, set the linear velocity directly
@@ -148,19 +149,22 @@ void PlayerController::onFixedUpdate()
 
             m_rigidBody->SetLinearVelocity(velocity + accelerationStep);
         }
-        //else
-        //{
-        //    // Limit acceleration
-        //    Vector3 accelerationStep = velocityChange.Normalized() * m_airAcceleration * Time::FixedDeltaTime;
-        //
-        //    // Don't overshoot
-        //    if (accelerationStep.Length() > velocityChange.Length())
-        //        accelerationStep = velocityChange;
-        //
-        //    // If not on the ground, apply a force for movement
-        //    Vector3 force = accelerationStep;
-        //    m_rigidBody->AddForce(force);
-        //}
+        else
+        {
+            Vector3 desiredAirVelocity = Vector3(moveDirection.x * m_movementSpeed, velocity.y, moveDirection.z * m_movementSpeed);
+            Vector3 airDirection = Vector3(0.0f);
+            if ((desiredAirVelocity.x > 0.0f && velocity.x < desiredAirVelocity.x) || (desiredAirVelocity.x < 0.0f && velocity.x > desiredAirVelocity.x))
+            {
+                airDirection.x = desiredAirVelocity.x;
+            }
+            if ((desiredAirVelocity.z > 0.0f && velocity.z < desiredAirVelocity.z) || (desiredAirVelocity.z < 0.0f && velocity.z > desiredAirVelocity.z))
+            {
+                airDirection.z = desiredAirVelocity.z;
+            }
+            // Limit acceleration
+            Vector3 force = airDirection.Normalized() * m_airAcceleration * Time::FixedDeltaTime;
+            m_rigidBody->AddForce(force);
+        }
     }
 }
 
@@ -168,6 +172,7 @@ json PlayerController::serialize() const
 {
     json data;
     data["type"] = getClassName(typeid(*this)); // Store the component type
+    data["health"] = m_health;
     data["layerNames"] = m_layerNames;
     data["movementSpeed"] = m_movementSpeed;
     data["acceleration"] = m_acceleration;
@@ -180,6 +185,10 @@ json PlayerController::serialize() const
 
 void PlayerController::deserialize(const json& data)
 {
+    if (data.contains("health")) {
+        m_health = data["health"].get<int>();
+    }
+
     if (data.contains("layerNames")) {
         m_layerNames = data["layerNames"].get<std::vector<std::string>>();
     }

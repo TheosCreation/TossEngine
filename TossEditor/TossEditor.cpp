@@ -171,9 +171,9 @@ void TossEditor::onUpdateInternal()
         inputManager.onUpdate();
         if (m_gameRunning)
         {
+            Physics::GetInstance().Update();
             while (m_accumulatedTime >= Time::FixedDeltaTime)
             {
-                Physics::GetInstance().Update();
                 m_currentScene->onFixedUpdate();
                 m_accumulatedTime -= Time::FixedDeltaTime;
             }
@@ -576,20 +576,17 @@ void TossEditor::onUpdateInternal()
         ImGui::End();
     }
 
-    if (ImGui::Begin("Hierarchy"))
-    {
+    if (ImGui::Begin("Hierarchy")) {
+
         if (ImGui::Button("Add Empty GameObject")) {
             m_currentScene->getObjectManager()->createGameObject<GameObject>();
         }
 
         // Display root game objects.
-        if (m_currentScene != nullptr)
-        {
-            for (const auto& pair : m_currentScene->getObjectManager()->m_gameObjects)
-            {
+        if (m_currentScene != nullptr) {
+            for (const auto& pair : m_currentScene->getObjectManager()->m_gameObjects) {
                 // Only show root game objects.
-                if (pair.second->m_transform.parent == nullptr)
-                {
+                if (pair.second->m_transform.parent == nullptr) {
                     ShowGameObjectNode(pair.second);
                 }
             }
@@ -598,14 +595,30 @@ void TossEditor::onUpdateInternal()
         // Add a drop target over the entire hierarchy window.
         ImVec2 windowSize = ImGui::GetContentRegionAvail();
         ImGui::InvisibleButton("HierarchyDropArea", windowSize);
-        if (ImGui::BeginDragDropTarget())
-        {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
-            {
+        if (ImGui::BeginDragDropTarget()) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE")) {
+                // Retrieve the raw pointer from the payload
+                Resource* droppedResource = nullptr;
+                memcpy(&droppedResource, payload->Data, payload->DataSize);
+
+                if (droppedResource != nullptr) {
+                    if (ResourcePtr resourcePtr = resourceManager.GetResourceByUniqueID(droppedResource->getUniqueID())) {
+                        // Try to dynamically cast it to a Prefab
+                        if (PrefabPtr prefab = std::dynamic_pointer_cast<Prefab>(resourcePtr)) {
+                            // Create a new GameObject from the prefab data.
+                            GameObject* newObj = m_currentScene->getObjectManager()->Instatiate(prefab, nullptr, Vector3(0.0f), Quaternion(), false);
+                            Debug::Log("Created GameObject from prefab: " + prefab->getUniqueID());
+                        }
+                        else {
+                            Debug::LogWarning("Dropped resource is not a prefab.");
+                        }
+                    }
+                }
+            }
+            // (Optional) You can still support other payload types here (e.g., for moving gameobjects).
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT")) {
                 GameObject* droppedGameObject = *(GameObject**)payload->Data;
-                // Only remove parent if it is not already a root.
-                if (droppedGameObject && droppedGameObject->m_transform.parent != nullptr)
-                {
+                if (droppedGameObject && droppedGameObject->m_transform.parent != nullptr) {
                     droppedGameObject->m_transform.SetParent(nullptr);
                 }
             }
@@ -715,25 +728,35 @@ void TossEditor::onUpdateInternal()
 
         std::map<string, ResourcePtr>& resources = resourceManager.GetAllResources();
 
-        for (auto& [uniqueID, resource] : resources) {
+        for (auto& [uniqueID, resource] : resourceManager.GetAllResources()) {
             if (uniqueID.empty()) continue;
 
             bool isSelected = (resource == resourceManager.GetSelectedResource());
 
+            // Display the resource item:
             if (ImGui::Selectable(uniqueID.c_str(), isSelected)) {
-                if (selectedSelectable != nullptr) selectedSelectable->OnDeSelect();
+                if (selectedSelectable != nullptr)
+                    selectedSelectable->OnDeSelect();
                 selectedSelectable = resource.get();
                 selectedSelectable->OnSelect();
                 resourceManager.SetSelectedResource(resource);
             }
 
-            // Right-click menu for deleting the resource
+            // Make this resource a drag source regardless of type
+            if (ImGui::BeginDragDropSource()) {
+                // Pass the raw pointer as payload
+                Resource* resourceRaw = resource.get();
+                ImGui::SetDragDropPayload("DND_RESOURCE", &resourceRaw, sizeof(resourceRaw));
+                ImGui::Text("Drag '%s'", uniqueID.c_str());
+                ImGui::EndDragDropSource();
+            }
+
+            // Right-click context menu for renaming, deletion, etc.
             if (ImGui::BeginPopupContextItem(("item_context_" + uniqueID).c_str())) {
                 if (ImGui::MenuItem("Rename")) {
                     resourceBeingRenamed = resource;
                     strncpy_s(renameBuffer, sizeof(renameBuffer), uniqueID.c_str(), _TRUNCATE);
                 }
-
                 if (ImGui::MenuItem("Delete")) {
                     resourceManager.DeleteResource(uniqueID);
                     if (isSelected) {
@@ -742,7 +765,7 @@ void TossEditor::onUpdateInternal()
                     }
                     ImGui::CloseCurrentPopup();
                     ImGui::EndPopup();
-                    break; // Break since resources have changed
+                    break;
                 }
                 ImGui::EndPopup();
             }
@@ -1148,14 +1171,14 @@ void TossEditor::onQuit()
 {
     m_editorRunning.store(false);
 
-    ResourceManager& resourceManager = ResourceManager::GetInstance();
-    TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesDescs("Resources/Resources.json"));
-    resourceManager.CleanUp();
-    Physics::GetInstance().UnLoadPrefabWorld();
     if (m_currentScene)
     {
         m_currentScene->onQuit();
     }
+    ResourceManager& resourceManager = ResourceManager::GetInstance();
+    TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesDescs("Resources/Resources.json"));
+    resourceManager.CleanUp();
+    Physics::GetInstance().UnLoadPrefabWorld();
     editorPreferences.SaveToFile("EditorPreferences.json");
 }
 
@@ -1285,8 +1308,8 @@ void TossEditor::PerformSafeBuild()
         return;
     }
 
-    //TossEngine& tossEngine = TossEngine::GetInstance();
-    //tossEngine.UnLoadScripts();
+    TossEngine& tossEngine = TossEngine::GetInstance();
+    tossEngine.UnLoadScripts();
 
     std::string command = std::string("cmd /C \"\"") + msBuildPath +
         "\" \"" + solutionPath +
@@ -1301,7 +1324,7 @@ void TossEditor::PerformSafeBuild()
         Debug::LogError("TossPlayer Project compilation failed.");
     }
 
-    //tossEngine.LoadScripts();
+    tossEngine.LoadScripts();
 }
 
 void TossEditor::PerformSafeDllReload()

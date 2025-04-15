@@ -84,8 +84,8 @@ public:
      */
     void setTargetPosition(Vector3 newTargetPosition);
  
-    Vector3 getPosition();
-    Vector3 getFacingDirection();
+    Vector3 getPosition() const;
+    Vector3 getFacingDirection() const;
 
     /**
      * @brief Gets a position in world space from a screen position from this camera.

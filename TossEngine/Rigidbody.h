@@ -40,7 +40,18 @@ public:
     Vector3 GetAngularVelocity() const;
     void SetAngularVelocity(const Vector3& velocity) const;
 
+    /**
+     * Adds force to the center of mass of the rigidbody
+     * Limitation of the force needing to be larger than 0.1f
+     * @param force 
+     */
     void AddForce(const Vector3& force) const;
+
+    /**
+     * Adds torque to the center of mass of the rigidbody
+     * Limitation of the torque needing to be larger than 0.1f
+     * @param torque 
+     */
     void AddTorque(const Vector3& torque) const;
 
     void SetPositionConstraints(bool lockX, bool lockY, bool lockZ);

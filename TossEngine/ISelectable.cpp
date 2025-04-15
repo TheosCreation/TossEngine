@@ -12,6 +12,15 @@ bool ISelectable::FloatSliderField(const std::string& name, float& value, float 
     return false;
 }
 
+bool ISelectable::IntSliderField(const string& name, int& value, int speed, int min, int max)
+{
+    if (ImGui::DragInt(name.c_str(), &value, speed, min, max))
+    {
+        return true;
+    }
+    return false;
+}
+
 static std::string GetSelectedLayersString(const std::vector<std::string>& selectedLayers) {
     if (selectedLayers.empty()) {
         return "Default";

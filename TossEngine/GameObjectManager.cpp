@@ -20,10 +20,6 @@ Mail : theo.morris@mds.ac.nz
 #include "TextureCubeMap.h"
 #include "Prefab.h"
 
-GameObjectManager::GameObjectManager()
-{
-}
-
 GameObjectManager::GameObjectManager(Scene* scene)
 {
     m_scene = scene;
@@ -31,27 +27,21 @@ GameObjectManager::GameObjectManager(Scene* scene)
 
 GameObjectManager::GameObjectManager(const GameObjectManager& other)
 {
-    m_scene = other.m_scene; // Assuming the scene should be shared
+    m_scene = other.m_scene;
 
     for (const auto& pair : other.m_gameObjects)
     {
-        //pair.second
     }
 
-    // Copy the entities set (no deep copy needed since these objects are managed in m_gameObjects)
     m_gameObjectsToDestroy = other.m_gameObjectsToDestroy;
 }
 
-GameObjectManager::~GameObjectManager()
-{
-}
-
-Scene* GameObjectManager::getScene()
+Scene* GameObjectManager::getScene() const
 {
     return m_scene;
 }
 
-GameObject* GameObjectManager::Instatiate(PrefabPtr prefab, Transform* parent, Vector3 positionalOffset, Quaternion rotationOffset)
+GameObject* GameObjectManager::Instatiate(PrefabPtr prefab, Transform* parent, Vector3 positionalOffset, Quaternion rotationOffset, bool hasStarted)
 {
     GameObject* newObject = prefab->Instantiate();
     if (!newObject)
@@ -64,23 +54,32 @@ GameObject* GameObjectManager::Instatiate(PrefabPtr prefab, Transform* parent, V
     if (parent != nullptr)
     {
         newObject->m_transform.SetParent(parent, false);
+        newObject->m_transform.localPosition = positionalOffset;
+        newObject->m_transform.localRotation = rotationOffset;
+    }
+    else
+    {
+
+        newObject->m_transform.localPosition = positionalOffset;
+        newObject->m_transform.rotation = rotationOffset;
     }
 
-    newObject->m_transform.localPosition = positionalOffset;
-    newObject->m_transform.localRotation = rotationOffset;
     if (createGameObjectInternal(newObject, prefab->name))
     {
-        newObject->onStart();
-        newObject->onLateStart();
+        if (hasStarted)
+        {
+            newObject->onStart();
+            newObject->onLateStart();
+        }
         return newObject;
     }
 
     return nullptr;
 }
 
-GameObject* GameObjectManager::Instatiate(PrefabPtr prefab, Vector3 position, Quaternion rotation)
+GameObject* GameObjectManager::Instatiate(PrefabPtr prefab, Vector3 position, Quaternion rotation, bool hasStarted)
 {
-    return Instatiate(prefab, nullptr, position, rotation);
+    return Instatiate(prefab, nullptr, position, rotation, hasStarted);
 }
 
 bool GameObjectManager::createGameObjectInternal(GameObject* gameObject, string name)
@@ -165,7 +164,7 @@ void GameObjectManager::loadGameObjects(const json& data)
     }
 }
 
-json GameObjectManager::saveGameObjects()
+json GameObjectManager::saveGameObjects() const
 {
     json data;
     data["gameobjects"] = json::array();
@@ -221,7 +220,7 @@ void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
     }
 }
 
-void GameObjectManager::saveGameObjectsToFile(const std::string& filePath)
+void GameObjectManager::saveGameObjectsToFile(const std::string& filePath) const
 {
     json sceneData;
     sceneData["gameobjects"] = json::array();
@@ -242,7 +241,7 @@ void GameObjectManager::saveGameObjectsToFile(const std::string& filePath)
     file.close();
 }
 
-void GameObjectManager::onStart()
+void GameObjectManager::onStart() const
 {
     for (const auto& pair : m_gameObjects)
     {
@@ -250,7 +249,7 @@ void GameObjectManager::onStart()
     }
 }
 
-void GameObjectManager::onLateStart()
+void GameObjectManager::onLateStart() const
 {
     for (const auto& pair : m_gameObjects)
     {
@@ -284,7 +283,7 @@ void GameObjectManager::onUpdateInternal()
     }
 }
 
-void GameObjectManager::onLateUpdate()
+void GameObjectManager::onLateUpdate() const
 {
     for (const auto& pair : m_gameObjects)
     {
@@ -292,7 +291,7 @@ void GameObjectManager::onLateUpdate()
     }
 }
 
-void GameObjectManager::onShadowPass(int index)
+void GameObjectManager::onShadowPass(int index) const
 {
     for (const auto& pair : m_gameObjects)
     {
@@ -368,7 +367,7 @@ std::vector<Camera*> GameObjectManager::getCameras() const
     return cameras;
 }
 
-TexturePtr GameObjectManager::getSkyBoxTexture()
+TexturePtr GameObjectManager::getSkyBoxTexture() const
 {
     for (const auto& pair : m_gameObjects)
     {
@@ -377,6 +376,7 @@ TexturePtr GameObjectManager::getSkyBoxTexture()
             return skybox->GetMaterial()->GetBinding("Texture_Skybox");
         }
     }
+    return TexturePtr();
 }
 
 void GameObjectManager::clearGameObjects()

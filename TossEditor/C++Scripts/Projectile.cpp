@@ -1,4 +1,6 @@
 ﻿#include "Projectile.h"
+#include "Enemy.h"
+#include "PlayerController.h"
 
 void Projectile::OnInspectorGUI()
 {
@@ -29,4 +31,30 @@ void Projectile::onStart()
     m_rigidBody = m_owner->getComponent<Rigidbody>();
     Transform& transform = getTransform();
     m_rigidBody->AddForce(transform.GetForward() * m_projectileSpeed);
+}
+
+void Projectile::onTriggerEnter(Collider* other)
+{
+    GameObject* gameObject = other->getOwner();
+
+    if (gameObject->tag == "Projectile") return;
+    if (gameObject->tag == "Ground")
+    {
+        Destroy(m_owner);
+    }
+
+    if (gameObject->getComponent<Enemy>())
+    {
+        Debug::Log("Hit Enemy");
+        Destroy(m_owner);
+    }
+
+    if (gameObject->getComponent<PlayerController>())
+    {
+        Debug::Log("Hit Player");
+        Destroy(m_owner);
+    }
+
+    //hit something else
+    //
 }

@@ -116,6 +116,7 @@ public:
     }
     
     static bool FloatSliderField(const string& name, float& value, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
+    static bool IntSliderField(const string& name, int& value, int speed = 1, int min = 0, int max = 0);
 
     static bool LayerDropdownField(const string& name, vector<string>& value);
 

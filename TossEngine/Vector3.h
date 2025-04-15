@@ -26,6 +26,10 @@ public:
 
     float Length() const { return glm::length(static_cast<glm::vec3>(*this)); }
 
+    /**
+     * Creates a normalized copy of the vector
+     * @return Vector3: A normalized vector
+     */
     Vector3 Normalized() const {
         return Vector3(glm::normalize(static_cast<glm::vec3>(*this)));
     }

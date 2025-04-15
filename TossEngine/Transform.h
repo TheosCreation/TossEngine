@@ -12,18 +12,18 @@ class GameObject;
 // Structure representing the transformation of an object in 3D space
 struct TOSSENGINE_API Transform
 {
-    Vector3 position;         // World position
-    Quaternion rotation;      // World rotation
-    Vector3 scale;            // World scale
+    Vector3 position = Vector3();         // World position
+    Quaternion rotation = Quaternion();      // World rotation
+    Vector3 scale = Vector3();            // World scale
 
-    Vector3 localPosition;    // Local position relative to parent
-    Quaternion localRotation; // Local rotation relative to parent
-    Vector3 localScale;       // Local scale relative to parent
+    Vector3 localPosition = Vector3();    // Local position relative to parent
+    Quaternion localRotation = Quaternion(); // Local rotation relative to parent
+    Vector3 localScale = Vector3();       // Local scale relative to parent
 
-    Transform* parent;                // Pointer to parent transform (nullptr if root)
+    Transform* parent = nullptr;                // Pointer to parent transform (nullptr if root)
     std::vector<Transform*> children; // List of pointers to child transforms
 
-    GameObject* gameObject;   // Pointer to the GameObject this Transform is attached to
+    GameObject* gameObject = nullptr;   // Pointer to the GameObject this Transform is attached to
 
     // Default Constructor for none attached transforms and just data
     Transform();
@@ -43,7 +43,7 @@ struct TOSSENGINE_API Transform
 
     void deserialize(const nlohmann::json& data);
 
-    Vector3 ToEulerAngles()
+    Vector3 ToEulerAngles() const
     {
         return rotation.ToEulerAngles();
     }
@@ -135,6 +135,6 @@ struct TOSSENGINE_API Transform
 private:
     void RemoveChild(Transform* child)
     {
-        children.erase(std::remove(children.begin(), children.end(), child), children.end());
+        std::erase(children, child);
     }
 };

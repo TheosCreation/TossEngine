@@ -19,6 +19,7 @@ public:
     void deserialize(const json& data) override;
 
 private:
+    int m_health = 100;
     float m_movementSpeed = 35.0f; // Movement speed of the movable object
     float m_acceleration = 200.0f;
     float m_airAcceleration = 10000.0f;

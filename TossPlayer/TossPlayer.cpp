@@ -100,6 +100,7 @@ void TossPlayer::onUpdateInternal()
     Time::UpdateDeltaTime(m_currentTime - m_previousTime);
     m_previousTime = m_currentTime;
 
+    Physics::GetInstance().Update();
     // Accumulate time
     m_accumulatedTime += Time::DeltaTime;
 
@@ -127,9 +128,9 @@ void TossPlayer::onUpdateInternal()
 
 void TossPlayer::onQuit()
 {
+    m_currentScene->onQuit();
     ResourceManager::GetInstance().CleanUp();
     Physics::GetInstance().UnLoadPrefabWorld();
-    m_currentScene->onQuit();
 }
 
 void TossPlayer::SetScene(ScenePtr _scene, bool skipCreate)
