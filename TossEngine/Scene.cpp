@@ -135,11 +135,9 @@ void Scene::onUpdateInternal()
     m_gameObjectManager->onUpdateInternal();
 }
 
-void Scene::onFixedUpdate(float fixedDeltaTime)
+void Scene::onFixedUpdate()
 {
-    if (fixedDeltaTime <= 0.0f) return;
-
-    m_gameObjectManager->onFixedUpdate(fixedDeltaTime);
+    m_gameObjectManager->onFixedUpdate();
 }
 
 void Scene::onLateUpdate()

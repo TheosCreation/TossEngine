@@ -13,7 +13,7 @@ public:
 
     void onStart() override;
     void onCreate() override;
-    void onLateCreate() override;
+    void onCreateLate() override;
 
     void SetBoxCollider(const Vector3& size);
     void SetSphereCollider(float radius);

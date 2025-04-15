@@ -14,6 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include "GameObjectManager.h"
 #include "ComponentRegistry.h"
 #include "Component.h"
+#include "Physics.h"
 
 GameObject::GameObject() : m_transform(this)
 {
@@ -270,12 +271,16 @@ void GameObject::setId(size_t id)
 
 void GameObject::onCreate()
 {
+    //for (auto& pair : m_components)
+    //{
+    //    pair.second->onCreate();
+    //}
 }
 
-void GameObject::onLateCreate()
+void GameObject::onCreateLate()
 {
     for (auto& pair : m_components) {
-        pair.second->onLateCreate();
+        pair.second->onCreateLate();
     }
     m_finishedCreation = true;
 }
@@ -296,10 +301,10 @@ void GameObject::onLateStart()
     hasStarted = true;
 }
 
-void GameObject::onFixedUpdate(float fixedDeltaTime)
+void GameObject::onFixedUpdate()
 {
     for (auto& pair : m_components) {
-        pair.second->onFixedUpdate(fixedDeltaTime);
+        pair.second->onFixedUpdate();
     }
 }
 
@@ -389,6 +394,7 @@ Component* GameObject::addComponent(string componentType, const json& data)
     {
         component->setOwner(this);
         m_components.emplace(std::type_index(typeid(*component)), component);
+
         component->onCreate();
         if (data != nullptr)
         {
@@ -396,7 +402,7 @@ Component* GameObject::addComponent(string componentType, const json& data)
         }
         if (m_finishedCreation)
         {
-            component->onLateCreate();
+            component->onCreateLate();
         }
 
         if (hasStarted)
@@ -431,6 +437,11 @@ bool GameObject::tryDeleteSelectedComponent()
         return true;
     }
     return false;
+}
+
+reactphysics3d::PhysicsWorld* GameObject::getWorld()
+{
+    return Physics::GetInstance().GetWorld();
 }
 
 void GameObject::setGameObjectManager(GameObjectManager* gameObjectManager)

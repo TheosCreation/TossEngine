@@ -104,6 +104,7 @@ public:
     void CleanUp();
 
     PhysicsWorld* GetWorld() const { return m_world; }
+    PhysicsWorld* GetPrefabWorld() const { return m_prefabWorld; }
 
     PhysicsCommon& GetPhysicsCommon() { return m_commonSettings; }
     const PhysicsCommon& GetPhysicsCommon() const { return m_commonSettings; }
@@ -123,6 +124,8 @@ public:
     void onTrigger(const rp3d::OverlapCallback::CallbackData& data) override;
     void LoadWorld();
     void UnLoadWorld();
+    void LoadPrefabWorld();
+    void UnLoadPrefabWorld();
 
 private:
     Physics() = default;
@@ -131,6 +134,7 @@ private:
     PhysicsCommon m_commonSettings;
     bool isDebug = false;
     PhysicsWorld* m_world = nullptr;
+    PhysicsWorld* m_prefabWorld = nullptr;
     PhysicsMaterialPtr m_defaultPhysicsMaterial = nullptr;
     Vector3 m_gravity = Vector3(0.0f, -9.81f, 0.0f);
 

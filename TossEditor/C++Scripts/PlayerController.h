@@ -11,9 +11,10 @@ class PlayerController : public Component
 public:
     void OnInspectorGUI() override;
 
-    virtual void onCreate() override;
-    virtual void onStart() override;
-    virtual void onUpdate() override;
+    void onCreate() override;
+    void onStart() override;
+    void onUpdate() override;
+    void onFixedUpdate() override;
     json serialize() const override;
     void deserialize(const json& data) override;
 

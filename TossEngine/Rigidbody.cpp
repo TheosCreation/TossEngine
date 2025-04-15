@@ -5,11 +5,7 @@
 
 Rigidbody::~Rigidbody()
 {
-    if (m_Body) {
-        Physics::GetInstance().GetWorld()->destroyRigidBody(m_Body);
-        m_Body = nullptr;
-        m_Collider = nullptr;
-    }
+    Rigidbody::onDestroy(); //last resort to call destroy for no errors
 }
 
 json Rigidbody::serialize() const
@@ -108,25 +104,29 @@ void Rigidbody::OnGameObjectDeSelected()
 
 void Rigidbody::onCreate()
 {
-    PhysicsWorld* world = Physics::GetInstance().GetWorld();
-    if (!world) return; // Early exit if world is null
+    PhysicsWorld* world = m_owner->getWorld();
+    if (!world)
+    {
+        Debug::LogError("Rigidbody not able to create body in world", true);
+    }
 
     Transform transform = m_owner->m_transform;
 
-    // Create rigid body at the GameObject�s position
+    // Create rigid body at the GameObject's position
     rp3d::Transform bodyTransform;
 
     // Create rigid body
     m_Body = world->createRigidBody(bodyTransform);
     m_Body->setUserData(this);
-    UpdateBodyTransform();
 
     // Apply the default body type
     SetBodyType(m_BodyType);
 }
 
-void Rigidbody::onLateCreate()
+void Rigidbody::onCreateLate()
 {
+    UpdateBodyTransform();
+
     m_Collider = m_owner->getComponent<Collider>();
     if (m_Collider == nullptr)
     {
@@ -195,7 +195,7 @@ void Rigidbody::onUpdateInternal()
     }
 }
 
-void Rigidbody::UpdateBodyTransform()
+void Rigidbody::UpdateBodyTransform() const
 {
     if (m_Body)
     {
@@ -215,7 +215,11 @@ void Rigidbody::UpdateBodyTransform()
 void Rigidbody::onDestroy()
 {
     if (m_Body) {
-        Physics::GetInstance().GetWorld()->destroyRigidBody(m_Body);
+        PhysicsWorld* world = m_owner->getWorld();
+        if (world)
+        {
+            world->destroyRigidBody(m_Body);
+        }
         m_Body = nullptr;
         m_Collider = nullptr;
     }
@@ -223,13 +227,13 @@ void Rigidbody::onDestroy()
 
 void Rigidbody::SetBodyType(BodyType type)
 {
+    m_BodyType = type;
     if (m_Body) {
-        m_BodyType = type;
         m_Body->setType(type);
     }
 }
 
-void Rigidbody::SetMass(float mass)
+void Rigidbody::SetMass(float mass) const
 {
     if (m_Body) {
         m_Body->setMass(mass);
@@ -244,24 +248,24 @@ void Rigidbody::SetUseGravity(bool useGravity)
     }
 }
 
-rp3d::RigidBody* Rigidbody::GetBody()
+rp3d::RigidBody* Rigidbody::GetBody() const
 {
     return m_Body;
 }
 
-Collider* Rigidbody::GetCollider()
+Collider* Rigidbody::GetCollider() const
 {
     return m_Collider;
 }
 
-void Rigidbody::AddForce(const Vector3& force)
+void Rigidbody::AddForce(const Vector3& force) const
 {
     if (m_Body) {
         m_Body->applyWorldForceAtCenterOfMass(rp3d::Vector3(force.x, force.y, force.z));
     }
 }
 
-void Rigidbody::AddTorque(const Vector3& torque)
+void Rigidbody::AddTorque(const Vector3& torque) const
 {
     if (m_Body) {
         m_Body->applyWorldForceAtCenterOfMass(rp3d::Vector3(torque.x, torque.y, torque.z));
@@ -277,7 +281,7 @@ Vector3 Rigidbody::GetLinearVelocity() const
     return Vector3();
 }
 
-void Rigidbody::SetLinearVelocity(const Vector3& velocity)
+void Rigidbody::SetLinearVelocity(const Vector3& velocity) const
 {
     if (m_Body) {
         m_Body->setLinearVelocity(rp3d::Vector3(velocity.x, velocity.y, velocity.z));
@@ -290,10 +294,10 @@ Vector3 Rigidbody::GetAngularVelocity() const
         rp3d::Vector3 angVel = m_Body->getAngularVelocity();
         return Vector3(angVel.x, angVel.y, angVel.z);
     }
-    return Vector3();
+    return Vector3(0.0f);
 }
 
-void Rigidbody::SetAngularVelocity(const Vector3& velocity)
+void Rigidbody::SetAngularVelocity(const Vector3& velocity) const
 {
     if (m_Body) {
         m_Body->setAngularVelocity(rp3d::Vector3(velocity.x, velocity.y, velocity.z));
@@ -312,26 +316,26 @@ void Rigidbody::SetRotationConstraints(bool lockX, bool lockY, bool lockZ)
     UpdateRotationConstraints();
 }
 
-void Rigidbody::OnCollisionEnter(Rigidbody* collidedRb)
+void Rigidbody::OnCollisionEnter(Rigidbody* collidedRb) const
 {
     Collider* collider = collidedRb->GetCollider();
     m_owner->CallOnCollisionEnterCallbacks(collider);
 }
 
-void Rigidbody::OnCollisionExit(Rigidbody* collidedRb)
+void Rigidbody::OnCollisionExit(Rigidbody* collidedRb) const
 {
     Collider* collider = collidedRb->GetCollider();
     m_owner->CallOnCollisionExitCallbacks(collider);
 }
 
-void Rigidbody::UpdatePositionConstraints()
+void Rigidbody::UpdatePositionConstraints() const
 {
     if (m_Body) {
         m_Body->setLinearLockAxisFactor(rp3d::Vector3(positionAxisLocks[0] ? 0.0f : 1.0f, positionAxisLocks[1] ? 0.0f : 1.0f, positionAxisLocks[2] ? 0.0f : 1.0f));
     }
 }
 
-void Rigidbody::UpdateRotationConstraints()
+void Rigidbody::UpdateRotationConstraints() const
 {
     if (m_Body) {
         m_Body->setAngularLockAxisFactor(rp3d::Vector3(rotationAxisLocks[0] ? 0.0f : 1.0f, rotationAxisLocks[1] ? 0.0f : 1.0f, rotationAxisLocks[2] ? 0.0f : 1.0f));

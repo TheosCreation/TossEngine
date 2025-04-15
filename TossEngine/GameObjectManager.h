@@ -91,14 +91,14 @@ public:
 
     void onLateUpdate();
     void onShadowPass(int index);
-    void Render(UniformData _data);
-    void onTransparencyPass(UniformData _data);
-    void onSkyboxPass(UniformData _data);
+    void Render(UniformData _data) const;
+    void onTransparencyPass(UniformData _data) const;
+    void onSkyboxPass(UniformData _data) const;
 
     /**
      * @brief Called every frame to update the GameObject system at a fixed frame rate.
      */
-    void onFixedUpdate(float fixedDeltaTime);
+    void onFixedUpdate() const;
 
     /**
      * @brief Gets all camera entities.

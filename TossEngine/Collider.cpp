@@ -100,7 +100,16 @@ void Collider::OnInspectorGUI()
     ImGui::Text("Collider Inspector - ID: %p", this);
     ImGui::Separator();
 
-    ImGui::Checkbox("Is Trigger", &m_isTrigger);
+    if(ImGui::Checkbox("Is Trigger", &m_isTrigger))
+    {
+        if (m_isTrigger == true)
+        {
+            if (m_Rigidbody)
+            {
+                m_Rigidbody->SetBodyType(BodyType::KINEMATIC); //make the body type kinematic to make trigger collider work
+            }
+        }
+    }
 
     ResourceAssignableField(m_physicsMaterial, "Physics Material");
 
@@ -207,7 +216,7 @@ void Collider::onCreate()
 {
 }
 
-void Collider::onLateCreate()
+void Collider::onCreateLate()
 {
     m_Rigidbody = m_owner->getComponent<Rigidbody>();
     if (m_Rigidbody == nullptr) {

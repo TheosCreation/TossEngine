@@ -7,6 +7,11 @@
 #include "ISelectable.h"
 #include "LayerManager.h"
 
+namespace reactphysics3d
+{
+    class PhysicsWorld;
+}
+
 class Collider;
 
 /**
@@ -83,7 +88,7 @@ public:
      * @brief Called when the GameObject after components have been serialized.
      * Can be overridden by derived classes to perform initialization.
      */
-    virtual void onLateCreate();
+    virtual void onCreateLate();
 
     /**
      * @brief Called when the game is started right before the first update frame.
@@ -100,7 +105,7 @@ public:
      * Can be overridden by derived classes to implement custom behavior.
      * @param deltaTime The time elapsed since the last frame.
      */
-    virtual void onFixedUpdate(float fixedDeltaTime);
+    virtual void onFixedUpdate();
 
     /**
      * @brief Called every frame to update the GameObject.
@@ -137,7 +142,7 @@ public:
 
         if (m_finishedCreation)
         {
-            component->onLateCreate();
+            component->onCreateLate();
         }
 
         if (hasStarted)
@@ -189,11 +194,42 @@ public:
         return nullptr;
     }
 
+    template <typename Component>
+    Component* getComponentInParent()
+    {
+        // Start with this GameObject.
+        GameObject* current = this;
+
+        // Traverse up the hierarchy.
+        while (current != nullptr)
+        {
+            // Check if the current GameObject has the component.
+            if (Component* comp = current->getComponent<Component>())
+            {
+                return comp;
+            }
+
+            // Move to the parent GameObject using the transform's parent pointer.
+            if (current->m_transform.parent)
+            {
+                current = current->m_transform.parent->gameObject;
+            }
+            else
+            {
+                current = nullptr;
+            }
+        }
+
+        return nullptr;
+    }
+
     std::map<std::type_index, Component*>& getAllComponents() {
         return m_components;
     }
 
     bool tryDeleteSelectedComponent();
+
+    virtual reactphysics3d::PhysicsWorld* getWorld();
 
 protected:
     vector<Component*> componentsToDestroy;

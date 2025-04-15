@@ -26,5 +26,7 @@ void Projectile::deserialize(const json& data)
 
 void Projectile::onStart()
 {
-    m_owner->getComponent<Rigidbody>();
+    m_rigidBody = m_owner->getComponent<Rigidbody>();
+    Transform& transform = getTransform();
+    m_rigidBody->AddForce(transform.GetForward() * m_projectileSpeed);
 }

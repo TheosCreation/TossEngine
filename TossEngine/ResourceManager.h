@@ -72,6 +72,7 @@ public:
     void DeleteResource(const std::string& uniqueId);
 
     void DeleteFromSavedData(const std::shared_ptr<Resource>& resource, const std::string& uniqueId);
+    void CleanUp();
 
 protected:
     bool hasLoadedResources = false;

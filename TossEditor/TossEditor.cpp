@@ -21,15 +21,17 @@ TossEditor::TossEditor()
     tossEngine.TryCreateWindow(this, editorPreferences.windowSize, "TossEditor", editorPreferences.maximized);
     tossEngine.LoadScripts(); //recompile and loads scripts
 
-    ResourceManager& resourceManager = ResourceManager::GetInstance();
-    tossEngine.StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
-    tossEngine.StartCoroutine(resourceManager.createResourcesFromDescs());
-
     m_projectSettings = std::make_unique<ProjectSettings>();
     m_projectSettings->LoadFromFile("ProjectSettings.json");
 
     Physics::GetInstance().SetGravity(m_projectSettings->gravity);
     Physics::GetInstance().SetDebug(true);
+    Physics::GetInstance().LoadPrefabWorld();
+
+    ResourceManager& resourceManager = ResourceManager::GetInstance();
+    tossEngine.StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
+    tossEngine.StartCoroutine(resourceManager.createResourcesFromDescs());
+
 
     m_playerSettings = std::make_unique<TossPlayerSettings>();
     m_playerSettings->LoadFromFile("PlayerSettings.json");
@@ -169,23 +171,24 @@ void TossEditor::onUpdateInternal()
         inputManager.onUpdate();
         if (m_gameRunning)
         {
-            Physics::GetInstance().Update();
-            while (m_accumulatedTime >= m_fixedTimeStep)
+            while (m_accumulatedTime >= Time::FixedDeltaTime)
             {
-                float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
-                m_previousFixedUpdateTime = m_currentTime;
-                m_currentScene->onFixedUpdate(fixedDeltaTime);
-                m_accumulatedTime -= m_fixedTimeStep;
+                Physics::GetInstance().Update();
+                m_currentScene->onFixedUpdate();
+                m_accumulatedTime -= Time::FixedDeltaTime;
             }
+
         }
         // player update
         m_player->Update(deltaTimeInternal);
         m_currentScene->onUpdateInternal();
 
+
         if (m_gameRunning)
         {
             m_currentScene->onUpdate();
             m_currentScene->onLateUpdate();
+
         }
         inputManager.onLateUpdate();
     }
@@ -387,10 +390,7 @@ void TossEditor::onUpdateInternal()
 
         if (ImGui::DragFloat3("Gravity", m_projectSettings->gravity.Data(), 0.1f))
         {
-            if (Physics::GetInstance().GetWorld())
-            {
-                Physics::GetInstance().SetGravity(m_projectSettings->gravity);
-            }
+            Physics::GetInstance().SetGravity(m_projectSettings->gravity);
         }
 
         ImGui::Separator();
@@ -1146,12 +1146,16 @@ void TossEditor::FindSceneFiles()
 
 void TossEditor::onQuit()
 {
+    m_editorRunning.store(false);
+
+    ResourceManager& resourceManager = ResourceManager::GetInstance();
+    TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesDescs("Resources/Resources.json"));
+    resourceManager.CleanUp();
+    Physics::GetInstance().UnLoadPrefabWorld();
     if (m_currentScene)
     {
         m_currentScene->onQuit();
     }
-    m_editorRunning.store(false);
-    TossEngine::GetInstance().StartCoroutine(ResourceManager::GetInstance().saveResourcesDescs("Resources/Resources.json"));
     editorPreferences.SaveToFile("EditorPreferences.json");
 }
 
@@ -1299,6 +1303,7 @@ void TossEditor::PerformSafeBuild()
 
     //tossEngine.LoadScripts();
 }
+
 void TossEditor::PerformSafeDllReload()
 {
     //all not needed yepee but will leave here if i found that it does cause issues
@@ -1325,7 +1330,6 @@ void TossEditor::PerformSafeDllReload()
     //    OpenScene(scene);
     //}
 }
-
 
 void TossEditor::onResize(Vector2 size)
 {

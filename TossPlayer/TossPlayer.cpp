@@ -25,9 +25,10 @@ TossPlayer::TossPlayer()
 
     initRandomSeed();
 
-    Physics::GetInstance().SetGravity(m_playerSettings->gravity);
-
     AudioEngine::GetInstance().Init();
+
+    Physics::GetInstance().SetGravity(m_playerSettings->gravity);
+    Physics::GetInstance().LoadPrefabWorld();
 
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     tossEngine.StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
@@ -107,7 +108,7 @@ void TossPlayer::onUpdateInternal()
     {
         float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
         m_previousFixedUpdateTime = m_currentTime;
-        m_currentScene->onFixedUpdate(fixedDeltaTime);
+        m_currentScene->onFixedUpdate();
         m_accumulatedTime -= m_fixedTimeStep;
     }
 
@@ -126,6 +127,8 @@ void TossPlayer::onUpdateInternal()
 
 void TossPlayer::onQuit()
 {
+    ResourceManager::GetInstance().CleanUp();
+    Physics::GetInstance().UnLoadPrefabWorld();
     m_currentScene->onQuit();
 }
 

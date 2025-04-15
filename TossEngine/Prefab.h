@@ -7,6 +7,7 @@ class Prefab : public GameObject, public Resource
 public:
     Prefab(const std::string& uniqueID, ResourceManager* manager);
     void OnInspectorGUI() override;
+    reactphysics3d::PhysicsWorld* getWorld() override;
 
     GameObject* Instantiate() const {
         // Serialize the prefab into JSON.

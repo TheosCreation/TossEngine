@@ -55,3 +55,4 @@ Mail : theo.morris@mds.ac.nz
 
 #include "Rigidbody.h"
 #include "Collider.h"
+#include "Camera.h"

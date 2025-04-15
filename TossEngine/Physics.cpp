@@ -23,13 +23,13 @@ void Physics::Update()
 {
     if (m_world)
     {
-        m_world->update(Time::DeltaTime);
+        m_world->update(Time::FixedDeltaTime);
     }
 
     // Update raycast debug entries lifetime
     for (auto it = m_raycastDebugEntries.begin(); it != m_raycastDebugEntries.end(); )
     {
-        it->lifetime -= Time::DeltaTime;
+        it->lifetime -= Time::FixedDeltaTime;
         if (it->lifetime <= 0)
             it = m_raycastDebugEntries.erase(it);
         else
@@ -43,6 +43,11 @@ void Physics::CleanUp()
     {
         m_commonSettings.destroyPhysicsWorld(m_world);
         m_world = nullptr;
+    }
+    if (m_prefabWorld)
+    {
+        m_commonSettings.destroyPhysicsWorld(m_prefabWorld);
+        m_prefabWorld = nullptr;
     }
 }
 
@@ -369,9 +374,10 @@ void Physics::LoadWorld()
     m_defaultPhysicsMaterial = std::make_shared<PhysicsMaterial>(physicsMaterialDesc, "DefaultPhysicsMaterial", nullptr);
 
     rp3d::PhysicsWorld::WorldSettings settings;
+    settings.worldName = "ScenePhysicsWorld";
     settings.gravity = static_cast<rp3d::Vector3>(m_gravity);
-    settings.defaultPositionSolverNbIterations = 20;  // Default is usually 6
-    settings.defaultVelocitySolverNbIterations = 10;  // Default is usually 4
+    settings.defaultPositionSolverNbIterations = 10;  // Default is usually 6
+    settings.defaultVelocitySolverNbIterations = 6;  // Default is usually 4
     m_world = m_commonSettings.createPhysicsWorld(settings);
     m_world->setEventListener(this);
 
@@ -396,7 +402,37 @@ void Physics::UnLoadWorld()
         m_world = nullptr;
         m_raycastDebugEntries.clear();
 
-        m_previousTriggerPairs.clear();
         m_previousCollisionPairs.clear();
+    }
+}
+
+void Physics::LoadPrefabWorld()
+{
+    rp3d::PhysicsWorld::WorldSettings settings;
+    settings.worldName = "PrefabPhysicsWorld";
+    settings.gravity = static_cast<rp3d::Vector3>(m_gravity);
+    settings.defaultPositionSolverNbIterations = 6;
+    settings.defaultVelocitySolverNbIterations = 4;
+    m_prefabWorld = m_commonSettings.createPhysicsWorld(settings);
+
+
+    m_prefabWorld->setIsDebugRenderingEnabled(isDebug);
+
+    // Get a reference to the debug renderer
+    reactphysics3d::DebugRenderer& debugRenderer = m_prefabWorld->getDebugRenderer();
+
+    // Select the contact points and contact normals to be displayed
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_POINT, isDebug);
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_NORMAL, isDebug);
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLISION_SHAPE, isDebug);
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLIDER_AABB, isDebug);
+}
+
+void Physics::UnLoadPrefabWorld()
+{
+    if (m_prefabWorld)
+    {
+        m_commonSettings.destroyPhysicsWorld(m_prefabWorld);
+        m_prefabWorld = nullptr;
     }
 }

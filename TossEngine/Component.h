@@ -27,7 +27,7 @@ public:
     }
 
     /**
-     * @brief Called when the component is created.
+     * @brief Called when the component is created and before deserialization.
      * Can be overridden by derived classes to perform initialization.
      */
     virtual void onCreate() {}
@@ -36,7 +36,7 @@ public:
      * @brief Called when the component is created and after deserialization
      * Can be overridden by derived classes to perform initialization.
      */
-    virtual void onLateCreate() {}
+    virtual void onCreateLate() {}
 
     virtual void onStart() {}
 
@@ -46,7 +46,7 @@ public:
 
     virtual void onUpdateInternal() {}
 
-    virtual void onFixedUpdate(float fixedDeltaTime) {}
+    virtual void onFixedUpdate() {}
 
     virtual void onDestroy() { }
 
@@ -72,6 +72,8 @@ public:
      * Can be overridden by derived classes to implement custom behavior.
      */
     virtual void onLateUpdate() {}
+
+    Transform& getTransform() const;
 
 protected:
     GameObject* m_owner = nullptr;

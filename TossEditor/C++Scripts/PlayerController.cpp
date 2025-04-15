@@ -102,14 +102,20 @@ void PlayerController::onUpdate()
     if (inputManager.isKeyPressed(Key::KeySpace) && jumpTimer <= 0 && m_groundCheck->isGrounded)
     {
         m_rigidBody->AddForce(Vector3(0.0f, 1.0f, 0.0f) * m_jumpForce);
+        m_groundCheck->isGrounded = false;
         jumpTimer = m_jumpCooldown;
     }
     else
     {
         jumpTimer -= Time::DeltaTime;
     }
+}
+
+void PlayerController::onFixedUpdate()
+{
 
 
+    auto& inputManager = InputManager::GetInstance();
     Vector3 forward = m_owner->m_transform.GetForward();
     Vector3 right = m_owner->m_transform.GetRight();
     Vector3 velocity = m_rigidBody->GetLinearVelocity();
@@ -127,14 +133,14 @@ void PlayerController::onUpdate()
         moveDirection = moveDirection.Normalized();
 
         // Accelerate toward direction
-        Vector3 desiredVelocity = moveDirection * m_movementSpeed;
+        Vector3 desiredVelocity = Vector3(moveDirection.x * m_movementSpeed, velocity.y, moveDirection.z * m_movementSpeed);
         Vector3 velocityChange = desiredVelocity - velocity;
 
         // If on the ground, set the linear velocity directly
         if (m_groundCheck->isGrounded)
         {
             // Limit acceleration
-            Vector3 accelerationStep = velocityChange.Normalized() * m_acceleration * Time::DeltaTime;
+            Vector3 accelerationStep = velocityChange.Normalized() * m_acceleration * Time::FixedDeltaTime;
 
             // Don't overshoot
             if (accelerationStep.Length() > velocityChange.Length())
@@ -142,19 +148,19 @@ void PlayerController::onUpdate()
 
             m_rigidBody->SetLinearVelocity(velocity + accelerationStep);
         }
-        else
-        {
-            // Limit acceleration
-            Vector3 accelerationStep = velocityChange.Normalized() * m_airAcceleration * Time::DeltaTime;
-
-            // Don't overshoot
-            if (accelerationStep.Length() > velocityChange.Length())
-                accelerationStep = velocityChange;
-
-            // If not on the ground, apply a force for movement
-            Vector3 force = accelerationStep;
-            m_rigidBody->AddForce(force);
-        }
+        //else
+        //{
+        //    // Limit acceleration
+        //    Vector3 accelerationStep = velocityChange.Normalized() * m_airAcceleration * Time::FixedDeltaTime;
+        //
+        //    // Don't overshoot
+        //    if (accelerationStep.Length() > velocityChange.Length())
+        //        accelerationStep = velocityChange;
+        //
+        //    // If not on the ground, apply a force for movement
+        //    Vector3 force = accelerationStep;
+        //    m_rigidBody->AddForce(force);
+        //}
     }
 }
 

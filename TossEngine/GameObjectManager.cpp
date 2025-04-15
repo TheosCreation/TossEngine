@@ -70,6 +70,8 @@ GameObject* GameObjectManager::Instatiate(PrefabPtr prefab, Transform* parent, V
     newObject->m_transform.localRotation = rotationOffset;
     if (createGameObjectInternal(newObject, prefab->name))
     {
+        newObject->onStart();
+        newObject->onLateStart();
         return newObject;
     }
 
@@ -93,7 +95,7 @@ bool GameObjectManager::createGameObjectInternal(GameObject* gameObject, string 
     gameObject->setId(newId);
     gameObject->setGameObjectManager(this);
     gameObject->onCreate();
-    gameObject->onLateCreate();
+    gameObject->onCreateLate();
 
     m_gameObjects[newId] = gameObject;
 
@@ -151,9 +153,9 @@ void GameObjectManager::loadGameObjects(const json& data)
         auto gameObject = new GameObject();
         // Initialize the GameObject
         gameObject->setGameObjectManager(this);
-        gameObject->onCreate();
         gameObject->deserialize(gameObjectData);  // Loads data into the object
-        gameObject->onLateCreate();
+        gameObject->onCreate();
+        gameObject->onCreateLate();
 
         size_t id = gameObject->getId();
         if (id == 0) id = m_nextAvailableId++;
@@ -207,9 +209,9 @@ void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
         auto gameObject = new GameObject();
         // Initialize the GameObject
         gameObject->setGameObjectManager(this);
-        gameObject->onCreate();
         gameObject->deserialize(gameObjectData);  // Loads data into the object
-        gameObject->onLateCreate();
+        gameObject->onCreate();
+        gameObject->onCreateLate();
 
         size_t id = gameObject->getId();
         if (id == 0) id = m_nextAvailableId++;
@@ -304,7 +306,7 @@ void GameObjectManager::onShadowPass(int index)
     }
 }
 
-void GameObjectManager::Render(UniformData _data)
+void GameObjectManager::Render(UniformData _data) const
 {
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     for (const auto& pair : m_gameObjects)
@@ -318,7 +320,7 @@ void GameObjectManager::Render(UniformData _data)
     }
 }
 
-void GameObjectManager::onTransparencyPass(UniformData _data)
+void GameObjectManager::onTransparencyPass(UniformData _data) const
 {
     for (const auto& pair : m_gameObjects)
     {
@@ -331,7 +333,7 @@ void GameObjectManager::onTransparencyPass(UniformData _data)
     }
 }
 
-void GameObjectManager::onSkyboxPass(UniformData _data)
+void GameObjectManager::onSkyboxPass(UniformData _data) const
 {
     for (const auto& pair : m_gameObjects)
     {
@@ -342,11 +344,11 @@ void GameObjectManager::onSkyboxPass(UniformData _data)
     }
 }
 
-void GameObjectManager::onFixedUpdate(float fixedDeltaTime)
+void GameObjectManager::onFixedUpdate() const
 {
     for (const auto& pair : m_gameObjects)
     {
-        pair.second->onFixedUpdate(fixedDeltaTime);
+        pair.second->onFixedUpdate();
     }
 }
 

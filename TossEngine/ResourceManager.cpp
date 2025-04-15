@@ -361,6 +361,8 @@ PrefabPtr ResourceManager::createPrefab(const string& id, const json& data)
     {
         prefabPtr->deserialize(data);
     }
+    prefabPtr->onCreate();
+    prefabPtr->onCreateLate();
     m_prefabDescs.emplace(id, data);
     return prefabPtr;
 }
@@ -772,6 +774,11 @@ void ResourceManager::DeleteFromSavedData(const std::shared_ptr<Resource>& resou
             }
         }
     }
+}
+
+void ResourceManager::CleanUp()
+{
+    m_mapResources.clear();
 }
 
 void ResourceManager::SetSelectedResource(ResourcePtr selectedResource)

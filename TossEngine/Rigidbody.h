@@ -20,34 +20,34 @@ public:
     void OnGameObjectDeSelected() override;
 
     void onCreate() override;
-    void onLateCreate() override;
+    void onCreateLate() override;
     void onStart() override;
     void onUpdate() override;
     void onUpdateInternal() override;
-    void UpdateBodyTransform();
+    void UpdateBodyTransform() const;
     void onDestroy() override;
 
     void SetBodyType(BodyType type);
-    void SetMass(float mass);
+    void SetMass(float mass) const;
     void SetUseGravity(bool useGravity);
 
-    rp3d::RigidBody* GetBody();
-    Collider* GetCollider();
+    rp3d::RigidBody* GetBody() const;
+    Collider* GetCollider() const;
 
     Vector3 GetLinearVelocity() const;
-    void SetLinearVelocity(const Vector3& velocity);
+    void SetLinearVelocity(const Vector3& velocity) const;
 
     Vector3 GetAngularVelocity() const;
-    void SetAngularVelocity(const Vector3& velocity);
+    void SetAngularVelocity(const Vector3& velocity) const;
 
-    void AddForce(const Vector3& force);
-    void AddTorque(const Vector3& torque);
+    void AddForce(const Vector3& force) const;
+    void AddTorque(const Vector3& torque) const;
 
     void SetPositionConstraints(bool lockX, bool lockY, bool lockZ);
     void SetRotationConstraints(bool lockX, bool lockY, bool lockZ);
 
-    void OnCollisionEnter(Rigidbody* collidedRb);
-    void OnCollisionExit(Rigidbody* collidedRb);
+    void OnCollisionEnter(Rigidbody* collidedRb) const;
+    void OnCollisionExit(Rigidbody* collidedRb) const;
 
 private:
     rp3d::RigidBody* m_Body = nullptr;
@@ -56,8 +56,8 @@ private:
     bool m_UseGravity = true;
 
 
-    void UpdatePositionConstraints();
-    void UpdateRotationConstraints();
+    void UpdatePositionConstraints() const;
+    void UpdateRotationConstraints() const;
 
     std::array<bool, 3> positionAxisLocks = { false, false, false };
     std::array<bool, 3> rotationAxisLocks = { false, false, false };

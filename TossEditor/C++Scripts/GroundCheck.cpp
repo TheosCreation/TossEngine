@@ -9,7 +9,6 @@ void GroundCheck::OnInspectorGUI()
 void GroundCheck::onTriggerEnter(Collider* other)
 {
     isGrounded = true;
-    Debug::Log("Entered");
 }
 
 void GroundCheck::onTriggerExit(Collider* other)

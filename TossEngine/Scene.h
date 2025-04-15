@@ -86,9 +86,8 @@ public:
      * @brief Called every frame to update the GameObject at a fixed frame rate.
      * Can be overridden by derived classes to implement custom behavior.
      *
-     * @param fixedDeltaTime The time elapsed since the last fixed update in seconds.
      */
-    virtual void onFixedUpdate(float fixedDeltaTime);
+    virtual void onFixedUpdate();
 
     /**
      * @brief Called every frame after the graphics update/render.

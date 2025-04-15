@@ -19,7 +19,7 @@ void DestroyObjectWithTime::deserialize(const json& data)
 
 void DestroyObjectWithTime::onStart()
 {
-	Debug::Log("Destroy object called detroyobjectwithtime script");
+	//Debug::Log("Destroy object called detroyobjectwithtime script");
 }
 
 void DestroyObjectWithTime::onUpdate()
@@ -28,7 +28,7 @@ void DestroyObjectWithTime::onUpdate()
 	if (elapsedTime > lifeTime)
 	{
 		elapsedTime = -100;
-		Debug::Log("Destroyed object");
+		//Debug::Log("Destroyed object");
 		Destroy(m_owner);//
 	}
 }

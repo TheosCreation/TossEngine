@@ -29,3 +29,8 @@ void Component::Destroy(GameObject* objectToDestroy)
 {
     objectToDestroy->Delete();
 }
+
+Transform& Component::getTransform() const
+{
+    return m_owner->m_transform;
+}
