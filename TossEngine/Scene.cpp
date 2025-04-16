@@ -29,6 +29,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Physics.h"
 #include "LightManager.h"
 #include "DirectionalLight.h"
+#include "ImGuizmo.h"
 
 Scene::Scene(const string& filePath)
 {

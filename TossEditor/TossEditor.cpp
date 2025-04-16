@@ -228,7 +228,6 @@ void TossEditor::onUpdateInternal()
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
     ImGui::End();
 
-
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))
@@ -344,24 +343,36 @@ void TossEditor::onUpdateInternal()
             ImGui::SetNextItemAllowOverlap();
             // Display the rendered scene scaled to the available region.
             ImGui::Image(sceneViewTexture, availSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
-
             if (selectedSelectable)
             {
                 if (auto gameObject = dynamic_cast<GameObject*>(selectedSelectable))
                 {
                     ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
-                    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, availSize.x, availSize.y);
+                    ImVec2 imagePos = ImGui::GetItemRectMin();
+                    ImVec2 imageSize = ImGui::GetItemRectSize();
+                    ImGuizmo::SetRect(imagePos.x, imagePos.y, imageSize.x, imageSize.y);
 
                     Mat4 cameraView;
                     m_player->getCamera()->getViewMatrix(cameraView);
 
                     Mat4 projectionMat;
                     m_player->getCamera()->getProjectionMatrix(projectionMat);
+                    //Debug::Log("Before Manipulate: Cursor Pos: (%f, %f)", pos.x, pos.y);
 
                     Mat4 transformMat = gameObject->m_transform.GetMatrix();
                     ImGuizmo::Manipulate(glm::value_ptr(cameraView.value), glm::value_ptr(projectionMat.value), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(transformMat.value));
+                    if (ImGuizmo::IsUsingAny())
+                    {
+                        Debug::Log("using any");
+                        gameObject->m_transform.SetMatrix(transformMat);
+                    }
+                    if (ImGuizmo::IsOver())
+                    {
+                        Debug::Log("over");
+                    }
                     if (ImGuizmo::IsUsing())
                     {
+                        Debug::Log("using");
                         gameObject->m_transform.SetMatrix(transformMat);
                     }
                 }

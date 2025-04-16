@@ -17,14 +17,13 @@ void ImGuiLogger::AddLog(const char* fmt, ...)
 
 void ImGuiLogger::Draw(const char* title, bool* p_open)
 {
-
     if (!ImGui::Begin(title, p_open))
     {
         ImGui::End();
         return;
     }
 
-    // Add a button to clear the log
+    // Button to clear the log
     if (ImGui::Button("Clear"))
     {
         std::lock_guard<std::mutex> lock(m_mutex);
@@ -32,7 +31,7 @@ void ImGuiLogger::Draw(const char* title, bool* p_open)
         m_CollapsedItems.clear();
     }
 
-    // Add a toggle button for collapse mode
+    // Toggle button for collapse mode
     ImGui::SameLine();
     if (ImGui::Button(m_Collapse ? "Uncollapse" : "Collapse"))
     {
@@ -45,7 +44,7 @@ void ImGuiLogger::Draw(const char* title, bool* p_open)
         std::lock_guard<std::mutex> lock(m_mutex);
         if (m_Collapse)
         {
-            // Recompute collapse list only when needed.
+            // Recompute collapsed log items when needed.
             if (m_NeedsCollapseRecompute)
             {
                 m_CollapsedItems.clear();
@@ -88,18 +87,31 @@ void ImGuiLogger::Draw(const char* title, bool* p_open)
                 m_NeedsCollapseRecompute = false;
             }
 
-            // Then output from the cached collapsed log.
-            for (const auto& collapsedLine : m_CollapsedItems)
+            // Output from collapsed log items
+
+            for (size_t i = 0; i < m_CollapsedItems.size(); i++)
             {
-                ImGui::TextUnformatted(collapsedLine.c_str());
+                // Create a unique label by appending a hidden index after "##"
+                std::string uniqueLabel = m_CollapsedItems[i] + "##" + std::to_string(i);
+                if (ImGui::Selectable(uniqueLabel.c_str()))
+                {
+                    // Copy the original log message to the clipboard when clicked.
+                    ImGui::SetClipboardText(m_CollapsedItems[i].c_str());
+                }
             }
         }
         else
         {
-            // Output normally when not collapsed.
-            for (const auto& item : m_Items)
+            // Output each log line as a selectable item.
+            for (size_t i = 0; i < m_Items.size(); i++)
             {
-                ImGui::TextUnformatted(item.c_str());
+                // Create a unique label by appending a hidden index after "##"
+                std::string uniqueLabel = m_Items[i] + "##" + std::to_string(i);
+                if (ImGui::Selectable(uniqueLabel.c_str()))
+                {
+                    // Copy the original log message to the clipboard when clicked.
+                    ImGui::SetClipboardText(m_Items[i].c_str());
+                }
             }
         }
 
