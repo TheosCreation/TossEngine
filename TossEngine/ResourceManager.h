@@ -41,6 +41,7 @@ public:
     MaterialPtr getMaterial(const std::string& uniqueId);
     PhysicsMaterialPtr getPhysicsMaterial(const std::string& uniqueId);
     PrefabPtr getPrefab(const std::string& uniqueId);
+    vector<PrefabPtr> getPrefabs() const;
 
     // Methods to create various resources
     ShaderPtr createShader(const ShaderDesc& desc, const std::string& uniqueID);
@@ -81,7 +82,7 @@ protected:
     bool hasCreatedResources = false;
     std::map<string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
     ResourcePtr m_selectedResource = nullptr; // for editor use
-
+    size_t m_nextAvailableId = 1;
     std::unordered_map<string, ShaderDesc> shaderDescriptions;
     std::unordered_map<string, string> texture2DFilePaths;
     std::unordered_map<string, vector<string>> cubemapTextureFilePaths;

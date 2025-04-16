@@ -120,6 +120,19 @@ PrefabPtr ResourceManager::getPrefab(const std::string& uniqueId)
     return PrefabPtr();
 }
 
+vector<PrefabPtr> ResourceManager::getPrefabs() const
+{
+    vector<PrefabPtr> prefabs;
+    for (const auto& pair : m_mapResources)
+    {
+        if (PrefabPtr prefab = std::dynamic_pointer_cast<Prefab>(pair.second))
+        {
+            prefabs.push_back(prefab);
+        }
+    }
+    return prefabs;
+}
+
 ShaderPtr ResourceManager::createShader(const ShaderDesc& desc, const std::string& uniqueID)
 {
     ShaderPtr shader = std::make_shared<Shader>(desc, uniqueID, this);
@@ -368,6 +381,9 @@ PrefabPtr ResourceManager::createPrefab(const string& id, const json& data)
     PrefabPtr prefabPtr = std::make_shared<Prefab>(id, this);
     m_mapResources.emplace(id, prefabPtr);
     prefabPtr->name = id;
+
+    size_t newId = m_nextAvailableId++;
+    prefabPtr->setId(newId);
     if (!data.empty())
     {
         prefabPtr->deserialize(data);

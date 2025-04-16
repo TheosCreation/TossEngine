@@ -52,8 +52,8 @@ public:
      * @brief Gets the unique identifier of the GameObject.
      * @return The unique identifier of the GameObject.
      */
-    size_t getId();
-    LayerBit getLayer();
+    size_t getId() const;
+    LayerBit getLayer() const;
 
     /**
      * @brief Sets the unique identifier of the GameObject.

@@ -43,6 +43,8 @@ struct TOSSENGINE_API Transform
 
     void deserialize(const nlohmann::json& data);
 
+    Transform* LookupParentTransform(size_t parentID) const;
+
     Vector3 ToEulerAngles() const
     {
         return rotation.ToEulerAngles();

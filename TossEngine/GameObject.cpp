@@ -85,10 +85,6 @@ void GameObject::deserialize(const json& data)
     }
     if (data.contains("transform"))
     {
-        m_transform.deserialize(data);
-    }
-    if (data.contains("transform"))
-    {
         m_transform.deserialize(data["transform"]);
     }
     //m_transform.SetParent();
@@ -254,12 +250,12 @@ void GameObject::OnDeSelect()
     }
 }
 
-size_t GameObject::getId()
+size_t GameObject::getId() const
 {
     return m_id;
 }
 
-LayerBit GameObject::getLayer()
+LayerBit GameObject::getLayer() const
 {
     return LayerManager::GetInstance().GetLayer(m_layer);
 }

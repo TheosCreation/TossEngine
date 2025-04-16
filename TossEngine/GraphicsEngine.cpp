@@ -95,6 +95,8 @@ void GraphicsEngine::createImGuiFrame()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame(); 
     ImGuizmo::BeginFrame();
+    ImGuizmo::SetOrthographic(false);
+    ImGuizmo::AllowAxisFlip(false);
 }
 
 // Inside your GraphicsEngine class

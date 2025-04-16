@@ -1,6 +1,8 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "GameObjectManager.h"
+#include "Prefab.h"
+#include "ResourceManager.h"
 
 Transform::Transform()
     : position(Vector3(0.0f, 0.0f, 0.0f)),
@@ -67,10 +69,9 @@ void Transform::SetMatrix(const Mat4& matrix)
 
 void Transform::UpdateWorldTransform()
 {
-    Mat4 worldMatrix;
     if (parent)
     {
-        worldMatrix = parent->GetMatrix() * GetLocalMatrix(); 
+        Mat4 worldMatrix = parent->GetMatrix() * GetLocalMatrix(); 
         SetMatrix(worldMatrix);
     }
     else
@@ -108,18 +109,10 @@ void Transform::deserialize(const nlohmann::json& data)
 
         if (gameObject != nullptr)
         {
-            auto& gameObjects = gameObject->getGameObjectManager()->m_gameObjects;
-            auto it = gameObjects.find(parentID);
-            if (it != gameObjects.end())
+            if (Transform* parent = LookupParentTransform(parentID))
             {
-                // Set the parent transform safely
-                SetParent(&it->second->m_transform, false);
+                SetParent(parent, false);
                 Debug::Log("Parent Set");
-            }
-            else
-            {
-                // Handle the case where parentID is invalid/not found
-                SetParent(nullptr);
             }
         }
     }
@@ -143,4 +136,35 @@ void Transform::deserialize(const nlohmann::json& data)
         localScale = Vector3(data["localScale"][0], data["localScale"][1], data["localScale"][2]);
 
     
+}
+
+Transform* Transform::LookupParentTransform(size_t parentID) const
+{
+    // First, try to find in the game object manager.
+    if (GameObjectManager* gameObjectManager = gameObject->getGameObjectManager())
+    {
+        auto& gameObjects = gameObjectManager->m_gameObjects;
+        auto it = gameObjects.find(parentID);
+        if (it != gameObjects.end())
+        {
+            return &it->second->m_transform;
+        }
+    }
+    
+
+    // If not found, try to find in the resource manager (for prefabs).
+    auto prefabs = ResourceManager::GetInstance().getPrefabs();
+    auto pit = std::find_if(prefabs.begin(), prefabs.end(),
+        [parentID](const PrefabPtr& prefab) {
+            return prefab->getId() == parentID;
+        });
+
+    if (pit != prefabs.end())
+    {
+        // If your Prefab class has a transform, return a pointer to it.
+        return &((*pit)->m_transform);
+    }
+
+    // Parent not found in either location.
+    return nullptr;
 }

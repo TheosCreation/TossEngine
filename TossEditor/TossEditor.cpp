@@ -108,8 +108,6 @@ void TossEditor::run()
 void TossEditor::onCreate()
 {
     auto& graphicsEngine = GraphicsEngine::GetInstance();
-    ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
-    ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
 
     string filePath = editorPreferences.lastKnownOpenScenePath;
 
@@ -201,6 +199,9 @@ void TossEditor::onUpdateInternal()
 
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
     graphicsEngine.createImGuiFrame();
+
+    ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
+    ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
     
     float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
     ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -232,7 +233,6 @@ void TossEditor::onUpdateInternal()
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
     ImGui::End();
     ImGuiIO& imGuiIo = ImGui::GetIO();
-
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))

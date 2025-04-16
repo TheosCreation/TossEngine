@@ -93,8 +93,6 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(m_windowPtr, true);
     ImGui_ImplOpenGL3_Init("#version 460");
-    ImGuizmo::SetOrthographic(false);
-    ImGuizmo::AllowAxisFlip(false);
 }
 
 Window::~Window()
