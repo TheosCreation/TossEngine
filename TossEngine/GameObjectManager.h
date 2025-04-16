@@ -64,8 +64,8 @@ public:
         return nullptr;
     }
 
-    GameObject* Instatiate(PrefabPtr prefab, Transform* parent = nullptr, Vector3 positionalOffset = Vector3(0.0f), Quaternion rotationOffset = Quaternion(), bool hasStarted = true);
-    GameObject* Instatiate(PrefabPtr prefab, Vector3 position, Quaternion rotation, bool hasStarted = true);
+    GameObject* Instantiate(const PrefabPtr& prefab, Transform* parent = nullptr, Vector3 positionalOffset = Vector3(0.0f), Quaternion rotationOffset = Quaternion(), bool hasStarted = true);
+    GameObject* Instantiate(const PrefabPtr& prefab, Vector3 position, Quaternion rotation, bool hasStarted = true);
 
     /**
      * @brief Removes an GameObject from the system.

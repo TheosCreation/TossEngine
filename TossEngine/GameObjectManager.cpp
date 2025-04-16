@@ -41,7 +41,7 @@ Scene* GameObjectManager::getScene() const
     return m_scene;
 }
 
-GameObject* GameObjectManager::Instatiate(PrefabPtr prefab, Transform* parent, Vector3 positionalOffset, Quaternion rotationOffset, bool hasStarted)
+GameObject* GameObjectManager::Instantiate(const PrefabPtr& prefab, Transform* parent, Vector3 positionalOffset, Quaternion rotationOffset, bool hasStarted)
 {
     GameObject* newObject = prefab->Instantiate();
     if (!newObject)
@@ -77,9 +77,9 @@ GameObject* GameObjectManager::Instatiate(PrefabPtr prefab, Transform* parent, V
     return nullptr;
 }
 
-GameObject* GameObjectManager::Instatiate(PrefabPtr prefab, Vector3 position, Quaternion rotation, bool hasStarted)
+GameObject* GameObjectManager::Instantiate(const PrefabPtr& prefab, Vector3 position, Quaternion rotation, bool hasStarted)
 {
-    return Instatiate(prefab, nullptr, position, rotation, hasStarted);
+    return Instantiate(prefab, nullptr, position, rotation, hasStarted);
 }
 
 bool GameObjectManager::createGameObjectInternal(GameObject* gameObject, string name)

@@ -622,7 +622,7 @@ void TossEditor::onUpdateInternal()
                         // Try to dynamically cast it to a Prefab
                         if (PrefabPtr prefab = std::dynamic_pointer_cast<Prefab>(resourcePtr)) {
                             // Create a new GameObject from the prefab data.
-                            GameObject* newObj = m_currentScene->getObjectManager()->Instatiate(prefab, nullptr, Vector3(0.0f), Quaternion(), false);
+                            GameObject* newObj = m_currentScene->getObjectManager()->Instantiate(prefab, nullptr, Vector3(0.0f), Quaternion(), false);
                             Debug::Log("Created GameObject from prefab: " + prefab->getUniqueID());
                         }
                         else {

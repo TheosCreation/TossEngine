@@ -5,6 +5,16 @@ Prefab::Prefab(const std::string& uniqueID, ResourceManager* manager) : Resource
 {
 }
 
+json Prefab::serialize() const
+{
+    return GameObject::serialize();
+}
+
+void Prefab::deserialize(const json& data)
+{
+    GameObject::deserialize(data);
+}
+
 void Prefab::OnInspectorGUI()
 {
     GameObject::OnInspectorGUI();
