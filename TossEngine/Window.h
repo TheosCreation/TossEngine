@@ -11,7 +11,6 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include <memory>
 #include "Utils.h"
 #include "Resizable.h"
 
@@ -38,13 +37,13 @@ public:
      * @brief Gets the inner size of the window.
      * @return A Vector2 representing the inner size of the window.
      */
-    Vector2 getInnerSize();
+    Vector2 getInnerSize() const;
 
     /**
      * @brief Gets the GLFWwindow pointer.
      * @return A pointer to the GLFWwindow.
      */
-    GLFWwindow* getWindow();
+    GLFWwindow* getWindow() const;
     void setWindowName(const string& windowName);
     void setOwner(Resizable* newOwner);
 
@@ -52,13 +51,13 @@ public:
      * @brief Makes the window the current OpenGL context.
      * @param _vsync Enables or disables vertical synchronization.
      */
-    void makeCurrentContext(bool _vsync);
+    void makeCurrentContext(bool _vsync) const;
 
     /**
      * @brief Presents the rendered content to the window.
      */
-    void present();
-    void close();
+    void present() const;
+    void close() const;
 
     void onResize(Vector2 size) override;
     void onMaximize(int maximized) override;
@@ -67,12 +66,11 @@ public:
      * @brief Checks if the window should close.
      * @return True if the window should close, false otherwise.
      */
-    bool shouldClose();
+    bool shouldClose() const;
 
 private:
     GLFWwindow* m_windowPtr;        // Pointer to the GLFWwindow.
-    void* m_context = nullptr;      // Pointer to the OpenGL context.
     bool vsync = false;             // Flag for vertical synchronization.
     Resizable* m_resizableOwner = nullptr;      // The Owner of the window
-    string m_windowName = "";      //
+    string m_windowName;
 };

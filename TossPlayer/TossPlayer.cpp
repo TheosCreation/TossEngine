@@ -71,8 +71,8 @@ void TossPlayer::run()
     //run funcs while window open
     while (tossEngine.GetWindow()->shouldClose() == false)
     {
-        tossEngine.PollEvents();
         onUpdateInternal();
+        tossEngine.PollEvents();
     }
 
     

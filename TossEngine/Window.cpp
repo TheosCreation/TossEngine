@@ -94,6 +94,7 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
     ImGui_ImplGlfw_InitForOpenGL(m_windowPtr, true);
     ImGui_ImplOpenGL3_Init("#version 460");
     ImGuizmo::SetOrthographic(false);
+    ImGuizmo::AllowAxisFlip(false);
 }
 
 Window::~Window()
@@ -110,14 +111,14 @@ Window::~Window()
     //glfwTerminate();
 }
 
-Vector2 Window::getInnerSize()
+Vector2 Window::getInnerSize() const
 {
     int width, height;
     glfwGetFramebufferSize(m_windowPtr, &width, &height);
-    return Vector2(width, height);
+    return {static_cast<float>(width), static_cast<float>(height)};
 }
 
-GLFWwindow* Window::getWindow()
+GLFWwindow* Window::getWindow() const
 {
     return m_windowPtr;
 }
@@ -136,19 +137,19 @@ void Window::setOwner(Resizable* newOwner)
     m_resizableOwner = newOwner;
 }
 
-void Window::makeCurrentContext(bool vsync)
+void Window::makeCurrentContext(bool vSync) const
 {
     glfwMakeContextCurrent(m_windowPtr);
 
-    glfwSwapInterval(vsync ? 1 : 0);
+    glfwSwapInterval(vSync ? 1 : 0);
 }
 
-void Window::present()
+void Window::present() const
 {
     glfwSwapBuffers(m_windowPtr);
 }
 
-void Window::close()
+void Window::close() const
 {
     if(m_windowPtr) {
         glfwSetWindowShouldClose(m_windowPtr, GLFW_TRUE);
@@ -170,7 +171,7 @@ void Window::onMaximize(int maximized)
     m_resizableOwner->onMaximize(maximized);
 }
 
-bool Window::shouldClose()
+bool Window::shouldClose() const
 {
     return glfwWindowShouldClose(m_windowPtr);
 }

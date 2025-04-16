@@ -421,3 +421,5 @@ TossEditor/C++Scripts/TossEngine.dll
 TossPlayer/TossPlayer.exe
 TossEditor/C++Scripts/TossEngine.lib
 TossPlayer/TossEngine.lib
+TossEditor/C++Scripts/TossEngine.exp
+TossPlayer/TossEngine.exp

@@ -11,6 +11,8 @@
 #include <ImGuizmo.h>
 #include <glfw3.h>
 
+#include "imgui_internal.h"
+
 
 TossEditor::TossEditor()
 {
@@ -74,7 +76,6 @@ void TossEditor::run()
 
         while (!tossEngine.GetWindow()->shouldClose())
         {
-            tossEngine.PollEvents();
             if (canUpdateInternal)
             {
                 onUpdateInternal();
@@ -84,6 +85,7 @@ void TossEditor::run()
             {
                 onLateUpdateInternal();
             }
+            tossEngine.PollEvents();
         }
 
         onQuit();
@@ -105,6 +107,10 @@ void TossEditor::run()
 
 void TossEditor::onCreate()
 {
+    auto& graphicsEngine = GraphicsEngine::GetInstance();
+    ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
+    ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
+
     string filePath = editorPreferences.lastKnownOpenScenePath;
 
     if (!filePath.empty()) // If a file was selected
@@ -195,8 +201,6 @@ void TossEditor::onUpdateInternal()
 
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
     graphicsEngine.createImGuiFrame();
-    ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
-    ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
     
     float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
     ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -227,6 +231,7 @@ void TossEditor::onUpdateInternal()
     ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
     ImGui::End();
+    ImGuiIO& imGuiIo = ImGui::GetIO();
 
     if (ImGui::BeginMainMenuBar())
     {
@@ -626,9 +631,9 @@ void TossEditor::onUpdateInternal()
                     }
                 }
             }
-            // (Optional) You can still support other payload types here (e.g., for moving gameobjects).
+
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT")) {
-                GameObject* droppedGameObject = *(GameObject**)payload->Data;
+                GameObject* droppedGameObject = *static_cast<GameObject**>(payload->Data);
                 if (droppedGameObject && droppedGameObject->m_transform.parent != nullptr) {
                     droppedGameObject->m_transform.SetParent(nullptr);
                 }
@@ -780,6 +785,35 @@ void TossEditor::onUpdateInternal()
                 }
                 ImGui::EndPopup();
             }
+        }
+
+
+        // TODO: Create a function because this is very useful
+
+        ImVec2 windowPos = ImGui::GetWindowPos();
+        ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+        ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
+        float scrollY = ImGui::GetScrollY();
+        ImVec2 dropMin = ImVec2(windowPos.x + contentMin.x,
+            windowPos.y + contentMin.y + scrollY);
+        ImVec2 dropMax = ImVec2(windowPos.x + contentMax.x,
+            windowPos.y + contentMax.y + scrollY);
+        ImRect dropRect(dropMin, dropMax);
+        if (ImGui::BeginDragDropTargetCustom(dropRect, ImGui::GetID("AssetsDropArea")))
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
+            {
+                // Retrieve the dropped GameObject.
+                GameObject* droppedObject = *static_cast<GameObject**>(payload->Data);
+
+                // Serialize the GameObject to JSON.
+                json jsonData = droppedObject->serialize();
+                // Create a prefab using the GameObject's name and JSON data.
+                resourceManager.createPrefab(droppedObject->name, jsonData);
+
+                Debug::Log("Created prefab '%s' from dragged GameObject", droppedObject->name.c_str());
+            }
+            ImGui::EndDragDropTarget();
         }
     }
     ImGui::End();
@@ -1133,11 +1167,17 @@ void TossEditor::onUpdateInternal()
     
     double RenderTime_End = (double)glfwGetTime();
 
+
+    if (imGuiIo.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        GLFWwindow* backup_current_context = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backup_current_context);
+    }
+
     // Render to window
     tossEngine.GetWindow()->present();
-
-    ImGui::UpdatePlatformWindows();
-    ImGui::RenderPlatformWindowsDefault();
 
 }
 

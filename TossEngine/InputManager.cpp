@@ -14,13 +14,10 @@ Mail : theo.morris@mds.ac.nz
 #include "Window.h"
 #include "TossEngine.h"
 #include "ProjectSettings.h"
-#include "TossPlayerSettings.h"
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
 #include <glew.h>
 #include <glfw3.h>
-#include <imgui_internal.h>
 
 double InputManager::scrollX = 0.0;
 double InputManager::scrollY = 0.0;
@@ -115,12 +112,12 @@ float InputManager::getMouseYAxis(bool checkPlayMode) const
 
 Vector2 InputManager::getMousePosition()
 {
-	return Vector2(currentMouseX, currentMouseY);
+	return {currentMouseX, currentMouseY};
 }
 
 Vector2 InputManager::getMouseScroll()
 {
-	return Vector2(scrollX, scrollY);
+	return {static_cast<float>(scrollX), static_cast<float>(scrollY)};
 }
 
 void InputManager::resetMouseScroll()
@@ -139,7 +136,7 @@ void InputManager::enablePlayMode(bool enable, bool alsoChangeGameplayMode)
 
 	if (enable) {
 		glfwSetInputMode(WindowPtr, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		glfwSetCursorPos(WindowPtr, m_screenArea.x / 2.0, m_screenArea.y / 2.0);
+		glfwSetCursorPos(WindowPtr, m_screenArea.x / 2.0f, m_screenArea.y / 2.0f);
 	}
 	else {
 		glfwSetInputMode(WindowPtr, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -170,14 +167,14 @@ void InputManager::onUpdate()
 {
 	double newMouseX, newMouseY;
 	glfwGetCursorPos(WindowPtr, &newMouseX, &newMouseY);
-	currentMouseX = (float)newMouseX;
-	currentMouseY = (float)newMouseY;
+	currentMouseX = static_cast<float>(newMouseX);
+	currentMouseY = static_cast<float>(newMouseY);
 
 	if (m_playEnable) {
 		// Calculate delta mouse position
-		m_deltaMouse = Vector2(currentMouseX - m_screenArea.x / 2.0, currentMouseY - m_screenArea.y / 2.0);
+		m_deltaMouse = Vector2(currentMouseX - m_screenArea.x / 2.0f, currentMouseY - m_screenArea.y / 2.0f);
 		// Reset the cursor to the center of the window
-		glfwSetCursorPos(WindowPtr, m_screenArea.x / 2.0, m_screenArea.y / 2.0);
+		glfwSetCursorPos(WindowPtr, m_screenArea.x / 2.0f, m_screenArea.y / 2.0f);
 	}
 	else {
 		// Calculate delta mouse position based on the previous frame's position
@@ -203,14 +200,14 @@ void InputManager::onLateUpdate()
 	m_oldMousePos = Vector2(currentMouseX, currentMouseY);
 }
 
-void InputManager::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void InputManager::scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
 {
-	scrollX = xoffset;
-	scrollY = yoffset;
+	scrollX = xOffset;
+	scrollY = yOffset;
 
 	if (ImGui::GetIO().WantCaptureMouse)
 	{
-		ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+		ImGui_ImplGlfw_ScrollCallback(window, xOffset, yOffset);
 	}
 }
 
@@ -218,9 +215,9 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
 {
 	Key translatedKey = static_cast<Key>(key);
 
-    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 	if (ImGui::GetIO().WantCaptureKeyboard)
 	{
+        ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 	}
 
 	if (action == GLFW_PRESS && !currentKeyStates[translatedKey]) {
@@ -235,10 +232,9 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
 {
 	MouseButton translatedButton = static_cast<MouseButton>(button);
 
-    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-
     if (ImGui::GetIO().WantCaptureMouse)
     {
+        ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     }
 
 	if (action == GLFW_PRESS && !currentMouseStates[translatedButton]) {

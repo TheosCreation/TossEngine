@@ -99,13 +99,13 @@ public:
      * @brief Returns the current mouse position as a vector2.
      * @return The current mouse position.
      */
-    Vector2 getMousePosition();
+    static Vector2 getMousePosition();
 
     /**
      * @brief Returns the current mouse scroll as a vector2.
      * @return The current mouse scroll.
      */
-    Vector2 getMouseScroll();
+    static Vector2 getMouseScroll();
 
     /**
      * @brief Enables or disables play mode, which hides the cursor and locks it at the center of the screen.
@@ -150,7 +150,7 @@ private:
     /**
      * @brief Static callback functions for handling input events.
      */
-    static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+    static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
@@ -167,7 +167,7 @@ private:
 
     const double MOUSE_MOVEMENT_THRESHOLD = 0.00001f; // Const for the mouse movement threshold
 
-    void resetMouseScroll(); // Resets scroll x and y to 0
+    static void resetMouseScroll(); // Resets scroll x and y to 0
 
     GLFWwindow* WindowPtr = nullptr; // Pointer to the GLFW window
 

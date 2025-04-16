@@ -4,7 +4,7 @@
 #include "TossEditor.h"
 #include "TossEngine.h"
 #include "Window.h"
-#include <imgui_internal.h>
+//#include <imgui_internal.h>
 
 #include <algorithm>
 
@@ -52,7 +52,7 @@ void EditorPlayer::Update(float deltaTime)
 
     if (inputManager.isMousePressed(MouseButtonLeft, false))
     {
-        Vector2 mousePosition = inputManager.getMousePosition();
+        //Vector2 mousePosition = inputManager.getMousePosition();
 
         //Debug::Log(m_cam->screenToWorldPoint(mousePosition));
     }
