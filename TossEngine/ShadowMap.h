@@ -49,4 +49,5 @@ public:
 private:
     uint FBO; // Framebuffer Object for the shadow map.
     Vector2 m_resolution = Vector2(0); // Resolution of the shadow map.
+    GLint m_prevViewport[4]; // Original viewport size before binding
 };

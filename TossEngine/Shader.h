@@ -46,7 +46,7 @@ public:
      * @brief Gets the ID of the shader program.
      * @return The ID of the shader program.
      */
-    uint getId();
+    uint getId() const;
 
     /**
      * @brief Sets the active 2D texture by texture ID.
@@ -54,7 +54,7 @@ public:
      * @param slot The texture slot to bind the texture to.
      * @param bindingName The name of the binding in the shader.
      */
-    void setTexture2D(const uint textureId, uint slot, std::string bindingName);
+    void setTexture2D(const uint& textureId, uint slot, const std::string& bindingName) const;
 
     /**
      * @brief Sets the active 2D texture using a shared pointer to Texture2D.
@@ -62,7 +62,7 @@ public:
      * @param slot The texture slot to bind the texture to.
      * @param bindingName The name of the binding in the shader.
      */
-    void setTexture2D(const TexturePtr& texture, uint slot, std::string bindingName);
+    void setTexture2D(const TexturePtr& texture, uint slot, const std::string& bindingName) const;
 
     /**
      * @brief Sets the active Cube Map texture using a shared pointer.
@@ -70,7 +70,7 @@ public:
      * @param slot The texture slot to bind the texture to.
      * @param bindingName The name of the binding in the shader.
      */
-    void setTextureCubeMap(const TexturePtr& texture, uint slot, std::string bindingName);
+    void setTextureCubeMap(const TexturePtr& texture, uint slot, const std::string& bindingName) const;
 
     /**
      * @brief Sends a mat4 into the shader.
@@ -178,7 +178,7 @@ private:
      * @param filePath The path to the shader file.
      * @return The contents of the shader file as a string.
      */
-    std::string ReadShaderFile(const std::string& filePath);
+    static std::string ReadShaderFile(const std::string& filePath);
 
     /**
      * @brief Preprocesses the shader code.
@@ -190,7 +190,7 @@ private:
     /**
      * @brief Links the shader program.
      */
-    void link();
+    void link() const;
 
 private:
     uint m_programId = 0; // The ID of the shader program.

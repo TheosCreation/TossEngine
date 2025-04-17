@@ -14,6 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include "GameObjectManager.h"
 #include "ComponentRegistry.h"
 #include "Component.h"
+#include "MissingComponent.h"
 #include "Physics.h"
 
 GameObject::GameObject() : m_transform(this)
@@ -58,6 +59,11 @@ json GameObject::serialize() const
     {
         componentsJson.push_back(pair.second->serialize());
     }
+    // Serialize missing components
+    for (const auto& pair : m_missingComponents)
+    {
+        componentsJson.push_back(pair.second->serialize());
+    }
     return {
         {"type", getClassName(typeid(*this))}, // Use typeid to get the class name
         {"id", m_id},
@@ -95,11 +101,17 @@ void GameObject::deserialize(const json& data)
         {
             if (componentData.contains("type"))
             {
-                addComponent(componentData["type"], componentData);
+                std::string typeName = componentData["type"];
+                Component* component = addComponent(typeName, componentData);
+                if (!component)
+                {
+                    MissingComponent* missing = new MissingComponent(typeName, componentData);
+                    m_missingComponents[typeName] = missing;
+                }
             }
             else
             {
-                Debug::LogError("Error loading component on gameobject: " + name + ". As the component has no type");
+                Debug::LogError("Error loading component on gameobject: " + name + ". As the component has no type data");
             }
         }
     }
@@ -173,38 +185,15 @@ void GameObject::OnInspectorGUI()
     }
 
     ImGui::DragFloat3("Scale", m_transform.localScale.Data(), 0.1f);
-    for (auto& pair : m_components)
-    {
-        ImGui::Separator();
-        Component* comp = pair.second; // e.g., from a std::map
-        // Highlight the selected component.
-        ImGuiTreeNodeFlags flags = (selectedComponent == comp) ? ImGuiTreeNodeFlags_Selected : 0;
-        bool open = ImGui::TreeNodeEx(comp->getName().c_str(), flags);
-        if (ImGui::IsItemClicked())
-        {
-            // Select the component when clicked.
-            selectedComponent = comp;
-        }
-        // Right-click context menu.
-        if (ImGui::BeginPopupContextItem())
-        {
-            if (ImGui::MenuItem("Delete"))
-            {
-                removeComponent(comp);
-                if (selectedComponent == comp)
-                    selectedComponent = nullptr;
-            }
-            ImGui::EndPopup();
-        }
-        if (open)
-        {
-            if (comp)
-            {
 
-                comp->OnInspectorGUI();
-            }
-            ImGui::TreePop();
-        }
+    for (auto& [type, comp] : m_components)
+    {
+        drawComponentInspector(comp, comp->getName());
+    }
+
+    for (auto& [typeName, missingComp] : m_missingComponents)
+    {
+        drawComponentInspector(missingComp, "Missing: " + typeName, true);
     }
     ImGui::Separator();
 
@@ -230,6 +219,37 @@ void GameObject::OnInspectorGUI()
             }
         }
         ImGui::EndPopup();
+    }
+}
+
+void GameObject::drawComponentInspector(Component* comp, const std::string& displayName, bool isMissing)
+{
+    ImGui::Separator();
+    ImGuiTreeNodeFlags flags = (selectedComponent == comp) ? ImGuiTreeNodeFlags_Selected : 0;
+    bool open = ImGui::TreeNodeEx(displayName.c_str(), flags);
+
+    if (ImGui::IsItemClicked())
+        selectedComponent = comp;
+
+    if (ImGui::BeginPopupContextItem())
+    {
+        if (ImGui::MenuItem("Delete"))
+        {
+            if (!isMissing)
+                removeComponent(comp);
+            else
+                m_missingComponents.erase(displayName.substr(9)); // "Missing: " prefix stripped
+
+            if (selectedComponent == comp)
+                selectedComponent = nullptr;
+        }
+        ImGui::EndPopup();
+    }
+
+    if (open)
+    {
+        comp->OnInspectorGUI();
+        ImGui::TreePop();
     }
 }
 
@@ -318,6 +338,11 @@ void GameObject::onUpdateInternal()
     if (Time::TimeScale != 0.0f) return;
 
     m_transform.UpdateWorldTransform();
+    
+    for (MissingComponent* missingComponent : missingComponetsToDestroy)
+    {
+        
+    }
 
     for (Component* component : componentsToDestroy)
     {
@@ -422,6 +447,14 @@ void GameObject::removeComponent(Component* component)
         return;
 
     componentsToDestroy.push_back(component);
+}
+
+void GameObject::removeMissingComponent(MissingComponent* component)
+{
+    if (component == nullptr)
+        return;
+
+    missingComponetsToDestroy.push_back(component);
 }
 
 bool GameObject::tryDeleteSelectedComponent()

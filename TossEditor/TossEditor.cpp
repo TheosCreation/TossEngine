@@ -175,7 +175,6 @@ void TossEditor::onUpdateInternal()
         inputManager.onUpdate();
         if (m_gameRunning)
         {
-            Physics::GetInstance().Update();
             while (m_accumulatedTime >= Time::FixedDeltaTime)
             {
                 m_currentScene->onFixedUpdate();
@@ -193,6 +192,7 @@ void TossEditor::onUpdateInternal()
             m_currentScene->onUpdate();
             m_currentScene->onLateUpdate();
 
+            Physics::GetInstance().Update();
         }
         inputManager.onLateUpdate();
     }
@@ -807,7 +807,9 @@ void TossEditor::onUpdateInternal()
                 GameObject* droppedObject = *static_cast<GameObject**>(payload->Data);
 
                 // Serialize the GameObject to JSON.
-                json jsonData = droppedObject->serialize();
+                json jsonData;
+                Prefab::recurseSerialize(droppedObject, jsonData);
+
                 // Create a prefab using the GameObject's name and JSON data.
                 resourceManager.createPrefab(droppedObject->name, jsonData);
 

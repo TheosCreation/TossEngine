@@ -12,6 +12,7 @@ namespace reactphysics3d
     class PhysicsWorld;
 }
 
+class MissingComponent;
 class Collider;
 
 /**
@@ -45,6 +46,7 @@ public:
     virtual void deserialize(const json& data) override;
 
     virtual void OnInspectorGUI() override;
+    void drawComponentInspector(Component* comp, const std::string& displayName, bool isMissing = false);
 
     virtual void OnSelect() override;
     virtual void OnDeSelect() override;
@@ -156,6 +158,7 @@ public:
 
     Component* addComponent(string componentType, const json& data = nullptr);
     virtual void removeComponent(Component* component);
+    virtual void removeMissingComponent(MissingComponent* component);
 
     template <typename Component>
     Component* getComponent()
@@ -233,7 +236,9 @@ public:
 
 protected:
     vector<Component*> componentsToDestroy;
+    vector<MissingComponent*> missingComponetsToDestroy;
     std::map<std::type_index, Component*> m_components;
+    std::map<std::string, MissingComponent*> m_missingComponents;
     bool hasStarted = false;
 
     GameObjectManager* m_gameObjectManager = nullptr; // Pointer to the GameObjectManager managing this GameObject.

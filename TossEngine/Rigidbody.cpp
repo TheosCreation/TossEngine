@@ -110,8 +110,6 @@ void Rigidbody::onCreate()
         Debug::LogError("Rigidbody not able to create body in world", true);
     }
 
-    Transform transform = m_owner->m_transform;
-
     // Create rigid body at the GameObject's position
     rp3d::Transform bodyTransform;
 
@@ -156,15 +154,21 @@ void Rigidbody::onStart()
 
 void Rigidbody::onUpdate()
 {
-    if (!m_Body || m_BodyType == BodyType::STATIC || (m_BodyType == BodyType::KINEMATIC && m_Collider->GetTrigger()))
-    {
-        UpdateBodyTransform();
-    }
+    //if (!m_Body || m_BodyType == BodyType::STATIC || (m_BodyType == BodyType::KINEMATIC && m_Collider->GetTrigger()))
+    //{
+    //    UpdateBodyTransform();
+    //}
     
 
     rp3d::Transform bodyTransform = m_Body->getTransform();
     rp3d::Vector3 position = bodyTransform.getPosition();
     rp3d::Quaternion rotation = bodyTransform.getOrientation();
+    if (rotation.length() <= rp3d::MACHINE_EPSILON) {
+        rotation = rp3d::Quaternion::identity();
+    }
+    else {
+        rotation.normalize();
+    }
 
     // Apply position constraints
     Vector3& pos = m_owner->m_transform.localPosition;
@@ -185,6 +189,9 @@ void Rigidbody::onUpdate()
     if (!rotationAxisLocks[2]) currentEuler.z = newEuler.z;
 
     m_owner->m_transform.localRotation = Quaternion(currentEuler);
+
+
+    UpdateBodyTransform();
 }
 
 void Rigidbody::onUpdateInternal()
@@ -203,6 +210,15 @@ void Rigidbody::UpdateBodyTransform() const
 
         Vector3 worldTranslation = Vector3::ExtractTranslation(worldMatrix);
         Quaternion worldRotation = Quaternion::ExtractRotation(worldMatrix);
+
+        // Avoid passing invalid rotation to rp3d
+        if (worldRotation.Magnitude() <= std::numeric_limits<float>::epsilon()) {
+            worldRotation = Quaternion::Identity();
+        }
+        else {
+            worldRotation.Normalize();
+        }
+
 
         rp3d::Transform bodyTransform(
             rp3d::Vector3(worldTranslation.x, worldTranslation.y, worldTranslation.z),
@@ -260,17 +276,14 @@ Collider* Rigidbody::GetCollider() const
 
 void Rigidbody::AddForce(const Vector3& force) const
 {
-    if (force.Length() > 0.1f)
-    {
-        if (m_Body) {
-            m_Body->applyWorldForceAtCenterOfMass(rp3d::Vector3(force.x, force.y, force.z));
-        }
+    if (m_Body && force.Length() > 100.0f * m_Body->getMass()) {
+        m_Body->applyWorldForceAtCenterOfMass(rp3d::Vector3(force.x, force.y, force.z));
     }
 }
 
 void Rigidbody::AddTorque(const Vector3& torque) const
 {
-    if (torque.Length() > 0.1f)
+    if (torque.Length() > 100.0f * m_Body->getMass())
     {
         if (m_Body) {
             m_Body->applyWorldForceAtCenterOfMass(rp3d::Vector3(torque.x, torque.y, torque.z));

@@ -11,6 +11,7 @@ public:
     void onTriggerEnter(Collider* other) override;
 private:
     float m_projectileSpeed = 20.0f;
+    int m_damage = 20;
     Rigidbody* m_rigidBody = nullptr;
 };
 

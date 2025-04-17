@@ -162,6 +162,7 @@ Transform* Transform::LookupParentTransform(size_t parentID) const
     if (pit != prefabs.end())
     {
         // If your Prefab class has a transform, return a pointer to it.
+        Debug::Log("Found prefab as a parent");
         return &((*pit)->m_transform);
     }
 

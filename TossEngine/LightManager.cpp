@@ -282,7 +282,7 @@ void LightManager::applyLighting(ShaderPtr shader) const
     }
 }
 
-void LightManager::applyShadows(ShaderPtr shader) const
+void LightManager::applyShadows(ShaderPtr shader)
 {
     //bindings 5 - 6
     for (uint i = 0; i < m_directionalLightCount; i++)

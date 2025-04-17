@@ -26,6 +26,8 @@ Mail : theo.morris@mds.ac.nz
 #include <gtx/quaternion.hpp>
 
 #define PI 3.14159265358979323846
+#define PI 3.14159265358979323846
+
 
 inline void initRandomSeed()
 {

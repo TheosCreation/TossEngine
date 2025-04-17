@@ -147,7 +147,8 @@ void PlayerController::onFixedUpdate()
             if (accelerationStep.Length() > velocityChange.Length())
                 accelerationStep = velocityChange;
 
-            m_rigidBody->SetLinearVelocity(velocity + accelerationStep);
+            if (accelerationStep.Length() > 0)
+                m_rigidBody->SetLinearVelocity(velocity + accelerationStep);
         }
         else
         {

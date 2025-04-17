@@ -68,7 +68,7 @@ public:
      * @brief Applies shadow information to the specified shader.
      * @param shader A shared pointer to the shader that will receive the shadow data.
      */
-    void applyShadows(ShaderPtr shader) const;
+    void applyShadows(ShaderPtr shader);
 
     /**
      * @brief Binds the shadow map texture for rendering.

@@ -101,28 +101,6 @@ using std::unique_ptr;
 using std::vector;
 using std::string;
 
-namespace QuaternionUtils
-{
-    // Inline function to create a quaternion that looks in the specified direction
-    inline Quaternion LookAt(const glm::vec3& direction, const glm::vec3& up = glm::vec3(0.0f, 1.0f, 0.0f))
-    {
-        // Ensure the direction is normalized
-        glm::vec3 forward = glm::normalize(direction);
-
-        // Compute the right vector
-        glm::vec3 right = glm::normalize(glm::cross(up, forward));
-
-        // Recalculate the up vector to make sure it is orthogonal
-        glm::vec3 recalculatedUp = glm::cross(forward, right);
-
-        // Create a 3x3 rotation matrix
-        glm::mat3 rotationMatrix(right, recalculatedUp, forward);
-
-        // Convert the matrix to a quaternion
-        return glm::quat_cast(rotationMatrix);
-    }
-}
-
 inline glm::mat4 LookAt(const Vector3& eye, const Vector3& center, const Vector3& up) {
     return glm::lookAt(static_cast<glm::vec3>(eye),
         static_cast<glm::vec3>(center),

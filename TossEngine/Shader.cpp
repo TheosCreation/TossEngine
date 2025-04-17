@@ -183,7 +183,7 @@ std::string Shader::PreprocessShader(const std::string& shaderCode) {
     return processedCode;
 }
 
-void Shader::link()
+void Shader::link() const
 {
 	glLinkProgram(m_programId);
 
@@ -199,12 +199,12 @@ void Shader::link()
 	}
 }
 
-uint Shader::getId()
+uint Shader::getId() const
 {
 	return m_programId;
 }
 
-void Shader::setTexture2D(const uint textureId, uint slot, std::string bindingName)
+void Shader::setTexture2D(const uint& textureId, uint slot, const std::string& bindingName) const
 {
     auto glSlot = GL_TEXTURE0 + slot;
     glActiveTexture(glSlot); // activate the texture unit first before binding texture
@@ -212,7 +212,7 @@ void Shader::setTexture2D(const uint textureId, uint slot, std::string bindingNa
     setInt(bindingName, slot);
 }
 
-void Shader::setTexture2D(const TexturePtr& texture, uint slot, std::string bindingName)
+void Shader::setTexture2D(const TexturePtr& texture, uint slot, const std::string& bindingName) const
 {
     auto glSlot = GL_TEXTURE0 + slot;
     glActiveTexture(glSlot); // activate the texture unit first before binding texture
@@ -229,7 +229,7 @@ void Shader::setTexture2D(const TexturePtr& texture, uint slot, std::string bind
     }
 }
 
-void Shader::setTextureCubeMap(const TexturePtr& texture, uint slot, std::string bindingName)
+void Shader::setTextureCubeMap(const TexturePtr& texture, uint slot, const std::string& bindingName) const
 {
     auto glSlot = GL_TEXTURE0 + slot;
     glActiveTexture(glSlot); // activate the texture unit first before binding/unbinding texture

@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "Resource.h"
 
-class Prefab : public GameObject, public Resource
+class TOSSENGINE_API Prefab : public GameObject, public Resource
 {
 public:
     Prefab(const std::string& uniqueID, ResourceManager* manager);
@@ -20,5 +20,8 @@ public:
         newObject->deserialize(data);
         return newObject;
     }
-};
 
+
+    static void recurseSerialize(const GameObject* go, json& out);
+    static void recurseDeserialize(GameObject* parentGO, const json& data);
+};

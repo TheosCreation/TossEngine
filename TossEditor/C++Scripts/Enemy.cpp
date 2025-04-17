@@ -8,4 +8,8 @@ void Enemy::OnInspectorGUI()
 void Enemy::TakeDamage(int damage)
 {
     m_health -= damage;
+    if (m_health <= 0)
+    {
+        Destroy(m_owner);
+    }
 }

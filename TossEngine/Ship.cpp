@@ -17,7 +17,7 @@ void Ship::onUpdate()
     glm::vec3 forward = glm::normalize(glm::vec3(-sin(angle), 0.0f, cos(angle)));
 
     // Convert the forward vector to a rotation quaternion
-    Quaternion shipRotation = QuaternionUtils::LookAt(forward, glm::vec3(0.0f, 1.0f, 0.0f));
+    Quaternion shipRotation = Quaternion::LookAt(forward, glm::vec3(0.0f, 1.0f, 0.0f));
 
     // Set the ship's rotation
     m_owner->m_transform.localRotation = shipRotation;

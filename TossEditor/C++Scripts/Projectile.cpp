@@ -6,6 +6,7 @@ void Projectile::OnInspectorGUI()
 {
     Component::OnInspectorGUI();
 
+    IntSliderField("Damage", m_damage);
     FloatSliderField("Projectile Speed", m_projectileSpeed);
 }
 
@@ -14,6 +15,7 @@ json Projectile::serialize() const
     json data;
     data["type"] = getClassName(typeid(*this));
     data["projectileSpeed"] = m_projectileSpeed;
+    data["damage"] = m_damage;
 
     return data;
 }
@@ -23,6 +25,11 @@ void Projectile::deserialize(const json& data)
     if (data.contains("projectileSpeed"))
     {
         m_projectileSpeed = data["projectileSpeed"].get<float>();
+    }
+
+    if (data.contains("damage"))
+    {
+        m_damage = data["damage"].get<int>();
     }
 }
 
@@ -43,9 +50,10 @@ void Projectile::onTriggerEnter(Collider* other)
         Destroy(m_owner);
     }
 
-    if (gameObject->getComponent<Enemy>())
+    if (Enemy* enemy = gameObject->getComponent<Enemy>())
     {
         Debug::Log("Hit Enemy");
+        enemy->TakeDamage(m_damage);
         Destroy(m_owner);
     }
 

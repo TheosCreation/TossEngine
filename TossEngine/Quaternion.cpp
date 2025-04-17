@@ -1,5 +1,6 @@
 #include "Quaternion.h"
 #include "Mat4.h"
+#include "Mat3.h"
 #include "Vector3.h"
 
 Quaternion::Quaternion(const Vector3& eulerAngles)
@@ -10,6 +11,10 @@ Quaternion::Quaternion(const Vector3& eulerAngles)
     x = q.x;
     y = q.y;
     z = q.z;
+}
+
+Quaternion::Quaternion(const Mat3& mat)
+{
 }
 
 Quaternion Quaternion::ExtractRotation(const Mat4& mat)
@@ -67,6 +72,11 @@ Quaternion Quaternion::ExtractRotation(const Mat4& mat)
     return Quaternion(qw, qx, qy, qz);
 }
 
+Quaternion Quaternion::Identity()
+{
+    return Quaternion();
+}
+
 Mat4 Quaternion::ToMat4() const
 {
     return Mat4(glm::toMat4(static_cast<glm::quat>(*this)));
@@ -75,7 +85,12 @@ Mat4 Quaternion::ToMat4() const
 Vector3 Quaternion::ToEulerAngles() const {
     // Returns Euler angles (in radians) from this quaternion
     return Vector3(glm::eulerAngles(static_cast<glm::quat>(*this)));
-} 
+}
+float Quaternion::Magnitude() const
+{
+    return glm::length(static_cast<glm::quat>(*this));
+}
+
 
 Vector3 Quaternion::operator*(const Vector3& v) const
 {
@@ -86,4 +101,20 @@ Vector3 Quaternion::operator*(const Vector3& v) const
 Quaternion Quaternion::FromEuler(Vector3 eulerAngles)
 {
     return Quaternion(eulerAngles);
+}
+
+Quaternion Quaternion::LookAt(const Vector3& direction, const Vector3& up)
+{
+    // Ensure the direction is normalized
+    Vector3 forward = direction.Normalized();
+
+    Vector3 right = Vector3::Cross(up, forward).Normalized();
+
+    Vector3 recalculatedUp = Vector3::Cross(forward, right).Normalized();
+
+    // Create a 3x3 rotation matrix
+    Mat3 rotationMatrix(right, recalculatedUp, forward);
+
+    // Convert the matrix to a quaternion
+    return Quaternion(rotationMatrix);
 }

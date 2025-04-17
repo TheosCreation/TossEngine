@@ -1,9 +1,11 @@
 #pragma once
 #include "TossEngineAPI.h"
 #include "Math.h"
+#include "Vector3.h"
 
 class Vector3;
 class Mat4;
+class Mat3;
 
 class TOSSENGINE_API Quaternion {
 public:
@@ -13,13 +15,16 @@ public:
     Quaternion(float w, float x, float y, float z) : w(w), x(x), y(y), z(z) {}
     Quaternion(const glm::quat& q) : w(q.w), x(q.x), y(q.y), z(q.z) {}
     Quaternion(const Vector3& eulerAngles);
+    Quaternion(const Mat3& mat);
 
 
     static Quaternion ExtractRotation(const Mat4& mat);
+    static Quaternion Identity();
 
     // Convert to Mat4
     Mat4 ToMat4() const;
     Vector3 ToEulerAngles() const;
+    float Magnitude() const;
 
     // Normalize this quaternion
     void Normalize() {
@@ -52,4 +57,6 @@ public:
     Vector3 operator*(const Vector3& v) const;
 
     static Quaternion FromEuler(Vector3 eulerAngles);
+
+    static Quaternion LookAt(const Vector3& direction, const Vector3& up = Vector3(0.0f, 1.0f, 0.0f));
 };
