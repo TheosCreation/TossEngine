@@ -19,6 +19,40 @@ reactphysics3d::decimal RaycastCallback::notifyRaycastHit(const RaycastInfo& inf
     return info.hitFraction;
 }
 
+Physics& Physics::GetInstance()
+{
+    static Physics instance;
+    return instance;
+}
+
+void Physics::UpdateInternal()
+{
+    for (const auto& pair : m_bodiesToDestroy)
+    {
+        pair.second->destroyRigidBody(pair.first);
+    }
+    for (rp3d::CollisionShape* shape : m_shapesToDestroy)
+    {
+        switch (shape->getType()) {
+        case rp3d::CollisionShapeType::CONVEX_POLYHEDRON:
+            m_commonSettings.destroyBoxShape(dynamic_cast<rp3d::BoxShape*>(shape));
+            break;
+        case rp3d::CollisionShapeType::SPHERE:
+            m_commonSettings.destroySphereShape(dynamic_cast<rp3d::SphereShape*>(shape));
+            break;
+        case rp3d::CollisionShapeType::CAPSULE:
+            m_commonSettings.destroyCapsuleShape(dynamic_cast<rp3d::CapsuleShape*>(shape));
+            break;
+        default:
+            // if you ever use other shapes: convex meshes, triangle meshes, etc.
+            break;
+        }
+
+    }
+    m_shapesToDestroy.clear();
+    m_bodiesToDestroy.clear();
+}
+
 void Physics::Update()
 {
     if (m_world)
@@ -435,4 +469,14 @@ void Physics::UnLoadPrefabWorld()
         m_commonSettings.destroyPhysicsWorld(m_prefabWorld);
         m_prefabWorld = nullptr;
     }
+}
+
+void Physics::DestroyShape(rp3d::CollisionShape* shape)
+{
+    m_shapesToDestroy.push_back(shape);
+}
+
+void Physics::DestroyBody(rp3d::RigidBody* body, PhysicsWorld* world)
+{
+    m_bodiesToDestroy.emplace(body, world);
 }

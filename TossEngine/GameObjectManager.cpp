@@ -5,7 +5,7 @@ Auckland
 New Zealand
 (c) 2024 Media Design School
 File Name : GameObjectManager.cpp
-Description : GameObject system is a container and controller of the entities for the game
+Description : GameObject system is a container and controller of the game objects for the game
 Author : Theo Morris
 Mail : theo.morris@mds.ac.nz
 **/

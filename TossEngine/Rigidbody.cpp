@@ -100,10 +100,6 @@ void Rigidbody::OnGameObjectDeSelected()
 void Rigidbody::onCreate()
 {
     PhysicsWorld* world = m_owner->getWorld();
-    if (!world)
-    {
-        Debug::LogError("Rigidbody not able to create body in world", true);
-    }
 
     // Create rigid body at the GameObject's position
     rp3d::Transform bodyTransform;
@@ -129,7 +125,7 @@ void Rigidbody::onCreateLate()
 
 void Rigidbody::onStart()
 {
-    // Ensure m_Collider and m_Body are both valid
+    // Ensure m_collider and m_Body are both valid
     if (m_Collider == nullptr) {
         Debug::LogError("Error: Collider is nullptr!");
         return;
@@ -149,11 +145,11 @@ void Rigidbody::onStart()
 
 void Rigidbody::onUpdate()
 {
-    //if (!m_Body || m_BodyType == BodyType::STATIC || (m_BodyType == BodyType::KINEMATIC && m_Collider->GetTrigger()))
+    //if (!m_Body || m_BodyType == BodyType::STATIC || (m_BodyType == BodyType::KINEMATIC && m_collider->GetTrigger()))
     //{
     //    UpdateBodyTransform();
     //}
-    
+    if (!m_Body) return;
 
     rp3d::Transform bodyTransform = m_Body->getTransform();
     rp3d::Vector3 position = bodyTransform.getPosition();
@@ -225,12 +221,10 @@ void Rigidbody::UpdateBodyTransform() const
 
 void Rigidbody::onDestroy()
 {
-    if (m_Body) {
-        PhysicsWorld* world = m_owner->getWorld();
-        if (world)
-        {
-            world->destroyRigidBody(m_Body);
-        }
+    if(m_Body) {
+        m_Body->setIsActive(false);
+        Physics::GetInstance().DestroyBody(m_Body, m_owner->getWorld());
+
         m_Body = nullptr;
         m_Collider = nullptr;
     }

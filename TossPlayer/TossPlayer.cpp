@@ -100,7 +100,6 @@ void TossPlayer::onUpdateInternal()
     Time::UpdateDeltaTime(m_currentTime - m_previousTime);
     m_previousTime = m_currentTime;
 
-    Physics::GetInstance().Update();
     // Accumulate time
     m_accumulatedTime += Time::DeltaTime;
 
@@ -113,8 +112,12 @@ void TossPlayer::onUpdateInternal()
         m_accumulatedTime -= m_fixedTimeStep;
     }
 
+    Physics::GetInstance().UpdateInternal();
+
     m_currentScene->onUpdate();
     m_currentScene->onLateUpdate();
+
+    Physics::GetInstance().Update();
 
     double RenderTime_Begin = (double)glfwGetTime();
 

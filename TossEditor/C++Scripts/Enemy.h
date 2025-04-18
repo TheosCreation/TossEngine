@@ -9,6 +9,8 @@ public:
 
 private:
     int m_health = 100;
+
+    SERIALIZE_COMPONENT_FIELDS(m_health)
 };
 
 REGISTER_COMPONENT(Enemy);

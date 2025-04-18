@@ -13,3 +13,4 @@ void Enemy::TakeDamage(int damage)
         Destroy(m_owner);
     }
 }
+

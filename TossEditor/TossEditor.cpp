@@ -194,6 +194,9 @@ void TossEditor::onUpdateInternal()
 
             Physics::GetInstance().Update();
         }
+
+
+        Physics::GetInstance().UpdateInternal();
         inputManager.onLateUpdate();
     }
 

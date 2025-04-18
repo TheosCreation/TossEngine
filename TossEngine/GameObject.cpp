@@ -351,7 +351,14 @@ void GameObject::onUpdateInternal()
     
     for (MissingComponent* missingComponent : missingComponetsToDestroy)
     {
-        
+        auto it = m_missingComponents.find(missingComponent->missingType);
+        if (it != m_missingComponents.end() && it->second == missingComponent)
+        {
+            // Remove the component from the container.
+            m_missingComponents.erase(it);
+
+            delete missingComponent;
+        }
     }
 
     for (Component* component : componentsToDestroy)
@@ -367,8 +374,7 @@ void GameObject::onUpdateInternal()
 
             // Remove the component from the container.
             m_components.erase(it);
-
-            // Delete the component (if you own it, which is the case here since addComponent used new).
+            
             delete component;
         }
     }
@@ -505,7 +511,6 @@ bool GameObject::Delete(bool deleteSelf)
         if (m_transform.parent)
             m_transform.SetParent(nullptr);
 
-        // Make a copy of the children list since deleting children might modify the original vector.
         std::vector<Transform*> childrenCopy = m_transform.children;
         for (Transform* childTransform : childrenCopy)
         {

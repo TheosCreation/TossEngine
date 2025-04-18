@@ -93,12 +93,9 @@ namespace std {
 class TOSSENGINE_API Physics : public rp3d::EventListener
 {
 public:
-    static Physics& GetInstance()
-    {
-        static Physics instance;
-        return instance;
-    }
+    static Physics& GetInstance();
 
+    void UpdateInternal();
     void Update();
 
     void CleanUp();
@@ -126,6 +123,8 @@ public:
     void UnLoadWorld();
     void LoadPrefabWorld();
     void UnLoadPrefabWorld();
+    void DestroyShape(rp3d::CollisionShape* shape);
+    void DestroyBody(rp3d::RigidBody* body, PhysicsWorld* world);
 
 private:
     Physics() = default;
@@ -147,5 +146,8 @@ private:
     uint VBO_tris;
     uint VAO_tris; 
     vector<RaycastDebugEntry> m_raycastDebugEntries;
+
+    std::vector<rp3d::CollisionShape*> m_shapesToDestroy;
+    std::map<rp3d::RigidBody*, PhysicsWorld*> m_bodiesToDestroy;
 
 };

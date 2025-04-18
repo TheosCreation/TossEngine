@@ -17,20 +17,20 @@ json Collider::serialize() const
 
     data["isTrigger"] = m_isTrigger;
 
-    if (m_Shape)
+    if (m_shape)
     {
-        data["colliderType"] = static_cast<int>(m_Shape->getType());
+        data["colliderType"] = static_cast<int>(m_shape->getType());
 
-        if (m_Shape->getType() == rp3d::CollisionShapeType::SPHERE)
+        if (m_shape->getType() == rp3d::CollisionShapeType::SPHERE)
         {
             data["radius"] = m_radius;
         }
-        else if (m_Shape->getType() == rp3d::CollisionShapeType::CAPSULE)
+        else if (m_shape->getType() == rp3d::CollisionShapeType::CAPSULE)
         {
             data["radius"] = m_radius;
             data["height"] = m_height;
         }
-        else if (m_Shape->getType() == rp3d::CollisionShapeType::CONVEX_POLYHEDRON)
+        else if (m_shape->getType() == rp3d::CollisionShapeType::CONVEX_POLYHEDRON)
         {
             data["size"] = { m_boxColliderSize.x , m_boxColliderSize.y, m_boxColliderSize.z }; // Convert to full extents
         }
@@ -52,7 +52,7 @@ void Collider::deserialize(const json& data)
 
     if (data.contains("layerNames")) {
         m_layerNames = data["layerNames"].get<std::vector<std::string>>();
-        if (m_Rigidbody != nullptr) {
+        if (m_rigidbody != nullptr) {
             UpdateRP3Collider();
         }
     }
@@ -99,9 +99,9 @@ void Collider::OnInspectorGUI()
     {
         if (m_isTrigger == true)
         {
-            if (m_Rigidbody)
+            if (m_rigidbody)
             {
-                m_Rigidbody->SetBodyType(BodyType::KINEMATIC); //make the body type kinematic to make trigger collider work
+                m_rigidbody->SetBodyType(BodyType::KINEMATIC); //make the body type kinematic to make trigger collider work
             }
         }
     }
@@ -120,7 +120,7 @@ void Collider::OnInspectorGUI()
 
     if (LayerDropdownField("Include Layers", m_layerNames))
     {
-        if (m_Rigidbody != nullptr) {
+        if (m_rigidbody != nullptr) {
             UpdateRP3Collider();
         }
     }
@@ -128,7 +128,7 @@ void Collider::OnInspectorGUI()
 
     // List of shape types for the dropdown menu
     static const char* shapeTypes[] = { "Sphere", "Capsule", "Box" };
-    int currentShapeType = static_cast<int>(m_Shape ? m_Shape->getType() : rp3d::CollisionShapeType::CONVEX_POLYHEDRON);
+    int currentShapeType = static_cast<int>(m_shape ? m_shape->getType() : rp3d::CollisionShapeType::CONVEX_POLYHEDRON);
 
     // Dropdown menu for selecting the collider type
     if (ImGui::Combo("Collider Type", &currentShapeType, shapeTypes, IM_ARRAYSIZE(shapeTypes)))
@@ -149,9 +149,9 @@ void Collider::OnInspectorGUI()
     }
 
     // Display relevant variables for the selected shape
-    if (m_Shape)
+    if (m_shape)
     {
-        switch (m_Shape->getType())
+        switch (m_shape->getType())
         {
         case rp3d::CollisionShapeType::CONVEX_POLYHEDRON:
         {
@@ -207,12 +207,12 @@ void Collider::onStart()
 {
     //collider->setIsTrigger(true);
     // Set the material properties
-    rp3d::Material colliderMaterial = m_Collider->getMaterial();
+    rp3d::Material colliderMaterial = m_collider->getMaterial();
     colliderMaterial.setFrictionCoefficient(m_physicsMaterial->getDynamicFriction());
     colliderMaterial.setBounciness(m_physicsMaterial->getBounciness());
 
     // Apply the updated material to the collider
-    m_Collider->setMaterial(colliderMaterial);
+    m_collider->setMaterial(colliderMaterial);
 }
 
 void Collider::onCreate()
@@ -221,10 +221,10 @@ void Collider::onCreate()
 
 void Collider::onCreateLate()
 {
-    m_Rigidbody = m_owner->getComponent<Rigidbody>();
-    if (m_Rigidbody == nullptr) {
-        m_Rigidbody = m_owner->addComponent<Rigidbody>();
-        m_Rigidbody->SetBodyType(BodyType::STATIC);
+    m_rigidbody = m_owner->getComponent<Rigidbody>();
+    if (m_rigidbody == nullptr) {
+        m_rigidbody = m_owner->addComponent<Rigidbody>();
+        m_rigidbody->SetBodyType(BodyType::STATIC);
     }
 
     if (m_physicsMaterial == nullptr)
@@ -232,7 +232,7 @@ void Collider::onCreateLate()
         m_physicsMaterial = Physics::GetInstance().GetDefaultPhysicsMaterial();
     }
 
-    if (m_Shape == nullptr)
+    if (m_shape == nullptr)
     {
         SetBoxCollider(Vector3(1.0f, 1.0f, 1.0f)); // Default to Box Collider
     }
@@ -242,12 +242,20 @@ void Collider::onCreateLate()
     }
 }
 
+void Collider::onDestroy()
+{
+    if (m_shape) {
+        Physics::GetInstance().DestroyShape(m_shape);
+        m_shape = nullptr;
+    }
+}
+
 void Collider::onRescale(const Vector3& previousScale)
 {
     //update the physics shape based on the scale
     if (m_owner->m_transform.GetLocalScale().Length() > 0)
     {
-        SetColliderType(static_cast<int>(m_Shape->getType()));
+        SetColliderType(static_cast<int>(m_shape->getType()));
     }
 }
 
@@ -280,10 +288,10 @@ void Collider::SetBoxCollider(const Vector3& size) {
                                m_boxColliderSize.y * sy,
                                m_boxColliderSize.z * sz };
     // 3) Create the box with those half‑extents
-    m_Shape = Physics::GetInstance()
+    m_shape = Physics::GetInstance()
         .GetPhysicsCommon()
         .createBoxShape(scaledSize);
-    if (m_Rigidbody) UpdateRP3Collider();
+    if (m_rigidbody) UpdateRP3Collider();
 }
 
 void Collider::SetSphereCollider(float radius) {
@@ -294,10 +302,10 @@ void Collider::SetSphereCollider(float radius) {
                                 std::fabs(s.y),
                                 std::fabs(s.z) });
     float scaledRadius = radius * maxScale;
-    m_Shape = Physics::GetInstance()
+    m_shape = Physics::GetInstance()
         .GetPhysicsCommon()
         .createSphereShape(scaledRadius);
-    if (m_Rigidbody) UpdateRP3Collider();
+    if (m_rigidbody) UpdateRP3Collider();
 }
 
 void Collider::SetCapsuleCollider(float radius, float height) {
@@ -308,23 +316,23 @@ void Collider::SetCapsuleCollider(float radius, float height) {
     float radiusScale = std::max(std::fabs(s.x), std::fabs(s.z));
     float scaledRadius = radius * radiusScale;
     float scaledHeight = height * std::fabs(s.y);
-    m_Shape = Physics::GetInstance()
+    m_shape = Physics::GetInstance()
         .GetPhysicsCommon()
         .createCapsuleShape(scaledRadius, scaledHeight);
-    if (m_Rigidbody) UpdateRP3Collider();
+    if (m_rigidbody) UpdateRP3Collider();
 }
 
 void Collider::UpdateRP3Collider()
 {
-    rp3d::RigidBody* rb = m_Rigidbody->GetBody();
-    if (m_Collider != nullptr) {
-        rb->removeCollider(m_Collider);
-        m_Collider = nullptr;
+    rp3d::RigidBody* rb = m_rigidbody->GetBody();
+    if (m_collider != nullptr) {
+        rb->removeCollider(m_collider);
+        m_collider = nullptr;
     }
 
-    m_Collider = rb->addCollider(m_Shape, rp3d::Transform::identity());
-    m_Collider->setIsTrigger(m_isTrigger);
-    m_Collider->setUserData(this);
+    m_collider = rb->addCollider(m_shape, rp3d::Transform::identity());
+    m_collider->setIsTrigger(m_isTrigger);
+    m_collider->setUserData(this);
 
     // Ensure there is always at least the "Default" layer.
     if (m_layerNames.empty()) {
@@ -338,9 +346,9 @@ void Collider::UpdateRP3Collider()
     }
 
     // Use the owner's layer as the category bits.
-    m_Collider->setCollisionCategoryBits(m_owner->getLayer());
+    m_collider->setCollisionCategoryBits(m_owner->getLayer());
     // Set the collision mask bits based on the selected layers.
-    m_Collider->setCollideWithMaskBits(maskBits);
+    m_collider->setCollideWithMaskBits(maskBits);
 }
 
 
@@ -366,7 +374,7 @@ void Collider::OnTriggerExit(Collider* otherCollider) const
 
 rp3d::CollisionShapeType Collider::GetColliderType() const
 {
-    return m_Shape ? m_Shape->getType() : rp3d::CollisionShapeType::CONVEX_POLYHEDRON;
+    return m_shape ? m_shape->getType() : rp3d::CollisionShapeType::CONVEX_POLYHEDRON;
 }
 
 PhysicsMaterialPtr Collider::GetPhysicsMaterial() const
