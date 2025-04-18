@@ -348,7 +348,6 @@ void TossEditor::onUpdateInternal()
             // Get the updated texture after rendering.
             ImTextureID sceneViewTexture = (ImTextureID)m_sceneFrameBuffer->RenderTexture->getId();
 
-            ImGui::SetNextItemAllowOverlap();
             // Display the rendered scene scaled to the available region.
             ImGui::Image(sceneViewTexture, availSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
             if (selectedSelectable)
@@ -368,7 +367,9 @@ void TossEditor::onUpdateInternal()
                     //Debug::Log("Before Manipulate: Cursor Pos: (%f, %f)", pos.x, pos.y);
 
                     Mat4 transformMat = gameObject->m_transform.GetMatrix();
+
                     ImGuizmo::Manipulate(glm::value_ptr(cameraView.value), glm::value_ptr(projectionMat.value), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(transformMat.value));
+                    
                     if (ImGuizmo::IsUsingAny())
                     {
                         Debug::Log("using any");
@@ -376,7 +377,7 @@ void TossEditor::onUpdateInternal()
                     }
                     if (ImGuizmo::IsOver())
                     {
-                        Debug::Log("over");
+                        //Debug::Log("over");
                     }
                     if (ImGuizmo::IsUsing())
                     {
@@ -586,7 +587,9 @@ void TossEditor::onUpdateInternal()
     {
         if (selectedSelectable)
         {
+            ImGui::PushID(selectedSelectable);
             selectedSelectable->OnInspectorGUI();
+            ImGui::PopID();
         }
         else
         {

@@ -321,6 +321,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Co
     <ClInclude Include="PhysicsMaterial.h" />
     <ClInclude Include="Prefab.h" />
     <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="SerializationMacros.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vector2.h" />

@@ -4,8 +4,6 @@
 class Gun : public Component
 {
 public:
-    json serialize() const override;
-    void deserialize(const json& data) override;
     void OnInspectorGUI() override;
 
     void onStart() override;
@@ -17,6 +15,8 @@ private:
     Camera* playerCamera = nullptr;
 
     float shootTimer = 0.0f;
+
+    SERIALIZABLE_MEMBERS(m_fireRate, m_projectile)
 };
 
-REGISTER_COMPONENT(Gun);
+REGISTER_COMPONENT(Gun)

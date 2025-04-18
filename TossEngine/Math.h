@@ -20,6 +20,9 @@ Mail : theo.morris@mds.ac.nz
 #include <algorithm>
 #include <sstream>
 #include <string>
+#include <nlohmann\json.hpp>
+
+using json = nlohmann::json;
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <gtx/component_wise.hpp>

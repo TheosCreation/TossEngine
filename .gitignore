@@ -423,3 +423,4 @@ TossEditor/C++Scripts/TossEngine.lib
 TossPlayer/TossEngine.lib
 TossEditor/C++Scripts/TossEngine.exp
 TossPlayer/TossEngine.exp
+vcpkg_installed

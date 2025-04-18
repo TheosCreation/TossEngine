@@ -3,6 +3,8 @@
 void Enemy::OnInspectorGUI()
 {
     IntSliderField("Health", m_health);
+
+    ImGui::DragFloat3("Position", vector.Data(), 0.1f);
 }
 
 void Enemy::TakeDamage(int damage)

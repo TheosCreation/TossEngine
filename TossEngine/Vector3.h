@@ -3,6 +3,7 @@
 #include "Math.h"
 #include "reactphysics3d\mathematics\Vector3.h"
 
+
 class Mat4;
 class Quaternion;
 class Vector2;
@@ -90,7 +91,7 @@ public:
 
     Vector3 operator*(const Quaternion& other) const; 
 
-    bool operator==(const Vector3& other) const {
+    bool operator==(const Vector3& other) const {\
         return x == other.x && y == other.y && z == other.z;
     }
 
@@ -99,3 +100,18 @@ public:
     }
 
 };
+
+
+inline void to_json(json& j, Vector3 const& v) {
+    j = json{
+        { "x", v.x },
+        { "y", v.y },
+        { "z", v.z }
+    };
+}
+
+inline void from_json(json const& j, Vector3& v) {
+    if (j.contains("x") && !j["x"].is_null()) j.at("x").get_to(v.x);
+    if (j.contains("y") && !j["y"].is_null()) j.at("y").get_to(v.y);
+    if (j.contains("z") && !j["z"].is_null()) j.at("z").get_to(v.z);
+}

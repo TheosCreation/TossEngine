@@ -28,4 +28,4 @@ private:
     uint m_lightId = 0;
 };
 
-REGISTER_COMPONENT(DirectionalLight);
+REGISTER_COMPONENT(DirectionalLight)

@@ -34,7 +34,6 @@ Mail : theo.morris@mds.ac.nz
 #include <queue>
 #include <atomic>
 #include <condition_variable>
-#include <nlohmann\json.hpp>
 #include <glew.h>
 #include "Debug.h"
 #include "Vector2.h"
@@ -47,7 +46,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Time.h"
 
 
-using json = nlohmann::json; // will be using json to serialize classes and save GameObject objects and all
 namespace fs = std::filesystem;
 
 // Forward declarations of classes

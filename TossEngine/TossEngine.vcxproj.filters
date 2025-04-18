@@ -528,5 +528,8 @@
     <ClInclude Include="MissingComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SerializationMacros.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

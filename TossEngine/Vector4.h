@@ -36,3 +36,19 @@ public:
     }
 
 };
+
+inline void to_json(json& j, Vector4 const& v) {
+    j = json{
+        { "x", v.x },
+        { "y", v.y },
+        { "z", v.z },
+        { "w", v.w },
+    };
+}
+
+inline void from_json(json const& j, Vector4& v) {
+    if (j.contains("x") && !j["x"].is_null()) j.at("x").get_to(v.x);
+    if (j.contains("y") && !j["y"].is_null()) j.at("y").get_to(v.y);
+    if (j.contains("z") && !j["z"].is_null()) j.at("z").get_to(v.z);
+    if (j.contains("w") && !j["w"].is_null()) j.at("w").get_to(v.w);
+}

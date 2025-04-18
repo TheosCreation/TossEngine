@@ -44,4 +44,4 @@ private:
     PhysicsMaterialPtr m_physicsMaterial = nullptr;
 };
 
-REGISTER_COMPONENT(Collider);
+REGISTER_COMPONENT(Collider)

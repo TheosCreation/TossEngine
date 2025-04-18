@@ -15,8 +15,6 @@ public:
     void onStart() override;
     void onUpdate() override;
     void onFixedUpdate() override;
-    json serialize() const override;
-    void deserialize(const json& data) override;
 
 private:
     int m_health = 100;
@@ -38,6 +36,8 @@ private:
     Rigidbody* m_rigidBody = nullptr; // Pointer to the rigidbody
     GroundCheck* m_groundCheck = nullptr; // Pointer to the groundCheck
     SoundPtr fireSound = nullptr;
+
+    SERIALIZABLE_MEMBERS(m_health, m_movementSpeed, m_acceleration, m_airAcceleration, m_jumpForce, m_jumpCooldown, m_layerNames)
 };
 
 REGISTER_COMPONENT(PlayerController);

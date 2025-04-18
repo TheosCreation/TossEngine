@@ -109,4 +109,4 @@ private:
     static bool _registered_##T = []() { \
         ComponentRegistry::GetInstance().registerComponent<T>(); \
         return true; \
-    }()
+    }();

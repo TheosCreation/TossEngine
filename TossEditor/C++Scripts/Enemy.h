@@ -9,8 +9,9 @@ public:
 
 private:
     int m_health = 100;
+    Vector3 vector;
 
-    SERIALIZE_COMPONENT_FIELDS(m_health)
+    SERIALIZABLE_MEMBERS(m_health, vector)
 };
 
 REGISTER_COMPONENT(Enemy);

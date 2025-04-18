@@ -25,3 +25,18 @@ public:
     static void recurseSerialize(const GameObject* go, json& out);
     static void recurseDeserialize(GameObject* parentGO, const json& data);
 };
+
+
+inline void to_json(json& j, PrefabPtr const& prefab) {
+    if (prefab) 
+    {
+        j = json{ { "id", prefab->getUniqueID() } };
+    }
+    else {
+        j = nullptr;
+    }
+}
+
+inline void from_json(json const& j, PrefabPtr& prefab) {
+    if (j.contains("id")) prefab = ResourceManager::GetInstance().getPrefab(j["id"].get<string>());
+}
