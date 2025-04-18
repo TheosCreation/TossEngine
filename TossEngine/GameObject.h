@@ -116,6 +116,8 @@ public:
      */
     virtual void onUpdate();
 
+    virtual void onLocalScaleChanged(Vector3 previousScale);
+
     void onUpdateInternal();
 
     /**

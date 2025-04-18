@@ -169,3 +169,13 @@ Transform* Transform::LookupParentTransform(size_t parentID) const
     // Parent not found in either location.
     return nullptr;
 }
+
+void Transform::SetLocalScale(const Vector3& newScale)
+{
+    Vector3 previousScale = localScale;
+    localScale = newScale;
+    if (gameObject)
+    {
+        gameObject->onLocalScaleChanged(previousScale);
+    }
+}

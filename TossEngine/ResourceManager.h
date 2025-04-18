@@ -12,6 +12,7 @@ Mail : theo.morris@mds.ac.nz
 
 #pragma once
 #include <map>
+#include <set>
 #include <string>
 #include "Utils.h"
 #include "CoroutineTask.h"
@@ -81,6 +82,8 @@ protected:
     bool hasLoadedResources = false;
     bool hasCreatedResources = false;
     std::map<string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
+
+    std::set<string> m_resourcesToDestroy;
     ResourcePtr m_selectedResource = nullptr; // for editor use
     size_t m_nextAvailableId = 1;
     std::unordered_map<string, ShaderDesc> shaderDescriptions;

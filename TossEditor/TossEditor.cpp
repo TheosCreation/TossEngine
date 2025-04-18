@@ -743,8 +743,7 @@ void TossEditor::onUpdateInternal()
         }
 
         std::map<string, ResourcePtr>& resources = resourceManager.GetAllResources();
-
-        for (auto& [uniqueID, resource] : resourceManager.GetAllResources()) {
+        for (auto& [uniqueID, resource] : resources) {
             if (uniqueID.empty()) continue;
 
             bool isSelected = (resource == resourceManager.GetSelectedResource());
@@ -767,8 +766,8 @@ void TossEditor::onUpdateInternal()
                 ImGui::EndDragDropSource();
             }
 
-            // Right-click context menu for renaming, deletion, etc.
-            if (ImGui::BeginPopupContextItem(("item_context_" + uniqueID).c_str())) {
+            std::string popupID = "item_context_" + uniqueID;
+            if (ImGui::BeginPopupContextItem(popupID.c_str())) {
                 if (ImGui::MenuItem("Rename")) {
                     resourceBeingRenamed = resource;
                     strncpy_s(renameBuffer, sizeof(renameBuffer), uniqueID.c_str(), _TRUNCATE);
@@ -1300,8 +1299,6 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
         }
         if (ImGui::MenuItem("Delete"))
         {
-            if (gameObject->m_transform.parent)
-                gameObject->m_transform.SetParent(nullptr);
             gameObject->Delete();
             if (selectedSelectable == gameObject)
                 selectedSelectable = nullptr;

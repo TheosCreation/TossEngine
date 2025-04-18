@@ -183,8 +183,11 @@ void GameObject::OnInspectorGUI()
         eulerAngles = m_transform.localRotation.Normalized().ToEulerAngles().ToDegrees();
 
     }
-
-    ImGui::DragFloat3("Scale", m_transform.localScale.Data(), 0.1f);
+    Vector3 localScale = m_transform.GetLocalScale();
+    if(ImGui::DragFloat3("Scale", localScale.Data(), 0.1f))
+    {
+        m_transform.SetLocalScale(localScale);
+    }
 
     for (auto& [type, comp] : m_components)
     {
@@ -330,6 +333,13 @@ void GameObject::onUpdate()
 
     for (auto& pair : m_components) {
         pair.second->onUpdate();
+    }
+}
+
+void GameObject::onLocalScaleChanged(Vector3 previousScale)
+{
+    for (auto& pair : m_components) {
+        pair.second->onRescale(previousScale);
     }
 }
 
@@ -491,6 +501,10 @@ bool GameObject::Delete(bool deleteSelf)
     }
     else
     {
+
+        if (m_transform.parent)
+            m_transform.SetParent(nullptr);
+
         // Make a copy of the children list since deleting children might modify the original vector.
         std::vector<Transform*> childrenCopy = m_transform.children;
         for (Transform* childTransform : childrenCopy)

@@ -1,4 +1,4 @@
-/***
+﻿/***
 Bachelor of Software Engineering
 Media Design School
 Auckland
@@ -719,31 +719,7 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
 
 void ResourceManager::DeleteResource(const std::string& uniqueId)
 {
-    // Find the resource by its uniqueId
-    auto it = std::find_if(m_mapResources.begin(), m_mapResources.end(),
-        [&uniqueId](const auto& pair) { return pair.second->getUniqueID() == uniqueId; });
-
-    if (it != m_mapResources.end()) {
-        // Found the resource, now delete it
-        auto resource = it->second; // Get the resource pointer
-
-        // Erase from resource map
-        m_mapResources.erase(it);
-
-        // Deselect if selected
-        if (m_selectedResource == resource) {
-            m_selectedResource = nullptr;
-        }
-
-        // Call the helper function to remove from the appropriate map based on the resource type
-        DeleteFromSavedData(resource, uniqueId);
-
-        // Optionally, you could log the deletion of the resource
-        Debug::Log("Deleted resource with ID: " + uniqueId);
-    }
-    else {
-        Debug::Log("Resource with ID: " + uniqueId + " not found.");
-    }
+    m_resourcesToDestroy.insert(uniqueId);
 }
 
 void ResourceManager::DeleteFromSavedData(const std::shared_ptr<Resource>& resource, const std::string& uniqueId)
@@ -883,13 +859,30 @@ CoroutineTask ResourceManager::createResourcesFromDescs()
 
 void ResourceManager::onUpdateInternal()
 {
-    for (auto& [key, resource] : m_mapResources)
-    {
-        // Check if the resource is of type Prefab
-        PrefabPtr prefabPtr = std::dynamic_pointer_cast<Prefab>(resource);
-        if (prefabPtr)
-        {
+    for (auto& [key, resource] : m_mapResources) {
+        if (m_resourcesToDestroy.count(key)) continue;
+        if (auto prefabPtr = std::dynamic_pointer_cast<Prefab>(resource)) {
             prefabPtr->onUpdateInternal();
         }
     }
+    for (auto const& id : m_resourcesToDestroy) {
+        auto it = m_mapResources.find(id);
+        if (it != m_mapResources.end()) {
+            auto& resource = it->second;
+            if (auto prefabPtr = std::dynamic_pointer_cast<Prefab>(resource)) 
+            {
+                prefabPtr->onDestroy();
+            }
+            if (m_selectedResource == resource) {
+                m_selectedResource = nullptr;
+            }
+            DeleteFromSavedData(resource, id);
+            m_mapResources.erase(it);
+            Debug::Log("Deleted resource with ID: " + id);
+        }
+        else {
+            Debug::Log("Attempted to delete non‑existent resource ID: " + id);
+        }
+    }
+    m_resourcesToDestroy.clear();
 }

@@ -3,11 +3,6 @@
 #include "Collider.h"
 #include "PhysicsMaterial.h"
 
-Rigidbody::~Rigidbody()
-{
-    Rigidbody::onDestroy(); //last resort to call destroy for no errors
-}
-
 json Rigidbody::serialize() const
 {
     json data;

@@ -9,9 +9,6 @@ class Collider;
 class TOSSENGINE_API Rigidbody : public Component
 {
 public:
-    Rigidbody() = default;
-    virtual ~Rigidbody();
-
     json serialize() const override;
     void deserialize(const json& data) override;
 

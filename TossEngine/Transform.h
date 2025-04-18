@@ -18,7 +18,6 @@ struct TOSSENGINE_API Transform
 
     Vector3 localPosition = Vector3();    // Local position relative to parent
     Quaternion localRotation = Quaternion(); // Local rotation relative to parent
-    Vector3 localScale = Vector3();       // Local scale relative to parent
 
     Transform* parent = nullptr;                // Pointer to parent transform (nullptr if root)
     std::vector<Transform*> children; // List of pointers to child transforms
@@ -60,6 +59,13 @@ struct TOSSENGINE_API Transform
         rotation = newRotation;
     }
 
+    Vector3 GetLocalScale() const
+    {
+        return localScale;
+    }
+
+    void SetLocalScale(const Vector3& newScale);
+    
     void SetScale(const Vector3& newScale)
     {
         scale = newScale;
@@ -133,10 +139,12 @@ struct TOSSENGINE_API Transform
             parent->children.push_back(this);
         }
     }
-
+    
 private:
     void RemoveChild(Transform* child)
     {
         std::erase(children, child);
     }
+
+    Vector3 localScale = Vector3();       // Local scale relative to parent
 };

@@ -14,7 +14,8 @@ public:
     void onStart() override;
     void onCreate() override;
     void onCreateLate() override;
-
+    void onRescale(const Vector3& previousScale) override;
+    void SetColliderType(int type);
     void SetBoxCollider(const Vector3& size);
     void SetSphereCollider(float radius);
     void SetCapsuleCollider(float radius, float height);

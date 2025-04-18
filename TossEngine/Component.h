@@ -58,6 +58,7 @@ public:
     }
     virtual void OnGameObjectSelected(){}
     virtual void OnGameObjectDeSelected() {}
+    virtual void onRescale(const Vector3& previousScale) {}
 
     virtual void onCollisionEnter(Collider* other) {}
     virtual void onCollisionExit(Collider* other) {}

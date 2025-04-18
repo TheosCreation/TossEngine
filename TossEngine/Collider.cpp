@@ -1,4 +1,4 @@
-#include "Collider.h"
+﻿#include "Collider.h"
 #include "GameObject.h"
 #include "Rigidbody.h"
 #include "PhysicsMaterial.h"
@@ -65,28 +65,23 @@ void Collider::deserialize(const json& data)
     if (data.contains("colliderType") && !data["colliderType"].is_null())
     {
         int colliderType = data["colliderType"].get<int>();
-
-        // Ensure the collider type is valid
-        if (colliderType < 0 || colliderType > 2) return;
-
-        // Check collider type and deserialize accordingly
-        if (colliderType == 0 && data.contains("radius") && !data["radius"].is_null())
+        if (data.contains("radius") && !data["radius"].is_null())
         {
-            SetSphereCollider(data["radius"].get<float>());
+            m_radius = data["radius"].get<float>();
         }
-        else if (colliderType == 1 && data.contains("radius") && data.contains("height") &&
-            !data["radius"].is_null() && !data["height"].is_null())
+        if (data.contains("height") && !data["height"].is_null())
         {
-            SetCapsuleCollider(data["radius"].get<float>(), data["height"].get<float>());
+            m_height = data["height"].get<float>();
         }
-        else if (colliderType == 2 && data.contains("size") && !data["size"].is_null())
+        if (data.contains("size") && !data["size"].is_null())
         {
             auto size = data["size"];
             if (size.size() == 3)
             {
-                SetBoxCollider(Vector3(size[0], size[1], size[2]));
+                m_boxColliderSize = Vector3(size[0], size[1], size[2]);
             }
         }
+        SetColliderType(colliderType);
     }
     else
     {
@@ -161,9 +156,13 @@ void Collider::OnInspectorGUI()
         case rp3d::CollisionShapeType::CONVEX_POLYHEDRON:
         {
             Vector3 size = m_boxColliderSize;
-
-            if (ImGui::DragFloat3("Size", &size.x, 0.1f, 0.1f, 10.0f))
+            // drag with a 0.01f minimum
+            if (ImGui::DragFloat3("Size", &size.x, 0.1f, 0.01f, 10.0f))
             {
+                // enforce strictly positive
+                size.x = std::max(size.x, 0.01f);
+                size.y = std::max(size.y, 0.01f);
+                size.z = std::max(size.z, 0.01f);
                 SetBoxCollider(size);
             }
             break;
@@ -172,9 +171,10 @@ void Collider::OnInspectorGUI()
         case rp3d::CollisionShapeType::SPHERE:
         {
             float radius = m_radius;
-
-            if (ImGui::DragFloat("Radius", &radius, 0.1f, 0.1f, 10.0f))
+            // drag with a 0.01f minimum
+            if (ImGui::DragFloat("Radius", &radius, 0.1f, 0.01f, 10.0f))
             {
+                radius = std::max(radius, 0.01f);
                 SetSphereCollider(radius);
             }
             break;
@@ -184,14 +184,17 @@ void Collider::OnInspectorGUI()
         {
             float radius = m_radius;
             float height = m_height;
-
-            if (ImGui::DragFloat("Radius", &radius, 0.1f, 0.1f, 10.0f) ||
-                ImGui::DragFloat("Height", &height, 0.1f, 0.1f, 10.0f))
+            // both fields have a 0.01f floor
+            if (ImGui::DragFloat("Radius", &radius, 0.1f, 0.01f, 10.0f) ||
+                ImGui::DragFloat("Height", &height, 0.1f, 0.01f, 10.0f))
             {
+                radius = std::max(radius, 0.01f);
+                height = std::max(height, 0.01f);
                 SetCapsuleCollider(radius, height);
             }
             break;
         }
+
         default:
             ImGui::Text("Unknown Shape Type");
             break;
@@ -239,43 +242,76 @@ void Collider::onCreateLate()
     }
 }
 
-void Collider::SetBoxCollider(const Vector3& size)
+void Collider::onRescale(const Vector3& previousScale)
 {
+    //update the physics shape based on the scale
+    if (m_owner->m_transform.GetLocalScale().Length() > 0)
+    {
+        SetColliderType(static_cast<int>(m_Shape->getType()));
+    }
+}
+
+void Collider::SetColliderType(int type)
+{
+    switch (type) {
+        case (static_cast<int>(rp3d::CollisionShapeType::SPHERE)) :
+            // re‑use stored radius
+            SetSphereCollider(m_radius);
+            break;
+            case static_cast<int>(rp3d::CollisionShapeType::CAPSULE) :
+                // re‑use stored radius & height
+                SetCapsuleCollider(m_radius, m_height);
+                break;
+                case static_cast<int>(rp3d::CollisionShapeType::CONVEX_POLYHEDRON) :
+                    // re‑use stored size
+                    SetBoxCollider(m_boxColliderSize);
+                    break;
+                default:
+                    Debug::LogError("Collider::SetColliderType(): invalid type ", type);
+    }
+}
+
+void Collider::SetBoxCollider(const Vector3& size) {
     m_boxColliderSize = size;
-
-    // Apply transform scale to the size
-    Vector3 scaledSize = m_boxColliderSize * m_owner->m_transform.localScale;
-    m_Shape = Physics::GetInstance().GetPhysicsCommon().createBoxShape(scaledSize);
-    if (m_Rigidbody != nullptr) {
-        UpdateRP3Collider();
-    }
+    
+    Vector3 scale = m_owner->m_transform.GetLocalScale();
+    float sx = std::fabs(scale.x), sy = std::fabs(scale.y), sz = std::fabs(scale.z);
+    Vector3 scaledSize{ m_boxColliderSize.x * sx,
+                               m_boxColliderSize.y * sy,
+                               m_boxColliderSize.z * sz };
+    // 3) Create the box with those half‑extents
+    m_Shape = Physics::GetInstance()
+        .GetPhysicsCommon()
+        .createBoxShape(scaledSize);
+    if (m_Rigidbody) UpdateRP3Collider();
 }
 
-void Collider::SetSphereCollider(float radius)
-{
+void Collider::SetSphereCollider(float radius) {
     m_radius = radius;
-
-    // Apply transform scale to the radius
-    float scaledRadius = radius * m_owner->m_transform.localScale.x;
-    m_Shape = Physics::GetInstance().GetPhysicsCommon().createSphereShape(scaledRadius);
-
-    if (m_Rigidbody != nullptr) {
-        UpdateRP3Collider();
-    }
+    // Pick the largest axis so the shape stays a true sphere
+    Vector3 s = m_owner->m_transform.GetLocalScale();
+    float maxScale = std::max({ std::fabs(s.x),
+                                std::fabs(s.y),
+                                std::fabs(s.z) });
+    float scaledRadius = radius * maxScale;
+    m_Shape = Physics::GetInstance()
+        .GetPhysicsCommon()
+        .createSphereShape(scaledRadius);
+    if (m_Rigidbody) UpdateRP3Collider();
 }
 
-void Collider::SetCapsuleCollider(float radius, float height)
-{
+void Collider::SetCapsuleCollider(float radius, float height) {
     m_radius = radius;
     m_height = height;
-    // Apply transform scale to the radius and height
-    float scaledRadius = m_radius * m_owner->m_transform.localScale.x;
-    float scaledHeight = m_height * m_owner->m_transform.localScale.y;
-    m_Shape = Physics::GetInstance().GetPhysicsCommon().createCapsuleShape(scaledRadius, scaledHeight);
-
-    if (m_Rigidbody != nullptr) {
-        UpdateRP3Collider();
-    }
+    Vector3 s = m_owner->m_transform.GetLocalScale();
+    // Radius in the XZ‑plane, height along Y
+    float radiusScale = std::max(std::fabs(s.x), std::fabs(s.z));
+    float scaledRadius = radius * radiusScale;
+    float scaledHeight = height * std::fabs(s.y);
+    m_Shape = Physics::GetInstance()
+        .GetPhysicsCommon()
+        .createCapsuleShape(scaledRadius, scaledHeight);
+    if (m_Rigidbody) UpdateRP3Collider();
 }
 
 void Collider::UpdateRP3Collider()
