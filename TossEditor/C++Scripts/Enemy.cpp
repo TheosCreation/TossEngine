@@ -1,10 +1,14 @@
 ﻿#include "Enemy.h"
+#include "PlayerController.h"
+
+void Enemy::onStart()
+{
+    m_target = m_owner->getGameObjectManager()->findObjectOfType<PlayerController>();
+}
 
 void Enemy::OnInspectorGUI()
 {
     IntSliderField("Health", m_health);
-
-    ImGui::DragFloat3("Position", vector.Data(), 0.1f);
 }
 
 void Enemy::TakeDamage(int damage)

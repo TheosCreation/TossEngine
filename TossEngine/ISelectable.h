@@ -2,7 +2,7 @@
 #include "Utils.h"
 #include "ResourceManager.h"
 
-class Resource;
+class GameObject;
 
 class TOSSENGINE_API ISelectable
 {
@@ -12,9 +12,10 @@ public:
     virtual void OnDeSelect() {}
     virtual bool Delete(bool deleteSelf = true) { return false;  }
 
-    //helper function to keep ui looking the same and easy to change
+    static void GameObjectAssignableField(GameObject*& _gameObject, const string& fieldName);
+
     template<typename T>
-    void ResourceAssignableField(std::shared_ptr<T>& resourcePtr, std::string fieldName)
+    void ResourceAssignableField(std::shared_ptr<T>& resourcePtr, const string& fieldName)
     {
         static_assert(std::is_base_of<Resource, T>::value, "T must derive from Resource");
         ResourceManager& resourceManager = ResourceManager::GetInstance();

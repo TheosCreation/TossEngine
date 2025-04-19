@@ -112,6 +112,8 @@ string GameObjectManager::getGameObjectNameAvaliable(string currentName)
     std::unordered_set<std::string> existingNames;
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         GameObject* gameObject = pair.second;
         if (gameObject->m_transform.parent == nullptr)
         {
@@ -245,6 +247,8 @@ void GameObjectManager::onStart() const
 {
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         pair.second->onStart();
     }
 }
@@ -253,6 +257,8 @@ void GameObjectManager::onLateStart() const
 {
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         pair.second->onLateStart();
     }
 }
@@ -264,6 +270,8 @@ void GameObjectManager::onUpdate()
 
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         pair.second->onUpdate();
     }
 }
@@ -272,13 +280,18 @@ void GameObjectManager::onUpdateInternal()
 {
     for (size_t gameObjectId : m_gameObjectsToDestroy)
     {
-        m_gameObjects[gameObjectId]->onDestroy();
-        m_gameObjects.erase(gameObjectId);  // Directly erase by ID
+        if (auto gameObject = m_gameObjects[gameObjectId])
+        {
+            gameObject->onDestroy();
+            m_gameObjects.erase(gameObjectId);  // Directly erase by ID
+        }
     }
     m_gameObjectsToDestroy.clear();
 
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         pair.second->onUpdateInternal();
     }
 }
@@ -287,6 +300,8 @@ void GameObjectManager::onLateUpdate() const
 {
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         pair.second->onLateUpdate();
     }
 }
@@ -295,6 +310,8 @@ void GameObjectManager::onShadowPass(int index) const
 {
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         MeshRenderer* renderer = pair.second->getComponent<MeshRenderer>();
         if (renderer)
         {
@@ -310,6 +327,8 @@ void GameObjectManager::Render(UniformData _data) const
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
         {
             if (meshRenderer->GetAlpha() != 1.0f) continue;
@@ -323,6 +342,8 @@ void GameObjectManager::onTransparencyPass(UniformData _data) const
 {
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
         {
             if (meshRenderer->GetAlpha() == 1.0f) continue;
@@ -336,6 +357,8 @@ void GameObjectManager::onSkyboxPass(UniformData _data) const
 {
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         if (auto skybox = pair.second->getComponent<Skybox>())
         {
             skybox->Render(_data, RenderingPath::Forward);
@@ -347,6 +370,8 @@ void GameObjectManager::onFixedUpdate() const
 {
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         pair.second->onFixedUpdate();
     }
 }
@@ -358,8 +383,9 @@ std::vector<Camera*> GameObjectManager::getCameras() const
     // Iterate over all game objects and check if they have a Camera component
     for (const auto& pair : m_gameObjects)
     {
-        Camera* camera = pair.second->getComponent<Camera>();
-        if (camera) {
+        if (!pair.second) continue;
+
+        if (Camera* camera = pair.second->getComponent<Camera>()) {
             cameras.push_back(camera);
         }
     }
@@ -371,6 +397,8 @@ TexturePtr GameObjectManager::getSkyBoxTexture() const
 {
     for (const auto& pair : m_gameObjects)
     {
+        if (!pair.second) continue;
+
         if (Skybox* skybox = pair.second->getComponent<Skybox>())
         {
             return skybox->GetMaterial()->GetBinding("Texture_Skybox");

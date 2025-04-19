@@ -108,18 +108,19 @@ void TossEditor::run()
 void TossEditor::onCreate()
 {
     auto& graphicsEngine = GraphicsEngine::GetInstance();
+    auto& tossEngine = TossEngine::GetInstance();
 
     string filePath = editorPreferences.lastKnownOpenScenePath;
 
     if (!filePath.empty()) // If a file was selected
     {
         auto scene = std::make_shared<Scene>(filePath);
-        OpenScene(scene);
+        tossEngine.OpenScene(scene);
     }
     else
     {
         auto scene = std::make_shared<Scene>("Scenes/Scene.json");
-        OpenScene(scene);
+        tossEngine.OpenScene(scene);
     }
 
     sourceWatcher = new FileWatcher("C++Scripts/");
@@ -170,27 +171,27 @@ void TossEditor::onUpdateInternal()
     m_accumulatedTime += deltaTimeInternal;
     resourceManager.onUpdateInternal();
 
-    if (m_currentScene)
+    if (auto scene = TossEngine::GetInstance().getCurrentScene())
     {
         inputManager.onUpdate();
         if (m_gameRunning)
         {
             while (m_accumulatedTime >= Time::FixedDeltaTime)
             {
-                m_currentScene->onFixedUpdate();
+                scene->onFixedUpdate();
                 m_accumulatedTime -= Time::FixedDeltaTime;
             }
 
         }
         // player update
         m_player->Update(deltaTimeInternal);
-        m_currentScene->onUpdateInternal();
+        scene->onUpdateInternal();
 
 
         if (m_gameRunning)
         {
-            m_currentScene->onUpdate();
-            m_currentScene->onLateUpdate();
+            scene->onUpdate();
+            scene->onLateUpdate();
 
             Physics::GetInstance().Update();
         }
@@ -268,12 +269,12 @@ void TossEditor::onUpdateInternal()
             {
                 Save();
 
-                if (m_currentScene)
+                if (auto scene = TossEngine::GetInstance().getCurrentScene())
                 {
                     Time::TimeScale = 1.0f;
                     m_gameRunning = true;
-                    m_currentScene->onStart();
-                    m_currentScene->onLateStart();
+                    scene->onStart();
+                    scene->onLateStart();
                 }
             }
         }
@@ -291,7 +292,7 @@ void TossEditor::onUpdateInternal()
                 if (!filePath.empty()) // If a file was selected
                 {
                     auto scene = std::make_shared<Scene>(filePath);
-                    OpenScene(scene);
+                    TossEngine::GetInstance().OpenScene(scene);
                 }
                 if(selectedSelectable != nullptr) selectedSelectable->OnDeSelect();
                 
@@ -305,17 +306,20 @@ void TossEditor::onUpdateInternal()
 
     ImGui::Begin("Game", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     {
+        auto scene = TossEngine::GetInstance().getCurrentScene();
         // Get the available size for the Scene window.
         ImVec2 availSize = ImGui::GetContentRegionAvail();
 
         // Convert to your Vector2 type (assuming Vector2 takes width and height).
         Vector2 newSize(availSize.x, availSize.y);
-        // Resize the scene's framebuffer to match the current window size.
-        m_currentScene->onResize(newSize);
-
         m_gameViewFrameBuffer->onResize(newSize);
-        // Now update the scene rendering with the current camera.
-        m_currentScene->onGraphicsUpdate(nullptr, m_gameViewFrameBuffer);
+        // Resize the scene's framebuffer to match the current window size.
+        if (scene)
+        {
+            scene->onResize(newSize);
+            scene->onGraphicsUpdate(nullptr, m_gameViewFrameBuffer);
+        }
+
 
         // Get the updated texture after rendering.
         ImTextureID gameViewTexture = (ImTextureID)m_gameViewFrameBuffer->RenderTexture->getId();
@@ -333,17 +337,17 @@ void TossEditor::onUpdateInternal()
         // Get the available size for the Scene window.
         ImVec2 availSize = ImGui::GetContentRegionAvail();
 
-        if (m_currentScene)
+        if (auto scene = TossEngine::GetInstance().getCurrentScene())
         {
             Vector2 newSize(availSize.x, availSize.y);
             Camera* camera = m_player->getCamera();
             // Resize the scene's framebuffer to match the current window size.
             camera->setScreenArea(newSize);
-            m_currentScene->onResize(newSize);
+            scene->onResize(newSize);
             m_sceneFrameBuffer->onResize(newSize);
 
             // Now update the scene rendering with the current camera.
-            m_currentScene->onGraphicsUpdate(camera, m_sceneFrameBuffer);
+            scene->onGraphicsUpdate(camera, m_sceneFrameBuffer);
 
             // Get the updated texture after rendering.
             ImTextureID sceneViewTexture = (ImTextureID)m_sceneFrameBuffer->RenderTexture->getId();
@@ -599,14 +603,16 @@ void TossEditor::onUpdateInternal()
     }
 
     if (ImGui::Begin("Hierarchy")) {
-
-        if (ImGui::Button("Add Empty GameObject")) {
-            m_currentScene->getObjectManager()->createGameObject<GameObject>();
+        auto scene = TossEngine::GetInstance().getCurrentScene();
+        if (ImGui::Button("Add Empty GameObject") && scene) {
+            scene->getObjectManager()->createGameObject<GameObject>();
         }
 
         // Display root game objects.
-        if (m_currentScene != nullptr) {
-            for (const auto& pair : m_currentScene->getObjectManager()->m_gameObjects) {
+        if (scene) {
+            for (const auto& pair : scene->getObjectManager()->m_gameObjects) {
+                if (!pair.second) continue;
+
                 // Only show root game objects.
                 if (pair.second->m_transform.parent == nullptr) {
                     ShowGameObjectNode(pair.second);
@@ -628,7 +634,7 @@ void TossEditor::onUpdateInternal()
                         // Try to dynamically cast it to a Prefab
                         if (PrefabPtr prefab = std::dynamic_pointer_cast<Prefab>(resourcePtr)) {
                             // Create a new GameObject from the prefab data.
-                            GameObject* newObj = m_currentScene->getObjectManager()->Instantiate(prefab, nullptr, Vector3(0.0f), Quaternion(), false);
+                            GameObject* newObj = scene->getObjectManager()->Instantiate(prefab, nullptr, Vector3(0.0f), Quaternion(), false);
                             Debug::Log("Created GameObject from prefab: " + prefab->getUniqueID());
                         }
                         else {
@@ -748,14 +754,22 @@ void TossEditor::onUpdateInternal()
             ImGui::EndPopup();
         }
 
-        std::map<string, ResourcePtr>& resources = resourceManager.GetAllResources();
-        for (auto& [uniqueID, resource] : resources) {
+        std::map<std::string, ResourcePtr>& resources = resourceManager.GetAllResources();
+        std::vector<std::pair<std::string, ResourcePtr>> sortedResources(resources.begin(), resources.end());
+
+        std::sort(sortedResources.begin(), sortedResources.end(),
+            [](const auto& a, const auto& b) {
+                return a.first < b.first;
+            });
+
+        for (auto& [uniqueID, resource] : sortedResources) {
             if (uniqueID.empty()) continue;
 
             bool isSelected = (resource == resourceManager.GetSelectedResource());
 
-            // Display the resource item:
-            if (ImGui::Selectable(uniqueID.c_str(), isSelected)) {
+            std::string resourceLabel = uniqueID + " [" + getClassName(typeid(*resource)) + "]";
+
+            if (ImGui::Selectable(resourceLabel.c_str(), isSelected)) {
                 if (selectedSelectable != nullptr)
                     selectedSelectable->OnDeSelect();
                 selectedSelectable = resource.get();
@@ -763,9 +777,7 @@ void TossEditor::onUpdateInternal()
                 resourceManager.SetSelectedResource(resource);
             }
 
-            // Make this resource a drag source regardless of type
             if (ImGui::BeginDragDropSource()) {
-                // Pass the raw pointer as payload
                 Resource* resourceRaw = resource.get();
                 ImGui::SetDragDropPayload("DND_RESOURCE", &resourceRaw, sizeof(resourceRaw));
                 ImGui::Text("Drag '%s'", uniqueID.c_str());
@@ -1229,9 +1241,9 @@ void TossEditor::onQuit()
 {
     m_editorRunning.store(false);
 
-    if (m_currentScene)
+    if (auto scene = TossEngine::GetInstance().getCurrentScene())
     {
-        m_currentScene->onQuit();
+        scene->onQuit();
     }
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesDescs("Resources/Resources.json"));
@@ -1271,7 +1283,6 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
             selectedSelectable->OnSelect();
         }
     }
-
     // Drag and drop source: allow dragging this game object.
     if (ImGui::BeginDragDropSource())
     {
@@ -1396,7 +1407,7 @@ void TossEditor::PerformSafeDllReload()
     canUpdateInternal = false;
 
     TossEngine::GetInstance().ReloadScripts();
-    m_currentScene->reload();
+    if (auto scene = TossEngine::GetInstance().getCurrentScene()) scene->reload();
 
     canUpdateInternal = true;
 
@@ -1430,9 +1441,9 @@ void TossEditor::Save() const
 {
     m_projectSettings->SaveToFile("ProjectSettings.json");
     m_playerSettings->SaveToFile("PlayerSettings.json");
-    if (m_currentScene)
+    if (auto scene = TossEngine::GetInstance().getCurrentScene())
     {
-        m_currentScene->Save();
+        scene->Save();
     }
     LayerManager& layerManager = LayerManager::GetInstance();
     json data = layerManager.serialize(); 
@@ -1456,27 +1467,12 @@ void TossEditor::OpenSceneViaFileSystem()
             selectedPath.string().find(projectRoot.string()) == 0)
         {
             relativeSceneFilePath = fs::relative(selectedPath, projectRoot);
+            editorPreferences.lastKnownOpenScenePath = relativeSceneFilePath.string();
             auto scene = std::make_shared<Scene>(relativeSceneFilePath.string());
-            OpenScene(scene);
+            TossEngine::GetInstance().OpenScene(scene);
         }
         else {
             Debug::LogWarning("Selected scene file must be inside the project folder.");
         }
     }
-}
-
-void TossEditor::OpenScene(shared_ptr<Scene> _scene)
-{
-    // if there is a current scene, call onQuit
-    if (m_currentScene != nullptr)
-    {
-        m_currentScene->onQuit();
-    }
-
-
-    // set the current scene to the new scene
-    m_currentScene = std::move(_scene);
-    editorPreferences.lastKnownOpenScenePath = m_currentScene->GetFilePath();
-    m_currentScene->onCreate();
-    m_currentScene->onCreateLate();
 }

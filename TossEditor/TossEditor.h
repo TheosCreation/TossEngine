@@ -30,7 +30,6 @@ public:
 
     void CreateSceneFileViaFileSystem();
     void OpenSceneViaFileSystem();
-    void OpenScene(shared_ptr<Scene> _scene);
 
 protected:
     void onUpdateInternal();
@@ -70,7 +69,6 @@ private:
     FileWatcher* sourceWatcher = nullptr;
 	ProjectSettingsPtr m_projectSettings = nullptr;
 	TossPlayerSettingsPtr m_playerSettings = nullptr;
-	shared_ptr<Scene> m_currentScene = nullptr;
 	bool m_gameRunning = false;
     ISelectable* selectedSelectable = nullptr;
     GameObject* renamingGameObject = nullptr;

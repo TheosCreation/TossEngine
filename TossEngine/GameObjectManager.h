@@ -105,6 +105,48 @@ public:
      * @return A vector of pointers to the camera entities.
      */
     std::vector<Camera*> getCameras() const;
+
+    template <typename T>
+    T* findObjectOfType()
+    {
+        for (auto& [id, gameObject] : m_gameObjects)
+        {
+            if (!gameObject) continue;
+
+            if (auto go = dynamic_cast<T*>(gameObject))
+                return go;
+
+            for (auto& comp : gameObject->getAllComponents())
+            {
+                if (auto c = dynamic_cast<T*>(comp.second))
+                    return c;
+            }
+        }
+
+        return nullptr;
+    }
+
+    template <typename T>
+    std::vector<T*> findObjectsOfType()
+    {
+        std::vector<T*> results;
+
+        for (auto& [id, gameObject] : m_gameObjects)
+        {
+            // Check the GameObject itself
+            if (T* castedGO = dynamic_cast<T*>(gameObject))
+                results.push_back(castedGO);
+
+            // Check its components
+            for (auto& pair : gameObject->getAllComponents())
+            {
+                if (T* castedComp = dynamic_cast<T*>(pair.second))
+                    results.push_back(castedComp);
+            }
+        }
+
+        return results;
+    }
     
     TexturePtr getSkyBoxTexture() const;
 
@@ -133,6 +175,7 @@ private:
      * @brief Set of entities scheduled for destruction.
      */
     std::vector<size_t> m_gameObjectsToDestroy;
+    GameObject* selectedGameObject = nullptr;
 
     /**
      * @brief Vector of all camera entities.

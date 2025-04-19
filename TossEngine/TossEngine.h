@@ -19,12 +19,16 @@ public:
     void Init();
     void LoadGenericResources();
     void TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName, bool maximized = false);
-    Window* GetWindow();
+    Window* GetWindow() const;
+    Scene* getCurrentScene() const;
+    GameObjectManager* getGameObjectManager() const;
     void PollEvents();
     void CleanUp();
     void UnLoadScripts() const;
     void LoadScripts() const;
     void ReloadScripts() const;
+
+    void OpenScene(shared_ptr<Scene> _scene);
     static float GetTime();
 
     std::shared_ptr<bool> StartCoroutine(CoroutineTask&& coroutine);
@@ -49,6 +53,8 @@ private:
 
     void CoroutineRunner();
 
+    shared_ptr<Scene> m_currentScene = nullptr;
+
     /**
      * @brief Private constructor to prevent external instantiation.
      */
@@ -60,3 +66,28 @@ private:
     ~TossEngine() = default;
 };
 
+
+
+
+inline void to_json(json& j, GameObject* const& gameObject) {
+    if (gameObject)
+    {
+        j = json{ { "id", gameObject->getId() } };
+    }
+    else {
+        j = nullptr;
+    }
+}
+
+inline void from_json(json const& j, GameObject*& gameObject)
+{
+    if (j.contains("id") && !j["id"].is_null())
+    {
+        size_t id = j["id"].get<size_t>();
+        GameObjectManager* mgr = TossEngine::GetInstance().getGameObjectManager();
+        if (mgr && mgr->m_gameObjects.count(id)) {
+            gameObject = mgr->m_gameObjects.at(id);
+        }
+    }
+
+}

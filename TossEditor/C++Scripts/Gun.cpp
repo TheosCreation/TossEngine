@@ -6,6 +6,7 @@ void Gun::OnInspectorGUI()
 
     FloatSliderField("FireRate", m_fireRate);
     ResourceAssignableField(m_projectile, "Projectile");
+    GameObjectAssignableField(m_muzzlePosition, "Muzzle Position");
 }
 
 void Gun::onStart()

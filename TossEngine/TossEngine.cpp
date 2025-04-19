@@ -83,9 +83,19 @@ void TossEngine::CoroutineRunner()
     }
 }
 
-Window* TossEngine::GetWindow()
+Window* TossEngine::GetWindow() const
 {
     return m_window.get();
+}
+
+Scene* TossEngine::getCurrentScene() const
+{
+    return m_currentScene.get();
+}
+
+GameObjectManager* TossEngine::getGameObjectManager() const
+{
+    return m_currentScene->getObjectManager();
 }
 
 void TossEngine::PollEvents()
@@ -119,6 +129,21 @@ void TossEngine::LoadScripts() const
 void TossEngine::ReloadScripts() const
 {
     m_scriptLoader->reloadDLL();
+}
+
+void TossEngine::OpenScene(shared_ptr<Scene> _scene)
+{
+    // if there is a current scene, call onQuit
+    if (m_currentScene != nullptr)
+    {
+        m_currentScene->onQuit();
+    }
+
+
+    // set the current scene to the new scene
+    m_currentScene = std::move(_scene);
+    m_currentScene->onCreate();
+    m_currentScene->onCreateLate();
 }
 
 float TossEngine::GetTime()

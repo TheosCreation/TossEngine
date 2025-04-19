@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\Dependencies\IMGUI\imgui_tables.cpp" />
     <ClCompile Include="..\..\Dependencies\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="GroundCheck.cpp" />
     <ClCompile Include="Gun.cpp" />
     <ClCompile Include="PlayerController.cpp">
@@ -200,6 +201,7 @@
     <ClInclude Include="..\..\Dependencies\IMGUI\imstb_textedit.h" />
     <ClInclude Include="..\..\Dependencies\IMGUI\imstb_truetype.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemySpawner.h" />
     <ClInclude Include="GroundCheck.h" />
     <ClInclude Include="Gun.h" />
     <ClInclude Include="PlayerController.h">

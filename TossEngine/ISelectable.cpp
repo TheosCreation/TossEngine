@@ -1,7 +1,52 @@
 #include "ISelectable.h"
 #include "LayerManager.h"
 #include "Material.h"
-#include "Prefab.h"
+#include "TossEngine.h"
+
+void ISelectable::GameObjectAssignableField(GameObject*& _gameObject, const string& fieldName)
+{
+    GameObjectManager* gameObjectManager = TossEngine::GetInstance().getGameObjectManager();
+
+    string label = (_gameObject)
+        ? (fieldName + ": " + _gameObject->name)
+        : (fieldName + ": None");
+
+    if (ImGui::BeginTable((fieldName + "Table").c_str(), 2, ImGuiTableFlags_SizingStretchProp))
+    {
+        ImGui::TableNextRow();
+
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Selectable(label.c_str());
+
+        ImGui::TableSetColumnIndex(1);
+        if (ImGui::SmallButton("+"))
+        {
+            ImGui::OpenPopup((fieldName + "Dropdown").c_str());
+        }
+
+        if (ImGui::BeginPopup((fieldName + "Dropdown").c_str()))
+        {
+            bool noneSelected = (_gameObject == nullptr);
+            if (ImGui::Selectable("None", noneSelected))
+            {
+                _gameObject = nullptr;
+            }
+
+            for (const auto& [id, gameObject] : gameObjectManager->m_gameObjects)
+            {
+                if (!gameObject) continue;
+
+                bool isSelected = (_gameObject && _gameObject->getId() == id);
+                if (ImGui::Selectable(gameObject->name.c_str(), isSelected))
+                {
+                    _gameObject = gameObject;
+                }
+            }
+            ImGui::EndPopup();
+        }
+        ImGui::EndTable();
+    }
+}
 
 bool ISelectable::FloatSliderField(const std::string& name, float& value, float speed, float min, float max)
 {

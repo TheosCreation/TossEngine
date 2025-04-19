@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Utils.h"
 #include "Math.h"
 #include "Serializable.h"
