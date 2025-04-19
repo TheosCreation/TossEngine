@@ -107,6 +107,19 @@ PhysicsMaterialPtr ResourceManager::getPhysicsMaterial(const std::string& unique
     return PhysicsMaterialPtr();
 }
 
+SoundPtr ResourceManager::getSound(const std::string& uniqueId)
+{
+    auto it = m_mapResources.find(uniqueId);
+    if (it != m_mapResources.end())
+        return std::static_pointer_cast<Sound>(it->second);
+
+    auto it2 = m_soundDescs.find(uniqueId);
+    if (it2 != m_soundDescs.end())
+        return createSound(it2->second, uniqueId);
+
+    return SoundPtr();
+}
+
 PrefabPtr ResourceManager::getPrefab(const std::string& uniqueId)
 {
     auto it = m_mapResources.find(uniqueId);
@@ -330,20 +343,17 @@ HeightMapPtr ResourceManager::createHeightMap(HeightMapInfo& _buildInfo)
     return heightMapPtr;
 }
 
-SoundPtr ResourceManager::createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath)
+SoundPtr ResourceManager::createSound(const SoundDesc& desc, const std::string& uniqueID)
 {
-    auto it = m_mapResources.find(filepath);
-    if (it != m_mapResources.end())
+    if (SoundPtr soundPtr = std::make_shared<Sound>(desc, uniqueID, this))
     {
-        SoundPtr sound = std::static_pointer_cast<Sound>(it->second);
-        AudioEngine::GetInstance().loadSound(sound);
-        return sound;
+        AudioEngine::GetInstance().loadSound(soundPtr);
+        m_soundDescs.emplace(uniqueID, desc);
+        m_mapResources.emplace(uniqueID, soundPtr);
+        return soundPtr;
     }
 
-    SoundPtr soundPtr = std::make_shared<Sound>(desc, filepath, uniqueID, this);
-    AudioEngine::GetInstance().loadSound(soundPtr);
-    m_mapResources.emplace(filepath, soundPtr);
-    return soundPtr;
+    return SoundPtr();
 }
 
 MaterialPtr ResourceManager::createMaterial(const MaterialDesc& materialDesc, const std::string& uniqueID)
@@ -477,6 +487,13 @@ CoroutineTask ResourceManager::saveResourcesDescs(const std::string& filepath)
         data["materials"][key] = material->serialize();
     }
 
+    for (auto& [key, soundDesc] : m_soundDescs)
+    {
+        data["sounds"][key] = {
+            {"filepath", soundDesc.filepath}
+        };
+    }
+
     // Serialize texture2D file paths
     for (auto& [key, texture2DFilePath] : texture2DFilePaths)
     {
@@ -523,6 +540,7 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
     // Clear existing data to prevent duplication
     shaderDescriptions.clear();
     materialDescs.clear();
+    m_soundDescs.clear();
     m_prefabDescs.clear();
     texture2DFilePaths.clear();
     cubemapTextureFilePaths.clear();
@@ -556,6 +574,19 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
         }
     }
 
+    // Deserialize sounds
+    if (data.contains("sounds"))
+    {
+        for (auto& [uniqueID, value] : data["sounds"].items()) {
+
+            SoundDesc soundDesc;
+            if (value.contains("filepath"))
+            {
+                soundDesc.filepath = value["filepath"].get<string>();
+            }
+            m_soundDescs[uniqueID] = soundDesc;
+        }
+    }
     // Deserialize materials
     if (data.contains("materials"))
     {
@@ -673,6 +704,14 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
             Debug::Log("Prefab renamed from '" + oldId + "' to '" + newId + "'");
         }
     }
+    else if (std::dynamic_pointer_cast<Sound>(resource)) {
+        auto soundIt = m_soundDescs.find(oldId);
+        if (soundIt != m_soundDescs.end()) {
+            m_soundDescs[newId] = soundIt->second;
+            m_soundDescs.erase(soundIt);
+            Debug::Log("Sound renamed from '" + oldId + "' to '" + newId + "'");
+        }
+    }
     else if (std::dynamic_pointer_cast<Material>(resource)) {
         auto materialIt = materialDescs.find(oldId);
         if (materialIt != materialDescs.end()) {
@@ -738,6 +777,14 @@ void ResourceManager::DeleteFromSavedData(const std::shared_ptr<Resource>& resou
         if (prefabIt != m_prefabDescs.end()) {
             m_prefabDescs.erase(prefabIt);
             Debug::Log("Deleted Prefab: " + uniqueId);
+        }
+    }
+    // For Sound
+    else if (std::dynamic_pointer_cast<Sound>(resource)) {
+        auto soundIt = m_soundDescs.find(uniqueId);
+        if (soundIt != m_soundDescs.end()) {
+            m_soundDescs.erase(soundIt);
+            Debug::Log("Deleted Sound: " + uniqueId);
         }
     }
     // For Material
@@ -821,6 +868,12 @@ CoroutineTask ResourceManager::createResourcesFromDescs()
     for (const auto& [uniqueID, prefabData] : m_prefabDescs)
     {
         createPrefab(uniqueID, prefabData);
+    }
+
+    // Create Sounds
+    for (const auto& [uniqueID, soundDesc] : m_soundDescs)
+    {
+        createSound(soundDesc, uniqueID);
     }
 
     // Create Materials

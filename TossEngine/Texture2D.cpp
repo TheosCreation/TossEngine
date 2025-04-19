@@ -47,7 +47,37 @@ void Texture2D::OnInspectorGUI()
 {
     ImGui::Text(("Texture2D Inspector - ID: " + m_uniqueID).c_str());
     ImGui::Separator();
+
+    //static const char* filterOptions[] = { "Linear", "Nearest" };
+    //static int minFilterIndex = 0;
+    //static int magFilterIndex = 0;
+    //
+    //if (ImGui::Combo("Min Filter", &minFilterIndex, filterOptions, IM_ARRAYSIZE(filterOptions)))
+    //{
+    //    GLenum filter = (minFilterIndex == 0) ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
+    //    glTextureParameteri(m_textureId, GL_TEXTURE_MIN_FILTER, filter);
+    //}
+    //
+    //if (ImGui::Combo("Mag Filter", &magFilterIndex, filterOptions, IM_ARRAYSIZE(filterOptions)))
+    //{
+    //    GLenum filter = (magFilterIndex == 0) ? GL_LINEAR : GL_NEAREST;
+    //    glTextureParameteri(m_textureId, GL_TEXTURE_MAG_FILTER, filter);
+    //}
+    //
+    //static const char* wrapModes[] = { "Repeat", "Mirrored", "Clamp to Edge" };
+    //static int wrapIndex = 0;
+    //
+    //if (ImGui::Combo("Wrap Mode", &wrapIndex, wrapModes, IM_ARRAYSIZE(wrapModes)))
+    //{
+    //    GLenum wrapMode = GL_REPEAT;
+    //    if (wrapIndex == 1) wrapMode = GL_MIRRORED_REPEAT;
+    //    else if (wrapIndex == 2) wrapMode = GL_CLAMP_TO_EDGE;
+    //
+    //    glTextureParameteri(m_textureId, GL_TEXTURE_WRAP_S, wrapMode);
+    //    glTextureParameteri(m_textureId, GL_TEXTURE_WRAP_T, wrapMode);
+    //}
 }
+
 
 bool Texture2D::Delete(bool deleteSelf)
 {

@@ -86,8 +86,11 @@ private:
 
     bool openPrefabPopupNextFrame = false;
 
-    char physicsMaterialIDBuffer[256] = "";
+    char IDBuffer[256] = "";
     bool openPhysicsMaterialNextFrame = false;
+
+    std::string soundFilePath;
+    bool openSoundCreationNextFrame = false;
 
     bool openCubeMapPopupNextFrame = false;
     bool openMaterialPopupNextFrame = false;

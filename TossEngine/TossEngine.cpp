@@ -131,7 +131,7 @@ void TossEngine::ReloadScripts() const
     m_scriptLoader->reloadDLL();
 }
 
-void TossEngine::OpenScene(shared_ptr<Scene> _scene)
+void TossEngine::OpenScene(shared_ptr<Scene> _scene, bool callStartMethods)
 {
     // if there is a current scene, call onQuit
     if (m_currentScene != nullptr)
@@ -144,6 +144,12 @@ void TossEngine::OpenScene(shared_ptr<Scene> _scene)
     m_currentScene = std::move(_scene);
     m_currentScene->onCreate();
     m_currentScene->onCreateLate();
+
+    if (callStartMethods)
+    {
+        m_currentScene->onStart();
+        m_currentScene->onLateStart();
+    }
 }
 
 float TossEngine::GetTime()

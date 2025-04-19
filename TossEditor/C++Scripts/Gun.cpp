@@ -6,6 +6,7 @@ void Gun::OnInspectorGUI()
 
     FloatSliderField("FireRate", m_fireRate);
     ResourceAssignableField(m_projectile, "Projectile");
+    ResourceAssignableField(fireSound, "Shoot Sound");
     GameObjectAssignableField(m_muzzlePosition, "Muzzle Position");
 }
 
@@ -22,7 +23,12 @@ void Gun::onUpdate()
         shootTimer = m_fireRate;
 
         Transform& camTransform = playerCamera->getTransform();
-        GameObject* spawnedProjectile = m_owner->getGameObjectManager()->Instantiate(m_projectile, m_muzzlePosition->m_transform.position, camTransform.rotation);
+        if (m_projectile)
+        {
+            AudioEngine::GetInstance().playSound(fireSound);
+            GameObject* spawnedProjectile = m_owner->getGameObjectManager()->Instantiate(m_projectile, m_muzzlePosition->m_transform.position, camTransform.rotation);
+            
+        }
     }
     else
     {

@@ -227,6 +227,10 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
     {
         graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, meshVBO->getNumIndices());
     }
+
+    m_shader->setTexture2D(nullptr, 0, "Texture0");
+    graphicsEngine.setTextureCubeMap(nullptr, 1, "Texture_Skybox");
+    graphicsEngine.setTexture2D(nullptr, 2, "ReflectionMap");
 }
 
 void MeshRenderer::SetMesh(MeshPtr mesh)

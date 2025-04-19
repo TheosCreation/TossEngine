@@ -21,7 +21,7 @@ public:
      * @param reverbAmount The amount of reverb to apply (0.0 to 1.0).
      * @param filePath The path to the sound file.
      */
-    Sound(const SoundDesc& desc, const std::string& filePath, const std::string& uniqueID, ResourceManager* manager);
+    Sound(const SoundDesc& desc, const std::string& uniqueID, ResourceManager* manager);
 
     // Getters
     bool is3D() const { return m_desc.is3D; }
@@ -48,5 +48,20 @@ private:
     bool m_loaded = false;           // Whether the sound has been loaded
     float x, y, z;         // 3D coordinates for the sound
 };
+
+inline void to_json(json& j, SoundPtr const& sound) {
+    if (sound)
+    {
+        j = json{ { "id", sound->getUniqueID() } };
+    }
+    else {
+        j = nullptr;
+    }
+}
+
+inline void from_json(json const& j, SoundPtr& sound) {
+    if (j.contains("id")) sound = ResourceManager::GetInstance().getSound(j["id"].get<string>());
+}
+
 
 #endif // SOUNDINFO_H

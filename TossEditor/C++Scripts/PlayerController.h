@@ -35,7 +35,6 @@ private:
     Camera* m_cam = nullptr; // Pointer to the main camera
     Rigidbody* m_rigidBody = nullptr; // Pointer to the rigidbody
     GroundCheck* m_groundCheck = nullptr; // Pointer to the groundCheck
-    SoundPtr fireSound = nullptr;
 
     SERIALIZABLE_MEMBERS(m_health, m_movementSpeed, m_acceleration, m_airAcceleration, m_jumpForce, m_jumpCooldown, m_layerNames)
 };

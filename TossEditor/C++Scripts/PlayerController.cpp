@@ -26,9 +26,6 @@ void PlayerController::OnInspectorGUI()
 void PlayerController::onCreate()
 {
     m_layerNames.push_back("Default");
-
-    auto& resourceManager = ResourceManager::GetInstance();
-    fireSound = resourceManager.createSound(SoundDesc(), "Fire", "Resources/Audio/fire.ogg");
 }
 
 void PlayerController::onStart()
@@ -48,11 +45,6 @@ void PlayerController::onUpdate()
     if (tossEngine.IsDebugMode() && inputManager.isKeyPressed(KeyF1, false))
     {
         inputManager.togglePlayMode();
-    }
-
-    if (inputManager.isKeyPressed(Key::Key1))
-    {
-        audioEngine.playSound(fireSound);
     }
 
     float sensitivity = 0.1f;  // Sensitivity factor for mouse movement

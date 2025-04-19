@@ -41,6 +41,7 @@ public:
     TexturePtr getTexture(const std::string& uniqueId);
     MaterialPtr getMaterial(const std::string& uniqueId);
     PhysicsMaterialPtr getPhysicsMaterial(const std::string& uniqueId);
+    SoundPtr getSound(const std::string& uniqueId);
     PrefabPtr getPrefab(const std::string& uniqueId);
     vector<PrefabPtr> getPrefabs() const;
 
@@ -52,7 +53,7 @@ public:
     Texture2DPtr createTexture2D(Texture2DDesc desc, string textureName = "NoTextureName");
     MeshPtr createMesh(MeshDesc desc, const string& uniqueId);
     HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
-    SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID, const std::string& filepath);
+    SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID);
     MaterialPtr createMaterial(const MaterialDesc& materialDesc, const std::string& uniqueID);
     PhysicsMaterialPtr createPhysicsMaterial(const PhysicsMaterialDesc& desc, const std::string& uniqueID);
     PhysicsMaterialPtr createPhysicsMaterial(const std::string& uniqueID, const json& data = nullptr);
@@ -93,6 +94,7 @@ protected:
     std::unordered_map<string, MeshDesc> meshDescriptions;
     std::unordered_map<string, json> physicsMaterialDescriptions;
     std::unordered_map<string, json> m_prefabDescs;
+    std::unordered_map<string, SoundDesc> m_soundDescs;
 
 private:
     ResourceManager() = default;

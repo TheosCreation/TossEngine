@@ -63,10 +63,7 @@ void TossPlayer::run()
         return;
     }
 
-    tossEngine.LoadGenericResources();
-
     onCreate();
-    onCreateLate();
 
     //run funcs while window open
     while (tossEngine.GetWindow()->shouldClose() == false)
@@ -83,47 +80,47 @@ void TossPlayer::run()
 void TossPlayer::onCreate()
 {
     auto scene = std::make_shared<Scene>(m_playerSettings->firstSceneToOpen);
-    SetScene(scene, false);
+    TossEngine::GetInstance().OpenScene(scene);
 }
-
-void TossPlayer::onCreateLate()
-{
-}
-
 
 void TossPlayer::onUpdateInternal()
 {
     auto& tossEngine = TossEngine::GetInstance();
+    InputManager& inputManager = InputManager::GetInstance();
+    auto scene = tossEngine.getCurrentScene();
+    if (!scene) return;
+
 
     // delta time
-    m_currentTime = tossEngine.GetTime();
+    m_currentTime = TossEngine::GetTime();
     Time::UpdateDeltaTime(m_currentTime - m_previousTime);
     m_previousTime = m_currentTime;
 
     // Accumulate time
     m_accumulatedTime += Time::DeltaTime;
 
+    inputManager.onUpdate();
+
     // Perform updates
-    while (m_accumulatedTime >= m_fixedTimeStep)
+    while (m_accumulatedTime >= Time::FixedDeltaTime)
     {
-        float fixedDeltaTime = m_currentTime - m_previousFixedUpdateTime;
-        m_previousFixedUpdateTime = m_currentTime;
-        m_currentScene->onFixedUpdate();
-        m_accumulatedTime -= m_fixedTimeStep;
+        scene->onFixedUpdate();
+        m_accumulatedTime -= Time::FixedDeltaTime;
     }
 
-    Physics::GetInstance().UpdateInternal();
-
-    m_currentScene->onUpdate();
-    m_currentScene->onLateUpdate();
+    scene->onUpdate();
+    scene->onLateUpdate();
 
     Physics::GetInstance().Update();
 
-    double RenderTime_Begin = (double)glfwGetTime();
+    Physics::GetInstance().UpdateInternal();
+    inputManager.onLateUpdate();
 
-    m_currentScene->onGraphicsUpdate();
+    //float RenderTime_Begin = TossEngine::GetTime();
 
-    double RenderTime_End = (double)glfwGetTime();
+    scene->onGraphicsUpdate();
+
+    //float RenderTime_End = TossEngine::GetTime();
 
     // Render to window
     tossEngine.GetWindow()->present();
@@ -131,36 +128,16 @@ void TossPlayer::onUpdateInternal()
 
 void TossPlayer::onQuit()
 {
-    m_currentScene->onQuit();
+    TossEngine::GetInstance().getCurrentScene()->onQuit();
     ResourceManager::GetInstance().CleanUp();
     Physics::GetInstance().UnLoadPrefabWorld();
-}
-
-void TossPlayer::SetScene(ScenePtr _scene, bool skipCreate)
-{
-    // if there is a current scene, call onQuit
-    if (m_currentScene != nullptr)
-    {
-        m_currentScene->onQuit();
-    }
-
-    // set the current scene to the new scene
-    m_currentScene = _scene;
-    if (!skipCreate)
-    {
-        m_currentScene->onCreate();
-        m_currentScene->onCreateLate();
-    }
-
-    m_currentScene->onStart();
-    m_currentScene->onLateStart();
 }
 
 void TossPlayer::onResize(Vector2 size)
 {
     Resizable::onResize(size);
 
-    m_currentScene->onResize(size);
+    TossEngine::GetInstance().getCurrentScene()->onResize(size);
 
     GeometryBuffer::GetInstance().Resize(size);
 }

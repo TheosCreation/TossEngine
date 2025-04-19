@@ -55,7 +55,7 @@ void Physics::UpdateInternal()
 
 void Physics::Update()
 {
-    if (m_world)
+    if (m_world && Time::DeltaTime > 0.0f)
     {
         m_world->update(Time::DeltaTime);
     }

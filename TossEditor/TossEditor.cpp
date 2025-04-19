@@ -21,7 +21,7 @@ TossEditor::TossEditor()
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, editorPreferences.windowSize, "TossEditor", editorPreferences.maximized);
-    tossEngine.LoadScripts(); //recompile and loads scripts
+    tossEngine.LoadScripts();
 
     m_projectSettings = std::make_unique<ProjectSettings>();
     m_projectSettings->LoadFromFile("ProjectSettings.json");
@@ -29,6 +29,7 @@ TossEditor::TossEditor()
     Physics::GetInstance().SetGravity(m_projectSettings->gravity);
     Physics::GetInstance().SetDebug(true);
     Physics::GetInstance().LoadPrefabWorld();
+    AudioEngine::GetInstance().Init();
 
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     tossEngine.StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
@@ -52,7 +53,6 @@ TossEditor::TossEditor()
     inputManager.setScreenArea(editorPreferences.windowSize);
 
     GeometryBuffer::GetInstance().Init(editorPreferences.windowSize);
-    AudioEngine::GetInstance().Init();
 
 
     m_sceneFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
@@ -115,12 +115,12 @@ void TossEditor::onCreate()
     if (!filePath.empty()) // If a file was selected
     {
         auto scene = std::make_shared<Scene>(filePath);
-        tossEngine.OpenScene(scene);
+        tossEngine.OpenScene(scene, false);
     }
     else
     {
         auto scene = std::make_shared<Scene>("Scenes/Scene.json");
-        tossEngine.OpenScene(scene);
+        tossEngine.OpenScene(scene, false);
     }
 
     sourceWatcher = new FileWatcher("C++Scripts/");
@@ -161,7 +161,7 @@ void TossEditor::onUpdateInternal()
     FindSceneFiles();
 
     // delta time
-    m_currentTime = tossEngine.GetTime();
+    m_currentTime = TossEngine::GetTime();
     float deltaTimeInternal = m_currentTime - m_previousTime;
     Time::UpdateDeltaTime(deltaTimeInternal);
     m_previousTime = m_currentTime;
@@ -256,7 +256,7 @@ void TossEditor::onUpdateInternal()
                 Save();
             }
             ImGui::Separator();
-            if (ImGui::MenuItem("Exit", "ESC"))
+            if (ImGui::MenuItem("Exit", "CTRL+E"))
             {
                 Exit();
             }
@@ -292,7 +292,7 @@ void TossEditor::onUpdateInternal()
                 if (!filePath.empty()) // If a file was selected
                 {
                     auto scene = std::make_shared<Scene>(filePath);
-                    TossEngine::GetInstance().OpenScene(scene);
+                    TossEngine::GetInstance().OpenScene(scene, false);
                 }
                 if(selectedSelectable != nullptr) selectedSelectable->OnDeSelect();
                 
@@ -751,6 +751,14 @@ void TossEditor::onUpdateInternal()
                 ImGui::CloseCurrentPopup();
             }
 
+            if (ImGui::MenuItem("Sound")) {
+                soundFilePath = TossEngine::GetInstance().openFileDialog("*.ogg");
+                if (!soundFilePath.empty()) {
+                    openSoundCreationNextFrame = true;
+                }
+                ImGui::CloseCurrentPopup();
+            }
+
             ImGui::EndPopup();
         }
 
@@ -805,7 +813,7 @@ void TossEditor::onUpdateInternal()
         }
 
 
-        // TODO: Create a function because this is very useful
+        // TODO: Create a function for drag and drop
 
         ImVec2 windowPos = ImGui::GetWindowPos();
         ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
@@ -928,55 +936,62 @@ void TossEditor::onUpdateInternal()
     {
         ImGui::InputText("Cubemap Name", cubemapNameBuffer, IM_ARRAYSIZE(cubemapNameBuffer));
 
-        // If files aren't selected yet, allow the user to pick files
+        // Face names for cubemap in typical order: +X, -X, +Y, -Y, +Z, -Z
+        static const char* faceNames[6] = {
+            "Right (+X)",
+            "Left (-X)",
+            "Top (+Y)",
+            "Bottom (-Y)",
+            "Back (-Z)",
+            "Front (+Z)"
+        };
+
         if (!filesSelected)
         {
-            // Ensure we don't call the file dialog multiple times in a frame
-            if (cubemapFilePaths.size() < 6)
+            for (int i = cubemapFilePaths.size(); i < 6; ++i)
             {
-                // Loop to select all 6 faces
-                for (int i = cubemapFilePaths.size(); i < 6; ++i)
+                std::string label = std::string("Select ") + faceNames[i];
+                ImGui::Text("%s", label.c_str());
+
+                if (ImGui::Button(("Browse##" + std::to_string(i)).c_str()))
                 {
                     std::string filePath = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;");
                     if (!filePath.empty())
                     {
                         std::filesystem::path root = getProjectRoot();
                         std::filesystem::path relativePath = std::filesystem::relative(filePath, root);
-                        cubemapFilePaths.push_back(relativePath.string());  // Store selected file path
+                        cubemapFilePaths.push_back(relativePath.string());
                     }
-                    else
-                    {
-                        break;  // Stop file selection if user cancels
-                    }
+                    break; // Only allow selecting one face per frame
                 }
+                break;
+            }
 
-                // If all 6 faces have been selected, set filesSelected to true
-                if (cubemapFilePaths.size() == 6)
-                {
-                    filesSelected = true;
-                }
+            if (cubemapFilePaths.size() == 6)
+            {
+                filesSelected = true;
             }
         }
 
-        if (ImGui::Button("Create") && cubemapFilePaths.size() == 6)
+        ImGui::Separator();
+
+        for (int i = 0; i < cubemapFilePaths.size(); ++i)
         {
-            std::string name = cubemapNameBuffer;
-            
-
-            // Call the function to create the cubemap
-            resourceManager.createCubeMapTextureFromFile(cubemapFilePaths, name);
-
-            Debug::Log("Created Cubemap Texture: " + name);
-            ImGui::CloseCurrentPopup(); // Close the popup on success
-            // Clear buffer
-            cubemapNameBuffer[0] = '\0'; // Reset name input buffer
-            // Clear file paths and reset the selection state for next use
-            cubemapFilePaths.clear();
-            filesSelected = false;
+            ImGui::Text("%s: %s", faceNames[i], cubemapFilePaths[i].c_str());
         }
 
-        // Make sure the "Cancel" button works
-        ImGui::SameLine();
+        if (filesSelected && ImGui::Button("Create Cubemap"))
+        {
+            std::string cubemapName = cubemapNameBuffer; // Convert buffer to std::string
+            ResourceManager::GetInstance().createCubeMapTextureFromFile(cubemapFilePaths, cubemapName);
+
+            // Clear file paths and name buffer
+            cubemapFilePaths.clear();
+            std::fill(std::begin(cubemapNameBuffer), std::end(cubemapNameBuffer), 0);
+            filesSelected = false;
+            ImGui::CloseCurrentPopup();
+        }
+
         if (ImGui::Button("Cancel"))
         {
             ImGui::CloseCurrentPopup();
@@ -1110,25 +1125,29 @@ void TossEditor::onUpdateInternal()
     }
 
 
-    if (openPhysicsMaterialNextFrame) {
-        ImGui::OpenPopup("Enter Physics Material ID");
-        openPhysicsMaterialNextFrame = false;
+    if (openSoundCreationNextFrame) {
+        ImGui::OpenPopup("Enter Sound ID");
+        openSoundCreationNextFrame = false;
     }
 
     // Show the popup to name the shader
-    if (ImGui::BeginPopupModal("Enter Physics Material ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::InputText("Physics Material ID", physicsMaterialIDBuffer, sizeof(physicsMaterialIDBuffer));
+    if (ImGui::BeginPopupModal("Enter Sound ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::InputText("Sound ID", IDBuffer, sizeof(IDBuffer));
 
         if (ImGui::Button("Create")) {
-            if (strlen(physicsMaterialIDBuffer) > 0) {
-                std::string physicsMaterialID = physicsMaterialIDBuffer;
+            if (strlen(IDBuffer) > 0) {
 
-                PhysicsMaterialDesc desc;
-                resourceManager.createPhysicsMaterial(desc, physicsMaterialID);
-                Debug::Log("Created physics material: " + physicsMaterialID);
+                std::filesystem::path root = getProjectRoot();
+                std::filesystem::path soundFilePathRel = std::filesystem::relative(soundFilePath, root);
+                std::string soundId = IDBuffer;
+
+                SoundDesc desc;
+                desc.filepath = soundFilePathRel.string();
+                resourceManager.createSound(desc, soundId);
+                Debug::Log("Created sound: " + soundId);
 
                 // Reset state
-                physicsMaterialIDBuffer[0] = '\0';
+                IDBuffer[0] = '\0';
 
                 ImGui::CloseCurrentPopup();
             }
@@ -1137,9 +1156,42 @@ void TossEditor::onUpdateInternal()
         ImGui::SameLine();
 
         if (ImGui::Button("Cancel")) {
-            shaderVertPath.clear();
-            shaderFragPath.clear();
-            shaderIDBuffer[0] = '\0';
+            IDBuffer[0] = '\0';
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
+    if (openPhysicsMaterialNextFrame) {
+        ImGui::OpenPopup("Enter Physics Material ID");
+        openPhysicsMaterialNextFrame = false;
+    }
+
+    // Show the popup to name the shader
+    if (ImGui::BeginPopupModal("Enter Physics Material ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::InputText("Physics Material ID", IDBuffer, sizeof(IDBuffer));
+
+        if (ImGui::Button("Create")) {
+            if (strlen(IDBuffer) > 0) {
+                std::string physicsMaterialID = IDBuffer;
+
+                PhysicsMaterialDesc desc;
+                resourceManager.createPhysicsMaterial(desc, physicsMaterialID);
+                Debug::Log("Created physics material: " + physicsMaterialID);
+
+                // Reset state
+                IDBuffer[0] = '\0';
+
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel")) {
+            IDBuffer[0] = '\0';
 
             ImGui::CloseCurrentPopup();
         }
@@ -1469,7 +1521,7 @@ void TossEditor::OpenSceneViaFileSystem()
             relativeSceneFilePath = fs::relative(selectedPath, projectRoot);
             editorPreferences.lastKnownOpenScenePath = relativeSceneFilePath.string();
             auto scene = std::make_shared<Scene>(relativeSceneFilePath.string());
-            TossEngine::GetInstance().OpenScene(scene);
+            TossEngine::GetInstance().OpenScene(scene, false);
         }
         else {
             Debug::LogWarning("Selected scene file must be inside the project folder.");

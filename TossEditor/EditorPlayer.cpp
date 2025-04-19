@@ -41,7 +41,7 @@ void EditorPlayer::Update(float deltaTime)
     {
         Editor->Save();
     }
-    if (inputManager.isKeyPressed(KeyEscape, false))
+    if (inputManager.isKeyDown(KeyLeftControl, false) && inputManager.isKeyPressed(KeyE, false))
     {
         Editor->Exit();
     }

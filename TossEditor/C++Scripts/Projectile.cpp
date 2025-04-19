@@ -29,14 +29,12 @@ void Projectile::onTriggerEnter(Collider* other)
 
     if (Enemy* enemy = gameObject->getComponent<Enemy>())
     {
-        Debug::Log("Hit Enemy");
         enemy->TakeDamage(m_damage);
         Destroy(m_owner);
     }
 
     if (gameObject->getComponent<PlayerController>())
     {
-        Debug::Log("Hit Player");
         Destroy(m_owner);
     }
 

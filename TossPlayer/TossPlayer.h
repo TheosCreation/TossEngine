@@ -21,19 +21,12 @@ protected:
     void onCreate();
 
     /**
-     * @brief Called when the player is created and after onCreate.
-     */
-    void onCreateLate();
-
-    /**
      * @brief Called when the player is quitting.
      */
     void onQuit();
-    void SetScene(ScenePtr _scene, bool skipCreate);
 
 private:
     TossPlayerSettingsPtr m_playerSettings = nullptr;
-	ScenePtr m_currentScene = nullptr;
     bool abort = false;
 
     float m_currentTime = 0.0f;

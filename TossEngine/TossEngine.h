@@ -28,7 +28,7 @@ public:
     void LoadScripts() const;
     void ReloadScripts() const;
 
-    void OpenScene(shared_ptr<Scene> _scene);
+    void OpenScene(shared_ptr<Scene> _scene, bool callStartMethods = true);
     static float GetTime();
 
     std::shared_ptr<bool> StartCoroutine(CoroutineTask&& coroutine);

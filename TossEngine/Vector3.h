@@ -89,6 +89,9 @@ public:
     Vector3 operator*(const Vector3& other) const { return Vector3(x * other.x, y * other.y, z * other.z); }
     Vector3& operator*=(const Vector3& other) { x *= other.x, y *= other.y, z *= other.z; return *this; }
 
+    Vector3 operator/(const Vector3& other) const { return Vector3(x / other.x, y / other.y, z / other.z); }
+    Vector3& operator/=(const Vector3& other) { x /= other.x, y /= other.y, z /= other.z; return *this; }
+
     Vector3 operator*(const Quaternion& other) const; 
 
     bool operator==(const Vector3& other) const {\

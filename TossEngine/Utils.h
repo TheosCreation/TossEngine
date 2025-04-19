@@ -238,6 +238,7 @@ struct TextureCubeMapDesc
 // Struct representing a sound description
 struct SoundDesc
 {
+    std::string filepath = "";
     bool is3D = false;
     bool isLoop = false;
     float volume = 1.0f;
