@@ -89,5 +89,4 @@ inline void from_json(json const& j, GameObject*& gameObject)
             gameObject = mgr->m_gameObjects.at(id);
         }
     }
-
 }

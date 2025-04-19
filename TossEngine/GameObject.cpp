@@ -262,6 +262,11 @@ void GameObject::OnSelect()
     {
         pair.second->OnGameObjectSelected();
     }
+
+    if (m_transform.parent)
+    {
+        m_transform.parent->gameObject->OnSelect();
+    }
 }
 
 
@@ -270,6 +275,12 @@ void GameObject::OnDeSelect()
     for (auto& pair : m_components)
     {
         pair.second->OnGameObjectDeSelected();
+    }
+
+
+    if (m_transform.parent)
+    {
+        m_transform.parent->gameObject->OnDeSelect();
     }
 }
 

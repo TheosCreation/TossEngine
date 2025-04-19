@@ -22,7 +22,7 @@ void Gun::onUpdate()
         shootTimer = m_fireRate;
 
         Transform& camTransform = playerCamera->getTransform();
-        GameObject* spawnedProjectile = m_owner->getGameObjectManager()->Instantiate(m_projectile, camTransform.position, camTransform.rotation);
+        GameObject* spawnedProjectile = m_owner->getGameObjectManager()->Instantiate(m_projectile, m_muzzlePosition->m_transform.position, camTransform.rotation);
     }
     else
     {

@@ -253,7 +253,8 @@ void Collider::onDestroy()
 void Collider::onRescale(const Vector3& previousScale)
 {
     //update the physics shape based on the scale
-    if (m_owner->m_transform.GetLocalScale().Length() > 0)
+    Vector3 localScale = m_owner->m_transform.GetLocalScale();
+    if (localScale.x > 0.0f && localScale.y > 0.0f && localScale.z > 0.0f)
     {
         SetColliderType(static_cast<int>(m_shape->getType()));
     }

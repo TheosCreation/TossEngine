@@ -1,4 +1,4 @@
-/***
+﻿/***
 Bachelor of Software Engineering
 Media Design School
 Auckland
@@ -205,20 +205,48 @@ void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
         return;
     }
 
-    for (const auto& gameObjectData : sceneData["gameobjects"])
+    std::set<size_t> usedIds;
+    std::vector<size_t>  idOrder;
+    idOrder.reserve(sceneData["gameobjects"].size());
+
+    for (auto& gameObjectData : sceneData["gameobjects"])
     {
+        // read saved ID (or 0 if missing)
+        size_t savedId = 0;
+        if (gameObjectData.contains("id"))
+            savedId = gameObjectData["id"].get<size_t>();
+
+        // if that ID is already taken, bump to nextAvailable
+        if (savedId == 0 || usedIds.count(savedId))
+            savedId = m_nextAvailableId++;
+
+        // reserve that ID
+        usedIds.insert(savedId);
+
+        idOrder.push_back(savedId);
+
+        // instantiate
         auto gameObject = new GameObject();
-        // Initialize the GameObject
         gameObject->setGameObjectManager(this);
-        gameObject->deserialize(gameObjectData);  // Loads data into the object
-        gameObject->onCreate();
-        gameObject->onCreateLate();
+        gameObject->setId(savedId);
 
-        size_t id = gameObject->getId();
-        if (id == 0) id = m_nextAvailableId++;
+        // put in map
+        m_gameObjects[savedId] = gameObject;
+    }
 
-        gameObject->setId(id);
-        m_gameObjects[id] = std::move(gameObject);
+    // second pass for deserilization and create functions
+    m_nextAvailableId = std::max(m_nextAvailableId,
+        *std::max_element(usedIds.begin(), usedIds.end()) + 1
+    );
+    for (size_t i = 0; i < idOrder.size(); ++i)
+    {
+        size_t finalId = idOrder[i];
+        auto& go = m_gameObjects[finalId];
+        auto& data = sceneData["gameobjects"][i];
+
+        go->deserialize(data);
+        go->onCreate();
+        go->onCreateLate(); // maybe split this up to a 3 pass
     }
 }
 
