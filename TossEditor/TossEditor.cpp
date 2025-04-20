@@ -368,12 +368,6 @@ void TossEditor::onUpdateInternal()
             scene->onResize(newSize);
             m_sceneFrameBuffer->onResize(newSize);
 
-            Mat4 cameraView;
-            m_player->getCamera()->getViewMatrix(cameraView);
-
-            Mat4 projectionMat;
-            m_player->getCamera()->getProjectionMatrix(projectionMat);
-
             // Now update the scene rendering with the current camera.
             scene->onGraphicsUpdate(camera, m_sceneFrameBuffer);
 
@@ -386,6 +380,9 @@ void TossEditor::onUpdateInternal()
             {
                 if (auto gameObject = dynamic_cast<GameObject*>(selectedSelectable))
                 {
+                    ImGuizmo::BeginFrame();
+                    ImGuizmo::SetOrthographic(false);
+                    ImGuizmo::AllowAxisFlip(false);
                     ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
                     ImVec2 imagePos = ImGui::GetItemRectMin();
                     ImVec2 imageMaxPos = ImGui::GetItemRectMax();
@@ -397,9 +394,14 @@ void TossEditor::onUpdateInternal()
 
                     ImGui::PushClipRect(imagePos, imageMaxPos, true);
 
+
+                    Mat4 cameraView;
+                    m_player->getCamera()->getViewMatrix(cameraView);
+
+                    Mat4 projectionMat;
+                    m_player->getCamera()->getProjectionMatrix(projectionMat);
                     ImGuizmo::Manipulate(glm::value_ptr(cameraView.value), glm::value_ptr(projectionMat.value), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(transformMat.value));
 
-                    ImGui::PopClipRect();
                     if (ImGuizmo::IsUsingAny())
                     {
                         Debug::Log("using any");
@@ -414,6 +416,7 @@ void TossEditor::onUpdateInternal()
                         Debug::Log("using");
                         gameObject->m_transform.SetMatrix(transformMat);
                     }
+                    ImGui::PopClipRect();
                 }
             }
         }

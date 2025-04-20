@@ -91,7 +91,7 @@ void PlayerController::onUpdate()
 
     if (inputManager.isKeyPressed(Key::KeySpace) && jumpTimer <= 0 && m_groundCheck->isGrounded)
     {
-        m_rigidBody->AddForce(Vector3(0.0f, 1.0f, 0.0f) * m_jumpForce);
+        m_rigidBody->AddForce(Vector3::Up * m_jumpForce);
         m_groundCheck->isGrounded = false;
         jumpTimer = m_jumpCooldown;
     }
@@ -141,18 +141,17 @@ void PlayerController::onFixedUpdate()
         }
         else
         {
-            Vector3 desiredAirVelocity = Vector3(moveDirection.x * m_movementSpeed, velocity.y, moveDirection.z * m_movementSpeed);
-            Vector3 airDirection = Vector3(0.0f);
-            if ((desiredAirVelocity.x > 0.0f && velocity.x < desiredAirVelocity.x) || (desiredAirVelocity.x < 0.0f && velocity.x > desiredAirVelocity.x))
+            Vector3 desiredMaxVelocity = Vector3(moveDirection.x * m_movementSpeed, 0, moveDirection.z * m_movementSpeed);
+            if ((desiredMaxVelocity.x > 0.0f && velocity.x > m_movementSpeed) || (desiredMaxVelocity.x < 0.0f && velocity.x < -m_movementSpeed))
             {
-                airDirection.x = desiredAirVelocity.x;
+                desiredMaxVelocity.x = 0;
             }
-            if ((desiredAirVelocity.z > 0.0f && velocity.z < desiredAirVelocity.z) || (desiredAirVelocity.z < 0.0f && velocity.z > desiredAirVelocity.z))
+            if ((desiredMaxVelocity.z > 0.0f && velocity.z > m_movementSpeed) || (desiredMaxVelocity.z < 0.0f && velocity.z < -m_movementSpeed))
             {
-                airDirection.z = desiredAirVelocity.z;
+                desiredMaxVelocity.z = 0;
             }
             // Limit acceleration
-            Vector3 force = airDirection.Normalized() * m_airAcceleration * Time::FixedDeltaTime;
+            Vector3 force = desiredMaxVelocity * m_airAcceleration * Time::FixedDeltaTime;
             m_rigidBody->AddForce(force);
         }
     }

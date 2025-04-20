@@ -102,7 +102,18 @@ public:
         return x != other.x || y != other.y || z != other.z;
     }
 
+
+    static const Vector3 Zero;
+    static const Vector3 One;
+    static const Vector3 Forward;
+    static const Vector3 Back;
+    static const Vector3 Up;
+    static const Vector3 Down;
+    static const Vector3 Right;
+    static const Vector3 Left;
+
 };
+
 
 
 inline void to_json(json& j, Vector3 const& v) {
