@@ -65,10 +65,14 @@ Scene::~Scene()
 {
 }
 
-void Scene::reload()
+void Scene::clean()
 {
     m_gameObjectManager->clearGameObjects();
     m_lightManager->clearLights();
+}
+
+void Scene::reload()
+{
     onCreate();
     onCreateLate();
 }

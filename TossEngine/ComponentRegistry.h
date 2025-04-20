@@ -50,6 +50,7 @@ public:
         }
         else {
             Debug::Log("Registering new component type: " + typeName);
+            addComponentModule(typeid(T));
         }
 
         // (Re)register the component
@@ -58,6 +59,10 @@ public:
             return new T();
             };
     }
+
+    void addComponentModule(const std::type_info& typeInfo);
+
+    void CleanUpModule(void* moduleHandle);
 
     std::vector<std::string> getRegisteredComponentNames() const;
 
@@ -92,6 +97,9 @@ private:
     // Map of component type names to their creation functions
     std::unordered_map<std::string, std::function<Component* ()>> m_componentCreators; 
     std::unordered_map<std::string, std::optional<std::type_index>> m_componentTypes;
+
+    // For being able to unload
+    std::unordered_map<std::string, void*> m_componentModules;
 
 
     /**

@@ -133,6 +133,11 @@ void TossEngine::ReloadScripts() const
 
 void TossEngine::OpenScene(shared_ptr<Scene> _scene, bool callStartMethods)
 {
+    if (_scene == nullptr)
+    {
+        m_currentScene.reset();
+        return;
+    }
     // if there is a current scene, call onQuit
     if (m_currentScene != nullptr)
     {

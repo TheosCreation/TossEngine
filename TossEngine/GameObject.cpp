@@ -211,9 +211,12 @@ void GameObject::OnInspectorGUI()
         ImGui::InputText("Search", componentSearchBuffer, sizeof(componentSearchBuffer));
         auto& registry = ComponentRegistry::GetInstance();
         std::vector<std::string> componentTypes = registry.getRegisteredComponentNames();
+        std::string searchStr = toLower(componentSearchBuffer);
+
         for (const auto& compName : componentTypes)
         {
-            if (componentSearchBuffer[0] == '\0' || std::strstr(compName.c_str(), componentSearchBuffer) != nullptr)
+            std::string lowerCompName = toLower(compName);
+            if (searchStr.empty() || lowerCompName.find(searchStr) != std::string::npos)
             {
                 if (ImGui::Selectable(compName.c_str()))
                 {

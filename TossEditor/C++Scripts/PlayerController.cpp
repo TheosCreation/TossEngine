@@ -1,8 +1,5 @@
 #include "PlayerController.h"
 #include "AudioEngine.h"
-#include "Camera.h"
-#include "Rigidbody.h"
-#include "Collider.h"
 #include "GroundCheck.h"
 
 void PlayerController::OnInspectorGUI()
@@ -50,13 +47,13 @@ void PlayerController::onUpdate()
     float sensitivity = 0.1f;  // Sensitivity factor for mouse movement
     m_yaw -= inputManager.getMouseXAxis() * sensitivity;
     m_pitch -= inputManager.getMouseYAxis() * sensitivity;
-
+    //
     // Clamp the pitch value to prevent flipping the camera
     if (m_pitch > 89.0f)
         m_pitch = 89.0f;
     if (m_pitch < -89.0f)
         m_pitch = -89.0f;
-
+    
     // Create quaternions for yaw (around the y-axis) and pitch (around the x-axis)
     glm::quat yawRotation = glm::angleAxis(glm::radians(m_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::quat pitchRotation = glm::angleAxis(glm::radians(m_pitch), glm::vec3(1.0f, 0.0f, 0.0f));

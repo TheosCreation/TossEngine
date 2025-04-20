@@ -1,9 +1,6 @@
 #pragma once
 #include <TossEngine.h>
 
-class Camera;
-class Rigidbody;
-class Collider;
 class GroundCheck;
 
 class PlayerController : public Component

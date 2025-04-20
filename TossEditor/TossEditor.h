@@ -25,6 +25,7 @@ public:
     void Undo();
 	void Save() const;
     void Exit();
+    void Reload();
 
     void DeleteSelected();
 

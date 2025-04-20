@@ -44,6 +44,7 @@ public:
      */
     ~Scene();
 
+    void clean();
     void reload();
 
     /**

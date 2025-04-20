@@ -45,6 +45,11 @@ void EditorPlayer::Update(float deltaTime)
     {
         Editor->Exit();
     }
+
+    if (inputManager.isKeyDown(KeyLeftControl, false) && inputManager.isKeyPressed(KeyR, false))
+    {
+        Editor->Reload();
+    }
     if (inputManager.isKeyPressed(KeyDelete, false))
     {
         Editor->DeleteSelected();

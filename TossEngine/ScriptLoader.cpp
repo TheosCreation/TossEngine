@@ -19,7 +19,7 @@ typedef void (*SetImGuiContextFunc)(ImGuiContext*);
 
 void ScriptLoader::loadDLL()
 {
-    scriptsDll = LoadLibrary(L"C++Scripts.dll");
+    scriptsDll = LoadLibraryA("C++Scripts.dll");
     if (scriptsDll)
     {
         Debug::Log("Scripts DLL loaded.");
@@ -52,9 +52,10 @@ void ScriptLoader::loadDLL()
 void ScriptLoader::CompileScriptsProject()
 {
     std::string msBuildPath = getMSBuildPath();
-    std::string solutionPath = FindSolutionPath(); //this needs to change to proper name of the solution on the release build of the engine
+    //std::string solutionPath = FindSolutionPath();
+    std::string projectPath = getProjectRoot();
     std::string config;
-
+    Debug::Log(projectPath);
     #ifdef _DEBUG
         config = "Debug";
     #else
@@ -66,14 +67,21 @@ void ScriptLoader::CompileScriptsProject()
         return;
     }
 
-    if (solutionPath.empty()) {
-        Debug::LogError("Could not locate TossEngine.sln | Did not recompile scripts", false);
-        return;
-    }
+    //if (solutionPath.empty()) {
+    //    Debug::LogError("Could not locate TossEngine.sln | Did not recompile scripts", false);
+    //    return;
+    //}
 
     std::string command = std::string("cmd /C \"\"") + msBuildPath +
-        "\" \"" + solutionPath +
-        "\" /t:C++Scripts /p:Configuration=" + config + " /p:Platform=x64\"";
+        "\" \"" + projectPath + "\\C++Scripts\\C++Scripts.vcxproj" +
+        "\" /p:Configuration=" + config +
+        " /p:Platform=x64 /m";
+
+    if (config == "Debug") {
+        command += " /p:AdditionalOptions=\\\"/FS\\\"";
+    }
+
+    command += "\"";
 
     int result = system(command.c_str());
 

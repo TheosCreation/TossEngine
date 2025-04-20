@@ -829,8 +829,23 @@ void ResourceManager::DeleteFromSavedData(const std::shared_ptr<Resource>& resou
     }
 }
 
+void ResourceManager::Reload()
+{
+    CleanUp();
+    createResourcesFromDescs();
+}
+
 void ResourceManager::CleanUp()
 {
+    for (auto& [key, resource] : m_mapResources)
+    {
+        // Check if the resource is of type Mesh
+        PrefabPtr prefab = std::dynamic_pointer_cast<Prefab>(resource);
+        if (prefab)
+        {
+            prefab->onDestroy();
+        }
+    }
     m_mapResources.clear();
 }
 

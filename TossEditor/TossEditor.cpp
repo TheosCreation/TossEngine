@@ -125,7 +125,7 @@ void TossEditor::onCreate()
 
     sourceWatcher = new FileWatcher("C++Scripts/");
 
-    scriptWatcherThread = std::thread(&TossEditor::LoadWatchAndCompileScripts, this);
+    //scriptWatcherThread = std::thread(&TossEditor::LoadWatchAndCompileScripts, this);
 
     m_player = std::make_unique<EditorPlayer>(this);
     m_player->onCreate();
@@ -149,6 +149,11 @@ void TossEditor::DeleteSelected()
 void TossEditor::Exit()
 {
     TossEngine::GetInstance().GetWindow()->close();
+}
+
+void TossEditor::Reload()
+{
+    requestDllReload.store(true);
 }
 
 void TossEditor::onUpdateInternal()
@@ -198,7 +203,6 @@ void TossEditor::onUpdateInternal()
 
 
         Physics::GetInstance().UpdateInternal();
-        inputManager.onLateUpdate();
     }
 
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
@@ -254,6 +258,11 @@ void TossEditor::onUpdateInternal()
             if (ImGui::MenuItem("Save", "CTRL+S"))
             {
                 Save();
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Reload", "CTRL+R"))
+            {
+                Reload();
             }
             ImGui::Separator();
             if (ImGui::MenuItem("Exit", "CTRL+E"))
@@ -599,8 +608,8 @@ void TossEditor::onUpdateInternal()
         {
             ImGui::Text("Nothing selected.");
         }
-        ImGui::End();
     }
+    ImGui::End();
 
     if (ImGui::Begin("Hierarchy")) {
         auto scene = TossEngine::GetInstance().getCurrentScene();
@@ -652,9 +661,8 @@ void TossEditor::onUpdateInternal()
             }
             ImGui::EndDragDropTarget();
         }
-
-        ImGui::End();
     }
+    ImGui::End();
 
     if (renamingGameObject != nullptr)
     {
@@ -1250,21 +1258,24 @@ void TossEditor::onUpdateInternal()
     // Render to window
     tossEngine.GetWindow()->present();
 
+
 }
 
 void TossEditor::onLateUpdateInternal()
 {
+    InputManager::GetInstance().onLateUpdate();
+
     if (requestDllReload.load())
     {
+        requestDllReload.store(false);
         Debug::Log("Reloading DLL safely at end of frame...");
         PerformSafeDllReload();
-        requestDllReload.store(false);
     }
     if (requestBuild.load())
     {
+        requestBuild.store(false);
         Debug::Log("Building player safely at end of frame...");
         PerformSafeBuild();
-        requestBuild.store(false);
     }
 }
 
@@ -1448,29 +1459,18 @@ void TossEditor::PerformSafeBuild()
 
 void TossEditor::PerformSafeDllReload()
 {
-    //all not needed yepee but will leave here if i found that it does cause issues
+    ResourceManager& resourceManager = ResourceManager::GetInstance();
     //Save();
-    //if (m_currentScene != nullptr)
-    //{
-    //    m_currentScene->onQuit();
-    //    m_currentScene.reset();
-    //    m_currentScene = nullptr;
-    //}
+    auto scene = TossEngine::GetInstance().getCurrentScene();
     canUpdateInternal = false;
-
+    if (scene) scene->clean();
+    resourceManager.CleanUp();
     TossEngine::GetInstance().ReloadScripts();
-    if (auto scene = TossEngine::GetInstance().getCurrentScene()) scene->reload();
+
+    resourceManager.createResourcesFromDescs();
+    if (scene) scene->reload();
 
     canUpdateInternal = true;
-
-    //string filePath = m_projectSettings->lastKnownOpenScenePath;
-    //
-    //if (!filePath.empty()) // If a file was selected
-    //{
-    //    auto scene = std::make_shared<Scene>(filePath);
-    //    scene->SetWindowFrameBuffer(m_sceneViewFrameBuffer);
-    //    OpenScene(scene);
-    //}
 }
 
 void TossEditor::onResize(Vector2 size)

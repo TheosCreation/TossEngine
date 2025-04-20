@@ -24,6 +24,7 @@
     <ProjectGuid>{71D94A3B-E2A4-4D01-956F-25140D135D80}</ProjectGuid>
     <RootNamespace>CScripts</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>7.0</WindowsTargetPlatformMinVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -44,6 +45,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>false</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -71,17 +73,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>$(SolutionDir)Dependencies\GLFW;$(SolutionDir)Dependencies\GLEW;$(SolutionDir)Dependencies\FMOD\Lib;$(SolutionDir)Dependencies\REACTPHYSICS3D\Lib;$(SolutionDir)Dependencies\TOSSENGINE;$(LibraryPath)
-</LibraryPath>
-    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(SolutionDir)/Dependencies/REFUREKU/include;$(SolutionDir)TossEngine/</ExternalIncludePath>
-    <OutDir>$(SolutionDir)TossEditor</OutDir>
-    <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>..\..\Dependencies\GLFW;..\..\Dependencies\GLEW;..\..\Dependencies\FMOD\Lib;..\..\Dependencies\REACTPHYSICS3D\Lib;..\..\Dependencies\TOSSENGINE;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/tinyobjloader;..\..\Dependencies/GLFW;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\Dependencies/REFUREKU/include;..\..\TossEngine/</ExternalIncludePath>
+    <OutDir>..\..\TossEditor</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>$(SolutionDir)Dependencies\GLFW;$(SolutionDir)Dependencies\GLEW;$(SolutionDir)Dependencies\FMOD\Lib;$(SolutionDir)Dependencies\REACTPHYSICS3D\Lib;$(SolutionDir)Dependencies\TOSSENGINE;$(LibraryPath)
-</LibraryPath>
-    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(SolutionDir)/Dependencies/REFUREKU/include;$(SolutionDir)TossEngine/</ExternalIncludePath>
-    <OutDir>$(SolutionDir)TossEditor</OutDir>
+    <LibraryPath>..\..\Dependencies\GLFW;..\..\Dependencies\GLEW;..\..\Dependencies\FMOD\Lib;..\..\Dependencies\REACTPHYSICS3D\Lib;..\..\Dependencies\TOSSENGINE;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/tinyobjloader;..\..\Dependencies/GLFW;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\Dependencies/REFUREKU/include;..\..\TossEngine/</ExternalIncludePath>
+    <OutDir>..\..\TossEditor</OutDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
@@ -118,21 +117,23 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IMGUI_IMPL_OPENGL_LOADER_GLAD;IMGUI_IMPL_GLFW;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <ShowIncludes>false</ShowIncludes>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)DebugSymbols\$(TargetName).pdb</ProgramDatabaseFile>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y "$(SolutionDir)TossEditor\C++Scripts.dll" "$(SolutionDir)TossPlayer"</Command>
+      <Command>copy /y "..\..\TossEditor\C++Scripts.dll" "..\..\TossPlayer"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,19 +142,20 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IMGUI_IMPL_OPENGL_LOADER_GLAD;IMGUI_IMPL_GLFW;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)DebugSymbols\$(TargetName).pdb</ProgramDatabaseFile>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
       <Command>copy /y "$(SolutionDir)TossEditor\C++Scripts.dll" "$(SolutionDir)TossPlayer"</Command>

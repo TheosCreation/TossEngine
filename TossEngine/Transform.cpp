@@ -112,7 +112,6 @@ void Transform::deserialize(const nlohmann::json& data)
             if (Transform* parent = LookupParentTransform(parentID))
             {
                 SetParent(parent, false);
-                Debug::Log("Parent Set");
             }
         }
     }

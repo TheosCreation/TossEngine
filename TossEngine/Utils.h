@@ -639,3 +639,11 @@ inline std::string getClassName(const std::type_info& typeInfo)
 
     return name;
 }
+
+inline std::string toLower(const std::string& str)
+{
+    std::string lowerStr = str;
+    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(),
+        [](unsigned char c) { return std::tolower(c); });
+    return lowerStr;
+}

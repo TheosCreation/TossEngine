@@ -56,3 +56,8 @@ Mail : theo.morris@mds.ac.nz
 #include "Rigidbody.h"
 #include "Collider.h"
 #include "Camera.h"
+#include "MeshRenderer.h"
+#include "Image.h"
+#include "Skybox.h"
+#include "Spotlight.h"
+#include "PointLight.h"
