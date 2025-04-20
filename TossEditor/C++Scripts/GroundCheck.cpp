@@ -14,5 +14,4 @@ void GroundCheck::onTriggerEnter(Collider* other)
 void GroundCheck::onTriggerExit(Collider* other)
 {
     isGrounded = false;
-    Debug::Log("Exited");
 }

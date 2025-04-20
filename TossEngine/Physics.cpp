@@ -60,14 +60,17 @@ void Physics::Update()
         m_world->update(Time::DeltaTime);
     }
 
-    // Update raycast debug entries lifetime
-    for (auto it = m_raycastDebugEntries.begin(); it != m_raycastDebugEntries.end(); )
+    if (isDebug)
     {
-        it->lifetime -= Time::DeltaTime;
-        if (it->lifetime <= 0)
-            it = m_raycastDebugEntries.erase(it);
-        else
-            ++it;
+        // Update raycast debug entries lifetime
+        for (auto it = m_raycastDebugEntries.begin(); it != m_raycastDebugEntries.end(); )
+        {
+            it->lifetime -= Time::DeltaTime;
+            if (it->lifetime <= 0)
+                it = m_raycastDebugEntries.erase(it);
+            else
+                ++it;
+        }
     }
 }
 

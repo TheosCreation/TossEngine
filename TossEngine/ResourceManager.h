@@ -80,6 +80,10 @@ public:
     void Reload();
     void CleanUp();
 
+
+    void LoadPrefabs();
+    void DeletePrefabs();
+
 protected:
     bool hasLoadedResources = false;
     bool hasCreatedResources = false;

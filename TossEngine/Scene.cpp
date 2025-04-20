@@ -231,6 +231,7 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         m_gameObjectManager->onTransparencyPass(uniformData);
         m_gameObjectManager->onSkyboxPass(uniformData);
 
+
         if (cameraToRenderOverride)
         {
             Physics::GetInstance().DrawDebug(uniformData);

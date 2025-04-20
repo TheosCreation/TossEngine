@@ -26,6 +26,7 @@ public:
 	void Save() const;
     void Exit();
     void Reload();
+    void DuplicateSelected();
 
     void DeleteSelected();
 

@@ -46,7 +46,7 @@ public:
     virtual void deserialize(const json& data) override;
 
     virtual void OnInspectorGUI() override;
-    void drawComponentInspector(Component* comp, const std::string& displayName, bool isMissing = false);
+    void drawComponentInspector(Component* comp, const std::string& displayName);
 
     virtual void OnSelect() override;
     virtual void OnDeSelect() override;

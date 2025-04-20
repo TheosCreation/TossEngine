@@ -114,7 +114,6 @@ void TossPlayer::onUpdateInternal()
     Physics::GetInstance().Update();
 
     Physics::GetInstance().UpdateInternal();
-    inputManager.onLateUpdate();
 
     //float RenderTime_Begin = TossEngine::GetTime();
 
@@ -124,6 +123,7 @@ void TossPlayer::onUpdateInternal()
 
     // Render to window
     tossEngine.GetWindow()->present();
+    inputManager.onLateUpdate();
 }
 
 void TossPlayer::onQuit()

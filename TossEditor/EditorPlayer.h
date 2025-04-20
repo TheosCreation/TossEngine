@@ -34,7 +34,7 @@ private:
 
     float m_minSpeed = 1.0f; // 
     float m_maxSpeed = 500.0f; // 
-    float m_movementSpeed = 50.0f; // Movement speed of the movable object
+    float m_movementSpeed = 35.0f; // Movement speed of the movable object
     float m_speedAdjustmentFactor = 2.0f; // 
     float m_yaw = 0.0f; // Yaw angle for rotation of the camera
     float m_pitch = 0.0f; // Pitch angle for rotation of the camera

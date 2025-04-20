@@ -42,6 +42,22 @@ void ImGuiLogger::Draw(const char* title, bool* p_open)
     if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar))
     {
         std::lock_guard<std::mutex> lock(m_mutex);
+        auto renderItem = [&](const std::string& msg, int idx)
+            {
+                // Determine color: default, warning=yellow, error=red
+                ImVec4 col = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+                if (msg.rfind("[Error]", 0) == 0)
+                    col = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+                else if (msg.rfind("[Warning]", 0) == 0)
+                    col = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+
+                ImGui::PushStyleColor(ImGuiCol_Text, col);
+                std::string label = msg + "##" + std::to_string(idx);
+                if (ImGui::Selectable(label.c_str()))
+                    ImGui::SetClipboardText(msg.c_str());
+                ImGui::PopStyleColor();
+            };
+
         if (m_Collapse)
         {
             // Recompute collapsed log items when needed.
@@ -90,29 +106,12 @@ void ImGuiLogger::Draw(const char* title, bool* p_open)
             // Output from collapsed log items
 
             for (size_t i = 0; i < m_CollapsedItems.size(); i++)
-            {
-                // Create a unique label by appending a hidden index after "##"
-                std::string uniqueLabel = m_CollapsedItems[i] + "##" + std::to_string(i);
-                if (ImGui::Selectable(uniqueLabel.c_str()))
-                {
-                    // Copy the original log message to the clipboard when clicked.
-                    ImGui::SetClipboardText(m_CollapsedItems[i].c_str());
-                }
-            }
+                renderItem(m_CollapsedItems[i], (int)i);
         }
         else
         {
-            // Output each log line as a selectable item.
             for (size_t i = 0; i < m_Items.size(); i++)
-            {
-                // Create a unique label by appending a hidden index after "##"
-                std::string uniqueLabel = m_Items[i] + "##" + std::to_string(i);
-                if (ImGui::Selectable(uniqueLabel.c_str()))
-                {
-                    // Copy the original log message to the clipboard when clicked.
-                    ImGui::SetClipboardText(m_Items[i].c_str());
-                }
-            }
+                renderItem(m_Items[i], (int)i);
         }
 
         if (m_ScrollToBottom)

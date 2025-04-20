@@ -50,6 +50,10 @@ void EditorPlayer::Update(float deltaTime)
     {
         Editor->Reload();
     }
+    if (inputManager.isKeyDown(KeyLeftControl, false) && inputManager.isKeyPressed(KeyD, false))
+    {
+        Editor->DuplicateSelected();
+    }
     if (inputManager.isKeyPressed(KeyDelete, false))
     {
         Editor->DeleteSelected();

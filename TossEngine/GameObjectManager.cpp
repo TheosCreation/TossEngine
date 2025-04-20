@@ -82,17 +82,27 @@ GameObject* GameObjectManager::Instantiate(const PrefabPtr& prefab, Vector3 posi
     return Instantiate(prefab, nullptr, position, rotation, hasStarted);
 }
 
-bool GameObjectManager::createGameObjectInternal(GameObject* gameObject, string name)
+bool GameObjectManager::createGameObjectInternal(GameObject* gameObject, const string& name, const json& data)
 {
     if (!gameObject)
         return false;
 
-    name = getGameObjectNameAvaliable(name);
 
     size_t newId = m_nextAvailableId++;
-    gameObject->name = name;
     gameObject->setId(newId);
     gameObject->setGameObjectManager(this);
+    if (data != nullptr)
+    {
+        gameObject->deserialize(data);
+        string uniqueName = getGameObjectNameAvaliable(gameObject->name);
+        gameObject->name = uniqueName;
+
+    }
+    else
+    {
+        string uniqueName = getGameObjectNameAvaliable(name);
+        gameObject->name = uniqueName;
+    }
     gameObject->onCreate();
     gameObject->onCreateLate();
 
@@ -100,6 +110,7 @@ bool GameObjectManager::createGameObjectInternal(GameObject* gameObject, string 
 
     return true;
 }
+
 
 string GameObjectManager::getGameObjectNameAvaliable(string currentName)
 {

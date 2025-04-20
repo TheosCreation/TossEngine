@@ -196,7 +196,7 @@ void GameObject::OnInspectorGUI()
 
     for (auto& [typeName, missingComp] : m_missingComponents)
     {
-        drawComponentInspector(missingComp, "Missing: " + typeName, true);
+        drawComponentInspector(missingComp, "Missing: " + typeName);
     }
     ImGui::Separator();
 
@@ -228,7 +228,7 @@ void GameObject::OnInspectorGUI()
     }
 }
 
-void GameObject::drawComponentInspector(Component* comp, const std::string& displayName, bool isMissing)
+void GameObject::drawComponentInspector(Component* comp, const std::string& displayName)
 {
     ImGui::Separator();
     ImGuiTreeNodeFlags flags = (selectedComponent == comp) ? ImGuiTreeNodeFlags_Selected : 0;
@@ -241,10 +241,14 @@ void GameObject::drawComponentInspector(Component* comp, const std::string& disp
     {
         if (ImGui::MenuItem("Delete"))
         {
-            if (!isMissing)
-                removeComponent(comp);
+            if (auto missingComponent = dynamic_cast<MissingComponent*>(comp))
+            {
+                removeMissingComponent(missingComponent);
+            }
             else
-                m_missingComponents.erase(displayName.substr(9)); // "Missing: " prefix stripped
+            {
+                removeComponent(comp);
+            }
 
             if (selectedComponent == comp)
                 selectedComponent = nullptr;

@@ -13,18 +13,36 @@ Author : Theo Morris
 Mail : theo.morris@mds.ac.nz
 ***/
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+
+#ifdef _DEBUG
+int main()
 {
     try
     {
-        TossPlayer tossEditor; // Create an instance of the executable game player
-        tossEditor.run();  // Run the editor
+        TossPlayer tossPlayer; // Create an instance of the player
+        tossPlayer.run();  // Run the player
     }
     catch (const std::exception& e)
     {
-        MessageBoxA(NULL, e.what(), "Error", MB_ICONERROR | MB_OK); // Display error in a message box
         return -1; // Return -1 to indicate an error
     }
 
     return 0; // Return 0 to indicate successful execution
 }
+#else
+
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+    try
+    {
+        TossPlayer tossPlayer; // Create an instance of the player
+        tossPlayer.run();  // Run the player
+    }
+    catch (const std::exception& e)
+    {
+        return -1; // Return -1 to indicate an error
+    }
+
+    return 0; // Return 0 to indicate successful execution
+}
+#endif

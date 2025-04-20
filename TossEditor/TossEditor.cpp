@@ -156,6 +156,19 @@ void TossEditor::Reload()
     requestDllReload.store(true);
 }
 
+void TossEditor::DuplicateSelected()
+{
+    if (selectedSelectable)
+    {
+        if (auto gameObject = dynamic_cast<GameObject*>(selectedSelectable))
+        {
+            json gameObjectJsonData = gameObject->serialize();
+            string name = gameObject->name;
+            TossEngine::GetInstance().getGameObjectManager()->createGameObject<GameObject>(name, gameObjectJsonData);
+        }
+    }
+}
+
 void TossEditor::onUpdateInternal()
 {
     TossEngine& tossEngine = TossEngine::GetInstance();
@@ -175,10 +188,10 @@ void TossEditor::onUpdateInternal()
     // Accumulate time
     m_accumulatedTime += deltaTimeInternal;
     resourceManager.onUpdateInternal();
+    inputManager.onUpdate();
 
     if (auto scene = TossEngine::GetInstance().getCurrentScene())
     {
-        inputManager.onUpdate();
         if (m_gameRunning)
         {
             while (m_accumulatedTime >= Time::FixedDeltaTime)
@@ -355,6 +368,12 @@ void TossEditor::onUpdateInternal()
             scene->onResize(newSize);
             m_sceneFrameBuffer->onResize(newSize);
 
+            Mat4 cameraView;
+            m_player->getCamera()->getViewMatrix(cameraView);
+
+            Mat4 projectionMat;
+            m_player->getCamera()->getProjectionMatrix(projectionMat);
+
             // Now update the scene rendering with the current camera.
             scene->onGraphicsUpdate(camera, m_sceneFrameBuffer);
 
@@ -369,20 +388,18 @@ void TossEditor::onUpdateInternal()
                 {
                     ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
                     ImVec2 imagePos = ImGui::GetItemRectMin();
+                    ImVec2 imageMaxPos = ImGui::GetItemRectMax();
                     ImVec2 imageSize = ImGui::GetItemRectSize();
                     ImGuizmo::SetRect(imagePos.x, imagePos.y, imageSize.x, imageSize.y);
-
-                    Mat4 cameraView;
-                    m_player->getCamera()->getViewMatrix(cameraView);
-
-                    Mat4 projectionMat;
-                    m_player->getCamera()->getProjectionMatrix(projectionMat);
                     //Debug::Log("Before Manipulate: Cursor Pos: (%f, %f)", pos.x, pos.y);
 
                     Mat4 transformMat = gameObject->m_transform.GetMatrix();
 
+                    ImGui::PushClipRect(imagePos, imageMaxPos, true);
+
                     ImGuizmo::Manipulate(glm::value_ptr(cameraView.value), glm::value_ptr(projectionMat.value), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(transformMat.value));
-                    
+
+                    ImGui::PopClipRect();
                     if (ImGuizmo::IsUsingAny())
                     {
                         Debug::Log("using any");
@@ -1243,9 +1260,6 @@ void TossEditor::onUpdateInternal()
 
     graphicsEngine.renderImGuiFrame();
     
-    
-    double RenderTime_End = (double)glfwGetTime();
-
 
     if (imGuiIo.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
@@ -1462,13 +1476,14 @@ void TossEditor::PerformSafeDllReload()
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     //Save();
     auto scene = TossEngine::GetInstance().getCurrentScene();
+    resourceManager.saveResourcesDescs("Resources/Resources.json"); // save resources just in case of crash and to save prefabs
+    selectedSelectable = nullptr; //because we are reloading the scene we can have to pointing to a old object
     canUpdateInternal = false;
     if (scene) scene->clean();
-    resourceManager.CleanUp();
+    resourceManager.DeletePrefabs();
     TossEngine::GetInstance().ReloadScripts();
-
-    resourceManager.createResourcesFromDescs();
-    if (scene) scene->reload();
+    resourceManager.LoadPrefabs();
+    if (scene) scene->reload(); // reloading scene for new script types or changes to scripts
 
     canUpdateInternal = true;
 }
@@ -1528,3 +1543,73 @@ void TossEditor::OpenSceneViaFileSystem()
         }
     }
 }
+//void DrawSceneViewWindow(FrameBuffer* editorFB,
+//    GameObject* editorCamera,
+//    Scene* scene,
+//    GameObject* selected,
+//    float deltaTime)
+//{
+//    editorCamera->Update(deltaTime);
+//    editorFB->Bind();
+//    scene->Render(editorFB, editorCamera->GetComponent<Camera>());
+//    editorFB->Unbind();
+//
+//    ImGui::Begin("Scene View");
+//
+//    ImVec2 sz((float)editorFB->GetWidth(), (float)editorFB->GetHeight());
+//    ImGui::Image((ImTextureID)(intptr_t)editorFB->GetTextureID(), sz);
+//
+//    ImVec2 img_min = ImGui::GetItemRectMin();
+//    ImVec2 img_max = ImGui::GetItemRectMax();
+//    ImVec2 img_sz{ img_max.x - img_min.x, img_max.y - img_min.y };
+//
+//    ImGuizmo::BeginFrame();
+//    ImGuizmo::Enable(selected != nullptr);
+//    ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
+//    ImGuizmo::SetOrthographic(false);
+//    ImGuizmo::SetRect(img_min.x, img_min.y, img_sz.x, img_sz.y);
+//
+//    Camera* cam = editorCamera->GetComponent<Camera>();
+//    glm::mat4 view = cam->GetViewMatrix();
+//    glm::mat4 proj = cam->GetProjectionMatrix();
+//    proj[1][1] *= -1.0f;
+//
+//    if (selected)
+//    {
+//        ImGuizmo::OPERATION op = ImGuizmo::TRANSLATE;
+//
+//        glm::mat4 model = selected->GetWorldMatrix();
+//
+//        ImGui::PushClipRect(img_min, img_max, true);
+//
+//        bool depth = glIsEnabled(GL_DEPTH_TEST);
+//        if (depth) glDisable(GL_DEPTH_TEST);
+//
+//        ImGuizmo::Manipulate(
+//            glm::value_ptr(view),
+//            glm::value_ptr(proj),
+//            op,
+//            ImGuizmo::LOCAL,
+//            glm::value_ptr(model)
+//        );
+//
+//        if (depth) glEnable(GL_DEPTH_TEST);
+//
+//        ImGui::PopClipRect();
+//
+//        if (ImGuizmo::IsUsing()) {
+//            glm::vec3 t, r, s;
+//            ImGuizmo::DecomposeMatrixToComponents(
+//                glm::value_ptr(model),
+//                glm::value_ptr(t),
+//                glm::value_ptr(r),
+//                glm::value_ptr(s)
+//            );
+//            selected->transform.position = t;
+//            selected->transform.rotation = glm::quat(glm::radians(r));
+//            selected->transform.scale = s;
+//        }
+//    }
+//
+//    ImGui::End();
+//}

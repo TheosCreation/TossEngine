@@ -772,9 +772,10 @@ void ResourceManager::DeleteFromSavedData(const std::shared_ptr<Resource>& resou
         }
     }
     // For Prefab
-    else if (std::dynamic_pointer_cast<Prefab>(resource)) {
+    else if (auto prefab = std::dynamic_pointer_cast<Prefab>(resource)) {
         auto prefabIt = m_prefabDescs.find(uniqueId);
         if (prefabIt != m_prefabDescs.end()) {
+            prefab->onDestroy();
             m_prefabDescs.erase(prefabIt);
             Debug::Log("Deleted Prefab: " + uniqueId);
         }
@@ -828,7 +829,6 @@ void ResourceManager::DeleteFromSavedData(const std::shared_ptr<Resource>& resou
         }
     }
 }
-
 void ResourceManager::Reload()
 {
     CleanUp();
@@ -847,6 +847,31 @@ void ResourceManager::CleanUp()
         }
     }
     m_mapResources.clear();
+}
+
+void ResourceManager::LoadPrefabs()
+{
+    // Create Prefabs
+    for (const auto& [uniqueID, prefabData] : m_prefabDescs)
+    {
+        createPrefab(uniqueID, prefabData);
+    }
+}
+
+void ResourceManager::DeletePrefabs()
+{
+    for (auto it = m_mapResources.begin(); it != m_mapResources.end(); )
+    {
+        if (auto prefab = std::dynamic_pointer_cast<Prefab>(it->second))
+        {
+            prefab->onDestroy();
+            it = m_mapResources.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }
 
 void ResourceManager::SetSelectedResource(ResourcePtr selectedResource)
@@ -879,11 +904,7 @@ CoroutineTask ResourceManager::createResourcesFromDescs()
         createShader(shaderDesc, uniqueID);
     }
 
-    // Create Prefabs
-    for (const auto& [uniqueID, prefabData] : m_prefabDescs)
-    {
-        createPrefab(uniqueID, prefabData);
-    }
+    LoadPrefabs();
 
     // Create Sounds
     for (const auto& [uniqueID, soundDesc] : m_soundDescs)
