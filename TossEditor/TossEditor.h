@@ -1,6 +1,7 @@
 #pragma once
 #include "Resizable.h"
 #include "EditorPreferences.h"
+#include <ImGuizmo.h>
 #include "TossEngine.h"
 
 class Window;
@@ -106,4 +107,6 @@ private:
     float m_previousTime = 0.0f;
     const float m_fixedTimeStep = 1.0f / 60.0f; // Fixed time step (60 FPS)
     float m_accumulatedTime = 0; //The current frame's time
+
+    ImGuizmo::OPERATION m_currentManipulateOperation = ImGuizmo::OPERATION::TRANSLATE;
 };

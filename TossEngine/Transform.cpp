@@ -1,4 +1,4 @@
-#include "Transform.h"
+﻿#include "Transform.h"
 #include "GameObject.h"
 #include "GameObjectManager.h"
 #include "Prefab.h"
@@ -47,24 +47,36 @@ Mat4 Transform::GetMatrix() const
 
 void Transform::SetMatrix(const Mat4& matrix)
 {
-    const glm::mat4& raw = matrix.value;
+    const glm::mat4 world = matrix.value;
 
-    // Extract translation (last column)
-    position = Vector3(raw[3]);
+    glm::mat4 parentWorld = parent
+        ? parent->GetMatrix().value
+        : glm::mat4(1.0f);
+    glm::mat4 localMat = glm::inverse(parentWorld) * world;
 
-    // Extract scale
-    scale.x = Vector3(raw[0]).Length();
-    scale.y = Vector3(raw[1]).Length();
-    scale.z = Vector3(raw[2]).Length();
+    localPosition = Vector3(localMat[3]);   // column 3 is translation
 
-    // Remove scale from matrix to isolate rotation
-    glm::mat4 rotMatrix = glm::mat4(1.0f);
-    rotMatrix[0] = glm::vec4(glm::normalize(glm::vec3(raw[0])), 0.0f);
-    rotMatrix[1] = glm::vec4(glm::normalize(glm::vec3(raw[1])), 0.0f);
-    rotMatrix[2] = glm::vec4(glm::normalize(glm::vec3(raw[2])), 0.0f);
-    rotMatrix[3] = glm::vec4(0, 0, 0, 1);
+    localScale.x = glm::length(glm::vec3(localMat[0]));
+    localScale.y = glm::length(glm::vec3(localMat[1]));
+    localScale.z = glm::length(glm::vec3(localMat[2]));
 
-    rotation = Quaternion(glm::quat_cast(rotMatrix));
+    glm::mat4 rotMat = glm::mat4(1.0f);
+    rotMat[0] = glm::vec4(glm::normalize(glm::vec3(localMat[0])), 0.0f);
+    rotMat[1] = glm::vec4(glm::normalize(glm::vec3(localMat[1])), 0.0f);
+    rotMat[2] = glm::vec4(glm::normalize(glm::vec3(localMat[2])), 0.0f);
+
+    localRotation = Quaternion(glm::quat_cast(rotMat));
+
+    position = Vector3(world[3]);
+    scale.x = glm::length(glm::vec3(world[0]));
+    scale.y = glm::length(glm::vec3(world[1]));
+    scale.z = glm::length(glm::vec3(world[2]));
+
+    glm::mat4 worldRot = glm::mat4(1.0f);
+    worldRot[0] = glm::vec4(glm::normalize(glm::vec3(world[0])), 0.0f);
+    worldRot[1] = glm::vec4(glm::normalize(glm::vec3(world[1])), 0.0f);
+    worldRot[2] = glm::vec4(glm::normalize(glm::vec3(world[2])), 0.0f);
+    rotation = Quaternion(glm::quat_cast(worldRot));
 }
 
 void Transform::UpdateWorldTransform()

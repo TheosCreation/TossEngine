@@ -36,18 +36,32 @@ public:
     void Init(TossPlayerSettingsPtr& playerSettings);
 
     /**
-     * @brief Checks if the specified key is currently being held down.
-     * @param key The key to check.
-     * @param checkPlayMode
-     * @return True if the key is down, false otherwise.
+     * @brief Returns true if key is currently being held down.
+     *
+     * This method fires every frame that the key is held down, and if
+     * checkPlayMode is true it will always return false when play mode
+     * is disabled so you wont get accidental pressed events in edit mode.
+     *
+     * @param key           The key code to query.
+     * @param checkPlayMode If true (the default) ignores presses entirely
+     *                      when not in play mode.
+     * @return              True if the key is held this frame (and play
+     *                      mode is on if checking) false otherwise.
      */
     bool isKeyDown(Key key, bool checkPlayMode = true) const;
 
     /**
-     * @brief Checks if the specified key was pressed.
-     * @param key The key to check.
-     * @param checkPlayMode
-     * @return True if the key was pressed, false otherwise.
+     * @brief Returns true on the exact frame that the key transitions from up to down.
+     *
+     * This method only fires once per press (not continuous), and if
+     * checkPlayMode is true it will always return false when play mode
+     * is disabled so you wont get accidental pressed events in edit mode.
+     *
+     * @param key           The key code to query.
+     * @param checkPlayMode If true (the default) ignores presses entirely
+     *                      when not in play mode.
+     * @return              True if the key was pressed this frame (and play
+     *                      mode is on if checking) false otherwise.
      */
     bool isKeyPressed(Key key, bool checkPlayMode = true) const;
 

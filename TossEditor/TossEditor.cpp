@@ -8,7 +8,6 @@
 #include "FileWatcher.h"
 #include "Camera.h"
 #include <imgui.h>
-#include <ImGuizmo.h>
 #include <glfw3.h>
 
 #include "imgui_internal.h"
@@ -154,6 +153,10 @@ void TossEditor::Exit()
 void TossEditor::Reload()
 {
     requestDllReload.store(true);
+
+    //Make sure we are resetting the state of the editor
+    m_gameRunning = false;
+    InputManager::GetInstance().enablePlayMode(false);
 }
 
 void TossEditor::DuplicateSelected()
@@ -177,6 +180,9 @@ void TossEditor::onUpdateInternal()
     ResourceManager& resourceManager = ResourceManager::GetInstance();
 
     FindSceneFiles();
+
+    graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
+    graphicsEngine.createImGuiFrame();
 
     // delta time
     m_currentTime = TossEngine::GetTime();
@@ -218,8 +224,6 @@ void TossEditor::onUpdateInternal()
         Physics::GetInstance().UpdateInternal();
     }
 
-    graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
-    graphicsEngine.createImGuiFrame();
 
     ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
     ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
@@ -278,7 +282,7 @@ void TossEditor::onUpdateInternal()
                 Reload();
             }
             ImGui::Separator();
-            if (ImGui::MenuItem("Exit", "CTRL+E"))
+            if (ImGui::MenuItem("Exit", "CTRL+ESC"))
             {
                 Exit();
             }
@@ -388,33 +392,24 @@ void TossEditor::onUpdateInternal()
                     ImVec2 imageMaxPos = ImGui::GetItemRectMax();
                     ImVec2 imageSize = ImGui::GetItemRectSize();
                     ImGuizmo::SetRect(imagePos.x, imagePos.y, imageSize.x, imageSize.y);
-                    //Debug::Log("Before Manipulate: Cursor Pos: (%f, %f)", pos.x, pos.y);
 
                     Mat4 transformMat = gameObject->m_transform.GetMatrix();
 
                     ImGui::PushClipRect(imagePos, imageMaxPos, true);
-
 
                     Mat4 cameraView;
                     m_player->getCamera()->getViewMatrix(cameraView);
 
                     Mat4 projectionMat;
                     m_player->getCamera()->getProjectionMatrix(projectionMat);
-                    ImGuizmo::Manipulate(glm::value_ptr(cameraView.value), glm::value_ptr(projectionMat.value), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(transformMat.value));
 
-                    if (ImGuizmo::IsUsingAny())
-                    {
-                        Debug::Log("using any");
-                        gameObject->m_transform.SetMatrix(transformMat);
-                    }
-                    if (ImGuizmo::IsOver())
-                    {
-                        //Debug::Log("over");
-                    }
+
+                    ImGuizmo::Manipulate(glm::value_ptr(cameraView.value), glm::value_ptr(projectionMat.value), m_currentManipulateOperation, ImGuizmo::WORLD, glm::value_ptr(transformMat.value));
+
                     if (ImGuizmo::IsUsing())
                     {
-                        Debug::Log("using");
                         gameObject->m_transform.SetMatrix(transformMat);
+                        gameObject->m_transform.UpdateWorldTransform();
                     }
                     ImGui::PopClipRect();
                 }
