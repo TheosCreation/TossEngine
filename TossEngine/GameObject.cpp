@@ -65,6 +65,7 @@ json GameObject::serialize() const
         {"type", getClassName(typeid(*this))}, // Use typeid to get the class name
         {"id", m_id},
         {"name", name},
+        {"isActive", isActive},
         {"layer", m_layer},
         {"tag", tag},
         { "transform", m_transform.serialize() },
@@ -77,6 +78,10 @@ void GameObject::deserialize(const json& data)
     if (data.contains("name"))
     {
         name = data["name"];
+    }
+    if (data.contains("isActive"))
+    {
+        isActive = data["isActive"];
     }
     if (data.contains("layer"))
     {
@@ -118,6 +123,8 @@ void GameObject::OnInspectorGUI()
 {
     ImGui::Text("Selected Object: %s", name.c_str());
 
+    ImGui::Checkbox("Active", &isActive);
+
     // You can define the size of the buffer based on your needs
     strncpy_s(tagBuffer, tag.c_str(), sizeof(tagBuffer)); // Copy the existing tag into the buffer
     tagBuffer[sizeof(tagBuffer) - 1] = '\0';
@@ -126,7 +133,6 @@ void GameObject::OnInspectorGUI()
     {
         tag = std::string(tagBuffer);
     }
-    
     // Retrieve available layers from the LayerManager.
     LayerManager& layerManager = LayerManager::GetInstance();
     const auto& availableLayers = layerManager.GetLayers();
@@ -321,6 +327,8 @@ void GameObject::onCreateLate()
 
 void GameObject::onStart()
 {
+    if (!isActive) return;
+
     for (auto& pair : m_components) {
         pair.second->onStart();
     }
@@ -328,6 +336,8 @@ void GameObject::onStart()
 
 void GameObject::onLateStart()
 {
+    if (!isActive) return;
+
     for (auto& pair : m_components) {
         pair.second->onLateStart();
     }
@@ -337,6 +347,8 @@ void GameObject::onLateStart()
 
 void GameObject::onFixedUpdate()
 {
+    if (!isActive) return;
+
     for (auto& pair : m_components) {
         pair.second->onFixedUpdate();
     }
@@ -344,6 +356,8 @@ void GameObject::onFixedUpdate()
 
 void GameObject::onUpdate()
 {
+    if (!isActive) return;
+
     m_transform.UpdateWorldTransform();
 
     for (auto& pair : m_components) {

@@ -39,6 +39,7 @@ public:
     string m_layer = "Default";
     Transform m_transform;
     bool isDestroyed = false;
+    bool isActive = true;
 
     // Serialize the GameObject to JSON
     virtual json serialize() const override;

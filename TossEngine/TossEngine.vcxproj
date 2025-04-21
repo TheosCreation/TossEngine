@@ -238,6 +238,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Co
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImGuiLogger.cpp" />
     <ClCompile Include="ISelectable.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mat3.cpp" />
     <ClCompile Include="Mat4.cpp" />
@@ -313,6 +314,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Co
     <ClInclude Include="GeometryBuffer.h" />
     <ClInclude Include="JsonUtility.h" />
     <ClInclude Include="LayerManager.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Mat3.h" />
     <ClInclude Include="Mat4.h" />
     <ClInclude Include="MissingComponent.h" />

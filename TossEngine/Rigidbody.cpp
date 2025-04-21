@@ -288,14 +288,14 @@ Collider* Rigidbody::GetCollider() const
 
 void Rigidbody::AddForce(const Vector3& force) const
 {
-    if (m_Body && force.Length() > 100.0f * m_Body->getMass()) {
+    if (m_Body && force.Length() > 0.1f * m_Body->getMass()) {
         m_Body->applyWorldForceAtCenterOfMass(rp3d::Vector3(force.x, force.y, force.z));
     }
 }
 
 void Rigidbody::AddTorque(const Vector3& torque) const
 {
-    if (m_Body && torque.Length() > 100.0f * m_Body->getMass())
+    if (m_Body && torque.Length() > 0.1f * m_Body->getMass())
     {
         m_Body->applyWorldForceAtCenterOfMass(rp3d::Vector3(torque.x, torque.y, torque.z));
     }

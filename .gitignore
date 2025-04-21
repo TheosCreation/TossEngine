@@ -19,3 +19,9 @@ TossEditor/TossEngine.dll
 TossEditor/TossEditor.pdb
 TossEditor/TossEditor.exe
 TossEditor/C++Scripts.dll
+TossEditor/C++Scripts.lib
+TossEditor/C++Scripts.exp
+Dependencies/TOSSENGINE/TossEngine.pdb
+Dependencies/TOSSENGINE/TossEngine.dll
+Dependencies/TOSSENGINE/TossEngine.exp
+Dependencies/TOSSENGINE/TossEngine.lib

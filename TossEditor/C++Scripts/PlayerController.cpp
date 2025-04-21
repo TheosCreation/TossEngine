@@ -124,6 +124,7 @@ void PlayerController::onFixedUpdate()
         // Accelerate toward direction
         Vector3 desiredVelocity = moveDirection * m_movementSpeed;
         Vector3 velocityChange = desiredVelocity - velocity;
+        velocityChange.y = 0.0f;
 
         // If on the ground, set the linear velocity directly
         if (m_groundCheck->isGrounded)

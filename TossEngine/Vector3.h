@@ -45,6 +45,7 @@ public:
 
     static Vector3 ExtractTranslation(const Mat4& m);
     static Vector3 ExtractScale(const Mat4& m);
+    static Vector3 Lerp(Vector3 startVector, Vector3 endVector, float t);
 
     Mat4 ToTranslation() const;
     Mat4 ToScale() const; 

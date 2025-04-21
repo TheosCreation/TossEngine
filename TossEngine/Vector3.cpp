@@ -37,6 +37,13 @@ Vector3 Vector3::ExtractScale(const Mat4& m)
     return scale;
 }
 
+Vector3 Vector3::Lerp(Vector3 startVector, Vector3 endVector, float t)
+{
+    t = std::clamp(t, 0.0f, 1.0f);
+
+    return startVector + (endVector - startVector) * t;
+}
+
 Mat4 Vector3::ToTranslation() const
 {
     return Mat4(glm::translate(glm::mat4(1.0f), static_cast<glm::vec3>(*this)));

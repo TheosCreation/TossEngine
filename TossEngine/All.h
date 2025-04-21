@@ -61,3 +61,4 @@ Mail : theo.morris@mds.ac.nz
 #include "Skybox.h"
 #include "Spotlight.h"
 #include "PointLight.h"
+#include "DirectionalLight.h"

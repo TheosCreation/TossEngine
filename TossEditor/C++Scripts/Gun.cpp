@@ -17,8 +17,7 @@ void Gun::onStart()
 
 void Gun::onUpdate()
 {
-    auto& inputManager = InputManager::GetInstance();
-    if(inputManager.isMouseDown(MouseButtonLeft) && shootTimer <= 0.0f)
+    if(m_isFiring && shootTimer <= 0.0f)
     {
         shootTimer = m_fireRate;
 
@@ -34,4 +33,19 @@ void Gun::onUpdate()
     {
         shootTimer -= Time::DeltaTime;
     }
+}
+
+void Gun::SetFiring(bool firing)
+{
+    m_isFiring = firing;
+}
+
+bool Gun::GetAiming() const
+{
+    return m_isAiming;
+}
+
+void Gun::SetAiming(bool aiming)
+{
+    m_isAiming = aiming;
 }
