@@ -43,8 +43,8 @@ void Physics::UpdateInternal()
         case rp3d::CollisionShapeType::CAPSULE:
             m_commonSettings.destroyCapsuleShape(dynamic_cast<rp3d::CapsuleShape*>(shape));
             break;
-        default:
-            // if you ever use other shapes: convex meshes, triangle meshes, etc.
+        case reactphysics3d::CollisionShapeType::CONCAVE_SHAPE:
+            //later development
             break;
         }
 
@@ -55,9 +55,9 @@ void Physics::UpdateInternal()
 
 void Physics::Update()
 {
-    if (m_world && Time::DeltaTime > 0.0f)
+    if (m_world && Time::FixedDeltaTime > 0.0f)
     {
-        m_world->update(Time::DeltaTime);
+        m_world->update(Time::FixedDeltaTime);
     }
 
     if (isDebug)
@@ -65,7 +65,7 @@ void Physics::Update()
         // Update raycast debug entries lifetime
         for (auto it = m_raycastDebugEntries.begin(); it != m_raycastDebugEntries.end(); )
         {
-            it->lifetime -= Time::DeltaTime;
+            it->lifetime -= Time::FixedDeltaTime;
             if (it->lifetime <= 0)
                 it = m_raycastDebugEntries.erase(it);
             else
@@ -106,23 +106,23 @@ void Physics::SetDebug(bool debug)
     // Setup for lines VAO
     glBindVertexArray(VAO_lines);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_lines);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), (void*)offsetof(DebugVertex, position));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), reinterpret_cast<void*>(offsetof(DebugVertex, position)));
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), (void*)offsetof(DebugVertex, color));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), reinterpret_cast<void*>(offsetof(DebugVertex, color)));
     glEnableVertexAttribArray(1);
     glBindVertexArray(0);
 
     // Setup for triangles VAO
     glBindVertexArray(VAO_tris);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_tris);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), (void*)offsetof(DebugVertex, position));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), reinterpret_cast<void*>(offsetof(DebugVertex, position)));
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), (void*)offsetof(DebugVertex, color));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), reinterpret_cast<void*>(offsetof(DebugVertex, color)));
     glEnableVertexAttribArray(1);
     glBindVertexArray(0);
 }
 
-bool Physics::GetDebug()
+bool Physics::GetDebug() const
 {
     return isDebug;
 }
@@ -137,7 +137,7 @@ void Physics::SetGravity(const Vector3& gravity)
     }
 }
 
-void Physics::DrawDebug(UniformData data)
+void Physics::DrawDebug(UniformData data) const
 {
     // Retrieve debug data from ReactPhysics3D
     reactphysics3d::DebugRenderer& debugRenderer = m_world->getDebugRenderer();
@@ -302,64 +302,30 @@ void Physics::onContact(const rp3d::CollisionCallback::CallbackData& data) {
             continue;
         }
 
+        auto eventType = contactPair.getEventType();
+
         // Retrieve the colliders.
         rp3d::Collider* collider1 = contactPair.getCollider1();
         rp3d::Collider* collider2 = contactPair.getCollider2();
 
-        // Create a CollisionPair and add it to the current set.
-        CollisionPair currentPair{ collider1, collider2 };
-        currentCollisionPairs.insert(currentPair);
+        if (collider1 && collider2) {
 
-        // Get the bodies from the colliders.
-        rp3d::Body* body1 = collider1->getBody();
-        rp3d::Body* body2 = collider2->getBody();
+            Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
+            Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
 
-        if (body1 && body2) {
-            // Retrieve the custom Rigidbody components.
-            Rigidbody* customRigidbody1 = static_cast<Rigidbody*>(body1->getUserData());
-            Rigidbody* customRigidbody2 = static_cast<Rigidbody*>(body2->getUserData());
-
-            // Only call OnCollisionEnter if this collision pair is new.
-            if (m_previousCollisionPairs.find(currentPair) == m_previousCollisionPairs.end()) {
-                if (customRigidbody1) {
-                    customRigidbody1->OnCollisionEnter(customRigidbody2);
-                }
-                if (customRigidbody2) {
-                    customRigidbody2->OnCollisionEnter(customRigidbody1);
-                }
+            //for now all we are passing through is the other collider, we need to pass through the contact pair but reconstruct it
+            if (eventType == ContactPair::EventType::ContactStart) {
+                customCollider1->OnCollisionEnter(customCollider2);
+                customCollider2->OnCollisionEnter(customCollider1);
             }
-        }
-        else {
-            std::cerr << "Invalid body detected in contact pair." << std::endl;
-        }
-    }
+            else if (eventType == ContactPair::EventType::ContactExit) {
 
-    // Detect collision exit events:
-    // For any pair that was active in the previous frame but not in the current one, call OnCollisionExit.
-    for (const auto& previousPair : m_previousCollisionPairs) {
-        if (currentCollisionPairs.find(previousPair) == currentCollisionPairs.end()) {
-            rp3d::Collider* collider1 = previousPair.collider1;
-            rp3d::Collider* collider2 = previousPair.collider2;
-
-            rp3d::Body* body1 = collider1->getBody();
-            rp3d::Body* body2 = collider2->getBody();
-
-            if (body1 && body2) {
-                Rigidbody* customRigidbody1 = static_cast<Rigidbody*>(body1->getUserData());
-                Rigidbody* customRigidbody2 = static_cast<Rigidbody*>(body2->getUserData());
-
-                if (customRigidbody1) {
-                    customRigidbody1->OnCollisionExit(customRigidbody2);
-                }
-                if (customRigidbody2) {
-                    customRigidbody2->OnCollisionExit(customRigidbody1);
-                }
+                customCollider1->OnCollisionExit(customCollider2);
+                customCollider2->OnCollisionExit(customCollider1);
             }
         }
     }
 
-    // Update the stored collision pairs for the next simulation step.
-    m_previousCollisionPairs = currentCollisionPairs;
 }
 
 void Physics::onTrigger(const rp3d::OverlapCallback::CallbackData& data) {

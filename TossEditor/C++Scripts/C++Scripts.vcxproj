@@ -158,7 +158,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y "$(SolutionDir)TossEditor\C++Scripts.dll" "$(SolutionDir)TossPlayer"</Command>
+      <Command>copy /y "..\..\TossEditor\C++Scripts.dll" "..\..\TossPlayer"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

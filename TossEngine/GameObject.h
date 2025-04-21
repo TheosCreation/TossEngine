@@ -38,6 +38,7 @@ public:
     string tag = "";
     string m_layer = "Default";
     Transform m_transform;
+    bool isDestroyed = false;
 
     // Serialize the GameObject to JSON
     virtual json serialize() const override;
@@ -129,7 +130,7 @@ public:
     virtual void onDestroy();
 
     void CallOnCollisionEnterCallbacks(Collider* other) const;
-    void CallOnCollisionExitCallbacks(Collider* other) const;
+    void CallOnCollisionExitCallbacks(Collider* other);
     void CallOnTriggerEnterCallbacks(Collider* other) const;
     void CallOnTriggerExitCallbacks(Collider* other) const;
 

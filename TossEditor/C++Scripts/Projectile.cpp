@@ -22,22 +22,23 @@ void Projectile::onTriggerEnter(Collider* other)
     GameObject* gameObject = other->getOwner();
 
     if (gameObject->tag == "Projectile") return;
+
     if (gameObject->tag == "Ground")
     {
         Destroy(m_owner);
+        return;
     }
 
     if (Enemy* enemy = gameObject->getComponent<Enemy>())
     {
         enemy->TakeDamage(m_damage);
         Destroy(m_owner);
+        return;
     }
 
-    if (gameObject->getComponent<PlayerController>())
+    if (PlayerController* player = gameObject->getComponent<PlayerController>())
     {
         Destroy(m_owner);
+        return;
     }
-
-    //hit something else
-    //
 }

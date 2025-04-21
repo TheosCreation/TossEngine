@@ -147,9 +147,12 @@ string GameObjectManager::getGameObjectNameAvaliable(string currentName)
     return candidateName;
 }
 
-void GameObjectManager::removeGameObject(GameObject* gameObject)
+void GameObjectManager::removeGameObject(const GameObject* gameObject)
 {
-    m_gameObjectsToDestroy.push_back(gameObject->getId());
+    if (gameObject && !gameObject->isDestroyed && !m_gameObjectsToDestroy.contains(gameObject->getId()))
+    {
+        m_gameObjectsToDestroy.insert(gameObject->getId());
+    }
 }
 
 void GameObjectManager::loadGameObjects(const json& data)
@@ -305,34 +308,36 @@ void GameObjectManager::onLateStart() const
 
 void GameObjectManager::onUpdate()
 {
-    onUpdateInternal();
-
     for (const auto& pair : m_gameObjects)
     {
         if (!pair.second) continue;
 
         pair.second->onUpdate();
     }
+
+    onUpdateInternal();
 }
 
 void GameObjectManager::onUpdateInternal()
 {
-    for (size_t gameObjectId : m_gameObjectsToDestroy)
-    {
-        if (auto gameObject = m_gameObjects[gameObjectId])
-        {
-            gameObject->onDestroy();
-            m_gameObjects.erase(gameObjectId);  // Directly erase by ID
-        }
-    }
-    m_gameObjectsToDestroy.clear();
-
     for (const auto& pair : m_gameObjects)
     {
         if (!pair.second) continue;
 
         pair.second->onUpdateInternal();
     }
+
+    for (size_t gameObjectId : m_gameObjectsToDestroy)
+    {
+        if (auto gameObject = m_gameObjects[gameObjectId])
+        {
+            gameObject->onDestroy();
+            gameObject->isDestroyed = true;
+            m_gameObjects.erase(gameObjectId);  // Directly erase by ID
+            delete gameObject;
+        }
+    }
+    m_gameObjectsToDestroy.clear();
 }
 
 void GameObjectManager::onLateUpdate() const

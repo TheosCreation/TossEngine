@@ -71,7 +71,7 @@ public:
      * @brief Removes an GameObject from the system.
      * @param GameObject Pointer to the GameObject to remove.
      */
-    void removeGameObject(GameObject* gameObject);
+    void removeGameObject(const GameObject* gameObject);
 
     void loadGameObjects(const json& data);
     json saveGameObjects() const;
@@ -174,7 +174,7 @@ private:
     /**
      * @brief Set of entities scheduled for destruction.
      */
-    std::vector<size_t> m_gameObjectsToDestroy;
+    std::unordered_set<size_t> m_gameObjectsToDestroy;
     GameObject* selectedGameObject = nullptr;
 
     /**

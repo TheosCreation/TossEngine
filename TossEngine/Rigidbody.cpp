@@ -107,6 +107,7 @@ void Rigidbody::onCreate()
     // Create rigid body
     m_Body = world->createRigidBody(bodyTransform);
     m_Body->setUserData(this);
+    m_Body->setIsSleeping(true);
 
     // Apply the default body type
     SetBodyType(m_BodyType);
@@ -132,14 +133,16 @@ void Rigidbody::onStart()
     }
     if (m_Body == nullptr) {
         Debug::LogError("Error: Rigidbody Body is nullptr!");
-        return;
     }
 
     UpdatePositionConstraints();
     UpdateRotationConstraints();
 
     // Ensure the body is not sleeping when the simulation starts
-    m_Body->setIsSleeping(false);
+    if (m_Body)
+    {
+        m_Body->setIsSleeping(false);
+    }
 }
 
 
@@ -149,40 +152,42 @@ void Rigidbody::onUpdate()
     //{
     //    UpdateBodyTransform();
     //}
-    if (!m_Body) return;
+    if (m_Body)
+    {
 
-    rp3d::Transform bodyTransform = m_Body->getTransform();
-    rp3d::Vector3 position = bodyTransform.getPosition();
-    rp3d::Quaternion rotation = bodyTransform.getOrientation();
-    if (rotation.length() <= rp3d::MACHINE_EPSILON) {
-        rotation = rp3d::Quaternion::identity();
+        rp3d::Transform bodyTransform = m_Body->getTransform();
+        rp3d::Vector3 position = bodyTransform.getPosition();
+        rp3d::Quaternion rotation = bodyTransform.getOrientation();
+        if (rotation.length() <= rp3d::MACHINE_EPSILON) {
+            rotation = rp3d::Quaternion::identity();
+        }
+        else {
+            rotation.normalize();
+        }
+
+        // Apply position constraints
+        Vector3& pos = m_owner->m_transform.localPosition;
+        if (!positionAxisLocks[0]) pos.x = position.x;
+        if (!positionAxisLocks[1]) pos.y = position.y;
+        if (!positionAxisLocks[2]) pos.z = position.z;
+
+        // Apply rotation constraints
+        Quaternion currentRot = m_owner->m_transform.localRotation;
+        Quaternion newRot(rotation.w, rotation.x, rotation.y, rotation.z);
+
+        // Simple approach: convert both to Euler angles
+        Vector3 currentEuler = currentRot.ToEulerAngles();
+        Vector3 newEuler = newRot.ToEulerAngles();
+
+        if (!rotationAxisLocks[0]) currentEuler.x = newEuler.x;
+        if (!rotationAxisLocks[1]) currentEuler.y = newEuler.y;
+        if (!rotationAxisLocks[2]) currentEuler.z = newEuler.z;
+
+        m_owner->m_transform.localRotation = Quaternion(currentEuler);
+
+
+        UpdateBodyTransform();
     }
-    else {
-        rotation.normalize();
-    }
-
-    // Apply position constraints
-    Vector3& pos = m_owner->m_transform.localPosition;
-    if (!positionAxisLocks[0]) pos.x = position.x;
-    if (!positionAxisLocks[1]) pos.y = position.y;
-    if (!positionAxisLocks[2]) pos.z = position.z;
-
-    // Apply rotation constraints
-    Quaternion currentRot = m_owner->m_transform.localRotation;
-    Quaternion newRot(rotation.w, rotation.x, rotation.y, rotation.z);
-
-    // Simple approach: convert both to Euler angles
-    Vector3 currentEuler = currentRot.ToEulerAngles();
-    Vector3 newEuler = newRot.ToEulerAngles();
-
-    if (!rotationAxisLocks[0]) currentEuler.x = newEuler.x;
-    if (!rotationAxisLocks[1]) currentEuler.y = newEuler.y;
-    if (!rotationAxisLocks[2]) currentEuler.z = newEuler.z;
-
-    m_owner->m_transform.localRotation = Quaternion(currentEuler);
-
-
-    UpdateBodyTransform();
 }
 
 void Rigidbody::onUpdateInternal()
@@ -221,13 +226,31 @@ void Rigidbody::UpdateBodyTransform() const
 
 void Rigidbody::onDestroy()
 {
-    if(m_Body) {
-        m_Body->setIsActive(false);
-        Physics::GetInstance().DestroyBody(m_Body, m_owner->getWorld());
-
-        m_Body = nullptr;
-        m_Collider = nullptr;
+    if (!m_Body)
+    {
+        Debug::LogError("Tried to destroy null Rigidbody");
+        return;
     }
+
+    called++;
+    if (called >= 2)
+    {
+        Debug::LogError("Destroyed Rigidbody twice");
+    }
+
+    m_Body->setIsActive(false);
+
+    if (m_owner && m_owner->getWorld())
+    {
+        Physics::GetInstance().DestroyBody(m_Body, m_owner->getWorld());
+    }
+    else
+    {
+        Debug::LogError("Trying to destroy a Rigidbody not in the world");
+    }
+
+    m_Body = nullptr;
+    m_Collider = nullptr;
 }
 
 void Rigidbody::SetBodyType(BodyType type)
@@ -272,11 +295,9 @@ void Rigidbody::AddForce(const Vector3& force) const
 
 void Rigidbody::AddTorque(const Vector3& torque) const
 {
-    if (torque.Length() > 100.0f * m_Body->getMass())
+    if (m_Body && torque.Length() > 100.0f * m_Body->getMass())
     {
-        if (m_Body) {
-            m_Body->applyWorldForceAtCenterOfMass(rp3d::Vector3(torque.x, torque.y, torque.z));
-        }
+        m_Body->applyWorldForceAtCenterOfMass(rp3d::Vector3(torque.x, torque.y, torque.z));
     }
 }
 
@@ -289,7 +310,7 @@ Vector3 Rigidbody::GetLinearVelocity() const
     return Vector3();
 }
 
-void Rigidbody::SetLinearVelocity(const Vector3& velocity) const
+void Rigidbody::SetLinearVelocity(const Vector3& velocity)
 {
     if (m_Body) {
         m_Body->setLinearVelocity(rp3d::Vector3(velocity.x, velocity.y, velocity.z));
@@ -322,18 +343,6 @@ void Rigidbody::SetRotationConstraints(bool lockX, bool lockY, bool lockZ)
 {
     rotationAxisLocks = { lockX, lockY, lockZ };
     UpdateRotationConstraints();
-}
-
-void Rigidbody::OnCollisionEnter(Rigidbody* collidedRb) const
-{
-    Collider* collider = collidedRb->GetCollider();
-    m_owner->CallOnCollisionEnterCallbacks(collider);
-}
-
-void Rigidbody::OnCollisionExit(Rigidbody* collidedRb) const
-{
-    Collider* collider = collidedRb->GetCollider();
-    m_owner->CallOnCollisionExitCallbacks(collider);
 }
 
 void Rigidbody::UpdatePositionConstraints() const

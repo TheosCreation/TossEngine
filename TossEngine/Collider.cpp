@@ -327,13 +327,19 @@ void Collider::UpdateRP3Collider()
 {
     rp3d::RigidBody* rb = m_rigidbody->GetBody();
     if (m_collider != nullptr) {
-        rb->removeCollider(m_collider);
+        if (rb)
+        {
+            rb->removeCollider(m_collider);
+        }
         m_collider = nullptr;
     }
 
-    m_collider = rb->addCollider(m_shape, rp3d::Transform::identity());
-    m_collider->setIsTrigger(m_isTrigger);
-    m_collider->setUserData(this);
+    if (rb)
+    {
+        m_collider = rb->addCollider(m_shape, rp3d::Transform::identity());
+        m_collider->setIsTrigger(m_isTrigger);
+        m_collider->setUserData(this);
+    }
 
     // Ensure there is always at least the "Default" layer.
     if (m_layerNames.empty()) {
@@ -346,10 +352,13 @@ void Collider::UpdateRP3Collider()
         maskBits |= static_cast<unsigned short>(layerManager.GetLayer(layerName));
     }
 
-    // Use the owner's layer as the category bits.
-    m_collider->setCollisionCategoryBits(m_owner->getLayer());
-    // Set the collision mask bits based on the selected layers.
-    m_collider->setCollideWithMaskBits(maskBits);
+    if (m_collider)
+    {
+        // Use the owner's layer as the category bits.
+        m_collider->setCollisionCategoryBits(m_owner->getLayer());
+        // Set the collision mask bits based on the selected layers.
+        m_collider->setCollideWithMaskBits(maskBits);
+    }
 }
 
 
@@ -371,6 +380,16 @@ void Collider::OnTriggerEnter(Collider* otherCollider) const
 void Collider::OnTriggerExit(Collider* otherCollider) const
 {
     m_owner->CallOnTriggerExitCallbacks(otherCollider);
+}
+
+void Collider::OnCollisionEnter(Collider* otherCollider) const
+{
+    m_owner->CallOnCollisionEnterCallbacks(otherCollider);
+}
+
+void Collider::OnCollisionExit(Collider* otherCollider) const
+{
+    m_owner->CallOnCollisionEnterCallbacks(otherCollider);
 }
 
 rp3d::CollisionShapeType Collider::GetColliderType() const

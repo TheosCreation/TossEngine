@@ -93,26 +93,25 @@ void TossPlayer::onUpdateInternal()
 
     // delta time
     m_currentTime = TossEngine::GetTime();
-    Time::UpdateDeltaTime(m_currentTime - m_previousTime);
+    float deltaTimeInternal = m_currentTime - m_previousTime;
+    Time::UpdateDeltaTime(deltaTimeInternal);
     m_previousTime = m_currentTime;
 
-    // Accumulate time
-    m_accumulatedTime += Time::DeltaTime;
 
+    // Accumulate time
+    m_accumulatedTime += deltaTimeInternal;
     inputManager.onUpdate();
 
-    // Perform updates
     while (m_accumulatedTime >= Time::FixedDeltaTime)
     {
+        Physics::GetInstance().Update();
         scene->onFixedUpdate();
         m_accumulatedTime -= Time::FixedDeltaTime;
     }
 
+
     scene->onUpdate();
     scene->onLateUpdate();
-
-    Physics::GetInstance().Update();
-
     Physics::GetInstance().UpdateInternal();
 
     //float RenderTime_Begin = TossEngine::GetTime();

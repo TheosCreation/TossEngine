@@ -22,6 +22,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Rect.h"
 #include "Math.h"
 #include <unordered_map>
+#include <unordered_set>
 #include <any>
 #include <functional>
 #include <algorithm>

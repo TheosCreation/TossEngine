@@ -32,7 +32,7 @@ public:
     Collider* GetCollider() const;
 
     Vector3 GetLinearVelocity() const;
-    void SetLinearVelocity(const Vector3& velocity) const;
+    void SetLinearVelocity(const Vector3& velocity);
 
     Vector3 GetAngularVelocity() const;
     void SetAngularVelocity(const Vector3& velocity) const;
@@ -54,8 +54,6 @@ public:
     void SetPositionConstraints(bool lockX, bool lockY, bool lockZ);
     void SetRotationConstraints(bool lockX, bool lockY, bool lockZ);
 
-    void OnCollisionEnter(Rigidbody* collidedRb) const;
-    void OnCollisionExit(Rigidbody* collidedRb) const;
 
 private:
     rp3d::RigidBody* m_Body = nullptr;
@@ -69,7 +67,7 @@ private:
 
     std::array<bool, 3> positionAxisLocks = { false, false, false };
     std::array<bool, 3> rotationAxisLocks = { false, false, false };
-
+    int called = 0;
 };
 
 REGISTER_COMPONENT(Rigidbody);

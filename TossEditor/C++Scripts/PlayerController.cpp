@@ -92,7 +92,6 @@ void PlayerController::onUpdate()
     if (inputManager.isKeyPressed(Key::KeySpace) && jumpTimer <= 0 && m_groundCheck->isGrounded)
     {
         m_rigidBody->AddForce(Vector3::Up * m_jumpForce);
-        m_groundCheck->isGrounded = false;
         jumpTimer = m_jumpCooldown;
     }
     else

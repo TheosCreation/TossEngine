@@ -42,9 +42,6 @@ GameObject::GameObject(const GameObject& other) : m_transform(this)
 
 GameObject::~GameObject()
 {
-    for (auto& pair : m_components) {
-        pair.second->onDestroy();
-    }
     for (auto& pair : m_components)
     {
         delete pair.second; // Free allocated memory
@@ -388,6 +385,7 @@ void GameObject::onUpdateInternal()
         auto it = m_components.find(key);
         if (it != m_components.end() && it->second == component)
         {
+            Debug::Log("Destroyed");
             component->onDestroy();
 
             // Remove the component from the container.
@@ -412,34 +410,48 @@ void GameObject::onDestroy()
     for (auto& pair : m_components) 
     {
         pair.second->onDestroy();
+        delete pair.second;
     }
+    m_components.clear();
 }
 
 void GameObject::CallOnCollisionEnterCallbacks(Collider* other) const
 {
     for (auto& pair : m_components) {
-        pair.second->onCollisionEnter(other);
+        if (pair.second)
+        {
+            pair.second->onCollisionEnter(other);
+        }
     }
 }
 
-void GameObject::CallOnCollisionExitCallbacks(Collider* other) const
+void GameObject::CallOnCollisionExitCallbacks(Collider* other)
 {
     for (auto& pair : m_components) {
-        pair.second->onCollisionExit(other);
+        if (pair.second)
+        {
+            pair.second->onCollisionExit(other);
+        }
     }
 }
 
 void GameObject::CallOnTriggerEnterCallbacks(Collider* other) const
 {
     for (auto& pair : m_components) {
-        pair.second->onTriggerEnter(other);
+        if (pair.second)
+        {
+            pair.second->onTriggerEnter(other);
+        }
     }
 }
 
 void GameObject::CallOnTriggerExitCallbacks(Collider* other) const
 {
     for (auto& pair : m_components) {
-        pair.second->onTriggerExit(other);
+        if (pair.second)
+        {
+            pair.second->onTriggerExit(other);
+        }
     }
 }
 
@@ -525,6 +537,7 @@ bool GameObject::Delete(bool deleteSelf)
     }
     else
     {
+        if (isDestroyed) return false;
 
         if (m_transform.parent)
             m_transform.SetParent(nullptr);

@@ -192,10 +192,13 @@ void TossEditor::onUpdateInternal()
 
     if (auto scene = TossEngine::GetInstance().getCurrentScene())
     {
+        scene->onUpdateInternal();
         if (m_gameRunning)
         {
             while (m_accumulatedTime >= Time::FixedDeltaTime)
             {
+
+                Physics::GetInstance().Update();
                 scene->onFixedUpdate();
                 m_accumulatedTime -= Time::FixedDeltaTime;
             }
@@ -203,15 +206,12 @@ void TossEditor::onUpdateInternal()
         }
         // player update
         m_player->Update(deltaTimeInternal);
-        scene->onUpdateInternal();
 
 
         if (m_gameRunning)
         {
             scene->onUpdate();
             scene->onLateUpdate();
-
-            Physics::GetInstance().Update();
         }
 
 

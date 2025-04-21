@@ -18,6 +18,13 @@ using Ray = reactphysics3d::Ray;
 using PhysicsCommon = reactphysics3d::PhysicsCommon;
 using RaycastInfo = reactphysics3d::RaycastInfo;
 
+struct TOSSENGINE_API Collision
+{
+    Vector3 contactPoint;
+    Collider* thisCollider;
+    Collider* otherCollider;
+};
+
 struct TOSSENGINE_API RaycastHit
 {
     bool hasHit = false;
@@ -108,14 +115,14 @@ public:
     PhysicsMaterialPtr GetDefaultPhysicsMaterial();
 
     void SetDebug(bool debug);
-    bool GetDebug();
+    bool GetDebug() const;
     void SetGravity(const Vector3& gravity);
     Vector3 GetGravity() const { return m_gravity; }
 
 
     RaycastHit Raycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f, LayerBit hitLayers = 0xFFFFFFFF);
 
-    void DrawDebug(UniformData data);
+    void DrawDebug(UniformData data) const;
 
     void onContact(const rp3d::CollisionCallback::CallbackData& data) override;
     void onTrigger(const rp3d::OverlapCallback::CallbackData& data) override;

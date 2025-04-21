@@ -25,6 +25,8 @@ public:
     bool GetTrigger() const;
     void OnTriggerEnter(Collider* otherCollider) const;
     void OnTriggerExit(Collider* otherCollider) const;
+    void OnCollisionEnter(Collider* otherCollider) const;
+    void OnCollisionExit(Collider* otherCollider) const;
 
     rp3d::CollisionShape* GetColliderShape() const { return m_shape; }
     rp3d::CollisionShapeType GetColliderType() const;
