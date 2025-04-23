@@ -73,13 +73,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>..\..\Dependencies\GLFW;..\..\Dependencies\GLEW;..\..\Dependencies\FMOD\Lib;..\..\Dependencies\REACTPHYSICS3D\Lib;..\..\Dependencies\TOSSENGINE;$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/tinyobjloader;..\..\Dependencies/GLFW;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\Dependencies/REFUREKU/include;..\..\TossEngine/</ExternalIncludePath>
-    <OutDir>..\..\TossEditor</OutDir>
+    <LibraryPath>..\..\Dependencies\GLFW;..\..\Dependencies\GLEW;..\..\Dependencies\FMOD\Lib;..\..\Dependencies\TOSSENGINE;..\..\Dependencies/REACTPHYSICS3D/Lib;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/tinyobjloader;..\..\Dependencies/GLFW;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\TossEngine/</ExternalIncludePath>
+    <OutDir>..\..\TossEditor\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>..\..\Dependencies\GLFW;..\..\Dependencies\GLEW;..\..\Dependencies\FMOD\Lib;..\..\Dependencies\REACTPHYSICS3D\Lib;..\..\Dependencies\TOSSENGINE;$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/tinyobjloader;..\..\Dependencies/GLFW;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\Dependencies/REFUREKU/include;..\..\TossEngine/</ExternalIncludePath>
+    <LibraryPath>..\..\Dependencies\GLFW;..\..\Dependencies\GLEW;..\..\Dependencies\FMOD\Lib;..\..\Dependencies\TOSSENGINE;..\..\Dependencies/REACTPHYSICS3D/Lib;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/tinyobjloader;..\..\Dependencies/GLFW;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\TossEngine/</ExternalIncludePath>
     <OutDir>..\..\TossEditor</OutDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
@@ -125,10 +125,11 @@
       <ShowIncludes>false</ShowIncludes>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;reactphysics3d_d.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)DebugSymbols\$(TargetName).pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
@@ -153,7 +154,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib;release_reactphysics3d.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)DebugSymbols\$(TargetName).pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>

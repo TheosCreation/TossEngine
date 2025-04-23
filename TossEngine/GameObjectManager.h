@@ -55,17 +55,17 @@ public:
      * @return A pointer to the created GameObject.
      */
     template <typename T>
-    T* createGameObject(string name = "", json data = nullptr)
+    std::shared_ptr<T> createGameObject(string name = "", json data = nullptr)
     {
         static_assert(std::is_base_of<GameObject, T>::value, "T must derive from Game Object class");
-        auto e = new T();
-        if (createGameObjectInternal(e, name, data))
-            return e;
+        auto go = std::make_shared<T>();
+        if (createGameObjectInternal(go, name, data))
+            return go;
         return nullptr;
     }
 
-    GameObject* Instantiate(const PrefabPtr& prefab, Transform* parent = nullptr, Vector3 positionalOffset = Vector3(0.0f), Quaternion rotationOffset = Quaternion(), bool hasStarted = true);
-    GameObject* Instantiate(const PrefabPtr& prefab, Vector3 position, Quaternion rotation, bool hasStarted = true);
+    GameObjectPtr Instantiate(const PrefabPtr& prefab, Transform* parent = nullptr, Vector3 positionalOffset = Vector3(0.0f), Quaternion rotationOffset = Quaternion(), bool hasStarted = true);
+    GameObjectPtr Instantiate(const PrefabPtr& prefab, Vector3 position, Quaternion rotation, bool hasStarted = true);
 
     /**
      * @brief Removes an GameObject from the system.
@@ -75,6 +75,7 @@ public:
 
     void loadGameObjects(const json& data);
     json saveGameObjects() const;
+    GameObjectPtr getGameObject(size_t id);
 
     void loadGameObjectsFromFile(const std::string& filePath);
     void saveGameObjectsToFile(const std::string& filePath) const;
@@ -113,8 +114,8 @@ public:
         {
             if (!gameObject) continue;
 
-            if (auto go = dynamic_cast<T*>(gameObject))
-                return go;
+            if (auto go = std::dynamic_pointer_cast<T>(gameObject))
+                return go.get();
 
             for (auto& comp : gameObject->getAllComponents())
             {
@@ -134,13 +135,13 @@ public:
         for (auto& [id, gameObject] : m_gameObjects)
         {
             // Check the GameObject itself
-            if (T* castedGO = dynamic_cast<T*>(gameObject))
+            if (T* castedGO = std::dynamic_pointer_cast<T>(gameObject))
                 results.push_back(castedGO);
 
             // Check its components
             for (auto& pair : gameObject->getAllComponents())
             {
-                if (T* castedComp = dynamic_cast<T*>(pair.second))
+                if (T* castedComp = dynamic_cast<T>(pair.second))
                     results.push_back(castedComp);
             }
         }
@@ -153,7 +154,7 @@ public:
     /**
     * @brief Map of game objects categorized by type ID.
     */
-    std::unordered_map<size_t, GameObject*> m_gameObjects;
+    std::unordered_map<size_t, GameObjectPtr> m_gameObjects;
 
 
     void clearGameObjects();
@@ -167,7 +168,7 @@ private:
      * @param id The type ID of the GameObject.
      * @return True if the GameObject was created successfully, false otherwise.
      */
-    bool createGameObjectInternal(GameObject* gameObject, const string& name = "", const json& data = nullptr);
+    bool createGameObjectInternal(GameObjectPtr gameObject, const string& name = "", const json& data = nullptr);
     string getGameObjectNameAvaliable(string currentName);
     
 

@@ -35,6 +35,11 @@ struct TOSSENGINE_API RaycastHit
     Rigidbody* rigidbody = nullptr;
 };
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4275)   // non-dll-interface base used in dll-exported type
+#endif
+
 struct TOSSENGINE_API RaycastCallback : public reactphysics3d::RaycastCallback
 {
     bool hit = false;
@@ -115,6 +120,7 @@ public:
     PhysicsMaterialPtr GetDefaultPhysicsMaterial();
 
     void SetDebug(bool debug);
+    void SetPaused(bool paused);
     bool GetDebug() const;
     void SetGravity(const Vector3& gravity);
     Vector3 GetGravity() const { return m_gravity; }
@@ -157,4 +163,9 @@ private:
     std::vector<rp3d::CollisionShape*> m_shapesToDestroy;
     std::map<rp3d::RigidBody*, PhysicsWorld*> m_bodiesToDestroy;
 
+    bool isPaused = false;
 };
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

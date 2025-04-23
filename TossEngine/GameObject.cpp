@@ -327,6 +327,8 @@ void GameObject::onCreateLate()
 
 void GameObject::onStart()
 {
+    isGameRunning = true;
+
     if (!isActive) return;
 
     for (auto& pair : m_components) {

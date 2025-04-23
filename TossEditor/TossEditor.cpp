@@ -163,11 +163,11 @@ void TossEditor::DuplicateSelected()
 {
     if (selectedSelectable)
     {
-        if (auto gameObject = dynamic_cast<GameObject*>(selectedSelectable))
+        if (auto gameObject = std::dynamic_pointer_cast<GameObject>(selectedSelectable))
         {
             json gameObjectJsonData = gameObject->serialize();
             string name = gameObject->name;
-            TossEngine::GetInstance().getGameObjectManager()->createGameObject<GameObject>(name, gameObjectJsonData);
+            selectedSelectable = TossEngine::GetInstance().getGameObjectManager()->createGameObject<GameObject>(name, gameObjectJsonData);
         }
     }
 }
@@ -194,6 +194,7 @@ void TossEditor::onUpdateInternal()
     // Accumulate time
     m_accumulatedTime += deltaTimeInternal;
     resourceManager.onUpdateInternal();
+    Physics::GetInstance().UpdateInternal();
     inputManager.onUpdate();
 
     if (auto scene = TossEngine::GetInstance().getCurrentScene())
@@ -203,7 +204,6 @@ void TossEditor::onUpdateInternal()
         {
             while (m_accumulatedTime >= Time::FixedDeltaTime)
             {
-
                 Physics::GetInstance().Update();
                 scene->onFixedUpdate();
                 m_accumulatedTime -= Time::FixedDeltaTime;
@@ -221,13 +221,12 @@ void TossEditor::onUpdateInternal()
         }
 
 
-        Physics::GetInstance().UpdateInternal();
     }
 
 
     ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
     ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
-    
+
     float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     
@@ -382,7 +381,7 @@ void TossEditor::onUpdateInternal()
             ImGui::Image(sceneViewTexture, availSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
             if (selectedSelectable)
             {
-                if (auto gameObject = dynamic_cast<GameObject*>(selectedSelectable))
+                if (auto gameObject = std::dynamic_pointer_cast<GameObject>(selectedSelectable))
                 {
                     ImGuizmo::BeginFrame();
                     ImGuizmo::SetOrthographic(false);
@@ -582,8 +581,9 @@ void TossEditor::onUpdateInternal()
                 sceneNames.push_back(scenePath.c_str());
             }
 
+            int count = static_cast<int>(sceneNames.size());
             // Display the combo box. If the user selects a different option, update the first scene.
-            if (ImGui::Combo("##FirstSceneCombo", &selectedFirstSceneIndex, sceneNames.data(), sceneNames.size()))
+            if (ImGui::Combo("##FirstSceneCombo", &selectedFirstSceneIndex, sceneNames.data(), count))
             {
                 m_playerSettings->firstSceneToOpen = m_playerSettings->selectedSceneFilePaths[selectedFirstSceneIndex];
             }
@@ -615,9 +615,7 @@ void TossEditor::onUpdateInternal()
     {
         if (selectedSelectable)
         {
-            ImGui::PushID(selectedSelectable);
             selectedSelectable->OnInspectorGUI();
-            ImGui::PopID();
         }
         else
         {
@@ -629,7 +627,7 @@ void TossEditor::onUpdateInternal()
     if (ImGui::Begin("Hierarchy")) {
         auto scene = TossEngine::GetInstance().getCurrentScene();
         if (ImGui::Button("Add Empty GameObject") && scene) {
-            scene->getObjectManager()->createGameObject<GameObject>();
+            selectedSelectable = scene->getObjectManager()->createGameObject<GameObject>();
         }
 
         // Display root game objects.
@@ -639,7 +637,7 @@ void TossEditor::onUpdateInternal()
 
                 // Only show root game objects.
                 if (pair.second->m_transform.parent == nullptr) {
-                    ShowGameObjectNode(pair.second);
+                    ShowGameObjectNode(pair.second.get());
                 }
             }
         }
@@ -658,7 +656,7 @@ void TossEditor::onUpdateInternal()
                         // Try to dynamically cast it to a Prefab
                         if (PrefabPtr prefab = std::dynamic_pointer_cast<Prefab>(resourcePtr)) {
                             // Create a new GameObject from the prefab data.
-                            GameObject* newObj = scene->getObjectManager()->Instantiate(prefab, nullptr, Vector3(0.0f), Quaternion(), false);
+                            scene->getObjectManager()->Instantiate(prefab, nullptr, Vector3(0.0f), Quaternion(), false);
                             Debug::Log("Created GameObject from prefab: " + prefab->getUniqueID());
                         }
                         else {
@@ -803,7 +801,7 @@ void TossEditor::onUpdateInternal()
             if (ImGui::Selectable(resourceLabel.c_str(), isSelected)) {
                 if (selectedSelectable != nullptr)
                     selectedSelectable->OnDeSelect();
-                selectedSelectable = resource.get();
+                selectedSelectable = resource;
                 selectedSelectable->OnSelect();
                 resourceManager.SetSelectedResource(resource);
             }
@@ -971,7 +969,8 @@ void TossEditor::onUpdateInternal()
 
         if (!filesSelected)
         {
-            for (int i = cubemapFilePaths.size(); i < 6; ++i)
+            int count = static_cast<int>(cubemapFilePaths.size());
+            for (int i = count; i < 6; ++i)
             {
                 std::string label = std::string("Select ") + faceNames[i];
                 ImGui::Text("%s", label.c_str());
@@ -1258,17 +1257,16 @@ void TossEditor::onUpdateInternal()
 
     graphicsEngine.renderImGuiFrame();
     
-
+    Window* window = tossEngine.GetWindow();
     if (imGuiIo.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
-        GLFWwindow* backup_current_context = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
-        glfwMakeContextCurrent(backup_current_context);
     }
 
     // Render to window
-    tossEngine.GetWindow()->present();
+    window->makeCurrentContext();
+    window->present();
 
 
 }
@@ -1332,7 +1330,7 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
     if (gameObject->m_transform.children.empty())
         flags |= ImGuiTreeNodeFlags_Leaf;
-    if (gameObject == selectedSelectable)
+    if (gameObject == selectedSelectable.get())
         flags |= ImGuiTreeNodeFlags_Selected;
 
     // Create the tree node, which draws the arrow and the label.
@@ -1354,7 +1352,7 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
             // Deselect the previous selection if any.
             if (selectedSelectable != nullptr)
                 selectedSelectable->OnDeSelect();
-            selectedSelectable = gameObject;
+            selectedSelectable = TossEngine::GetInstance().getGameObjectManager()->getGameObject(gameObject->getId());
             selectedSelectable->OnSelect();
         }
     }
@@ -1392,7 +1390,7 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
         if (ImGui::MenuItem("Delete"))
         {
             gameObject->Delete();
-            if (selectedSelectable == gameObject)
+            if (selectedSelectable.get() == gameObject)
                 selectedSelectable = nullptr;
         }
         ImGui::EndPopup();

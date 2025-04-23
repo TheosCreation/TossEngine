@@ -21,14 +21,6 @@ void Projectile::onTriggerEnter(Collider* other)
 {
     GameObject* gameObject = other->getOwner();
 
-    if (gameObject->tag == "Projectile") return;
-
-    if (gameObject->tag == "Ground")
-    {
-        Destroy(m_owner);
-        return;
-    }
-
     if (Enemy* enemy = gameObject->getComponent<Enemy>())
     {
         enemy->TakeDamage(m_damage);
@@ -41,4 +33,6 @@ void Projectile::onTriggerEnter(Collider* other)
         Destroy(m_owner);
         return;
     }
+
+    Destroy(m_owner);
 }

@@ -3,7 +3,7 @@
 #include "Material.h"
 #include "TossEngine.h"
 
-void ISelectable::GameObjectAssignableField(GameObject*& _gameObject, const string& fieldName)
+void ISelectable::GameObjectAssignableField(GameObjectPtr& _gameObject, const string& fieldName)
 {
     GameObjectManager* gameObjectManager = TossEngine::GetInstance().getGameObjectManager();
 
@@ -59,7 +59,7 @@ bool ISelectable::FloatSliderField(const std::string& name, float& value, float 
 
 bool ISelectable::IntSliderField(const string& name, int& value, int speed, int min, int max)
 {
-    if (ImGui::DragInt(name.c_str(), &value, speed, min, max))
+    if (ImGui::DragInt(name.c_str(), &value, static_cast<float>(speed), min, max))
     {
         return true;
     }

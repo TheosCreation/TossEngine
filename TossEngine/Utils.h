@@ -93,6 +93,7 @@ typedef std::shared_ptr<Material> MaterialPtr;
 typedef std::shared_ptr<PhysicsMaterial> PhysicsMaterialPtr;
 typedef std::shared_ptr<Scene> ScenePtr;
 typedef std::shared_ptr<Prefab> PrefabPtr;
+typedef std::shared_ptr<GameObject> GameObjectPtr;
 
 // Using declarations to simplify the code and avoid typing the full namespace each time
 using std::shared_ptr;

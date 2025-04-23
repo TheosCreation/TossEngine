@@ -91,8 +91,8 @@ void GraphicsEngine::clear(const glm::vec4& color, bool clearDepth, bool clearSt
 
 void GraphicsEngine::createImGuiFrame()
 {
-    ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
+    ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
 }
 

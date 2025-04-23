@@ -49,9 +49,9 @@ public:
 
     /**
      * @brief Makes the window the current OpenGL context.
-     * @param _vsync Enables or disables vertical synchronization.
      */
-    void makeCurrentContext(bool _vsync) const;
+    void makeCurrentContext() const;
+    void enableVsync(bool _vsync);
 
     /**
      * @brief Presents the rendered content to the window.

@@ -69,7 +69,7 @@ private:
 
 
 
-inline void to_json(json& j, GameObject* const& gameObject) {
+inline void to_json(json& j, GameObjectPtr const& gameObject) {
     if (gameObject)
     {
         j = json{ { "id", gameObject->getId() } };
@@ -79,7 +79,7 @@ inline void to_json(json& j, GameObject* const& gameObject) {
     }
 }
 
-inline void from_json(json const& j, GameObject*& gameObject)
+inline void from_json(json const& j, GameObjectPtr& gameObject)
 {
     if (j.contains("id") && !j["id"].is_null())
     {

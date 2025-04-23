@@ -73,7 +73,7 @@ private:
 	ProjectSettingsPtr m_projectSettings = nullptr;
 	TossPlayerSettingsPtr m_playerSettings = nullptr;
 	bool m_gameRunning = false;
-    ISelectable* selectedSelectable = nullptr;
+    std::shared_ptr<ISelectable> selectedSelectable = nullptr;
     GameObject* renamingGameObject = nullptr;
     char renameBuffer[256] = "";
     ResourcePtr resourceBeingRenamed = nullptr;

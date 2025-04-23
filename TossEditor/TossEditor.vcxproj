@@ -71,13 +71,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(SolutionDir)/Dependencies/REFUREKU/include;$(SolutionDir)TossEngine/</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(SolutionDir)TossEngine/</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/FMOD/Lib;$(SolutionDir)/Dependencies/REACTPHYSICS3D/Lib;$(SolutionDir)/Dependencies/TOSSENGINE;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)</OutDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(SolutionDir)/Dependencies/REFUREKU/include;$(SolutionDir)TossEngine/</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(SolutionDir)TossEngine/</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/FMOD/Lib;$(SolutionDir)/Dependencies/REACTPHYSICS3D/Lib;$(SolutionDir)/Dependencies/TOSSENGINE;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)</OutDir>
   </PropertyGroup>
@@ -121,12 +121,15 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;reactphysics3d_d.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,7 +149,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib;release_reactphysics3d.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

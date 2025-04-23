@@ -32,12 +32,12 @@ json Prefab::serialize() const
 
 void Prefab::recurseDeserialize(GameObject* parentGO, const json& data)
 {
+    //children dont work yet for prefabs
     // for each declared child:
     if (data.contains("children"))
     {
         for (auto& childJson : data["children"])
         {
-            // create a new GameObject via your manager so it gets registered
             GameObject* childGO = new GameObject();
 
             // populate its own fields & components:

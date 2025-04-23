@@ -141,6 +141,7 @@ void Rigidbody::onStart()
     // Ensure the body is not sleeping when the simulation starts
     if (m_Body)
     {
+        UpdateBodyTransform();
         m_Body->setIsSleeping(false);
     }
 }

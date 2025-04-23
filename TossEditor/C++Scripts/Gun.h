@@ -16,7 +16,7 @@ public:
 private:
     float m_fireRate = 0.1f;
     PrefabPtr m_projectile = nullptr;
-    GameObject* m_muzzlePosition = nullptr;
+    GameObjectPtr m_muzzlePosition = nullptr;
     SoundPtr fireSound = nullptr;
 
     Camera* playerCamera = nullptr;

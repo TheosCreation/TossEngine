@@ -12,7 +12,7 @@ public:
     virtual void OnDeSelect() {}
     virtual bool Delete(bool deleteSelf = true) { return false;  }
 
-    static void GameObjectAssignableField(GameObject*& _gameObject, const string& fieldName);
+    static void GameObjectAssignableField(GameObjectPtr& _gameObject, const string& fieldName);
 
     template<typename T>
     void ResourceAssignableField(std::shared_ptr<T>& resourcePtr, const string& fieldName)

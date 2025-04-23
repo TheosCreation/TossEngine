@@ -10,10 +10,10 @@ public:
     void onStart() override;
     void onUpdate() override;
 private:
-    GameObject* m_idlePosition = nullptr;
-    GameObject* m_aimingPosition = nullptr;
+    GameObjectPtr m_idlePosition = nullptr;
+    GameObjectPtr m_aimingPosition = nullptr;
 
-    GameObject* m_gunObject = nullptr;
+    GameObjectPtr m_gunObject = nullptr;
     float m_aimingSpeed = 5.0f;
 
     Gun* m_currentHeldGun = nullptr;

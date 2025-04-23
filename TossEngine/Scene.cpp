@@ -98,11 +98,11 @@ void Scene::onCreate()
         Debug::Log("Created new scene at filepath: " + m_filePath);
 
         //Creates default objects that are usually required for a scene
-        GameObject* skyboxObject = m_gameObjectManager->createGameObject<GameObject>("Skybox");
+        GameObjectPtr skyboxObject = m_gameObjectManager->createGameObject<GameObject>("Skybox");
         Skybox* skybox = skyboxObject->addComponent<Skybox>();
         skybox->setMesh(resourceManager.getMesh("Resources/Meshes/cube.obj"));
 
-        GameObject* directionalLightObject = m_gameObjectManager->createGameObject<GameObject>("Directional Light");
+        GameObjectPtr directionalLightObject = m_gameObjectManager->createGameObject<GameObject>("Directional Light");
         directionalLightObject->m_transform.rotation = Quaternion::FromEuler(Vector3(30,40,50));
         DirectionalLight* dirLight = directionalLightObject->addComponent<DirectionalLight>();
 

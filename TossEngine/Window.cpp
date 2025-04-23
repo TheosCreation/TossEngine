@@ -37,7 +37,7 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
     glfwWindowHint(GLFW_SAMPLES, 4);
 
     // Create a GLFW window
-    m_windowPtr = glfwCreateWindow(m_size.x, m_size.y, windowName.c_str(), nullptr, nullptr);
+    m_windowPtr = glfwCreateWindow(static_cast<int>(m_size.x), static_cast<int>(m_size.y), windowName.c_str(), nullptr, nullptr);
     if (!m_windowPtr)
     {
         Debug::LogError("GLFW failed to initialize properly. Terminating program.");
@@ -46,7 +46,8 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
     }
     
     // Make the context current before initializing GLEW
-    makeCurrentContext(vsync);
+    enableVsync(vsync);
+    makeCurrentContext();
 
     // Initialize GLEW or GLAD here if needed
     if (glewInit() != GLEW_OK)
@@ -63,16 +64,14 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
     glfwSetWindowSizeCallback(m_windowPtr, [](GLFWwindow* window, int width, int height)
         {
             // Get the user pointer, which is the 'Window' instance
-            Window* display = static_cast<Window*>(glfwGetWindowUserPointer(window));
-            if (display)
+            if (Window* display = static_cast<Window*>(glfwGetWindowUserPointer(window)))
             {
-                display->onResize(Vector2(width, height));
+                display->onResize(Vector2(static_cast<float>(width), static_cast<float>(height)));
             }
         });
 
     glfwSetWindowMaximizeCallback(m_windowPtr, [](GLFWwindow* window, int maximized) {
-        Window* display = static_cast<Window*>(glfwGetWindowUserPointer(window));
-        if (display) {
+        if (Window* display = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
             display->onMaximize(maximized);
         }
         });
@@ -86,9 +85,9 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(m_windowPtr, true);
@@ -135,11 +134,15 @@ void Window::setOwner(Resizable* newOwner)
     m_resizableOwner = newOwner;
 }
 
-void Window::makeCurrentContext(bool vSync) const
+void Window::makeCurrentContext() const
 {
     glfwMakeContextCurrent(m_windowPtr);
+}
 
-    glfwSwapInterval(vSync ? 1 : 0);
+void Window::enableVsync(bool _vsync)
+{
+    vsync = _vsync;
+    glfwSwapInterval(_vsync ? 1 : 0);
 }
 
 void Window::present() const

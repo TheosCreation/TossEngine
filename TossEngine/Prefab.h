@@ -11,11 +11,11 @@ public:
     void OnInspectorGUI() override;
     reactphysics3d::PhysicsWorld* getWorld() override;
 
-    GameObject* Instantiate() const {
+    GameObjectPtr Instantiate() const {
         // Serialize the prefab into JSON.
         json data = this->serialize();
         // Create a new empty game object.
-        GameObject* newObject = new GameObject();
+        GameObjectPtr newObject = std::make_shared<GameObject>();
         // Deserialize the saved data into the new object.
         newObject->deserialize(data);
         return newObject;

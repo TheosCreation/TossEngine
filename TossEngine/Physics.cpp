@@ -55,6 +55,8 @@ void Physics::UpdateInternal()
 
 void Physics::Update()
 {
+    if (isPaused) return;
+
     if (m_world && Time::FixedDeltaTime > 0.0f)
     {
         m_world->update(Time::FixedDeltaTime);
@@ -120,6 +122,11 @@ void Physics::SetDebug(bool debug)
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(DebugVertex), reinterpret_cast<void*>(offsetof(DebugVertex, color)));
     glEnableVertexAttribArray(1);
     glBindVertexArray(0);
+}
+
+void Physics::SetPaused(bool paused)
+{
+    isPaused = paused;
 }
 
 bool Physics::GetDebug() const
@@ -381,6 +388,7 @@ void Physics::LoadWorld()
     settings.gravity = static_cast<rp3d::Vector3>(m_gravity);
     settings.defaultPositionSolverNbIterations = 10;  // Default is usually 6
     settings.defaultVelocitySolverNbIterations = 6;  // Default is usually 4
+    settings.isSleepingEnabled = true;
     m_world = m_commonSettings.createPhysicsWorld(settings);
     m_world->setEventListener(this);
 

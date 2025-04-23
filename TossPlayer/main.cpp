@@ -24,6 +24,7 @@ int main()
     }
     catch (const std::exception& e)
     {
+        Debug::LogError(e.what());
         return -1; // Return -1 to indicate an error
     }
 

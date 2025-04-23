@@ -41,9 +41,9 @@ Scene* GameObjectManager::getScene() const
     return m_scene;
 }
 
-GameObject* GameObjectManager::Instantiate(const PrefabPtr& prefab, Transform* parent, Vector3 positionalOffset, Quaternion rotationOffset, bool hasStarted)
+GameObjectPtr GameObjectManager::Instantiate(const PrefabPtr& prefab, Transform* parent, Vector3 positionalOffset, Quaternion rotationOffset, bool hasStarted)
 {
-    GameObject* newObject = prefab->Instantiate();
+    GameObjectPtr newObject = prefab->Instantiate();
     if (!newObject)
     {
         Debug::LogError("Failed to instantiate prefab.", false);
@@ -77,12 +77,12 @@ GameObject* GameObjectManager::Instantiate(const PrefabPtr& prefab, Transform* p
     return nullptr;
 }
 
-GameObject* GameObjectManager::Instantiate(const PrefabPtr& prefab, Vector3 position, Quaternion rotation, bool hasStarted)
+GameObjectPtr GameObjectManager::Instantiate(const PrefabPtr& prefab, Vector3 position, Quaternion rotation, bool hasStarted)
 {
     return Instantiate(prefab, nullptr, position, rotation, hasStarted);
 }
 
-bool GameObjectManager::createGameObjectInternal(GameObject* gameObject, const string& name, const json& data)
+bool GameObjectManager::createGameObjectInternal(GameObjectPtr gameObject, const string& name, const json& data)
 {
     if (!gameObject)
         return false;
@@ -125,7 +125,7 @@ string GameObjectManager::getGameObjectNameAvaliable(string currentName)
     {
         if (!pair.second) continue;
 
-        GameObject* gameObject = pair.second;
+        GameObjectPtr gameObject = pair.second;
         if (gameObject->m_transform.parent == nullptr)
         {
             existingNames.insert(gameObject->name);
@@ -165,7 +165,7 @@ void GameObjectManager::loadGameObjects(const json& data)
 
     for (const auto& gameObjectData : data["gameobjects"])
     {
-        auto gameObject = new GameObject();
+        auto gameObject = std::make_shared<GameObject>();
         // Initialize the GameObject
         gameObject->setGameObjectManager(this);
         gameObject->deserialize(gameObjectData);  // Loads data into the object
@@ -191,6 +191,11 @@ json GameObjectManager::saveGameObjects() const
     }
 
     return data;
+}
+
+GameObjectPtr GameObjectManager::getGameObject(size_t id)
+{
+    return m_gameObjects[id];
 }
 
 void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
@@ -240,7 +245,7 @@ void GameObjectManager::loadGameObjectsFromFile(const std::string& filePath)
         idOrder.push_back(savedId);
 
         // instantiate
-        auto gameObject = new GameObject();
+        auto gameObject = std::make_shared<GameObject>();
         gameObject->setGameObjectManager(this);
         gameObject->setId(savedId);
 
@@ -334,7 +339,6 @@ void GameObjectManager::onUpdateInternal()
             gameObject->onDestroy();
             gameObject->isDestroyed = true;
             m_gameObjects.erase(gameObjectId);  // Directly erase by ID
-            delete gameObject;
         }
     }
     m_gameObjectsToDestroy.clear();

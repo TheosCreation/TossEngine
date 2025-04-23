@@ -41,6 +41,8 @@ public:
     bool isDestroyed = false;
     bool isActive = true;
 
+    bool isGameRunning = false;
+
     // Serialize the GameObject to JSON
     virtual json serialize() const override;
 

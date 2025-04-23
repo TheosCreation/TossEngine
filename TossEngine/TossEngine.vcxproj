@@ -81,7 +81,7 @@
     </CustomBuildBeforeTargets>
     <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
     <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
-    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(SolutionDir)/Dependencies/REFUREKU/include;$(IncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(IncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -93,7 +93,7 @@
     </CustomBuildBeforeTargets>
     <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
     <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
-    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(SolutionDir)/Dependencies/REFUREKU/include;$(IncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies/STB;$(SolutionDir)Dependencies/tinyobjloader;$(SolutionDir)Dependencies/GLFW;$(SolutionDir)Dependencies/GLEW;$(SolutionDir)Dependencies/JSON;$(SolutionDir)Dependencies/GLM;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/Dependencies/FMOD/Include;$(SolutionDir)/Dependencies/REACTPHYSICS3D;$(SolutionDir)Dependencies/tinyfiledialogs;$(IncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
@@ -144,10 +144,11 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;Refureku.lib;reactphysics3d_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;reactphysics3d_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>MSVCRT.lib</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies/MONO/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
@@ -186,7 +187,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossPlayer"</Co
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;Refureku.lib;release_reactphysics3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;release_reactphysics3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>
