@@ -56,9 +56,11 @@ void Transform::SetMatrix(const Mat4& matrix)
 
     localPosition = Vector3(localMat[3]);   // column 3 is translation
 
+    Vector3 previousScale = localScale;
     localScale.x = glm::length(glm::vec3(localMat[0]));
     localScale.y = glm::length(glm::vec3(localMat[1]));
     localScale.z = glm::length(glm::vec3(localMat[2]));
+    gameObject->onLocalScaleChanged(previousScale);
 
     glm::mat4 rotMat = glm::mat4(1.0f);
     rotMat[0] = glm::vec4(glm::normalize(glm::vec3(localMat[0])), 0.0f);

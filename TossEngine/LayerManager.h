@@ -2,7 +2,7 @@
 #include "Utils.h"
 #include "Serializable.h"
 
-using LayerBit = uint32_t;
+using LayerBit = unsigned short;
 
 class TOSSENGINE_API LayerManager : public Serializable
 {
@@ -17,30 +17,27 @@ public:
     LayerManager(const LayerManager&) = delete;
     LayerManager& operator=(const LayerManager&) = delete;
 
-    // Retrieve the bit value for a given layer name.
-    // If the layer does not exist, it is created.
     LayerBit GetLayer(const std::string& name) {
         auto it = m_layerMap.find(name);
-        if (it != m_layerMap.end()) {
+        if (it != m_layerMap.end())
             return it->second;
-        }
 
-        // Determine which bit index to use.
-        unsigned int bitIndex;
+        // pick a bit index
+        int bitIndex;
         if (!m_freeBitIndices.empty()) {
-            // Reuse a previously freed bit index.
             bitIndex = m_freeBitIndices.back();
             m_freeBitIndices.pop_back();
         }
         else {
-            // Ensure we don't exceed the bit width (assuming 32-bit).
-            if (m_nextBitIndex >= 32) {
+            constexpr int MAX_BITS = sizeof(LayerBit) * 8; // 16
+            if (m_nextBitIndex >= MAX_BITS) {
                 throw std::runtime_error("Maximum number of layers reached.");
             }
             bitIndex = m_nextBitIndex++;
         }
 
-        LayerBit newBit = 1 << bitIndex;
+        // do the shift in an unsigned int, then cast down
+        LayerBit newBit = static_cast<LayerBit>((1u << bitIndex));
         m_layerMap[name] = newBit;
         return newBit;
     }

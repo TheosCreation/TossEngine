@@ -60,6 +60,7 @@ private:
     Collider* m_Collider = nullptr; // Reference to separate Collider component
     BodyType m_BodyType = BodyType::DYNAMIC;
     bool m_UseGravity = true;
+    float m_mass = 1.0f;
 
 
     void UpdatePositionConstraints() const;

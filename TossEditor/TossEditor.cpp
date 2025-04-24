@@ -21,6 +21,7 @@ TossEditor::TossEditor()
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, editorPreferences.windowSize, "TossEditor", editorPreferences.maximized);
     tossEngine.LoadScripts();
+    tossEngine.SetDebugMode(true);
 
     m_projectSettings = std::make_unique<ProjectSettings>();
     m_projectSettings->LoadFromFile("ProjectSettings.json");
@@ -379,6 +380,32 @@ void TossEditor::onUpdateInternal()
 
             // Display the rendered scene scaled to the available region.
             ImGui::Image(sceneViewTexture, availSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
+
+            ImVec2 imgMin = ImGui::GetItemRectMin();
+            ImVec2 imageMax = ImGui::GetItemRectMax();
+            ImVec2 imgSize = ImGui::GetItemRectSize();
+
+            // 2) pick an offset inside the image where your toolbar should sit
+            const float margin = 8.0f;
+            ImGui::SetCursorScreenPos({ imgMin.x + margin, imgMin.y + margin });
+
+            // 3) optionally push a transparent background so your buttons show up
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
+            ImGui::BeginGroup();     // keep them all together
+
+            if (ImGui::RadioButton("T", m_currentManipulateOperation == ImGuizmo::TRANSLATE))
+                m_currentManipulateOperation = ImGuizmo::TRANSLATE;
+            ImGui::SameLine();
+            if (ImGui::RadioButton("R", m_currentManipulateOperation == ImGuizmo::ROTATE))
+                m_currentManipulateOperation = ImGuizmo::ROTATE;
+            ImGui::SameLine();
+            if (ImGui::RadioButton("S", m_currentManipulateOperation == ImGuizmo::SCALE))
+                m_currentManipulateOperation = ImGuizmo::SCALE;
+
+            ImGui::EndGroup();
+            ImGui::PopStyleColor();
+
+
             if (selectedSelectable)
             {
                 if (auto gameObject = std::dynamic_pointer_cast<GameObject>(selectedSelectable))
@@ -387,14 +414,11 @@ void TossEditor::onUpdateInternal()
                     ImGuizmo::SetOrthographic(false);
                     ImGuizmo::AllowAxisFlip(false);
                     ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
-                    ImVec2 imagePos = ImGui::GetItemRectMin();
-                    ImVec2 imageMaxPos = ImGui::GetItemRectMax();
-                    ImVec2 imageSize = ImGui::GetItemRectSize();
-                    ImGuizmo::SetRect(imagePos.x, imagePos.y, imageSize.x, imageSize.y);
+                    ImGuizmo::SetRect(imgMin.x, imgMin.y, imgSize.x, imgSize.y);
 
                     Mat4 transformMat = gameObject->m_transform.GetMatrix();
 
-                    ImGui::PushClipRect(imagePos, imageMaxPos, true);
+                    ImGui::PushClipRect(imgMin, imageMax, true);
 
                     Mat4 cameraView;
                     m_player->getCamera()->getViewMatrix(cameraView);

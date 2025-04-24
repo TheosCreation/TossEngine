@@ -8,7 +8,7 @@ json Rigidbody::serialize() const
     json data;
     data["type"] = getClassName(typeid(*this)); // Store the component type
     data["bodyType"] = static_cast<int>(m_BodyType);
-    data["mass"] = m_Body ? m_Body->getMass() : 0.0f;
+    data["mass"] = m_mass;
     data["useGravity"] = m_UseGravity;
     data["positionConstraints"] = positionAxisLocks;
     data["rotationConstraints"] = rotationAxisLocks;
@@ -50,10 +50,9 @@ void Rigidbody::OnInspectorGUI()
     }
 
     // Mass input
-    float mass = (m_Body) ? m_Body->getMass() : 0.0f;
-    if (ImGui::DragFloat("Mass", &mass, 0.1f, 0.1f, 10.0f))
+    if (ImGui::DragFloat("Mass", &m_mass, 0.1f, 0.1f, 10.0f))
     {
-        SetMass(mass);
+        SetMass(m_mass);
     }
 
     // Gravity toggle
@@ -174,7 +173,7 @@ void Rigidbody::onUpdate()
 
         // Apply rotation constraints
         Quaternion currentRot = m_owner->m_transform.localRotation;
-        Quaternion newRot(rotation.w, rotation.x, rotation.y, rotation.z);
+        Quaternion newRot(rotation.w, -rotation.x, -rotation.y, -rotation.z);
 
         // Simple approach: convert both to Euler angles
         Vector3 currentEuler = currentRot.ToEulerAngles();
@@ -219,7 +218,7 @@ void Rigidbody::UpdateBodyTransform() const
 
         rp3d::Transform bodyTransform(
             rp3d::Vector3(worldTranslation.x, worldTranslation.y, worldTranslation.z),
-            rp3d::Quaternion(worldRotation.x, worldRotation.y, worldRotation.z, worldRotation.w)
+            rp3d::Quaternion(-worldRotation.x, -worldRotation.y, -worldRotation.z, worldRotation.w)
         );
         m_Body->setTransform(bodyTransform);
     }

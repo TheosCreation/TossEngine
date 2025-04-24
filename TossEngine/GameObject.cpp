@@ -361,11 +361,11 @@ void GameObject::onUpdate()
 {
     if (!isActive) return;
 
-    m_transform.UpdateWorldTransform();
-
     for (auto& pair : m_components) {
         pair.second->onUpdate();
     }
+
+    m_transform.UpdateWorldTransform();
 }
 
 void GameObject::onLocalScaleChanged(Vector3 previousScale)

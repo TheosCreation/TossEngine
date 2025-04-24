@@ -35,6 +35,10 @@ public:
         return Vector3(glm::normalize(static_cast<glm::vec3>(*this)));
     }
 
+    void Normalize() {
+        *this = this->Normalized();
+    }
+
     static Vector3 Cross(const Vector3& a, const Vector3& b) {
         return Vector3(glm::cross(static_cast<glm::vec3>(a), static_cast<glm::vec3>(b)));
     }
