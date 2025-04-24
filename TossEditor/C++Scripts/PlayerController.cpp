@@ -12,6 +12,7 @@ void PlayerController::OnInspectorGUI()
     FloatSliderField("Air Acceleration", m_airAcceleration, 0.1f);
     FloatSliderField("Jump Force", m_jumpForce, 1.0f);
     FloatSliderField("Jump Cooldown", m_jumpCooldown, 0.1f, 0.1f, 2.0f);
+    ResourceAssignableField(m_texture, "Texture");
 
     vector<std::string> layers = m_layerNames;
     if (LayerDropdownField("Raycast hit layers", layers))

@@ -58,3 +58,18 @@ public:
 protected:
     uint m_textureId = 0; // The ID of the texture.
 };
+
+
+inline void to_json(json& j, TexturePtr const& texture) {
+    if (texture)
+    {
+        j = json{ { "id", texture->getUniqueID() } };
+    }
+    else {
+        j = nullptr;
+    }
+}
+
+inline void from_json(json const& j, TexturePtr& texture) {
+    if (j.contains("id")) texture = ResourceManager::GetInstance().getTexture(j["id"].get<string>());
+}

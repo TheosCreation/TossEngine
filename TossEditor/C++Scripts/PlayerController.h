@@ -32,8 +32,10 @@ private:
     Camera* m_cam = nullptr; // Pointer to the main camera
     Rigidbody* m_rigidBody = nullptr; // Pointer to the rigidbody
     GroundCheck* m_groundCheck = nullptr; // Pointer to the groundCheck
+    TexturePtr m_texture = nullptr;
+    TextureCubeMapPtr m_cubeMapTexture = nullptr;
 
-    SERIALIZABLE_MEMBERS(m_health, m_movementSpeed, m_acceleration, m_airAcceleration, m_jumpForce, m_jumpCooldown, m_layerNames)
+    SERIALIZABLE_MEMBERS(m_health, m_movementSpeed, m_acceleration, m_airAcceleration, m_jumpForce, m_jumpCooldown, m_layerNames, m_texture, m_cubeMapTexture)
 };
 
 REGISTER_COMPONENT(PlayerController);

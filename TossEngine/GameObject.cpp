@@ -44,7 +44,8 @@ GameObject::~GameObject()
 {
     for (auto& pair : m_components)
     {
-        delete pair.second; // Free allocated memory
+        // Free allocated memory
+        delete pair.second;
     }
     m_components.clear();
 }

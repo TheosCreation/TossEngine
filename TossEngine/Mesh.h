@@ -60,3 +60,17 @@ private:
 
     Vector3 eulerAngles;
 };
+
+inline void to_json(json& j, MeshPtr const& mesh) {
+    if (mesh)
+    {
+        j = json{ { "id", mesh->getUniqueID() } };
+    }
+    else {
+        j = nullptr;
+    }
+}
+
+inline void from_json(json const& j, MeshPtr& mesh) {
+    if (j.contains("id")) mesh = ResourceManager::GetInstance().getMesh(j["id"].get<string>());
+}

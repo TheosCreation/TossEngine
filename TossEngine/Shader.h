@@ -196,3 +196,17 @@ private:
     uint m_programId = 0; // The ID of the shader program.
     uint m_attachedShaders[2] = {}; // The IDs of the attached shaders.
 };
+
+inline void to_json(json& j, ShaderPtr const& shader) {
+    if (shader)
+    {
+        j = json{ { "id", shader->getUniqueID() } };
+    }
+    else {
+        j = nullptr;
+    }
+}
+
+inline void from_json(json const& j, ShaderPtr& shader) {
+    if (j.contains("id")) shader = ResourceManager::GetInstance().getShader(j["id"].get<string>());
+}

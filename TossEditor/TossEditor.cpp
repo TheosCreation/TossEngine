@@ -1313,6 +1313,7 @@ void TossEditor::FindSceneFiles()
 void TossEditor::onQuit()
 {
     m_editorRunning.store(false);
+    selectedSelectable = nullptr;
 
     if (auto scene = TossEngine::GetInstance().getCurrentScene())
     {

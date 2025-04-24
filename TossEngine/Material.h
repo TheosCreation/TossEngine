@@ -51,3 +51,17 @@ private:
 	ShaderPtr m_shader;
 	std::unordered_map<std::string, UniformValue> m_uniformValues;
 };
+
+inline void to_json(json& j, MaterialPtr const& material) {
+    if (material)
+    {
+        j = json{ { "id", material->getUniqueID() } };
+    }
+    else {
+        j = nullptr;
+    }
+}
+
+inline void from_json(json const& j, MaterialPtr& material) {
+    if (j.contains("id")) material = ResourceManager::GetInstance().getMaterial(j["id"].get<string>());
+}

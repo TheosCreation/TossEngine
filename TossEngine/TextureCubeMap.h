@@ -39,3 +39,17 @@ public:
 private:
     TextureCubeMapDesc m_desc = {};     // Description of the 2D texture.
 };
+
+inline void to_json(json& j, TextureCubeMapPtr const& cubemap) {
+    if (cubemap)
+    {
+        j = json{ { "id", cubemap->getUniqueID() } };
+    }
+    else {
+        j = nullptr;
+    }
+}
+
+inline void from_json(json const& j, TextureCubeMapPtr& cubemap) {
+    if (j.contains("id")) cubemap = ResourceManager::GetInstance().getTextureCubeMap(j["id"].get<string>());
+}
