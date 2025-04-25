@@ -12,9 +12,10 @@ Mail : theo.morris@mds.ac.nz
 
 #include "Texture2D.h"
 #include <glew.h>
-
-#include "stb_image.h"
 #include "TossEngine.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 // Constructor that initializes a 2D texture with the given description.
 Texture2D::Texture2D(const Texture2DDesc& desc, const string& filePath, const string& uniqueId, ResourceManager* manager) : Resource(filePath, uniqueId, manager)
@@ -52,6 +53,11 @@ Texture2D::Texture2D(const std::string& uid, ResourceManager* mgr) : Resource(ui
 
 void Texture2D::onCreateLate()
 {
+    if (!m_path.empty()) GenerateTexture();
+}
+
+void Texture2D::GenerateTexture()
+{
     stbi_set_flip_vertically_on_load(false);
 
     // Load the image data using stb_image.
@@ -67,8 +73,6 @@ void Texture2D::onCreateLate()
     m_textureSize = { width, height };
     m_numChannels = nrChannels;
 
-    // Free the image data.
-    stbi_image_free(data);
 
     // Generate a texture ID and bind it as a 2D texture.
     glGenTextures(1, &m_textureId);
@@ -92,6 +96,9 @@ void Texture2D::onCreateLate()
 
     // Generate mipmaps for the texture.
     glGenerateMipmap(GL_TEXTURE_2D);
+
+    // Free the image data.
+    stbi_image_free(data);
 }
 
 void Texture2D::OnInspectorGUI()
@@ -119,6 +126,7 @@ void Texture2D::OnInspectorGUI()
                 auto root = getProjectRoot();
                 auto relPath = std::filesystem::relative(chosen, root);
                 m_path = relPath.string();
+                if (!m_path.empty()) GenerateTexture();
             }
         }
 

@@ -30,6 +30,7 @@ private:
 
     SERIALIZABLE_MEMBERS(m_staticFriction, m_dynamicFriction, m_bounciness)
 };
+REGISTER_RESOURCE(PhysicsMaterial)
 
 inline void to_json(json& j, PhysicsMaterialPtr const& material) {
     if (material)

@@ -49,29 +49,20 @@ void AudioEngine::loadSound(SoundPtr& soundInfo) {
 
 void AudioEngine::loadSound(Sound& sound)
 {
-    if (sound.isLoaded()) {
-        //std::cout << "Playing Sound\n";
-        FMOD::Channel* channel;
-        // start play in 'paused' state
-        ERRCHECK(lowLevelSystem->playSound(sounds[sound.getUniqueID()], nullptr, true /* start paused */, &channel));
-
-        if (sound.is3D())
-            set3dChannelPosition(sound, channel);
-
-        //std::cout << "Playing sound at volume " << soundInfo.getVolume() << '\n';
-        channel->setVolume(sound.getVolume());
-
-        if (sound.isLoop()) // add to channel map of sounds currently playing, to stop later
-            loopsPlaying.insert({ sound.getUniqueID(), channel });
-
-        ERRCHECK(channel->setReverbProperties(0, sound.getReverbAmount()));
-
-        // start audio playback
-        ERRCHECK(channel->setPaused(false));
-
+    if (!sound.isLoaded()) {
+        std::cout << "Audio Engine: Loading Sound from file " << sound.getPath() << '\n';
+        FMOD::Sound* fmodSound;
+        ERRCHECK(lowLevelSystem->createSound(sound.getPath().c_str(), sound.is3D() ? FMOD_3D : FMOD_2D, nullptr, &fmodSound));
+        ERRCHECK(fmodSound->setMode(sound.isLoop() ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF));
+        ERRCHECK(fmodSound->set3DMinMaxDistance(0.5f * DISTANCEFACTOR, 5000.0f * DISTANCEFACTOR));
+        sounds.insert({ sound.getUniqueID(), fmodSound });
+        unsigned int msLength = 0;
+        ERRCHECK(sounds[sound.getUniqueID()]->getLength(&msLength, FMOD_TIMEUNIT_MS));
+        //soundInfo.setMSLength(msLength);
+        sound.setLoaded(true);
     }
     else
-        std::cout << "Audio Engine: Can't play, sound was not loaded yet from " << sound.getPath() << '\n';
+        std::cout << "Audio Engine: Sound File was already loaded!\n";
 }
 
 void AudioEngine::playSound(SoundPtr soundInfo) {

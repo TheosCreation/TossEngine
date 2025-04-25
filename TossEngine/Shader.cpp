@@ -22,29 +22,39 @@ Shader::Shader(const ShaderDesc& desc, const string& uniqueId, ResourceManager* 
     Attach(desc.vertexShaderFilePath, ShaderType::VertexShader);
     Attach(desc.fragmentShaderFilePath, ShaderType::FragmentShader);
     link();
+    isLoaded = true;
 }
 
 Shader::Shader(const std::string& uid, ResourceManager* mgr) : Resource(uid, mgr)
 {
+    m_programId = glCreateProgram();
 }
 
-Shader::~Shader()
+void Shader::onDestroy()
 {
-	for (uint i = 0; i < 2; i++)
-	{
-		glDetachShader(m_programId, m_attachedShaders[i]);
-		glDeleteShader(m_attachedShaders[i]);
-	}
-	glDeleteProgram(m_programId);
+    if (isLoaded)
+    {
+        for (uint i = 0; i < 2; ++i) {
+            if (m_attachedShaders[i] != 0) {
+                glDetachShader(m_programId, m_attachedShaders[i]);
+                glDeleteShader(m_attachedShaders[i]);
+            }
+        }
+        isLoaded = false;
+    }
+    if (m_programId != 0) {
+        glDeleteProgram(m_programId);
+    }
 }
 
 void Shader::onCreateLate()
 {
-    if (m_vertexShaderFilePath.empty() && m_fragShaderFilePath.empty()) return;
+    if (m_vertexShaderFilePath.empty() || m_fragShaderFilePath.empty()) return;
 
     Attach(m_vertexShaderFilePath, ShaderType::VertexShader);
     Attach(m_fragShaderFilePath, ShaderType::FragmentShader);
     link();
+    isLoaded = true;
 }
 
 void Shader::OnInspectorGUI()
@@ -124,6 +134,8 @@ void Shader::OnInspectorGUI()
         Attach(m_vertexShaderFilePath, ShaderType::VertexShader);
         Attach(m_fragShaderFilePath, ShaderType::FragmentShader);
         link();
+
+        isLoaded = true;
     }
 }
 

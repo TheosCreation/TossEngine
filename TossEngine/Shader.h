@@ -31,10 +31,7 @@ public:
 
     Shader(const std::string& uid, ResourceManager* mgr);
 
-    /**
-     * @brief Destructor for the Shader class.
-     */
-    ~Shader();
+    void onDestroy() override;
 
     void onCreateLate() override;
 
@@ -193,13 +190,14 @@ private:
 
 private:
     uint m_programId = 0; // The ID of the shader program.
-    uint m_attachedShaders[2] = {}; // The IDs of the attached shaders.
+    uint m_attachedShaders[2] = { 0, 0 }; // The IDs of the attached shaders.
 
     string m_vertexShaderFilePath = "";
     string m_fragShaderFilePath = "";
 
     SERIALIZABLE_MEMBERS(m_vertexShaderFilePath, m_fragShaderFilePath)
 };
+REGISTER_RESOURCE(Shader)
 
 inline void to_json(json& j, ShaderPtr const& shader) {
     if (shader)

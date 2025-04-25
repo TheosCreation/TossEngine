@@ -25,8 +25,6 @@ Mail : theo.morris@mds.ac.nz
 #include <filesystem>
 #include <fstream>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 
 ShaderPtr ResourceManager::getShader(const std::string& uniqueId)
 {
@@ -182,55 +180,55 @@ ShaderPtr ResourceManager::createComputeShader(const string& computeShaderFilena
 
 TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vector<std::string>& filepaths, const string& uniqueId)
 {
-    stbi_set_flip_vertically_on_load(false);
-
-    if (filepaths.size() != 6)
-    {
-        Debug::LogError("Cubemap texture requires exactly 6 images", false);
-        return TextureCubeMapPtr();
-    }
-
-    TextureCubeMapDesc desc;
-    for (const auto& filepath : filepaths)
-    {
-        int width, height, nrChannels;
-        unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
-        if (data)
-        {
-            desc.textureData.push_back(data);
-            desc.textureSize = { width, height };
-            desc.numChannels = nrChannels;
-        }
-        else
-        {
-            Debug::LogError("Cubemap texture failed to load at path: " + filepath, false);
-            stbi_image_free(data);
-            return TextureCubeMapPtr();
-        }
-    }
-
-    // Create a cubemap texture using the graphics engine.
-    TextureCubeMapPtr textureCubeMapPtr = std::make_shared<TextureCubeMap>(desc, uniqueId, this);
-    if (!textureCubeMapPtr)
-    {
-        Debug::LogError("Cubemap texture not generated", false);
-    }
-
-    // Free the image data.
-    for (auto data : desc.textureData)
-    {
-        stbi_image_free(data);
-    }
-
-    if (textureCubeMapPtr)
-    {
-        m_mapResources.emplace(uniqueId, textureCubeMapPtr);
-        if (cubemapTextureFilePaths.find(uniqueId) == cubemapTextureFilePaths.end())
-        {
-            cubemapTextureFilePaths.emplace(uniqueId, filepaths);
-        }
-        return textureCubeMapPtr;
-    }
+    //stbi_set_flip_vertically_on_load(false);
+    //
+    //if (filepaths.size() != 6)
+    //{
+    //    Debug::LogError("Cubemap texture requires exactly 6 images", false);
+    //    return TextureCubeMapPtr();
+    //}
+    //
+    //TextureCubeMapDesc desc;
+    //for (const auto& filepath : filepaths)
+    //{
+    //    int width, height, nrChannels;
+    //    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+    //    if (data)
+    //    {
+    //        desc.textureData.push_back(data);
+    //        desc.textureSize = { width, height };
+    //        desc.numChannels = nrChannels;
+    //    }
+    //    else
+    //    {
+    //        Debug::LogError("Cubemap texture failed to load at path: " + filepath, false);
+    //        stbi_image_free(data);
+    //        return TextureCubeMapPtr();
+    //    }
+    //}
+    //
+    //// Create a cubemap texture using the graphics engine.
+    //TextureCubeMapPtr textureCubeMapPtr = std::make_shared<TextureCubeMap>(desc, uniqueId, this);
+    //if (!textureCubeMapPtr)
+    //{
+    //    Debug::LogError("Cubemap texture not generated", false);
+    //}
+    //
+    //// Free the image data.
+    //for (auto data : desc.textureData)
+    //{
+    //    stbi_image_free(data);
+    //}
+    //
+    //if (textureCubeMapPtr)
+    //{
+    //    m_mapResources.emplace(uniqueId, textureCubeMapPtr);
+    //    if (cubemapTextureFilePaths.find(uniqueId) == cubemapTextureFilePaths.end())
+    //    {
+    //        cubemapTextureFilePaths.emplace(uniqueId, filepaths);
+    //    }
+    //    return textureCubeMapPtr;
+    //}
 
     return TextureCubeMapPtr();
 }
@@ -238,47 +236,47 @@ TextureCubeMapPtr ResourceManager::createCubeMapTextureFromFile(const std::vecto
 Texture2DPtr ResourceManager::createTexture2DFromFile(const std::string& filepath, const string& uniqueId, TextureType type)
 {
     // Check if the resource has already been loaded
-    auto it = m_mapResources.find(uniqueId);
-    if (it != m_mapResources.end())
-    {
-        return std::static_pointer_cast<Texture2D>(it->second);
-    }
-    stbi_set_flip_vertically_on_load(false);
-
-    // Load the image data using stb_image.
-    Texture2DDesc desc;
-    int width, height, nrChannels;
-    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
-    if (!data)
-    {
-        Debug::LogError("Texture failed to load at path: " + filepath, false);
-        return Texture2DPtr();
-    }
-
-    desc.textureData = data;
-    desc.textureSize = { width, height };
-    desc.numChannels = nrChannels;
-
-    // Create a 2D texture using the graphics engine.
-    Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, filepath, uniqueId, this);
-    if (!texture2DPtr)
-    {
-        Debug::LogError("Texture not generated", false);
-    }
-
-    // Free the image data.
-    stbi_image_free(data);
-
-    if (texture2DPtr)
-    {
-        if (texture2DFilePaths.find(uniqueId) == texture2DFilePaths.end())
-        {
-            texture2DFilePaths.emplace(uniqueId, filepath);
-        }
-
-        m_mapResources.emplace(filepath, texture2DPtr);
-        return texture2DPtr;
-    }
+    //auto it = m_mapResources.find(uniqueId);
+    //if (it != m_mapResources.end())
+    //{
+    //    return std::static_pointer_cast<Texture2D>(it->second);
+    //}
+    //stbi_set_flip_vertically_on_load(false);
+    //
+    //// Load the image data using stb_image.
+    //Texture2DDesc desc;
+    //int width, height, nrChannels;
+    //unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+    //if (!data)
+    //{
+    //    Debug::LogError("Texture failed to load at path: " + filepath, false);
+    //    return Texture2DPtr();
+    //}
+    //
+    //desc.textureData = data;
+    //desc.textureSize = { width, height };
+    //desc.numChannels = nrChannels;
+    //
+    //// Create a 2D texture using the graphics engine.
+    //Texture2DPtr texture2DPtr = std::make_shared<Texture2D>(desc, filepath, uniqueId, this);
+    //if (!texture2DPtr)
+    //{
+    //    Debug::LogError("Texture not generated", false);
+    //}
+    //
+    //// Free the image data.
+    //stbi_image_free(data);
+    //
+    //if (texture2DPtr)
+    //{
+    //    if (texture2DFilePaths.find(uniqueId) == texture2DFilePaths.end())
+    //    {
+    //        texture2DFilePaths.emplace(uniqueId, filepath);
+    //    }
+    //
+    //    m_mapResources.emplace(filepath, texture2DPtr);
+    //    return texture2DPtr;
+    //}
 
     return Texture2DPtr();
 }
@@ -927,14 +925,11 @@ void ResourceManager::Reload()
 
 void ResourceManager::CleanUp()
 {
+    m_selectedResource.reset();
+
     for (auto& [key, resource] : m_mapResources)
     {
-        // Check if the resource is of type Mesh
-        PrefabPtr prefab = std::dynamic_pointer_cast<Prefab>(resource);
-        if (prefab)
-        {
-            prefab->onDestroy();
-        }
+        resource->onDestroy();
     }
     m_mapResources.clear();
 }
@@ -1008,9 +1003,75 @@ CoroutineTask ResourceManager::loadResourcesFromFile(const std::string& filepath
         }
     }
 
+    for (auto& [uid, resource] : m_mapResources)
+    {
+        resource->onCreate();
+        if (m_resourceDataMap.contains(uid))
+        {
+            resource->deserialize(m_resourceDataMap[uid]);
+        }
+        resource->onCreateLate();
+    }
+
+
     hasLoadedResources = true;
     co_return;
 }
+
+
+ResourcePtr ResourceManager::createResourceFromData(const std::string& typeName, const json& data)
+{
+    auto it = resourceFactories.find(typeName);
+    if (it == resourceFactories.end()) {
+        Debug::LogError("No resource factory for type “" + typeName + "”", false);
+        return nullptr;
+    }
+
+    if (data.contains("uniqueId"))
+    {
+        std::string uid = data["uniqueId"];
+        auto res = it->second(uid, this);
+        if (res) {
+            m_mapResources.emplace(uid, res);
+            m_resourceDataMap.emplace(uid, data); // for later when we deserialize all resources
+        }
+        return res;
+    }
+    else
+    {
+        Debug::LogError("Resource data loaded has no id");
+    }
+    return nullptr;
+}
+
+ResourcePtr ResourceManager::createResource(const std::string& typeName, const std::string& uid)
+{
+    auto it = resourceFactories.find(typeName);
+    if (it == resourceFactories.end()) {
+        Debug::LogError("No resource factory for type “" + typeName + "”", false);
+        return nullptr;
+    }
+
+    auto res = it->second(uid, this);
+    if (res) {
+        m_mapResources.emplace(uid, res);
+        res->onCreate();
+        res->onCreateLate();
+    }
+    return res;
+}
+
+vector<string> ResourceManager::GetCreatableResourceTypes() const
+{
+    std::vector<std::string> types;
+    types.reserve(resourceFactories.size());
+    for (auto const& kv : resourceFactories)
+        types.push_back(kv.first);
+
+    std::sort(types.begin(), types.end());
+    return types;
+}
+
 
 CoroutineTask ResourceManager::saveResourcesToFile(const std::string& filepath)
 {
@@ -1042,32 +1103,6 @@ CoroutineTask ResourceManager::saveResourcesToFile(const std::string& filepath)
     co_return;
 }
 
-ResourcePtr ResourceManager::createResourceFromData(const std::string& typeName, const json& data)
-{
-    auto it = resourceFactories.find(typeName);
-    if (it == resourceFactories.end()) {
-        Debug::LogError("No resource factory for type “" + typeName + "”", false);
-        return nullptr;
-    }
-
-    if (data.contains("uniqueId"))
-    {
-        std::string uid = data["uniqueId"];
-        auto res = it->second(uid, this);
-        res->onCreate();
-        res->deserialize(data);
-        res->onCreateLate();
-        if (res) {
-            m_mapResources.emplace(uid, res);
-        }
-        return res;
-    }
-    else
-    {
-        Debug::LogError("Resource data loaded has no id");
-    }
-    return nullptr;
-}
 
 CoroutineTask ResourceManager::createResourcesFromDescs()
 {

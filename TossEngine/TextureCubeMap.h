@@ -29,11 +29,9 @@ public:
     TextureCubeMap(const std::string& uid, ResourceManager* mgr);
 
     void onCreateLate() override;
+    void GenerateTextureCubeMap();
 
-    /**
-     * @brief Destructor for the TextureCubeMap class.
-     */
-    ~TextureCubeMap();
+    void onDestroy() override;
 
     void OnInspectorGUI() override;
 
@@ -60,6 +58,7 @@ private:
 
     SERIALIZABLE_MEMBERS(m_numChannels, m_textureSize, m_filePaths)
 };
+REGISTER_RESOURCE(TextureCubeMap)
 
 inline void to_json(json& j, TextureCubeMapPtr const& cubemap) {
     if (cubemap)

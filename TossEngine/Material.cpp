@@ -12,9 +12,6 @@ Material::Material(const std::string& uid, ResourceManager* mgr) : Resource(uid,
 {
 }
 
-Material::~Material()
-{
-}
 json Material::serialize() const
 {
     json data;
@@ -142,6 +139,9 @@ void Material::deserialize(const json& data)
 
             }, uniform);
     }
+
+
+    isLoaded = true;
 }
 
 void Material::OnInspectorGUI()
@@ -307,45 +307,50 @@ TextureCubeMapPtr Material::GetBinding(const string& bindingName)
 
 void Material::UpdateBindings()
 {
+    std::unordered_map<std::string, UniformValue> old = std::move(m_uniformValues);
     m_uniformValues.clear();
-    GLuint programID = m_shader->getId();
-    for (const auto& binding : m_shader->getBindings())
+
+    GLuint prog = m_shader->getId();
+    for (auto& binding : m_shader->getBindings())
     {
+        const char* name = binding.name.c_str();
+        GLint loc = glGetUniformLocation(prog, name);
+        if (loc < 0) continue;  // skip inactive uniforms
+
         switch (binding.type)
         {
-        case GL_FLOAT:
-            m_uniformValues[binding.name] = 0.0f;
-            break;
-        case GL_FLOAT_VEC2:
-            m_uniformValues[binding.name] = Vector2(0.0f, 0.0f);
-            break;
-        case GL_FLOAT_VEC3:
-            m_uniformValues[binding.name] = Vector3(0.0f, 0.0f, 0.0f);
-            break;
-        case GL_FLOAT_VEC4:
-            m_uniformValues[binding.name] = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-            break;
-        case GL_FLOAT_MAT4:
-            m_uniformValues[binding.name] = Mat4(1.0f); // Identity matrix.
-            break;
+        case GL_FLOAT:      m_uniformValues[name] = 0.0f;              break;
+        case GL_FLOAT_VEC2: m_uniformValues[name] = Vector2{};        break;
+        case GL_FLOAT_VEC3: m_uniformValues[name] = Vector3{};        break;
+        case GL_FLOAT_VEC4: m_uniformValues[name] = Vector4{};        break;
+        case GL_FLOAT_MAT4: m_uniformValues[name] = Mat4{ 1.0f };       break;
+
         case GL_SAMPLER_2D:
         {
             Texture2DBinding tb;
-            tb.texture = nullptr;
-            tb.slot = static_cast<uint32_t>(glGetUniformLocation(programID, binding.name.c_str()));
-            m_uniformValues[binding.name] = tb;
+            tb.slot = (uint)loc;
+            // if the user had bound a texture to this uniform before, restore it:
+            if (auto it = old.find(name);
+                it != old.end() && std::holds_alternative<Texture2DBinding>(it->second))
+            {
+                tb.texture = std::get<Texture2DBinding>(it->second).texture;
+            }
+            m_uniformValues[name] = tb;
             break;
         }
+
         case GL_SAMPLER_CUBE:
         {
-            TextureCubeMapBinding tb;
-            tb.texture = nullptr;
-            tb.slot = static_cast<uint32_t>(glGetUniformLocation(programID, binding.name.c_str()));
-            m_uniformValues[binding.name] = tb;
+            TextureCubeMapBinding cb;
+            cb.slot = (uint)loc;
+            if (auto it = old.find(name);
+                it != old.end() && std::holds_alternative<TextureCubeMapBinding>(it->second))
+            {
+                cb.texture = std::get<TextureCubeMapBinding>(it->second).texture;
+            }
+            m_uniformValues[name] = cb;
             break;
         }
-        default:
-            break;
         }
     }
 }

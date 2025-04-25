@@ -18,6 +18,7 @@ Mail : theo.morris@mds.ac.nz
 #include <filesystem>
 #include "VertexMesh.h"
 #include "GraphicsEngine.h"
+#include "TossEngine.h"
 
 Mesh::Mesh(const MeshDesc& desc, const string& uniqueId, ResourceManager* manager) : Resource(desc.filePath, uniqueId, manager)
 {
@@ -142,7 +143,12 @@ Mesh::Mesh(const std::string& uid, ResourceManager* mgr) : Resource(uid, mgr)
 
 void Mesh::onCreateLate()
 {
+    if (m_path.empty()) return;
+    LoadMeshFromFilePath();
+}
 
+void Mesh::LoadMeshFromFilePath()
+{
     tinyobj::attrib_t attribs;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials; //unused but my gun model imports materials lets try to see if that works
@@ -255,6 +261,7 @@ void Mesh::onCreateLate()
     );
 
     initInstanceBuffer();
+    isLoaded = true;
 }
 
 Mesh::~Mesh()
@@ -265,6 +272,33 @@ void Mesh::OnInspectorGUI()
 {
     ImGui::Text(("Mesh Inspector - ID: " + m_uniqueID).c_str());
     ImGui::Separator();
+
+    if (ImGui::BeginTable("MeshFilepath", 3,
+        ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg))
+    {
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::TextUnformatted("Filepath:");
+        ImGui::TableSetColumnIndex(1);
+        if (m_path.empty()) {
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Assigned");
+        }
+        else {
+            ImGui::TextUnformatted(m_path.c_str());
+        }
+        ImGui::TableSetColumnIndex(2);
+        if (ImGui::Button("Browse##MeshFilePath")) {
+            auto chosen = TossEngine::GetInstance().openFileDialog("*.obj");
+            if (!chosen.empty()) {
+                auto root = getProjectRoot();
+                auto relPath = std::filesystem::relative(chosen, root);
+                m_path = relPath.string();
+                if (!m_path.empty()) LoadMeshFromFilePath();
+            }
+        }
+
+        ImGui::EndTable();
+    }
 
     if (ImGui::CollapsingHeader("Mesh Instances", ImGuiTreeNodeFlags_DefaultOpen))
     {

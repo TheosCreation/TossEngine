@@ -254,7 +254,7 @@ void Collider::onRescale(const Vector3& previousScale)
 {
     //update the physics shape based on the scale
     Vector3 localScale = m_owner->m_transform.GetLocalScale();
-    if (localScale.x > 0.0f && localScale.y > 0.0f && localScale.z > 0.0f)
+    if (localScale.x > 0.01f && localScale.y > 0.01f && localScale.z > 0.01f)
     {
         SetColliderType(static_cast<int>(m_shape->getType()));
     }
@@ -284,6 +284,7 @@ void Collider::SetBoxCollider(const Vector3& size) {
     m_boxColliderSize = size;
     
     Vector3 scale = m_owner->m_transform.GetLocalScale();
+    if (scale.x <= 0.01f || scale.y <= 0.01f || scale.z <= 0.01f) return;
     float sx = std::fabs(scale.x), sy = std::fabs(scale.y), sz = std::fabs(scale.z);
     Vector3 scaledSize{ m_boxColliderSize.x * sx,
                                m_boxColliderSize.y * sy,
@@ -298,10 +299,11 @@ void Collider::SetBoxCollider(const Vector3& size) {
 void Collider::SetSphereCollider(float radius) {
     m_radius = radius;
     // Pick the largest axis so the shape stays a true sphere
-    Vector3 s = m_owner->m_transform.GetLocalScale();
-    float maxScale = std::max({ std::fabs(s.x),
-                                std::fabs(s.y),
-                                std::fabs(s.z) });
+    Vector3 scale = m_owner->m_transform.GetLocalScale();
+    if (scale.x <= 0.01f || scale.y <= 0.01f || scale.z <= 0.01f) return;
+    float maxScale = std::max({ std::fabs(scale.x),
+                                std::fabs(scale.y),
+                                std::fabs(scale.z) });
     float scaledRadius = radius * maxScale;
     m_shape = Physics::GetInstance()
         .GetPhysicsCommon()
@@ -312,11 +314,12 @@ void Collider::SetSphereCollider(float radius) {
 void Collider::SetCapsuleCollider(float radius, float height) {
     m_radius = radius;
     m_height = height;
-    Vector3 s = m_owner->m_transform.GetLocalScale();
+    Vector3 scale = m_owner->m_transform.GetLocalScale();
+    if (scale.x <= 0.01f || scale.y <= 0.01f || scale.z <= 0.01f) return;
     // Radius in the XZ‑plane, height along Y
-    float radiusScale = std::max(std::fabs(s.x), std::fabs(s.z));
+    float radiusScale = std::max(std::fabs(scale.x), std::fabs(scale.z));
     float scaledRadius = radius * radiusScale;
-    float scaledHeight = height * std::fabs(s.y);
+    float scaledHeight = height * std::fabs(scale.y);
     m_shape = Physics::GetInstance()
         .GetPhysicsCommon()
         .createCapsuleShape(scaledRadius, scaledHeight);

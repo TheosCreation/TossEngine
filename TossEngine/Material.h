@@ -33,7 +33,6 @@ class TOSSENGINE_API Material : public Resource
 public:
 	Material(ShaderPtr shader, const std::string& uniqueID, ResourceManager* manager);
     Material(const std::string& uid, ResourceManager* mgr);
-	~Material();
 
     json serialize() const override;
     void deserialize(const json& data) override;
@@ -53,6 +52,7 @@ private:
 	ShaderPtr m_shader;
 	std::unordered_map<std::string, UniformValue> m_uniformValues;
 };
+REGISTER_RESOURCE(Material)
 
 inline void to_json(json& j, MaterialPtr const& material) {
     if (material)

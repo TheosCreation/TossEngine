@@ -123,6 +123,7 @@ void MeshRenderer::onShadowPass(uint index)
 
     // Bind the vertex array object for the mesh
     auto meshVBO = m_mesh->getVertexArrayObject();
+    if (meshVBO == nullptr) return;
 
     graphicsEngine.setVertexArrayObject(meshVBO);
 
@@ -169,7 +170,7 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
 
         if (m_reflectiveMap)
         {
-            m_geometryShader->setTexture2D(m_reflectiveMap, 2, "ReflectionMap");
+            m_geometryShader->setTexture2D(m_reflectiveMap, 1, "ReflectionMap");
         }
     }
 
@@ -201,12 +202,12 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
         auto skyboxTexture = m_owner->getGameObjectManager()->getSkyBoxTexture();
         if (skyboxTexture)
         {
-            graphicsEngine.setTextureCubeMap(skyboxTexture, 1, "Texture_Skybox");
+            graphicsEngine.setTextureCubeMap(skyboxTexture, 6, "Texture_Skybox");
         }
 
         if (m_reflectiveMap)
         {
-            graphicsEngine.setTexture2D(m_reflectiveMap, 2, "ReflectionMap");
+            graphicsEngine.setTexture2D(m_reflectiveMap, 1, "ReflectionMap");
         }
 
         m_owner->getLightManager()->applyShadows(m_shader);
@@ -214,6 +215,7 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
 
     // Bind the vertex array object for the mesh
     auto meshVBO = m_mesh->getVertexArrayObject();
+    if (meshVBO == nullptr) return;
 
     // Retrieve the instance of the graphics engine
     graphicsEngine.setVertexArrayObject(meshVBO);
@@ -229,8 +231,8 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
     }
 
     m_shader->setTexture2D(nullptr, 0, "Texture0");
-    graphicsEngine.setTextureCubeMap(nullptr, 1, "Texture_Skybox");
-    graphicsEngine.setTexture2D(nullptr, 2, "ReflectionMap");
+    graphicsEngine.setTextureCubeMap(nullptr, 6, "Texture_Skybox");
+    graphicsEngine.setTexture2D(nullptr, 1, "ReflectionMap");
 }
 
 void MeshRenderer::SetMesh(MeshPtr mesh)

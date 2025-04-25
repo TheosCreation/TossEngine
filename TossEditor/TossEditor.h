@@ -78,28 +78,10 @@ private:
     char renameBuffer[256] = "";
     ResourcePtr resourceBeingRenamed = nullptr;
 
-    std::string shaderVertPath;
-    std::string shaderFragPath;
-    char shaderIDBuffer[256] = "";
-    bool openShaderPopupNextFrame = false;
-
-    std::string meshFilepath;
     char iDBuffer[256] = "";
-    bool openMeshPopupNextFrame = false;
+    string selectedTypeName = "";
+    bool createResource = false;
 
-    bool openPrefabPopupNextFrame = false;
-
-    char IDBuffer[256] = "";
-    bool openPhysicsMaterialNextFrame = false;
-
-    std::string fontFilePath;
-    bool openFontCreationNextFrame = false;
-
-    std::string soundFilePath;
-    bool openSoundCreationNextFrame = false;
-
-    bool openCubeMapPopupNextFrame = false;
-    bool openMaterialPopupNextFrame = false;
     ShaderPtr shader;
 
     unique_ptr<EditorPlayer> m_player = nullptr;
@@ -108,7 +90,6 @@ private:
 
     float m_currentTime = 0.0f;
     float m_previousTime = 0.0f;
-    const float m_fixedTimeStep = 1.0f / 60.0f; // Fixed time step (60 FPS)
     float m_accumulatedTime = 0; //The current frame's time
 
     ImGuizmo::OPERATION m_currentManipulateOperation = ImGuizmo::OPERATION::TRANSLATE;

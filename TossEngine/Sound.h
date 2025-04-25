@@ -24,6 +24,7 @@ public:
     Sound(const SoundDesc& desc, const std::string& uniqueID, ResourceManager* manager);
     Sound(const std::string& uid, ResourceManager* mgr);
 
+    void OnInspectorGUI() override;
     void onCreateLate() override;
 
     // Getters
@@ -58,6 +59,7 @@ private:
 
     SERIALIZABLE_MEMBERS(m_path, m_is3D, m_isLoop, m_volume, m_reverbAmount)
 };
+REGISTER_RESOURCE(Sound)
 
 inline void to_json(json& j, SoundPtr const& sound) {
     if (sound)

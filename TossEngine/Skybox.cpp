@@ -54,7 +54,7 @@ void Skybox::Render(UniformData data, RenderingPath renderPath)
     if(!m_material->Bind()) return;
 
     ShaderPtr shader = m_material->GetShader();
-    
+
     // Get the graphics engine instance for rendering
    // graphicsEngine.setShader(shader); // Set the shader for the skybox
 
@@ -76,6 +76,7 @@ void Skybox::Render(UniformData data, RenderingPath renderPath)
 
     // Get the mesh's vertex array object and bind it to the graphics pipeline
     auto meshVBO = m_mesh->getVertexArrayObject();
+    if (!meshVBO) return;
     graphicsEngine.setVertexArrayObject(meshVBO);
 
     // Draw the indexed triangles for the skybox

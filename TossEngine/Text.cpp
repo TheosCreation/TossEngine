@@ -5,7 +5,8 @@
 
 void Text::onCreateLate()
 {
-    RebuildMesh();
+    if (m_font->isLoaded)
+        RebuildMesh();
 }
 
 void Text::OnInspectorGUI()

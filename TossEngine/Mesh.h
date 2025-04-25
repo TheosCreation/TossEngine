@@ -33,6 +33,7 @@ public:
     Mesh(const std::string& uid, ResourceManager* mgr);
 
     void onCreateLate() override;
+    void LoadMeshFromFilePath();
 
     /**
      * @brief Destructor for the Mesh class.
@@ -65,6 +66,7 @@ private:
 
     SERIALIZABLE_MEMBERS(m_path, m_instanceTransforms)
 };
+REGISTER_RESOURCE(Mesh)
 
 inline void to_json(json& j, MeshPtr const& mesh) {
     if (mesh)

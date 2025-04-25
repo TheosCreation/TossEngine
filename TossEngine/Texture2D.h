@@ -30,6 +30,7 @@ public:
     Texture2D(const std::string& uid, ResourceManager* mgr);
 
     void onCreateLate() override;
+    void GenerateTexture();
 
     void OnInspectorGUI() override;
     bool Delete(bool deleteSelf = true) override;
@@ -94,7 +95,7 @@ private:
 
     SERIALIZABLE_MEMBERS(m_numChannels, m_textureSize, m_path)
 };
-
+REGISTER_RESOURCE(Texture2D)
 
 inline void to_json(json& j, Texture2DPtr const& texture) {
     if (texture)

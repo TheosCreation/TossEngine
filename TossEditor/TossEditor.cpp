@@ -32,8 +32,8 @@ TossEditor::TossEditor()
     AudioEngine::GetInstance().Init();
 
     ResourceManager& resourceManager = ResourceManager::GetInstance();
-    tossEngine.StartCoroutine(resourceManager.loadResourceDesc("Resources/Resources.json"));
-    tossEngine.StartCoroutine(resourceManager.createResourcesFromDescs());
+    tossEngine.StartCoroutine(resourceManager.loadResourcesFromFile("Resources/ResourcesNew.json"));
+    //tossEngine.StartCoroutine(resourceManager.createResourcesFromDescs());
 
 
     m_playerSettings = std::make_unique<TossPlayerSettings>();
@@ -734,84 +734,17 @@ void TossEditor::onUpdateInternal()
 
         // Resource creation popup
         if (ImGui::BeginPopup("CreateResourcePopup")) {
-            if (ImGui::MenuItem("Texture2D")) {
-                std::string textureFilePath = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;*.jpeg;*.bmp");
-
-                if (!textureFilePath.empty()) {
-                    fs::path selectedPath = textureFilePath;
-                    fs::path projectRoot = getProjectRoot();
-                    fs::path relativePath;
-
-                    if (fs::equivalent(selectedPath.root_name(), projectRoot.root_name()) &&
-                        selectedPath.string().find(projectRoot.string()) == 0)
-                    {
-                        relativePath = fs::relative(selectedPath, projectRoot);
-                        Debug::Log(relativePath.string());
-                        resourceManager.createTexture2DFromFile(relativePath.string(), relativePath.string());//change this soon
-                    }
-                    else {
-                        Debug::LogWarning("Selected texture must be inside the project folder.");
-                    }
+            auto types = resourceManager.GetCreatableResourceTypes();
+            for (auto& typeName : types)
+            {
+                if (ImGui::MenuItem(typeName.c_str()))
+                {
+                    createResource = true;
+                    selectedTypeName = typeName;
+                    ImGui::OpenPopup("Enter Resource ID");
+                    ImGui::CloseCurrentPopup();
                 }
-                ImGui::CloseCurrentPopup();
             }
-
-            if (ImGui::MenuItem("Mesh")) {
-                meshFilepath = TossEngine::GetInstance().openFileDialog("*.obj");
-
-                if (!meshFilepath.empty()) {
-                    openMeshPopupNextFrame = true;
-                }
-                ImGui::CloseCurrentPopup();
-            }
-
-            if (ImGui::MenuItem("Prefab")) {
-                openPrefabPopupNextFrame = true;
-                ImGui::CloseCurrentPopup();
-            }
-
-            if (ImGui::MenuItem("Material")) {
-                openMaterialPopupNextFrame = true;
-                ImGui::CloseCurrentPopup();
-            }
-            
-            if (ImGui::MenuItem("Cubemap Texture")) {
-                openCubeMapPopupNextFrame = true;
-                ImGui::CloseCurrentPopup();
-            }
-
-            if (ImGui::MenuItem("Shader")) {
-                shaderVertPath = TossEngine::GetInstance().openFileDialog("*.vert");
-                if (!shaderVertPath.empty()) {
-                    shaderFragPath = TossEngine::GetInstance().openFileDialog("*.frag");
-                    if (!shaderFragPath.empty()) {
-                        openShaderPopupNextFrame = true; // Trigger name popup
-                    }
-                }
-                ImGui::CloseCurrentPopup();
-            }
-
-            if (ImGui::MenuItem("Physics Material")) {
-                openPhysicsMaterialNextFrame = true;
-                ImGui::CloseCurrentPopup();
-            }
-
-            if (ImGui::MenuItem("Sound")) {
-                soundFilePath = TossEngine::GetInstance().openFileDialog("*.ogg");
-                if (!soundFilePath.empty()) {
-                    openSoundCreationNextFrame = true;
-                }
-                ImGui::CloseCurrentPopup();
-            }
-
-            if (ImGui::MenuItem("Font")) {
-                fontFilePath = TossEngine::GetInstance().openFileDialog("*.ttf;*.otf");
-                if (!fontFilePath.empty()) {
-                    openFontCreationNextFrame = true;
-                }
-                ImGui::CloseCurrentPopup();
-            }
-
             ImGui::EndPopup();
         }
 
@@ -865,6 +798,42 @@ void TossEditor::onUpdateInternal()
             }
         }
 
+        if (createResource)
+        {
+            ImGui::OpenPopup("Enter Resource ID");
+        }
+        if (ImGui::BeginPopupModal("Enter Resource ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            createResource = false;
+            string label = selectedTypeName + " ID";
+            ImGui::InputText(label.c_str(), iDBuffer, sizeof(iDBuffer));
+
+            if (ImGui::Button("Create")) {
+                if (strlen(iDBuffer) > 0) {
+                    resourceManager.createResource(selectedTypeName, iDBuffer);
+
+                    Debug::Log("Created " + selectedTypeName + ": " + iDBuffer);
+
+                    // Reset state
+                    iDBuffer[0] = '\0';
+                    selectedTypeName.clear();
+
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Cancel")) {
+                selectedTypeName.clear();
+                iDBuffer[0] = '\0';
+
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+
 
         // TODO: Create a function for drag and drop
 
@@ -897,396 +866,6 @@ void TossEditor::onUpdateInternal()
         }
     }
     ImGui::End();
-
-    // In the same frame, open the popups if flagged
-    if (openMaterialPopupNextFrame) {
-        ImGui::OpenPopup("Select Shader");
-        openMaterialPopupNextFrame = false;
-    }
-    static char materialNameBuffer[64] = ""; // buffer for entering the material name
-
-    if (ImGui::BeginPopupModal("Select Shader", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        std::string previewLabel = (shader) ? shader->getUniqueID() : "None";
-
-        if (ImGui::BeginCombo("Shader", previewLabel.c_str()))
-        {
-            bool noneSelected = (shader == nullptr);
-            if (ImGui::Selectable("None", noneSelected))
-            {
-                shader = nullptr;
-                resourceManager.SetSelectedResource(nullptr);
-            }
-
-            auto& resources = resourceManager.GetAllResources();
-            for (const auto& [id, resource] : resources)
-            {
-                auto casted = std::dynamic_pointer_cast<Shader>(resource);
-                if (casted)
-                {
-                    bool isSelected = (shader && shader->getUniqueID() == id);
-                    if (ImGui::Selectable(id.c_str(), isSelected))
-                    {
-                        shader = casted;
-                    }
-
-                    if (isSelected)
-                        ImGui::SetItemDefaultFocus();
-                }
-            }
-            ImGui::EndCombo();
-        }
-
-        ImGui::Spacing();
-        ImGui::InputText("Material Name", materialNameBuffer, IM_ARRAYSIZE(materialNameBuffer));
-
-        // Only enable the Create button if valid inputs are present
-        bool canCreate = shader && strlen(materialNameBuffer) > 0;
-        if (!canCreate)
-            ImGui::BeginDisabled();
-
-        if (ImGui::Button("Create Material"))
-        {
-            std::string name = materialNameBuffer;
-            MaterialDesc materialDesc;
-            materialDesc.shaderId = shader->getUniqueID();
-            if (resourceManager.createMaterial(materialDesc, name))
-            {
-                Debug::Log("Created material: " + name + " using shader: " + shader->getUniqueID());
-                ImGui::CloseCurrentPopup();
-                materialNameBuffer[0] = '\0'; // Clear input field after creation
-            }
-            else
-            {
-                Debug::LogError("Failed to create material: " + name);
-            }
-        }
-
-        if (!canCreate)
-            ImGui::EndDisabled();
-
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel"))
-        {
-            ImGui::CloseCurrentPopup();
-            materialNameBuffer[0] = '\0';
-        }
-
-        ImGui::EndPopup();
-    }
-
-    static char cubemapNameBuffer[64] = "NewCubemap";
-    static bool filesSelected = false;  // To track if the files are selected
-    static std::vector<std::string> cubemapFilePaths;  // Store file paths for the cubemap faces
-
-    if (openCubeMapPopupNextFrame)
-    {
-        ImGui::OpenPopup("Create Cubemap Texture");
-        openCubeMapPopupNextFrame = false;
-    }
-
-    if (ImGui::BeginPopupModal("Create Cubemap Texture", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        ImGui::InputText("Cubemap Name", cubemapNameBuffer, IM_ARRAYSIZE(cubemapNameBuffer));
-
-        // Face names for cubemap in typical order: +X, -X, +Y, -Y, +Z, -Z
-        static const char* faceNames[6] = {
-            "Right (+X)",
-            "Left (-X)",
-            "Top (+Y)",
-            "Bottom (-Y)",
-            "Back (-Z)",
-            "Front (+Z)"
-        };
-
-        if (!filesSelected)
-        {
-            int count = static_cast<int>(cubemapFilePaths.size());
-            for (int i = count; i < 6; ++i)
-            {
-                std::string label = std::string("Select ") + faceNames[i];
-                ImGui::Text("%s", label.c_str());
-
-                if (ImGui::Button(("Browse##" + std::to_string(i)).c_str()))
-                {
-                    std::string filePath = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;");
-                    if (!filePath.empty())
-                    {
-                        std::filesystem::path root = getProjectRoot();
-                        std::filesystem::path relativePath = std::filesystem::relative(filePath, root);
-                        cubemapFilePaths.push_back(relativePath.string());
-                    }
-                    break; // Only allow selecting one face per frame
-                }
-                break;
-            }
-
-            if (cubemapFilePaths.size() == 6)
-            {
-                filesSelected = true;
-            }
-        }
-
-        ImGui::Separator();
-
-        for (int i = 0; i < cubemapFilePaths.size(); ++i)
-        {
-            ImGui::Text("%s: %s", faceNames[i], cubemapFilePaths[i].c_str());
-        }
-
-        if (filesSelected && ImGui::Button("Create Cubemap"))
-        {
-            std::string cubemapName = cubemapNameBuffer; // Convert buffer to std::string
-            ResourceManager::GetInstance().createCubeMapTextureFromFile(cubemapFilePaths, cubemapName);
-
-            // Clear file paths and name buffer
-            cubemapFilePaths.clear();
-            std::fill(std::begin(cubemapNameBuffer), std::end(cubemapNameBuffer), 0);
-            filesSelected = false;
-            ImGui::CloseCurrentPopup();
-        }
-
-        if (ImGui::Button("Cancel"))
-        {
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::EndPopup();
-    }
-
-    if (openPrefabPopupNextFrame) {
-        ImGui::OpenPopup("Enter Prefab ID");
-        openPrefabPopupNextFrame = false;
-    }
-
-    if (ImGui::BeginPopupModal("Enter Prefab ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) 
-    {
-        ImGui::InputText("Prefab ID", iDBuffer, sizeof(iDBuffer));
-
-        if (ImGui::Button("Create")) {
-            if (strlen(iDBuffer) > 0) {
-                std::string prefabID = iDBuffer;
-
-                resourceManager.createPrefab(prefabID);
-
-                Debug::Log("Created prefab: " + prefabID);
-
-                // Reset state
-                iDBuffer[0] = '\0';
-
-                ImGui::CloseCurrentPopup();
-            }
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Cancel")) {
-            meshFilepath.clear();
-            iDBuffer[0] = '\0';
-
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::EndPopup();
-    }
-
-    if (openMeshPopupNextFrame) {
-        ImGui::OpenPopup("Enter Mesh ID");
-        openMeshPopupNextFrame = false;
-    }
-
-    // Show the popup to name the shader
-    if (ImGui::BeginPopupModal("Enter Mesh ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::InputText("Mesh ID", iDBuffer, sizeof(iDBuffer));
-
-        if (ImGui::Button("Create")) {
-            if (strlen(iDBuffer) > 0) {
-                std::string meshId = iDBuffer;
-                std::filesystem::path root = getProjectRoot();
-                std::filesystem::path relativeMeshPath = std::filesystem::relative(meshFilepath, root);
-
-                MeshDesc desc;
-                desc.filePath = relativeMeshPath.string();
-
-                resourceManager.createMesh(desc, meshId);
-
-                Debug::Log("Created mesh: " + meshId);
-
-                // Reset state
-                meshFilepath.clear();
-                iDBuffer[0] = '\0';
-
-                ImGui::CloseCurrentPopup();
-            }
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Cancel")) {
-            meshFilepath.clear();
-            iDBuffer[0] = '\0';
-
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::EndPopup();
-    }
-
-    // In the same frame, open the popup if flagged
-    if (openShaderPopupNextFrame) {
-        ImGui::OpenPopup("Enter Shader ID");
-        openShaderPopupNextFrame = false;
-    }
-    
-    if (ImGui::BeginPopupModal("Enter Shader ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::InputText("Shader ID", shaderIDBuffer, sizeof(shaderIDBuffer));
-
-        if (ImGui::Button("Create")) {
-            if (strlen(shaderIDBuffer) > 0) {
-                std::string shaderID = shaderIDBuffer;
-                std::filesystem::path root = getProjectRoot();
-                std::filesystem::path vertRel = std::filesystem::relative(shaderVertPath, root);
-                std::filesystem::path fragRel = std::filesystem::relative(shaderFragPath, root);
-
-                ShaderDesc desc;
-                desc.vertexShaderFilePath = vertRel.string();
-                desc.fragmentShaderFilePath = fragRel.string();
-
-                resourceManager.createShader(desc, shaderID);
-
-                Debug::Log("Created shader: " + shaderID);
-
-                // Reset state
-                shaderVertPath.clear();
-                shaderFragPath.clear();
-                shaderIDBuffer[0] = '\0';
-
-                ImGui::CloseCurrentPopup();
-            }
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Cancel")) {
-            shaderVertPath.clear();
-            shaderFragPath.clear();
-            shaderIDBuffer[0] = '\0';
-
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::EndPopup();
-    }
-
-
-    if (openSoundCreationNextFrame) {
-        ImGui::OpenPopup("Enter Sound ID");
-        openSoundCreationNextFrame = false;
-    }
-
-
-    // Show the popup to name the shader
-    if (ImGui::BeginPopupModal("Enter Sound ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::InputText("Sound ID", IDBuffer, sizeof(IDBuffer));
-
-        if (ImGui::Button("Create")) {
-            if (strlen(IDBuffer) > 0) {
-
-                std::filesystem::path root = getProjectRoot();
-                std::filesystem::path soundFilePathRel = std::filesystem::relative(soundFilePath, root);
-                std::string soundId = IDBuffer;
-
-                SoundDesc desc;
-                desc.filepath = soundFilePathRel.string();
-                resourceManager.createSound(desc, soundId);
-                Debug::Log("Created sound: " + soundId);
-
-                // Reset state
-                IDBuffer[0] = '\0';
-
-                ImGui::CloseCurrentPopup();
-            }
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Cancel")) {
-            IDBuffer[0] = '\0';
-
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::EndPopup();
-    }
-
-    if (openFontCreationNextFrame) {
-        ImGui::OpenPopup("Enter Font ID");
-        openFontCreationNextFrame = false;
-    }
-    if (ImGui::BeginPopupModal("Enter Font ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::InputText("Font ID", IDBuffer, sizeof(IDBuffer));
-
-        if (ImGui::Button("Create")) {
-            if (strlen(IDBuffer) > 0) {
-
-                std::filesystem::path root = getProjectRoot();
-                std::filesystem::path fontFilePathRel = std::filesystem::relative(fontFilePath, root);
-                std::string fontId = IDBuffer;
-                resourceManager.createFont(fontId, fontFilePathRel.string());
-                Debug::Log("Created font: " + fontId);
-
-                // Reset state
-                IDBuffer[0] = '\0';
-
-                ImGui::CloseCurrentPopup();
-            }
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Cancel")) {
-            IDBuffer[0] = '\0';
-
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::EndPopup();
-    }
-
-    if (openPhysicsMaterialNextFrame) {
-        ImGui::OpenPopup("Enter Physics Material ID");
-        openPhysicsMaterialNextFrame = false;
-    }
-
-    // Show the popup to name the shader
-    if (ImGui::BeginPopupModal("Enter Physics Material ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::InputText("Physics Material ID", IDBuffer, sizeof(IDBuffer));
-
-        if (ImGui::Button("Create")) {
-            if (strlen(IDBuffer) > 0) {
-                std::string physicsMaterialID = IDBuffer;
-
-                PhysicsMaterialDesc desc;
-                resourceManager.createPhysicsMaterial(desc, physicsMaterialID);
-                Debug::Log("Created physics material: " + physicsMaterialID);
-
-                // Reset state
-                IDBuffer[0] = '\0';
-
-                ImGui::CloseCurrentPopup();
-            }
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Cancel")) {
-            IDBuffer[0] = '\0';
-
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::EndPopup();
-    }
 
     if (resourceBeingRenamed != nullptr)
     {
@@ -1387,7 +966,7 @@ void TossEditor::onQuit()
         scene->onQuit();
     }
     ResourceManager& resourceManager = ResourceManager::GetInstance();
-    TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesDescs("Resources/Resources.json"));
+    //TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesDescs("Resources/Resources.json"));
     TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesToFile("Resources/ResourcesNew.json"));
     resourceManager.CleanUp();
     Physics::GetInstance().UnLoadPrefabWorld();

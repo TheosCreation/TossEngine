@@ -10,6 +10,8 @@ public:
 
     void onCreateLate() override;
 
+    void GenerateFont();
+
     void OnInspectorGUI() override;
     uint getId() const;
     int getAtlasWidth() const;
@@ -24,7 +26,7 @@ private:
     vector<stbtt_bakedchar> m_charData;
     vector<unsigned char> m_ttfData;
 
-    SERIALIZABLE_MEMBERS(m_atlasHeight, m_atlasWidth, m_pixelHeight)
+    SERIALIZABLE_MEMBERS(m_atlasHeight, m_atlasWidth, m_pixelHeight, m_path)
 };
 REGISTER_RESOURCE(Font)
 

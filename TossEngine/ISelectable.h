@@ -88,6 +88,7 @@ public:
         
         if (ImGui::BeginCombo(fieldName.c_str(), previewLabel.c_str()))
         {
+            bool didSelect = false;
             // Option: None
             bool noneSelected = (resourcePtr == nullptr);
             if (ImGui::Selectable("None", noneSelected))
@@ -109,6 +110,7 @@ public:
                     {
                         resourcePtr = casted;
                         resourceManager.SetSelectedResource(resourcePtr);
+                        didSelect = true;
                     }
         
                     // Highlight the selected item
@@ -118,11 +120,11 @@ public:
             }
         
             ImGui::EndCombo();
-            return true;
+            return didSelect;
         }
         return false;
     }
-    static void FileSelectionTableField(const char* tableID, const std::vector<std::string>& rowLabels, std::vector<std::string>& filePaths, const char* filter);
+    static bool FileSelectionTableField(const char* tableID, const std::vector<std::string>& rowLabels, std::vector<std::string>& filePaths, const char* filter);
     static bool FloatSliderField(const string& name, float& value, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
     static bool IntSliderField(const string& name, int& value, int speed = 1, int min = 0, int max = 0);
 

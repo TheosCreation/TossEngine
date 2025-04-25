@@ -1,6 +1,6 @@
 #version 460 core
 
-uniform samplerCube Texture_Skybox;
+layout(binding = 6) uniform samplerCube Texture_Skybox;
 
 in vec3 FragTexcoord;
 

@@ -187,6 +187,12 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
     }
     Window* window = TossEngine::GetInstance().GetWindow();
     Vector2 innerSize = window->getInnerSize();
+    if (writeToFrameBuffer)
+    {
+        innerSize = writeToFrameBuffer->getSize();
+    }
+
+
     uniformData.uiProjectionMatrix = glm::ortho(0.0f, innerSize.x, -innerSize.y, 0.0f, -1.0f, 1.0f);
 
     // Example of Defered Rendering Pipeline

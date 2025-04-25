@@ -29,6 +29,7 @@ public:
     static void recurseSerialize(const GameObject* go, json& out);
     static void recurseDeserialize(GameObject* parentGO, const json& data);
 };
+REGISTER_RESOURCE(Prefab)
 
 
 inline void to_json(json& j, PrefabPtr const& prefab) {
