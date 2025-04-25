@@ -31,8 +31,7 @@ TossEditor::TossEditor()
     Physics::GetInstance().LoadPrefabWorld();
     AudioEngine::GetInstance().Init();
 
-    ResourceManager& resourceManager = ResourceManager::GetInstance();
-    tossEngine.StartCoroutine(resourceManager.loadResourcesFromFile("Resources/Resources.json"));
+    ResourceManager::GetInstance().loadResourcesFromFile("Resources/Resources.json");
 
 
     m_playerSettings = std::make_unique<TossPlayerSettings>();
@@ -319,7 +318,6 @@ void TossEditor::onUpdateInternal()
                     auto scene = std::make_shared<Scene>(filePath);
                     TossEngine::GetInstance().OpenScene(scene, false);
                 }
-                if(selectedSelectable != nullptr) selectedSelectable->OnDeSelect();
                 
                 selectedSelectable = nullptr;
             }
@@ -855,9 +853,10 @@ void TossEditor::onUpdateInternal()
                 // Serialize the GameObject to JSON.
                 json jsonData;
                 Prefab::recurseSerialize(droppedObject, jsonData);
+                jsonData["uniqueId"] = droppedObject->name;
 
                 // Create a prefab using the GameObject's name and JSON data.
-                resourceManager.createResourceFromData(droppedObject->name, jsonData);
+                resourceManager.createResourceFromData("Prefab", jsonData);
 
                 Debug::Log("Created prefab '%s' from dragged GameObject", droppedObject->name.c_str());
             }
@@ -965,8 +964,10 @@ void TossEditor::onQuit()
         scene->onQuit();
     }
     ResourceManager& resourceManager = ResourceManager::GetInstance();
-    TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesToFile("Resources/Resources.json"));
+    resourceManager.saveResourcesToFile("Resources/Resources.json");
     resourceManager.CleanUp();
+    DebugDraw::GetInstance().CleanUp();
+    GraphicsEngine::GetInstance().CleanUp();
     Physics::GetInstance().UnLoadPrefabWorld();
     editorPreferences.SaveToFile("EditorPreferences.json");
 }
@@ -979,20 +980,12 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
     if (gameObject == selectedSelectable.get())
         flags |= ImGuiTreeNodeFlags_Selected;
 
-    // Create the tree node, which draws the arrow and the label.
     bool open = ImGui::TreeNodeEx(gameObject->name.c_str(), flags);
-
-    // Get the bounding rectangle for this item to determine where the arrow is drawn.
     ImVec2 itemMin = ImGui::GetItemRectMin();
-    // Typically, the arrow is about one frame height wide.
     float arrowWidth = ImGui::GetFrameHeight();
 
-    // If the tree node was clicked...
     if (ImGui::IsItemClicked())
     {
-        // Check if the click was outside of the arrow region.
-        // That is, if the mouse's x position is farther right than the arrow's width,
-        // then treat the click as a selection of the game object.
         if (ImGui::GetIO().MousePos.x > itemMin.x + arrowWidth)
         {
             // Deselect the previous selection if any.
@@ -1024,7 +1017,7 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
         ImGui::EndDragDropTarget();
     }
 
-    // Context menu (right-click) for renaming/deleting.
+    // Context menu for renaming/deleting.
     if (ImGui::BeginPopupContextItem())
     {
         if (ImGui::MenuItem("Rename"))
@@ -1185,73 +1178,3 @@ void TossEditor::OpenSceneViaFileSystem()
         }
     }
 }
-//void DrawSceneViewWindow(FrameBuffer* editorFB,
-//    GameObject* editorCamera,
-//    Scene* scene,
-//    GameObject* selected,
-//    float deltaTime)
-//{
-//    editorCamera->Update(deltaTime);
-//    editorFB->Bind();
-//    scene->Render(editorFB, editorCamera->GetComponent<Camera>());
-//    editorFB->Unbind();
-//
-//    ImGui::Begin("Scene View");
-//
-//    ImVec2 sz((float)editorFB->GetWidth(), (float)editorFB->GetHeight());
-//    ImGui::Image((ImTextureID)(intptr_t)editorFB->GetTextureID(), sz);
-//
-//    ImVec2 img_min = ImGui::GetItemRectMin();
-//    ImVec2 img_max = ImGui::GetItemRectMax();
-//    ImVec2 img_sz{ img_max.x - img_min.x, img_max.y - img_min.y };
-//
-//    ImGuizmo::BeginFrame();
-//    ImGuizmo::Enable(selected != nullptr);
-//    ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
-//    ImGuizmo::SetOrthographic(false);
-//    ImGuizmo::SetRect(img_min.x, img_min.y, img_sz.x, img_sz.y);
-//
-//    Camera* cam = editorCamera->GetComponent<Camera>();
-//    glm::mat4 view = cam->GetViewMatrix();
-//    glm::mat4 proj = cam->GetProjectionMatrix();
-//    proj[1][1] *= -1.0f;
-//
-//    if (selected)
-//    {
-//        ImGuizmo::OPERATION op = ImGuizmo::TRANSLATE;
-//
-//        glm::mat4 model = selected->GetWorldMatrix();
-//
-//        ImGui::PushClipRect(img_min, img_max, true);
-//
-//        bool depth = glIsEnabled(GL_DEPTH_TEST);
-//        if (depth) glDisable(GL_DEPTH_TEST);
-//
-//        ImGuizmo::Manipulate(
-//            glm::value_ptr(view),
-//            glm::value_ptr(proj),
-//            op,
-//            ImGuizmo::LOCAL,
-//            glm::value_ptr(model)
-//        );
-//
-//        if (depth) glEnable(GL_DEPTH_TEST);
-//
-//        ImGui::PopClipRect();
-//
-//        if (ImGuizmo::IsUsing()) {
-//            glm::vec3 t, r, s;
-//            ImGuizmo::DecomposeMatrixToComponents(
-//                glm::value_ptr(model),
-//                glm::value_ptr(t),
-//                glm::value_ptr(r),
-//                glm::value_ptr(s)
-//            );
-//            selected->transform.position = t;
-//            selected->transform.rotation = glm::quat(glm::radians(r));
-//            selected->transform.scale = s;
-//        }
-//    }
-//
-//    ImGui::End();
-//}

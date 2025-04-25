@@ -152,6 +152,8 @@ public:
 
     void drawLines(const LineType& lineType, uint vertexCount, uint offset);
 
+    void CleanUp();
+
 private:
     bool isInitilized = false;
     ShaderPtr currentShader = nullptr;

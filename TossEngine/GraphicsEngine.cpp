@@ -367,3 +367,8 @@ void GraphicsEngine::drawLines(const LineType& lineType, uint vertexCount, uint 
     glDrawArrays(glLineType, offset, vertexCount);
 }
 
+void GraphicsEngine::CleanUp()
+{
+    currentShader.reset();
+}
+

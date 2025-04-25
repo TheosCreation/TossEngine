@@ -38,7 +38,7 @@ public:
     /**
      * @brief Destructor for the Resource class.
      */
-    virtual ~Resource();
+    virtual ~Resource() = default;
 
     virtual void onCreate() {}
     virtual void onCreateLate() {}

@@ -30,8 +30,7 @@ TossPlayer::TossPlayer()
     Physics::GetInstance().SetGravity(m_playerSettings->gravity);
     Physics::GetInstance().LoadPrefabWorld();
 
-    ResourceManager& resourceManager = ResourceManager::GetInstance();
-    tossEngine.StartCoroutine(resourceManager.loadResourcesFromFile("Resources/Resources.json"));
+    ResourceManager::GetInstance().loadResourcesFromFile("Resources/Resources.json");
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.Init(m_playerSettings);

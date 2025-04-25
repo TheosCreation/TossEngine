@@ -11,6 +11,8 @@ public:
     }
 
     ShaderPtr GetShader();
+    void CleanUp();
+
 
 private:
     DebugDraw() = default;

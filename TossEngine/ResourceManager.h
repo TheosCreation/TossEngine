@@ -53,8 +53,8 @@ public:
             return std::make_shared<T>(uid, mgr);
             };
     }
-    CoroutineTask loadResourcesFromFile(const std::string& filepath);
-    CoroutineTask saveResourcesToFile(const std::string& filepath);
+    void loadResourcesFromFile(const std::string& filepath);
+    void saveResourcesToFile(const std::string& filepath);
     ResourcePtr createResourceFromData(const std::string& typeName, const json& data);
     ResourcePtr createResource(const std::string& typeName, const std::string& uid);
 

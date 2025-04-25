@@ -220,6 +220,7 @@ void Rigidbody::UpdateBodyTransform() const
             rp3d::Vector3(worldTranslation.x, worldTranslation.y, worldTranslation.z),
             rp3d::Quaternion(-worldRotation.x, -worldRotation.y, -worldRotation.z, worldRotation.w)
         );
+        
         m_Body->setTransform(bodyTransform);
     }
 }

@@ -69,7 +69,13 @@ void ResourceManager::DeleteResource(const std::string& uniqueId)
 
 void ResourceManager::Reload()
 {
-    CleanUp();
+    m_selectedResource.reset();
+
+    for (auto& [key, resource] : m_mapResources)
+    {
+        resource->onDestroy();
+    }
+    m_mapResources.clear();
     loadResourcesFromFile(m_currentFilePath);
 }
 
@@ -82,6 +88,9 @@ void ResourceManager::CleanUp()
         resource->onDestroy();
     }
     m_mapResources.clear();
+
+    //we only call cleanup on quit because the resource factories are created on launch
+    resourceFactories.clear();
 }
 
 
@@ -147,15 +156,15 @@ void ResourceManager::SetSelectedResource(const ResourcePtr& selectedResource)
     m_selectedResource = selectedResource;
 }
 
-CoroutineTask ResourceManager::loadResourcesFromFile(const std::string& filepath)
+void ResourceManager::loadResourcesFromFile(const std::string& filepath)
 {
-    if (hasLoadedResources) co_return;
+    if (hasLoadedResources) return;
     m_currentFilePath = filepath;
     std::ifstream file(filepath);
     if (!file.is_open())
     {
         Debug::LogError("Failed to open file for reading: " + filepath, false);
-        co_return;
+        return;
     }
 
     json data;
@@ -183,7 +192,6 @@ CoroutineTask ResourceManager::loadResourcesFromFile(const std::string& filepath
 
 
     hasLoadedResources = true;
-    co_return;
 }
 
 
@@ -241,7 +249,7 @@ vector<string> ResourceManager::GetCreatableResourceTypes() const
 }
 
 
-CoroutineTask ResourceManager::saveResourcesToFile(const std::string& filepath)
+void ResourceManager::saveResourcesToFile(const std::string& filepath)
 {
     json out;
     out["resources"] = nlohmann::json::array();
@@ -262,13 +270,12 @@ CoroutineTask ResourceManager::saveResourcesToFile(const std::string& filepath)
     std::ofstream file(filepath);
     if (!file.is_open()) {
         Debug::LogError("Failed to open file for writing: " + filepath, false);
-        co_return;
+        return;
     }
     file << out.dump(4);
     file.close();
 
     Debug::Log("Saved Resources to filepath: " + filepath);
-    co_return;
 }
 
 

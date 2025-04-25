@@ -11,3 +11,8 @@ ShaderPtr DebugDraw::GetShader()
     }
     return m_debugShader;
 }
+
+void DebugDraw::CleanUp()
+{
+    m_debugShader.reset();
+}

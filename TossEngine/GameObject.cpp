@@ -379,6 +379,10 @@ void GameObject::onUpdateInternal()
     if (Time::TimeScale != 0.0f) return;
 
     m_transform.UpdateWorldTransform();
+
+    for (auto& pair : m_components) {
+        pair.second->onUpdateInternal();
+    }
     
     for (MissingComponent* missingComponent : missingComponetsToDestroy)
     {
@@ -411,10 +415,6 @@ void GameObject::onUpdateInternal()
         }
     }
     componentsToDestroy.clear();
-
-    for (auto& pair : m_components) {
-        pair.second->onUpdateInternal();
-    }
 }
 
 void GameObject::onLateUpdate()

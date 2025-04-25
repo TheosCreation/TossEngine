@@ -20,10 +20,6 @@ Resource::Resource(const std::string& uid, ResourceManager* mgr) : m_uniqueID(ui
 {
 }
 
-Resource::~Resource()
-{
-}
-
 std::string Resource::getPath()
 {
 	return m_path;
