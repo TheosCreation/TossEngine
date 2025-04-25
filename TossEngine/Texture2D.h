@@ -11,14 +11,13 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include "Utils.h"
-#include "Texture.h"
+#include "Resource.h"
 
 /**
  * @class Texture2D
  * @brief A representation of a 2D texture to be used by the graphics engine class.
  */
-class TOSSENGINE_API Texture2D : public Texture
+class TOSSENGINE_API Texture2D : public Resource
 {
 public:
     /**
@@ -28,6 +27,9 @@ public:
      * @param manager Resource Manager of the 2D texture.
      */
     Texture2D(const Texture2DDesc& desc, const string& filePath, const string& uniqueId, ResourceManager* manager);
+    Texture2D(const std::string& uid, ResourceManager* mgr);
+
+    void onCreateLate() override;
 
     void OnInspectorGUI() override;
     bool Delete(bool deleteSelf = true) override;
@@ -65,6 +67,18 @@ public:
     void resize(Rect newTextureSize);
 
     /**
+     * @brief Gets the ID of the texture.
+     * @return The ID of the texture.
+     */
+    uint getId() const { return m_textureId; }
+
+    /**
+     * @brief Sets the ID of the texture.
+     * @param id The new ID for the texture.
+     */
+    void setId(uint id) { m_textureId = id; }
+
+    /**
      * @brief Destructor for the Texture2D class.
      * Cleans up resources associated with the texture.
      */
@@ -72,4 +86,26 @@ public:
 
 private:
     Texture2DDesc m_desc = {}; // Description of the 2D texture.
+    int m_numChannels = 3;
+    Rect m_textureSize = {};
+
+    uint m_textureId = 0;
+    unsigned char* m_textureData = nullptr;
+
+    SERIALIZABLE_MEMBERS(m_numChannels, m_textureSize, m_path)
 };
+
+
+inline void to_json(json& j, Texture2DPtr const& texture) {
+    if (texture)
+    {
+        j = json{ { "id", texture->getUniqueID() } };
+    }
+    else {
+        j = nullptr;
+    }
+}
+
+inline void from_json(json const& j, Texture2DPtr& texture) {
+    if (j.contains("id")) texture = ResourceManager::GetInstance().getTexture2D(j["id"].get<string>());
+}

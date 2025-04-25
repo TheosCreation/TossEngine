@@ -12,6 +12,7 @@ Mail : theo.morris@mds.ac.nz
 
 #include "ResourceManager.h"
 #include "Mesh.h"
+#include "Texture.h"
 #include "Texture2D.h"
 #include "TextureCubeMap.h"
 #include "HeightMap.h"
@@ -67,12 +68,12 @@ TextureCubeMapPtr ResourceManager::getTextureCubeMap(const std::string& uniqueId
         return createCubeMapTextureFromFile(it2->second, uniqueId);
 }
 
-TexturePtr ResourceManager::getTexture(const std::string& uniqueId)
+Texture2DPtr ResourceManager::getTexture2D(const std::string& uniqueId)
 {
     // Try finding the texture in the resource map first
     auto it = m_mapResources.find(uniqueId);
     if (it != m_mapResources.end())
-        return std::static_pointer_cast<Texture>(it->second);
+        return std::static_pointer_cast<Texture2D>(it->second);
 
     // Look up in the file path map
     auto it2 = texture2DFilePaths.find(uniqueId);
@@ -308,9 +309,7 @@ FontPtr ResourceManager::createFont(const string& uniqueId, const string& filepa
     {
         return std::static_pointer_cast<Font>(it->second);
     }
-    stbi_set_flip_vertically_on_load(false);
 
-    // Load the image data using stb_image.
     std::ifstream ifs(filepath, std::ios::binary | std::ios::ate);
     if (!ifs) {
         Debug::LogError("Font file not found: " + filepath, false);
@@ -459,7 +458,7 @@ PrefabPtr ResourceManager::createPrefab(const string& id, const json& data)
     return prefabPtr;
 }
 
-void ResourceManager::deleteTexture(TexturePtr texture)
+void ResourceManager::deleteTexture(Texture2DPtr texture)
 {
     for (auto it = m_mapResources.begin(); it != m_mapResources.end(); ++it)
     {
@@ -1013,6 +1012,36 @@ CoroutineTask ResourceManager::loadResourcesFromFile(const std::string& filepath
     co_return;
 }
 
+CoroutineTask ResourceManager::saveResourcesToFile(const std::string& filepath)
+{
+    json out;
+    out["resources"] = nlohmann::json::array();
+
+    for (auto& [uid, resource] : m_mapResources)
+    {
+        // get the payload for *this* resource
+        json payload = resource->serialize();
+
+        // inject type + uniqueId
+        payload["type"] = getClassName(typeid(*resource));
+        payload["uniqueId"] = uid;
+
+        out["resources"].push_back(std::move(payload));
+    }
+
+    // write to disk
+    std::ofstream file(filepath);
+    if (!file.is_open()) {
+        Debug::LogError("Failed to open file for writing: " + filepath, false);
+        co_return;
+    }
+    file << out.dump(4);
+    file.close();
+
+    Debug::Log("Saved Resources to filepath: " + filepath);
+    co_return;
+}
+
 ResourcePtr ResourceManager::createResourceFromData(const std::string& typeName, const json& data)
 {
     auto it = resourceFactories.find(typeName);
@@ -1024,7 +1053,10 @@ ResourcePtr ResourceManager::createResourceFromData(const std::string& typeName,
     if (data.contains("uniqueId"))
     {
         std::string uid = data["uniqueId"];
-        auto res = it->second(uid, this, data);
+        auto res = it->second(uid, this);
+        res->onCreate();
+        res->deserialize(data);
+        res->onCreateLate();
         if (res) {
             m_mapResources.emplace(uid, res);
         }
@@ -1107,10 +1139,7 @@ void ResourceManager::onUpdateInternal()
         auto it = m_mapResources.find(id);
         if (it != m_mapResources.end()) {
             auto& resource = it->second;
-            if (auto prefabPtr = std::dynamic_pointer_cast<Prefab>(resource)) 
-            {
-                prefabPtr->onDestroy();
-            }
+            resource->onDestroy();
             if (m_selectedResource == resource) {
                 m_selectedResource = nullptr;
             }

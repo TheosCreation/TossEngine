@@ -118,14 +118,14 @@ public:
      * @param texture A shared pointer to the Texture2D to set.
      * @param slot The texture slot to bind the texture to.
      */
-    void setTexture2D(const TexturePtr& texture, uint slot, std::string bindingName);
+    void setTexture2D(const Texture2DPtr& texture, uint slot, std::string bindingName) const;
 
     /**
      * @brief Sets the active Cube Map Texture.
      * @param texture A shared pointer to the Texture2D to set.
      * @param slot The texture slot to bind the texture to.
      */
-    void setTextureCubeMap(const TexturePtr& texture, uint slot, std::string bindingName);
+    void setTextureCubeMap(const TextureCubeMapPtr& texture, uint slot, std::string bindingName) const;
 
     /**
      * @brief Draws triangles.

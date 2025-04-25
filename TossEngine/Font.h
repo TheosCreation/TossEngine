@@ -6,18 +6,25 @@ class Font : public Resource
 {
 public:
     Font(const FontDesc& desc, const string& filePath, const string& uniqueId, ResourceManager* manager);
-    Font(const std::string& uid, ResourceManager* mgr, const json& data);
+    Font(const std::string& uid, ResourceManager* mgr);
 
+    void onCreateLate() override;
+
+    void OnInspectorGUI() override;
     uint getId() const;
     int getAtlasWidth() const;
     int getAtlasHeight() const;
     const std::vector<stbtt_bakedchar>& getCharData() const noexcept { return m_charData; }
 private:
-    int m_atlasWidth;
-    int m_atlasHeight;
-    float m_pixelHeight;
+    int m_atlasHeight = 512;
+    int m_atlasWidth = 512;
+    float m_pixelHeight = 32.0f;
+
     uint m_textureId;
     vector<stbtt_bakedchar> m_charData;
+    vector<unsigned char> m_ttfData;
+
+    SERIALIZABLE_MEMBERS(m_atlasHeight, m_atlasWidth, m_pixelHeight)
 };
 REGISTER_RESOURCE(Font)
 

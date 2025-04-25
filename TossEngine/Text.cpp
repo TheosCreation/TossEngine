@@ -1,8 +1,9 @@
 ﻿#include "Text.h"
 #include "GameObject.h"
 #include "GraphicsEngine.h"
+#include "TossEngine.h"
 
-void Text::onCreate()
+void Text::onCreateLate()
 {
     RebuildMesh();
 }
@@ -36,6 +37,7 @@ void Text::Render(UniformData data, RenderingPath renderPath)
     if (m_owner)
     {
         shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
+        shader->setMat4("projectionMatrix", data.uiProjectionMatrix);
     }
 
     if (m_font)
@@ -56,7 +58,7 @@ void Text::RebuildMesh()
     if (!m_font) return;
 
     std::vector<Vertex>   verts;
-    std::vector<uint32_t> idxs;
+    std::vector<uint> idxs;
     float cursorX = 0, cursorY = 0;
 
     auto& font = *m_font;
@@ -74,7 +76,7 @@ void Text::RebuildMesh()
         );
 
         // 4 verts per glyph
-        uint32_t base = (uint32_t)verts.size();
+        uint base = (uint)verts.size();
         verts.push_back({ {q.x0, q.y0, 0}, {q.s0, q.t1} });
         verts.push_back({ {q.x1, q.y0, 0}, {q.s1, q.t1} });
         verts.push_back({ {q.x1, q.y1, 0}, {q.s1, q.t0} });
@@ -101,14 +103,14 @@ void Text::RebuildMesh()
         {
           verts.data(),
           sizeof(Vertex),
-          (uint32_t)verts.size(),
+          (uint)verts.size(),
           (VertexAttribute*)attribs,
           2
         },
         // IBO
       {
         idxs.data(),
-        (uint32_t)idxs.size()
+        (uint)idxs.size()
       }
     );
 }

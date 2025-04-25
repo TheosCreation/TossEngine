@@ -81,6 +81,7 @@ void Image::Render(UniformData data, RenderingPath renderPath)
     if (m_owner)
     {
         shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
+        shader->setMat4("projectionMatrix", data.uiProjectionMatrix);
     }
 
     if (m_texture)
@@ -105,7 +106,7 @@ void Image::SetSize(Vector2 size)
     }
 }
 
-void Image::SetTexture(const TexturePtr& texture)
+void Image::SetTexture(const Texture2DPtr& texture)
 {
     m_texture = texture;
 }

@@ -67,6 +67,7 @@ public:
      * if the sound file has already been added to the cache
      */
     void loadSound(SoundPtr& soundInfo);
+    void loadSound(Sound& sound);
 
     /**
     * Plays a sound file using FMOD's low level audio system. If the sound file has not been
@@ -200,7 +201,7 @@ private:
     /**
      * Sets the 3D position of a sound
      */
-    void set3dChannelPosition(SoundPtr soundInfo, FMOD::Channel* channel);
+    void set3dChannelPosition(Sound& soundInfo, FMOD::Channel* channel);
 
     /**
      * Initializes the reverb effect

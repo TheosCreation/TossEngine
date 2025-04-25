@@ -11,7 +11,9 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "Shader.h"
-#include "Texture.h"
+#include "Texture2D.h"
+#include "TextureCubeMap.h"
+#include "TossEngine.h"
 
 
 Shader::Shader(const ShaderDesc& desc, const string& uniqueId, ResourceManager* manager) : Resource("", uniqueId, manager)
@@ -22,11 +24,8 @@ Shader::Shader(const ShaderDesc& desc, const string& uniqueId, ResourceManager* 
     link();
 }
 
-Shader::Shader(const string computeFileName, ResourceManager* manager) : Resource("", computeFileName, manager)
+Shader::Shader(const std::string& uid, ResourceManager* mgr) : Resource(uid, mgr)
 {
-    m_programId = glCreateProgram();
-    Attach(computeFileName, ShaderType::ComputeShader);
-    link();
 }
 
 Shader::~Shader()
@@ -39,10 +38,93 @@ Shader::~Shader()
 	glDeleteProgram(m_programId);
 }
 
+void Shader::onCreateLate()
+{
+    if (m_vertexShaderFilePath.empty() && m_fragShaderFilePath.empty()) return;
+
+    Attach(m_vertexShaderFilePath, ShaderType::VertexShader);
+    Attach(m_fragShaderFilePath, ShaderType::FragmentShader);
+    link();
+}
+
 void Shader::OnInspectorGUI()
 {
     ImGui::Text(("Shader Inspector - ID: " + m_uniqueID).c_str());
     ImGui::Separator();
+
+    bool pathsChanged = false;
+
+    if (ImGui::BeginTable("ShaderPaths", 3,
+        ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg))
+    {
+        // --- Vertex row ---
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::TextUnformatted("Vertex Shader:");
+        ImGui::TableSetColumnIndex(1);
+        if (m_vertexShaderFilePath.empty())
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Assigned");
+        else
+            ImGui::TextUnformatted(m_vertexShaderFilePath.c_str());
+        ImGui::TableSetColumnIndex(2);
+        if (ImGui::Button("Browse##Vert"))
+        {
+            auto chosen = TossEngine::GetInstance().openFileDialog("*.vert");
+            if (!chosen.empty())
+            {
+                auto root = getProjectRoot();
+                auto relPath = std::filesystem::relative(chosen, root).string();
+                m_vertexShaderFilePath = relPath;
+                pathsChanged = true;
+            }
+        }
+
+        // --- Fragment row ---
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::TextUnformatted("Fragment Shader:");
+        ImGui::TableSetColumnIndex(1);
+        if (m_fragShaderFilePath.empty())
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Assigned");
+        else
+            ImGui::TextUnformatted(m_fragShaderFilePath.c_str());
+        ImGui::TableSetColumnIndex(2);
+        if (ImGui::Button("Browse##Frag"))
+        {
+            auto chosen = TossEngine::GetInstance().openFileDialog("*.frag");
+            if (!chosen.empty())
+            {
+                auto root = getProjectRoot();
+                auto relPath = std::filesystem::relative(chosen, root).string();
+                m_fragShaderFilePath = relPath;
+                pathsChanged = true;
+            }
+        }
+
+        ImGui::EndTable();
+    }
+
+    // if either path changed, and now both are set, recompile & relink
+    if (pathsChanged &&
+        !m_vertexShaderFilePath.empty() &&
+        !m_fragShaderFilePath.empty())
+    {
+        // detach old shaders
+        for (uint i = 0; i < 2; ++i)
+        {
+            if (m_attachedShaders[i] != 0)
+            {
+                glDetachShader(m_programId, m_attachedShaders[i]);
+                glDeleteShader(m_attachedShaders[i]);
+                m_attachedShaders[i] = 0;
+            }
+        }
+
+        // attach & link anew
+        Attach(m_vertexShaderFilePath, ShaderType::VertexShader);
+        Attach(m_fragShaderFilePath, ShaderType::FragmentShader);
+        link();
+    }
 }
 
 bool Shader::Delete(bool deleteSelf)
@@ -212,7 +294,7 @@ void Shader::setTexture2D(const uint& textureId, uint slot, const std::string& b
     setInt(bindingName, slot);
 }
 
-void Shader::setTexture2D(const TexturePtr& texture, uint slot, const std::string& bindingName) const
+void Shader::setTexture2D(const Texture2DPtr& texture, uint slot, const std::string& bindingName) const
 {
     auto glSlot = GL_TEXTURE0 + slot;
     glActiveTexture(glSlot); // activate the texture unit first before binding texture
@@ -229,7 +311,7 @@ void Shader::setTexture2D(const TexturePtr& texture, uint slot, const std::strin
     }
 }
 
-void Shader::setTextureCubeMap(const TexturePtr& texture, uint slot, const std::string& bindingName) const
+void Shader::setTextureCubeMap(const TextureCubeMapPtr& texture, uint slot, const std::string& bindingName) const
 {
     auto glSlot = GL_TEXTURE0 + slot;
     glActiveTexture(glSlot); // activate the texture unit first before binding/unbinding texture

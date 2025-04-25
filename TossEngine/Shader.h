@@ -28,16 +28,15 @@ public:
      */
     Shader(const ShaderDesc& desc, const string& uniqueId, ResourceManager* manager);
 
-    /**
-     * @brief Constructor for the compute Shader class.
-     * @param computeFileName File name of the compute shader.
-     */
-    Shader(const string computeFileName, ResourceManager* manager);
+
+    Shader(const std::string& uid, ResourceManager* mgr);
 
     /**
      * @brief Destructor for the Shader class.
      */
     ~Shader();
+
+    void onCreateLate() override;
 
     void OnInspectorGUI() override;
     bool Delete(bool deleteSelf = true) override;
@@ -62,7 +61,7 @@ public:
      * @param slot The texture slot to bind the texture to.
      * @param bindingName The name of the binding in the shader.
      */
-    void setTexture2D(const TexturePtr& texture, uint slot, const std::string& bindingName) const;
+    void setTexture2D(const Texture2DPtr& texture, uint slot, const std::string& bindingName) const;
 
     /**
      * @brief Sets the active Cube Map texture using a shared pointer.
@@ -70,7 +69,7 @@ public:
      * @param slot The texture slot to bind the texture to.
      * @param bindingName The name of the binding in the shader.
      */
-    void setTextureCubeMap(const TexturePtr& texture, uint slot, const std::string& bindingName) const;
+    void setTextureCubeMap(const TextureCubeMapPtr& texture, uint slot, const std::string& bindingName) const;
 
     /**
      * @brief Sends a mat4 into the shader.
@@ -195,6 +194,11 @@ private:
 private:
     uint m_programId = 0; // The ID of the shader program.
     uint m_attachedShaders[2] = {}; // The IDs of the attached shaders.
+
+    string m_vertexShaderFilePath = "";
+    string m_fragShaderFilePath = "";
+
+    SERIALIZABLE_MEMBERS(m_vertexShaderFilePath, m_fragShaderFilePath)
 };
 
 inline void to_json(json& j, ShaderPtr const& shader) {

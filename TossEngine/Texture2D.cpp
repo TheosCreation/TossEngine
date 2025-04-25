@@ -13,8 +13,11 @@ Mail : theo.morris@mds.ac.nz
 #include "Texture2D.h"
 #include <glew.h>
 
+#include "stb_image.h"
+#include "TossEngine.h"
+
 // Constructor that initializes a 2D texture with the given description.
-Texture2D::Texture2D(const Texture2DDesc& desc, const string& filePath, const string& uniqueId, ResourceManager* manager) : Texture(filePath, uniqueId, manager)
+Texture2D::Texture2D(const Texture2DDesc& desc, const string& filePath, const string& uniqueId, ResourceManager* manager) : Resource(filePath, uniqueId, manager)
 {
     // Generate a texture ID and bind it as a 2D texture.
     glGenTextures(1, &m_textureId);
@@ -43,10 +46,84 @@ Texture2D::Texture2D(const Texture2DDesc& desc, const string& filePath, const st
     m_desc = desc;
 }
 
+Texture2D::Texture2D(const std::string& uid, ResourceManager* mgr) : Resource(uid, mgr)
+{
+}
+
+void Texture2D::onCreateLate()
+{
+    stbi_set_flip_vertically_on_load(false);
+
+    // Load the image data using stb_image.
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load(m_path.c_str(), &width, &height, &nrChannels, 0);
+    if (!data)
+    {
+        Debug::LogError("Texture failed to load at path: " + m_path, false);
+        return;
+    }
+
+    m_textureData = data;
+    m_textureSize = { width, height };
+    m_numChannels = nrChannels;
+
+    // Free the image data.
+    stbi_image_free(data);
+
+    // Generate a texture ID and bind it as a 2D texture.
+    glGenTextures(1, &m_textureId);
+    glBindTexture(GL_TEXTURE_2D, m_textureId);
+
+    // Set texture wrapping parameters.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Repeat texture horizontally.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Repeat texture vertically.
+
+    // Set texture filtering parameters.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // Use linear filtering and generate mipmaps.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // Use linear filtering for magnification.
+
+    // Determine the number of color channels in the texture data.
+    auto glChannels = GL_RGB;
+    if (m_numChannels == 3) glChannels = GL_RGB; // 3 channels (RGB).
+    else if (m_numChannels == 4) glChannels = GL_RGBA; // 4 channels (RGBA).
+
+    // Specify the 2D texture image.
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_textureSize.width, m_textureSize.height, 0, glChannels, GL_UNSIGNED_BYTE, m_textureData);
+
+    // Generate mipmaps for the texture.
+    glGenerateMipmap(GL_TEXTURE_2D);
+}
+
 void Texture2D::OnInspectorGUI()
 {
     ImGui::Text(("Texture2D Inspector - ID: " + m_uniqueID).c_str());
     ImGui::Separator();
+
+    if (ImGui::BeginTable("TexturePath", 3,
+        ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg))
+    {
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::TextUnformatted("Filepath:");
+        ImGui::TableSetColumnIndex(1);
+        if (m_path.empty()) {
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Assigned");
+        }
+        else {
+            ImGui::TextUnformatted(m_path.c_str());
+        }
+        ImGui::TableSetColumnIndex(2);
+        if (ImGui::Button("Browse##TexturePath")) {
+            auto chosen = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;*.tga");
+            if (!chosen.empty()) {
+                auto root = getProjectRoot();
+                auto relPath = std::filesystem::relative(chosen, root);
+                m_path = relPath.string();
+            }
+        }
+
+        ImGui::EndTable();
+    }
 
     //static const char* filterOptions[] = { "Linear", "Nearest" };
     //static int minFilterIndex = 0;

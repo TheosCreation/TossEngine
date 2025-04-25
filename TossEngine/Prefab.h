@@ -5,11 +5,15 @@
 class TOSSENGINE_API Prefab : public GameObject, public Resource
 {
 public:
-    Prefab(const std::string& uniqueID, ResourceManager* manager);
+    Prefab(const std::string& uid, ResourceManager* mgr);
     json serialize() const override;
     void deserialize(const json& data) override;
     void OnInspectorGUI() override;
     reactphysics3d::PhysicsWorld* getWorld() override;
+
+    void onCreate() override;
+    void onCreateLate() override;
+    void onDestroy() override;
 
     GameObjectPtr Instantiate() const {
         // Serialize the prefab into JSON.

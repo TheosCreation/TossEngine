@@ -11,6 +11,7 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
+#include "Math.h"
 
 /**
  * @class Rect
@@ -52,3 +53,19 @@ public:
     int left = 0;   // The left position of the rectangle
     int top = 0;    // The top position of the rectangle
 };
+
+inline void to_json(json& j, Rect const& r) {
+    j = json{
+        { "left",   r.left   },
+        { "top",    r.top    },
+        { "width",  r.width  },
+        { "height", r.height }
+    };
+}
+
+inline void from_json(json const& j, Rect& r) {
+    j.at("left").get_to(r.left);
+    j.at("top").get_to(r.top);
+    j.at("width").get_to(r.width);
+    j.at("height").get_to(r.height);
+}

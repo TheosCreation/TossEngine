@@ -11,14 +11,13 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #pragma once
-#include "Utils.h"
-#include "Texture.h"
+#include "Resource.h"
 
 /**
  * @class TextureCubeMap
  * @brief A resource that represents a cubemap texture used by the graphics engine.
  */
-class TOSSENGINE_API TextureCubeMap : public Texture
+class TOSSENGINE_API TextureCubeMap : public Resource
 {
 public:
     /**
@@ -27,6 +26,9 @@ public:
      * @param manager Pointer to the resource manager.
      */
     TextureCubeMap(const TextureCubeMapDesc& desc, const string& uniqueId, ResourceManager* manager);
+    TextureCubeMap(const std::string& uid, ResourceManager* mgr);
+
+    void onCreateLate() override;
 
     /**
      * @brief Destructor for the TextureCubeMap class.
@@ -34,10 +36,29 @@ public:
     ~TextureCubeMap();
 
     void OnInspectorGUI() override;
-    bool Delete(bool deleteSelf = true) override;
+
+    /**
+     * @brief Gets the ID of the texture.
+     * @return The ID of the texture.
+     */
+    uint getId() const { return m_textureId; }
+
+    /**
+     * @brief Sets the ID of the texture.
+     * @param id The new ID for the texture.
+     */
+    void setId(uint id) { m_textureId = id; }
 
 private:
+    uint m_textureId = 0;
     TextureCubeMapDesc m_desc = {};     // Description of the 2D texture.
+    int m_numChannels = 3;
+    Rect m_textureSize = {};
+    vector<std::string> m_filePaths = vector<std::string>(6);
+
+    vector<void*> m_textureDatas;
+
+    SERIALIZABLE_MEMBERS(m_numChannels, m_textureSize, m_filePaths)
 };
 
 inline void to_json(json& j, TextureCubeMapPtr const& cubemap) {

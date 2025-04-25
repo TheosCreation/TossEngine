@@ -461,7 +461,7 @@ std::vector<Camera*> GameObjectManager::getCameras() const
     return cameras;
 }
 
-TexturePtr GameObjectManager::getSkyBoxTexture() const
+TextureCubeMapPtr GameObjectManager::getSkyBoxTexture() const
 {
     for (const auto& pair : m_gameObjects)
     {
@@ -472,7 +472,7 @@ TexturePtr GameObjectManager::getSkyBoxTexture() const
             return skybox->GetMaterial()->GetBinding("Texture_Skybox");
         }
     }
-    return TexturePtr();
+    return nullptr;
 }
 
 void GameObjectManager::clearGameObjects()

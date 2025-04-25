@@ -21,6 +21,7 @@
     SERIALIZABLE_MEMBERS_IMPL( BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__) )
 
 #define SERIALIZABLE_MEMBERS_IMPL(seq)                                \
+public:                                                                \
   inline nlohmann::json serialize() const override {                  \
     nlohmann::json j = Serializable::serialize();                     \
     BOOST_PP_SEQ_FOR_EACH(_SER_MEMBER, j, seq)                        \

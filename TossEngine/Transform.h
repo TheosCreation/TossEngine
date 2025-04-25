@@ -148,3 +148,13 @@ private:
 
     Vector3 localScale = Vector3();       // Local scale relative to parent
 };
+
+//this isnt getting reference
+inline void to_json(json& j, Transform const& transform) {
+    j = transform.serialize();
+}
+
+inline void from_json(json const& j, Transform& transform) {
+    transform = Transform();
+    transform.deserialize(j);
+}

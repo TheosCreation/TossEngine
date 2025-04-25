@@ -303,12 +303,12 @@ void GraphicsEngine::setRenderingPath(RenderingPath newRenderingPath)
     m_renderingPath = newRenderingPath;
 }
 
-void GraphicsEngine::setTexture2D(const TexturePtr& texture, uint slot, std::string bindingName)
+void GraphicsEngine::setTexture2D(const Texture2DPtr& texture, uint slot, std::string bindingName) const
 {
     currentShader->setTexture2D(texture, slot, bindingName);
 }
 
-void GraphicsEngine::setTextureCubeMap(const TexturePtr& texture, uint slot, std::string bindingName)
+void GraphicsEngine::setTextureCubeMap(const TextureCubeMapPtr& texture, uint slot, std::string bindingName) const
 {
     currentShader->setTextureCubeMap(texture, slot, bindingName);
 }

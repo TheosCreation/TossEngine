@@ -27,7 +27,7 @@ public:
 
 	void SetSize(Vector2 size);
 
-	void SetTexture(const TexturePtr& texture);
+	void SetTexture(const Texture2DPtr& texture);
 
 
 private:
@@ -35,7 +35,7 @@ private:
 
 	VertexArrayObjectPtr m_vao;
 	Vector2 m_size = { 1, 1 };
-	TexturePtr m_texture;
+	Texture2DPtr m_texture;
 
     SERIALIZABLE_MEMBERS(m_size, m_material, m_texture)
 };

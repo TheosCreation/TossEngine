@@ -20,6 +20,10 @@ Texture::Texture(const string& filePath, const string& uniqueId, ResourceManager
 {
 }
 
+Texture::Texture(const string& uniqueId, ResourceManager* manager) : Resource(uniqueId, manager)
+{
+}
+
 void Texture::OnInspectorGUI()
 {
     ImGui::Text(("Texture Inspector - ID: " + m_uniqueID).c_str());

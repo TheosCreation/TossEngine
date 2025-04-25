@@ -43,9 +43,9 @@ public:
 
 	void SetGeometryShader(ShaderPtr shader);
 
-	void SetTexture(TexturePtr texture);
+	void SetTexture(Texture2DPtr texture);
 
-	void SetReflectiveMapTexture(TexturePtr texture);
+	void SetReflectiveMapTexture(Texture2DPtr texture);
 
 	void SetShininess(float shininess);
 
@@ -61,8 +61,8 @@ private:
 	ShaderPtr m_geometryShader;
 	ShaderPtr m_shadowShader;
 
-	TexturePtr m_texture;
-	TexturePtr m_reflectiveMap;
+	Texture2DPtr m_texture;
+    Texture2DPtr m_reflectiveMap;
 
 	float m_shininess = 32.0f;
 	float m_alpha = 1.0f;

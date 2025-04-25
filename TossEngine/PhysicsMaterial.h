@@ -7,6 +7,7 @@ class PhysicsMaterial : public Resource
 public:
     // Constructor with parameters for setting material properties
     PhysicsMaterial(const PhysicsMaterialDesc& desc, const std::string& uniqueId, ResourceManager* manager);
+    PhysicsMaterial(const std::string& uid, ResourceManager* mgr);
 
     void OnInspectorGUI() override;
     bool Delete(bool deleteSelf = true) override;
@@ -21,13 +22,25 @@ public:
     float getBounciness() const { return m_bounciness; }
     void setBounciness(float bounciness) { m_bounciness = bounciness; }
 
-    // For inspector/serialization
-    json serialize() const;
-    void deserialize(const json& data);
-
 private:
     // Properties of the material
     float m_staticFriction = 1.0f;
     float m_dynamicFriction = 1.0f;
     float m_bounciness = 1.0f;
+
+    SERIALIZABLE_MEMBERS(m_staticFriction, m_dynamicFriction, m_bounciness)
 };
+
+inline void to_json(json& j, PhysicsMaterialPtr const& material) {
+    if (material)
+    {
+        j = json{ { "id", material->getUniqueID() } };
+    }
+    else {
+        j = nullptr;
+    }
+}
+
+inline void from_json(json const& j, PhysicsMaterialPtr& material) {
+    if (j.contains("id")) material = ResourceManager::GetInstance().get<PhysicsMaterial>(j["id"].get<string>());
+}

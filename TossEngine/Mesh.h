@@ -30,6 +30,9 @@ public:
      * @param manager Pointer to the resource manager.
      */
     Mesh(const MeshDesc& desc, const string& uniqueId, ResourceManager* manager);
+    Mesh(const std::string& uid, ResourceManager* mgr);
+
+    void onCreateLate() override;
 
     /**
      * @brief Destructor for the Mesh class.
@@ -59,6 +62,8 @@ private:
     std::vector<Transform> m_instanceTransforms; //A vector of transformations for each instance.
 
     Vector3 eulerAngles;
+
+    SERIALIZABLE_MEMBERS(m_path, m_instanceTransforms)
 };
 
 inline void to_json(json& j, MeshPtr const& mesh) {

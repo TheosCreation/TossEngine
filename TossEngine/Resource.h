@@ -15,6 +15,7 @@ Mail : theo.morris@mds.ac.nz
 #include <string>
 #include "Utils.h"
 #include "ISelectable.h"
+#include "Serializable.h"
 
 // Forward declaration of ResourceManager class
 class ResourceManager;
@@ -23,7 +24,7 @@ class ResourceManager;
  * @class Resource
  * @brief Represents a generic resource such as a file, image, or texture.
  */
-class TOSSENGINE_API Resource : public ISelectable
+class TOSSENGINE_API Resource : public ISelectable, public Serializable
 {
 public:
     /**
@@ -38,6 +39,10 @@ public:
      * @brief Destructor for the Resource class.
      */
     virtual ~Resource();
+
+    virtual void onCreate() {}
+    virtual void onCreateLate() {}
+    virtual void onDestroy() {}
 
     /**
      * @brief Gets the file path of the resource.

@@ -1388,6 +1388,7 @@ void TossEditor::onQuit()
     }
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesDescs("Resources/Resources.json"));
+    TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesToFile("Resources/ResourcesNew.json"));
     resourceManager.CleanUp();
     Physics::GetInstance().UnLoadPrefabWorld();
     editorPreferences.SaveToFile("EditorPreferences.json");

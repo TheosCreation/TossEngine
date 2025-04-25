@@ -5,7 +5,7 @@
 class Text : public Renderer 
 {
 public:
-    void onCreate() override;
+    void onCreateLate() override;
     void OnInspectorGUI() override;
     void Render(UniformData data, RenderingPath renderPath) override;
 private:

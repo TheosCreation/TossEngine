@@ -46,21 +46,22 @@ public:
     template<typename T>
         void registerResource() {
         // T must have:
-        //   T(const std::string& uid, ResourceManager* mgr, const json& data);
+        //   T(const std::string& uid, ResourceManager* mgr);
         std::string typeName = getClassName(typeid(T));
         resourceFactories[typeName] =
-            [](const std::string& uid, ResourceManager* mgr, const json& data) -> ResourcePtr {
-            return std::make_shared<T>(uid, mgr, data);
+            [](const std::string& uid, ResourceManager* mgr) -> ResourcePtr {
+            return std::make_shared<T>(uid, mgr);
             };
     }
     CoroutineTask loadResourcesFromFile(const std::string& filepath);
+    CoroutineTask saveResourcesToFile(const std::string& filepath);
     ResourcePtr createResourceFromData(const std::string& typeName, const json& data);
 
     // replace the getters with a typed function
     ShaderPtr getShader(const std::string& uniqueId);
     MeshPtr getMesh(const std::string& uniqueId, bool createIfNotFound = true);
     TextureCubeMapPtr getTextureCubeMap(const std::string& uniqueId);
-    TexturePtr getTexture(const std::string& uniqueId);
+    Texture2DPtr getTexture2D(const std::string& uniqueId);
     MaterialPtr getMaterial(const std::string& uniqueId);
     PhysicsMaterialPtr getPhysicsMaterial(const std::string& uniqueId);
     SoundPtr getSound(const std::string& uniqueId);
@@ -83,7 +84,7 @@ public:
     PhysicsMaterialPtr createPhysicsMaterial(const std::string& uniqueID, const json& data = nullptr);
     PrefabPtr createPrefab(const string& id, const json& data = nullptr);
 
-    void deleteTexture(TexturePtr texture);
+    void deleteTexture(Texture2DPtr texture);
     CoroutineTask saveResourcesDescs(const std::string& filepath);
     CoroutineTask loadResourceDesc(const std::string& filepath);
     void ClearInstancesFromMeshes();
@@ -115,7 +116,7 @@ protected:
     bool hasCreatedResources = false;
     std::map<string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
 
-    std::unordered_map<std::string, std::function<ResourcePtr(const std::string& uniqueId, ResourceManager* mgr, const json& data)>> resourceFactories;
+    std::unordered_map<std::string, std::function<ResourcePtr(const std::string& uniqueId, ResourceManager* mgr)>> resourceFactories;
 
     std::set<string> m_resourcesToDestroy;
     ResourcePtr m_selectedResource = nullptr; // for editor use

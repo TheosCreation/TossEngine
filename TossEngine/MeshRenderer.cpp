@@ -85,12 +85,12 @@ void MeshRenderer::deserialize(const json& data)
     if (data.contains("texture"))
     {
         std::string textureName = data["texture"];
-        m_texture = resourceManager.getTexture(textureName); // Replace with appropriate method to load texture
+        m_texture = resourceManager.getTexture2D(textureName); // Replace with appropriate method to load texture
     }
     if (data.contains("reflectiveMap"))
     {
         std::string reflectiveMapName = data["reflectiveMap"];
-        m_reflectiveMap = resourceManager.getTexture(reflectiveMapName);
+        m_reflectiveMap = resourceManager.getTexture2D(reflectiveMapName);
     }
 
     // Deserialize material properties
@@ -253,12 +253,12 @@ void MeshRenderer::SetGeometryShader(ShaderPtr shader)
     m_geometryShader = shader;
 }
 
-void MeshRenderer::SetTexture(TexturePtr texture)
+void MeshRenderer::SetTexture(Texture2DPtr texture)
 {
     m_texture = texture;
 }
 
-void MeshRenderer::SetReflectiveMapTexture(TexturePtr texture)
+void MeshRenderer::SetReflectiveMapTexture(Texture2DPtr texture)
 {
     m_reflectiveMap = texture;
 }

@@ -48,6 +48,46 @@ void ISelectable::GameObjectAssignableField(GameObjectPtr& _gameObject, const st
     }
 }
 
+void ISelectable::FileSelectionTableField(const char* tableID, const std::vector<std::string>& rowLabels,
+    std::vector<std::string>& filePaths, const char* filter)
+{
+    IM_ASSERT(rowLabels.size() == filePaths.size());
+    if (!ImGui::BeginTable(tableID, 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg))
+        return;
+
+    for (size_t i = 0; i < rowLabels.size(); ++i)
+    {
+        ImGui::TableNextRow();
+        // Column 0: the human label
+        ImGui::TableSetColumnIndex(0);
+        ImGui::TextUnformatted(rowLabels[i].c_str());
+
+        // Column 1: either the path or a red “Not Assigned”
+        ImGui::TableSetColumnIndex(1);
+        if (filePaths[i].empty())
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Assigned");
+        else
+            ImGui::TextUnformatted(filePaths[i].c_str());
+
+        // Column 2: the “Browse” button, with unique ID per-row
+        ImGui::TableSetColumnIndex(2);
+        char buf[64];
+        snprintf(buf, sizeof(buf), "Browse##%s_%zu", tableID, i);
+        if (ImGui::Button(buf))
+        {
+            auto chosen = TossEngine::GetInstance().openFileDialog(filter);
+            if (!chosen.empty())
+            {
+                auto root = getProjectRoot();
+                auto relPath = std::filesystem::relative(chosen, root).string();
+                filePaths[i] = relPath;
+            }
+        }
+    }
+
+    ImGui::EndTable();
+}
+
 bool ISelectable::FloatSliderField(const std::string& name, float& value, float speed, float min, float max)
 {
     if (ImGui::DragFloat(name.c_str(), &value, speed, min, max))

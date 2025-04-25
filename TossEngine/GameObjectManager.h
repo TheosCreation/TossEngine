@@ -150,7 +150,7 @@ public:
         return results;
     }
     
-    TexturePtr getSkyBoxTexture() const;
+    TextureCubeMapPtr getSkyBoxTexture() const;
 
     /**
     * @brief Map of game objects categorized by type ID.

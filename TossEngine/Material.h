@@ -2,12 +2,13 @@
 #include "Utils.h"
 #include "Resource.h"
 #include "Shader.h"
-#include "Texture.h"
+#include "Texture2D.h"
+#include "TextureCubeMap.h"
 #include "Serializable.h"
 #include <variant>
 
 struct Texture2DBinding {
-	TexturePtr texture = nullptr;       // The texture resource.
+	Texture2DPtr texture = nullptr;       // The texture resource.
 	uint slot = 0;                // Texture unit/slot.
 };
 
@@ -27,10 +28,11 @@ using UniformValue = std::variant<
 	TextureCubeMapBinding
 >;
 
-class TOSSENGINE_API Material : public Resource, public Serializable
+class TOSSENGINE_API Material : public Resource
 {
 public:
 	Material(ShaderPtr shader, const std::string& uniqueID, ResourceManager* manager);
+    Material(const std::string& uid, ResourceManager* mgr);
 	~Material();
 
     json serialize() const override;

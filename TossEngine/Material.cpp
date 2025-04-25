@@ -8,6 +8,10 @@ Material::Material(ShaderPtr shader, const std::string& uniqueID, ResourceManage
     UpdateBindings();
 }
 
+Material::Material(const std::string& uid, ResourceManager* mgr) : Resource(uid, mgr)
+{
+}
+
 Material::~Material()
 {
 }
@@ -121,7 +125,7 @@ void Material::deserialize(const json& data)
                 {
                     if (value.contains("id"))
                     {
-                        existingValue.texture = resourceManager.getTexture(value["id"]);
+                        existingValue.texture = resourceManager.getTexture2D(value["id"]);
                         if (value.contains("slot"))
                             existingValue.slot = value["slot"];
                     }

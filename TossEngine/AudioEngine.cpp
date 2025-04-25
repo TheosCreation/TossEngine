@@ -47,6 +47,33 @@ void AudioEngine::loadSound(SoundPtr& soundInfo) {
         std::cout << "Audio Engine: Sound File was already loaded!\n";
 }
 
+void AudioEngine::loadSound(Sound& sound)
+{
+    if (sound.isLoaded()) {
+        //std::cout << "Playing Sound\n";
+        FMOD::Channel* channel;
+        // start play in 'paused' state
+        ERRCHECK(lowLevelSystem->playSound(sounds[sound.getUniqueID()], nullptr, true /* start paused */, &channel));
+
+        if (sound.is3D())
+            set3dChannelPosition(sound, channel);
+
+        //std::cout << "Playing sound at volume " << soundInfo.getVolume() << '\n';
+        channel->setVolume(sound.getVolume());
+
+        if (sound.isLoop()) // add to channel map of sounds currently playing, to stop later
+            loopsPlaying.insert({ sound.getUniqueID(), channel });
+
+        ERRCHECK(channel->setReverbProperties(0, sound.getReverbAmount()));
+
+        // start audio playback
+        ERRCHECK(channel->setPaused(false));
+
+    }
+    else
+        std::cout << "Audio Engine: Can't play, sound was not loaded yet from " << sound.getPath() << '\n';
+}
+
 void AudioEngine::playSound(SoundPtr soundInfo) {
     if (soundInfo->isLoaded()) {
         //std::cout << "Playing Sound\n";
@@ -54,8 +81,6 @@ void AudioEngine::playSound(SoundPtr soundInfo) {
         // start play in 'paused' state
         ERRCHECK(lowLevelSystem->playSound(sounds[soundInfo->getUniqueID()], 0, true /* start paused */, &channel));
 
-        if (soundInfo->is3D())
-            set3dChannelPosition(soundInfo, channel);
 
         //std::cout << "Playing sound at volume " << soundInfo.getVolume() << '\n';
         channel->setVolume(soundInfo->getVolume());
@@ -112,11 +137,11 @@ void AudioEngine::updateSoundLoopVolume(SoundPtr& soundInfo, float newVolume, un
 
 
 void AudioEngine::update3DSoundPosition(SoundPtr soundInfo) {
-    if (soundIsPlaying(soundInfo))
-        set3dChannelPosition(soundInfo, loopsPlaying[soundInfo->getUniqueID()]);
-    else
-        std::cout << "Audio Engine: Can't update sound position!\n";
-
+    //if (soundIsPlaying(soundInfo))
+    //    //set3dChannelPosition(soundInfo, loopsPlaying[soundInfo->getUniqueID()]);
+    //else
+    //    std::cout << "Audio Engine: Can't update sound position!\n";
+    // TODO: fix this function and the set 3d position function
 }
 
 bool AudioEngine::soundIsPlaying(SoundPtr soundInfo) {
@@ -216,8 +241,8 @@ bool AudioEngine::soundLoaded(SoundPtr soundInfo) {
     return sounds.count(soundInfo->getUniqueID()) > 0;
 }
 
-void AudioEngine::set3dChannelPosition(SoundPtr soundInfo, FMOD::Channel* channel) {
-    FMOD_VECTOR position = { soundInfo->getX() * DISTANCEFACTOR, soundInfo->getY() * DISTANCEFACTOR, soundInfo->getZ() * DISTANCEFACTOR };
+void AudioEngine::set3dChannelPosition(Sound& sound, FMOD::Channel* channel) {
+    FMOD_VECTOR position = { sound.getX() * DISTANCEFACTOR, sound.getY() * DISTANCEFACTOR, sound.getZ() * DISTANCEFACTOR };
     FMOD_VECTOR velocity = { 0.0f, 0.0f, 0.0f }; // TODO Add dopplar (velocity) support
     ERRCHECK(channel->set3DAttributes(&position, &velocity));
 }

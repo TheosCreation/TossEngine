@@ -22,13 +22,16 @@ public:
      * @param filePath The path to the sound file.
      */
     Sound(const SoundDesc& desc, const std::string& uniqueID, ResourceManager* manager);
+    Sound(const std::string& uid, ResourceManager* mgr);
+
+    void onCreateLate() override;
 
     // Getters
-    bool is3D() const { return m_desc.is3D; }
-    bool isLoop() const { return m_desc.isLoop; }
-    float getVolume() const { return m_desc.volume; }
+    bool is3D() const { return m_is3D; }
+    bool isLoop() const { return m_isLoop; }
+    float getVolume() const { return m_volume; }
     float getReverbAmount() const { return m_desc.reverbAmount; }
-    bool isLoaded() { return m_loaded; }
+    bool isLoaded() const { return m_loaded; }
     float getX() const { return x; }
     float getY() const { return y; }
     float getZ() const { return z; }
@@ -45,8 +48,15 @@ public:
 
 private:
     SoundDesc m_desc = {};
-    bool m_loaded = false;           // Whether the sound has been loaded
+    bool m_is3D = false;
+    bool m_isLoop = false;
+    float m_volume = 1.0f;
+    float m_reverbAmount = 0.0f;
+
+    bool m_loaded = false;
     float x, y, z;         // 3D coordinates for the sound
+
+    SERIALIZABLE_MEMBERS(m_path, m_is3D, m_isLoop, m_volume, m_reverbAmount)
 };
 
 inline void to_json(json& j, SoundPtr const& sound) {

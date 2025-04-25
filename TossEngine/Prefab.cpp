@@ -1,7 +1,7 @@
 #include "Prefab.h"
 #include "Physics.h"
 
-Prefab::Prefab(const std::string& uniqueID, ResourceManager* manager) : Resource("", uniqueID, manager)
+Prefab::Prefab(const std::string& uid, ResourceManager* mgr) : Resource(uid, mgr)
 {
 }
 
@@ -71,4 +71,22 @@ void Prefab::OnInspectorGUI()
 reactphysics3d::PhysicsWorld* Prefab::getWorld()
 {
     return Physics::GetInstance().GetPrefabWorld();
+}
+
+void Prefab::onCreate()
+{
+    GameObject::onCreate();
+    Resource::onCreate();
+}
+
+void Prefab::onCreateLate()
+{
+    GameObject::onCreateLate();
+    Resource::onCreateLate();
+}
+
+void Prefab::onDestroy()
+{
+    GameObject::onDestroy();
+    Resource::onDestroy();
 }

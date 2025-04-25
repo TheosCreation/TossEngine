@@ -183,13 +183,11 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
                 m_lightManager->setSpotlightDirection(camera->getFacingDirection());
                 drawUi = camera->GetDrawUi();
             }
-            else
-            {
-                camera->getViewMatrix(uniformData.uiViewMatrix);
-                camera->getProjectionMatrix(uniformData.uiProjectionMatrix);
-            }
         }
     }
+    Window* window = TossEngine::GetInstance().GetWindow();
+    Vector2 innerSize = window->getInnerSize();
+    uniformData.uiProjectionMatrix = glm::ortho(0.0f, innerSize.x, -innerSize.y, 0.0f, -1.0f, 1.0f);
 
     // Example of Defered Rendering Pipeline
     if (graphicsEngine.getRenderingPath() == RenderingPath::Deferred)
