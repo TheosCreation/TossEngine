@@ -20,6 +20,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Sound.h"
 #include "Prefab.h"
 #include "AudioEngine.h"
+#include "Font.h"
 #include <filesystem>
 #include <fstream>
 
@@ -36,7 +37,7 @@ ShaderPtr ResourceManager::getShader(const std::string& uniqueId)
     if (it2 != shaderDescriptions.end())
         return createShader(it2->second, uniqueId);
 
-    return ShaderPtr(); // Return empty if not found
+    return nullptr; // Return empty if not found
 }
 
 MeshPtr ResourceManager::getMesh(const std::string& uniqueId, bool createIfNotFound)
@@ -78,7 +79,7 @@ TexturePtr ResourceManager::getTexture(const std::string& uniqueId)
     if (it2 != texture2DFilePaths.end())
         return createTexture2DFromFile(it2->second, uniqueId);
 
-    return TexturePtr(); // Not found anywhere
+    return nullptr; // Not found anywhere
 }
 
 MaterialPtr ResourceManager::getMaterial(const std::string& uniqueId)
@@ -91,7 +92,7 @@ MaterialPtr ResourceManager::getMaterial(const std::string& uniqueId)
     if (it2 != materialDescs.end())
         return createMaterial(it2->second, uniqueId);
 
-    return MaterialPtr();
+    return nullptr;
 }
 
 PhysicsMaterialPtr ResourceManager::getPhysicsMaterial(const std::string& uniqueId)
@@ -104,7 +105,7 @@ PhysicsMaterialPtr ResourceManager::getPhysicsMaterial(const std::string& unique
     if (it2 != physicsMaterialDescriptions.end())
         return createPhysicsMaterial(uniqueId, it2->second);
 
-    return PhysicsMaterialPtr();
+    return nullptr;
 }
 
 SoundPtr ResourceManager::getSound(const std::string& uniqueId)
@@ -117,7 +118,7 @@ SoundPtr ResourceManager::getSound(const std::string& uniqueId)
     if (it2 != m_soundDescs.end())
         return createSound(it2->second, uniqueId);
 
-    return SoundPtr();
+    return nullptr;
 }
 
 PrefabPtr ResourceManager::getPrefab(const std::string& uniqueId)
@@ -130,7 +131,20 @@ PrefabPtr ResourceManager::getPrefab(const std::string& uniqueId)
     if (it2 != m_prefabDescs.end())
         return createPrefab(uniqueId, it2->second);
 
-    return PrefabPtr();
+    return nullptr;
+}
+
+FontPtr ResourceManager::getFont(const std::string& uniqueId)
+{
+    auto it = m_mapResources.find(uniqueId);
+    if (it != m_mapResources.end())
+        return std::static_pointer_cast<Font>(it->second);
+
+    auto it2 = m_fontTtfFilepaths.find(uniqueId);
+    if (it2 != m_fontTtfFilepaths.end())
+        return createFont(uniqueId, it2->second);
+
+    return nullptr;
 }
 
 vector<PrefabPtr> ResourceManager::getPrefabs() const
@@ -284,6 +298,47 @@ Texture2DPtr ResourceManager::createTexture2D(Texture2DDesc desc, string texture
     }
 
     return Texture2DPtr();
+}
+
+FontPtr ResourceManager::createFont(const string& uniqueId, const string& filepath)
+{
+    // Check if the resource has already been loaded
+    auto it = m_mapResources.find(uniqueId);
+    if (it != m_mapResources.end())
+    {
+        return std::static_pointer_cast<Font>(it->second);
+    }
+    stbi_set_flip_vertically_on_load(false);
+
+    // Load the image data using stb_image.
+    std::ifstream ifs(filepath, std::ios::binary | std::ios::ate);
+    if (!ifs) {
+        Debug::LogError("Font file not found: " + filepath, false);
+        return nullptr;
+    }
+    auto fileSize = ifs.tellg();
+    ifs.seekg(0);
+
+    FontDesc desc;
+    desc.ttfData.resize((size_t)fileSize);
+    ifs.read(reinterpret_cast<char*>(desc.ttfData.data()), fileSize);
+    ifs.close();
+
+    desc.pixelHeight = 32.0f;
+    desc.atlasWidth = 512;
+    desc.atlasHeight = 512;
+
+    // Create a font.
+    FontPtr fontPtr = std::make_shared<Font>(desc, filepath, uniqueId, this);
+    if (!fontPtr)
+    {
+        Debug::LogError("Failed to generate font atlas for: " + filepath, false);
+        return nullptr;
+    }
+
+    m_fontTtfFilepaths[uniqueId] = filepath;
+    m_mapResources.emplace(uniqueId, fontPtr);
+    return fontPtr;
 }
 
 MeshPtr ResourceManager::createMesh(MeshDesc desc, const string& uniqueId)
@@ -494,6 +549,13 @@ CoroutineTask ResourceManager::saveResourcesDescs(const std::string& filepath)
         };
     }
 
+    for (auto& [key, ttfFilePath] : m_fontTtfFilepaths)
+    {
+        data["fontTtfFilePaths"][key] = {
+            {"filepath", ttfFilePath}
+        };
+    }
+
     // Serialize texture2D file paths
     for (auto& [key, texture2DFilePath] : texture2DFilePaths)
     {
@@ -541,6 +603,7 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
     shaderDescriptions.clear();
     materialDescs.clear();
     m_soundDescs.clear();
+    m_fontTtfFilepaths.clear();
     m_prefabDescs.clear();
     texture2DFilePaths.clear();
     cubemapTextureFilePaths.clear();
@@ -585,6 +648,18 @@ CoroutineTask ResourceManager::loadResourceDesc(const std::string& filepath)
                 soundDesc.filepath = value["filepath"].get<string>();
             }
             m_soundDescs[uniqueID] = soundDesc;
+        }
+    }
+
+    // Deserialize fonts
+    if (data.contains("fontTtfFilePaths"))
+    {
+        for (auto& [uniqueID, value] : data["fontTtfFilePaths"].items()) {
+
+            if (value.contains("filepath"))
+            {
+                m_fontTtfFilepaths[uniqueID] = value["filepath"].get<string>();
+            }
         }
     }
     // Deserialize materials
@@ -712,6 +787,14 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
             Debug::Log("Sound renamed from '" + oldId + "' to '" + newId + "'");
         }
     }
+    else if (std::dynamic_pointer_cast<Font>(resource)) {
+        auto fontIt = m_fontTtfFilepaths.find(oldId);
+        if (fontIt != m_fontTtfFilepaths.end()) {
+            m_fontTtfFilepaths[newId] = fontIt->second;
+            m_fontTtfFilepaths.erase(fontIt);
+            Debug::Log("Font renamed from '" + oldId + "' to '" + newId + "'");
+        }
+    }
     else if (std::dynamic_pointer_cast<Material>(resource)) {
         auto materialIt = materialDescs.find(oldId);
         if (materialIt != materialDescs.end()) {
@@ -786,6 +869,14 @@ void ResourceManager::DeleteFromSavedData(const std::shared_ptr<Resource>& resou
         if (soundIt != m_soundDescs.end()) {
             m_soundDescs.erase(soundIt);
             Debug::Log("Deleted Sound: " + uniqueId);
+        }
+    }
+    // For Font
+    else if (std::dynamic_pointer_cast<Font>(resource)) {
+        auto fontIt = m_fontTtfFilepaths.find(uniqueId);
+        if (fontIt != m_fontTtfFilepaths.end()) {
+            m_fontTtfFilepaths.erase(fontIt);
+            Debug::Log("Deleted Font: " + uniqueId);
         }
     }
     // For Material
@@ -894,6 +985,58 @@ void ResourceManager::ClearInstancesFromMeshes()
     }
 }
 
+CoroutineTask ResourceManager::loadResourcesFromFile(const std::string& filepath)
+{
+    if (hasLoadedResources) co_return;
+
+    std::ifstream file(filepath);
+    if (!file.is_open())
+    {
+        Debug::LogError("Failed to open file for reading: " + filepath, false);
+        co_return;
+    }
+
+    json data;
+    file >> data;
+    file.close();
+
+    for (const auto& resourceData : data["resources"])
+    {
+        if (resourceData.contains("type"))
+        {
+            std::string typeName = resourceData["type"];
+            createResourceFromData(typeName, resourceData);
+        }
+    }
+
+    hasLoadedResources = true;
+    co_return;
+}
+
+ResourcePtr ResourceManager::createResourceFromData(const std::string& typeName, const json& data)
+{
+    auto it = resourceFactories.find(typeName);
+    if (it == resourceFactories.end()) {
+        Debug::LogError("No resource factory for type “" + typeName + "”", false);
+        return nullptr;
+    }
+
+    if (data.contains("uniqueId"))
+    {
+        std::string uid = data["uniqueId"];
+        auto res = it->second(uid, this, data);
+        if (res) {
+            m_mapResources.emplace(uid, res);
+        }
+        return res;
+    }
+    else
+    {
+        Debug::LogError("Resource data loaded has no id");
+    }
+    return nullptr;
+}
+
 CoroutineTask ResourceManager::createResourcesFromDescs()
 {
     if (hasCreatedResources) co_return;
@@ -910,6 +1053,12 @@ CoroutineTask ResourceManager::createResourcesFromDescs()
     for (const auto& [uniqueID, soundDesc] : m_soundDescs)
     {
         createSound(soundDesc, uniqueID);
+    }
+
+    // Create Fonts
+    for (const auto& [uniqueID, fontFilePath] : m_fontTtfFilepaths)
+    {
+        createFont(uniqueID, fontFilePath);
     }
 
     // Create Materials

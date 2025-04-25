@@ -32,6 +32,7 @@ public:
      * @param manager Pointer to the resource manager.
      */
     Resource(const string& path, const string& uniqueId, ResourceManager* manager);
+    Resource(const std::string& uid, ResourceManager* mgr);
 
     /**
      * @brief Destructor for the Resource class.

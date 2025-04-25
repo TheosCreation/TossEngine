@@ -85,6 +85,9 @@
     <ClCompile Include="RainbowLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_stdlib.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DestroyObjectWithTime.h">
@@ -158,6 +161,9 @@
     </ClInclude>
     <ClInclude Include="RainbowLight.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\IMGUI\imgui_stdlib.h">
+      <Filter>ImGui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

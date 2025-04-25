@@ -13,9 +13,11 @@ Mail : theo.morris@mds.ac.nz
 #include "GameObjectManager.h"
 #include "Camera.h"
 #include "GraphicsEngine.h"
+#include "Renderer.h"
 #include "MeshRenderer.h"
 #include "RigidBody.h"
 #include "Image.h"
+#include "Text.h"
 #include "Skybox.h"
 #include "TextureCubeMap.h"
 #include "Prefab.h"
@@ -410,6 +412,24 @@ void GameObjectManager::onSkyboxPass(UniformData _data) const
         if (auto skybox = pair.second->getComponent<Skybox>())
         {
             skybox->Render(_data, RenderingPath::Forward);
+        }
+    }
+}
+
+void GameObjectManager::onScreenSpacePass(UniformData _data) const
+{
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue;
+
+        if (auto image = pair.second->getComponent<Image>())
+        {
+            image->Render(_data, RenderingPath::Forward);
+        }
+
+        if (auto text = pair.second->getComponent<Text>())
+        {
+            text->Render(_data, RenderingPath::Forward);
         }
     }
 }

@@ -22,6 +22,7 @@ void EditorPlayer::onCreate()
     auto& tossEngine = TossEngine::GetInstance();
     m_cam = addComponent<Camera>();
     m_cam->setScreenArea(tossEngine.GetWindow()->getInnerSize());
+    m_cam->SetDrawUi(false);
 }
 
 void EditorPlayer::Update(float deltaTime)

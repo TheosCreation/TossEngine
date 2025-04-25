@@ -21,6 +21,7 @@ json Camera::serialize() const
     data["farPlane"] = m_farPlane;
     data["fov"] = m_fov;
     data["projection"] = ToString(m_type);
+    data["drawUi"] = m_drawUi;
 
 	return data;
 }
@@ -45,6 +46,11 @@ void Camera::deserialize(const json& data)
     {
         m_type = FromString<CameraType>(data["projection"]);
     }
+
+    if (data.contains("drawUi"))
+    {
+        m_drawUi = data["drawUi"];
+    }
 }
 
 void Camera::OnInspectorGUI()
@@ -58,6 +64,7 @@ void Camera::OnInspectorGUI()
 
 
     ImGui::Text("Camera Projection");
+    ImGui::Checkbox("Draw Ui", &m_drawUi);
     // Rendering Path selection
     static const char* items[]{ "Orthogonal", "Perspective" };
     static int Selecteditem = (int)m_type;
@@ -110,6 +117,16 @@ void Camera::setFieldOfView(float fov)
 CameraType Camera::getCameraType()
 {
 	return m_type;
+}
+
+void Camera::SetDrawUi(bool drawUi)
+{
+    m_drawUi = drawUi;
+}
+
+bool Camera::GetDrawUi()
+{
+    return m_drawUi;
 }
 
 void Camera::setCameraType(const CameraType& type)

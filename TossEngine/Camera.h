@@ -65,6 +65,9 @@ public:
      */
     CameraType getCameraType();
 
+    void SetDrawUi(bool drawUi);
+    bool GetDrawUi();
+
     /**
      * @brief Sets the type of the camera (Perspective or Orthographic).
      * @param type The camera type to set.
@@ -111,6 +114,7 @@ private:
     float m_farPlane = 10000.0f;       //The distance of the far plane.
     float m_nearPlane = 0.1f;          //The distance of the near plane.
     float m_fov = 90.0f;                //The field of view (FOV) angle.
+    bool m_drawUi = true;
     const float radius = 10.0f;         //The radius of the camera's orbit.
     CameraType m_type = CameraType::Perspective;  //The type of the camera (Perspective or Orthographic).
     Vector4 m_screenArea;                   //The screen area of the camera.

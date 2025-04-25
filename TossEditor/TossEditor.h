@@ -92,6 +92,9 @@ private:
     char IDBuffer[256] = "";
     bool openPhysicsMaterialNextFrame = false;
 
+    std::string fontFilePath;
+    bool openFontCreationNextFrame = false;
+
     std::string soundFilePath;
     bool openSoundCreationNextFrame = false;
 

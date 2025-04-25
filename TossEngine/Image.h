@@ -17,17 +17,12 @@ public:
         Renderer::OnInspectorGUI();
 
         // Display the image's size.
-        ImGui::DragFloat2("Size", &m_size.x, 0.1f);
+        if (ImGui::DragFloat2("Size", m_size.Data(), 0.1f))
+        {
+            SetSize(m_size);
+        }
 
-        // Display the texture, assuming m_texture has a GetName() method.
-        if (m_texture)
-        {
-            ImGui::Text("Texture: ");
-        }
-        else
-        {
-            ImGui::Text("No Texture assigned.");
-        }
+        ResourceAssignableField(m_texture, "Texture");
     }
 
 	void SetSize(Vector2 size);
@@ -38,9 +33,11 @@ public:
 private:
 	void updateVertices();
 
-	VertexArrayObjectPtr m_vbo;
+	VertexArrayObjectPtr m_vao;
 	Vector2 m_size = { 1, 1 };
 	TexturePtr m_texture;
+
+    SERIALIZABLE_MEMBERS(m_size, m_material, m_texture)
 };
 
 REGISTER_COMPONENT(Image);

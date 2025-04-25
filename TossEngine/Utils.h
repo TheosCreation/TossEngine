@@ -45,6 +45,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Mat3.h"
 #include "Transform.h"
 #include "Time.h"
+#include "imgui_stdlib.h"
 
 
 namespace fs = std::filesystem;
@@ -54,6 +55,7 @@ class UniformBuffer;
 class VertexArrayObject;
 class Shader;
 class Texture2D;
+class Font;
 class ShadowMap;
 class Framebuffer;
 class TextureCubeMap;
@@ -81,6 +83,7 @@ typedef std::shared_ptr<Shader> ShaderPtr;
 typedef std::shared_ptr<Resource> ResourcePtr;
 typedef std::shared_ptr<Texture> TexturePtr;
 typedef std::shared_ptr<Texture2D> Texture2DPtr;
+typedef std::shared_ptr<Font> FontPtr;
 typedef std::shared_ptr<ShadowMap> ShadowMapPtr;
 typedef std::shared_ptr<Framebuffer> FramebufferPtr;
 typedef std::shared_ptr<TextureCubeMap> TextureCubeMapPtr;
@@ -138,6 +141,7 @@ struct VertexBufferDesc
 
     VertexAttribute* attributesList = nullptr;  // Pointer to the list of vertex attributes
     uint attributesListSize = 0;                // Size of the vertex attributes list
+    bool isDynamic = false;
 };
 
 // Struct representing an index buffer description
@@ -213,6 +217,15 @@ struct Texture2DDesc
     Rect textureSize = {};                  // Size of the texture
     uint numChannels = 0;                   // Number of channels in the texture
 
+};
+
+// Struct representing a font description
+struct FontDesc
+{
+    std::vector<unsigned char> ttfData;  // raw .ttf bytes
+    float                      pixelHeight;  // how tall to bake glyphs, in pixels
+    int                        atlasWidth = 512;
+    int                        atlasHeight = 512;
 };
 
 // Structure to hold information about a heightmap

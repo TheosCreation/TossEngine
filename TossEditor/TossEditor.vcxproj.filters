@@ -67,6 +67,9 @@
     <ClCompile Include="..\Dependencies\IMGUIZMO\ImGradient.cpp">
       <Filter>ImGuizmos</Filter>
     </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_stdlib.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TossEditor.h">
@@ -122,6 +125,9 @@
     </ClInclude>
     <ClInclude Include="..\Dependencies\IMGUIZMO\ImCurveEdit.h">
       <Filter>ImGuizmos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_stdlib.h">
+      <Filter>ImGui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -243,6 +249,12 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="Resources\Shaders\Fragment\PhysicsShader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\Vertex\Image.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\Fragment\Text.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

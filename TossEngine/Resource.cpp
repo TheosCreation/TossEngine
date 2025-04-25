@@ -16,6 +16,10 @@ Resource::Resource(const string& path, const string& uniqueId, ResourceManager* 
 {
 }
 
+Resource::Resource(const std::string& uid, ResourceManager* mgr) : m_uniqueID(uid), m_resourceManager(mgr)
+{
+}
+
 Resource::~Resource()
 {
 }

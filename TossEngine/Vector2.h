@@ -51,3 +51,15 @@ public:
         return x != other.x || y != other.y;
     }
 };
+
+inline void to_json(json& j, Vector2 const& v) {
+    j = json{
+        { "x", v.x },
+        { "y", v.y }
+    };
+}
+
+inline void from_json(json const& j, Vector2& v) {
+    if (j.contains("x") && !j["x"].is_null()) j.at("x").get_to(v.x);
+    if (j.contains("y") && !j["y"].is_null()) j.at("y").get_to(v.y);
+}

@@ -159,8 +159,10 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
     // Populate the uniform data struct
     uniformData.currentTime = tossEngine.GetTime();
 
+    bool drawUi = true;
     if (cameraToRenderOverride != nullptr)
     {
+        drawUi = false;
         cameraToRenderOverride->getViewMatrix(uniformData.viewMatrix);
         cameraToRenderOverride->getProjectionMatrix(uniformData.projectionMatrix);
         uniformData.cameraPosition = cameraToRenderOverride->getPosition();
@@ -179,6 +181,7 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
                 uniformData.cameraPosition = camera->getPosition();
                 m_lightManager->setSpotlightPosition(uniformData.cameraPosition);
                 m_lightManager->setSpotlightDirection(camera->getFacingDirection());
+                drawUi = camera->GetDrawUi();
             }
             else
             {
@@ -281,12 +284,16 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
     m_SSRQ->SetMaterial(m_postProcessSSRQMaterial);
     m_SSRQ->Render(uniformData, RenderingPath::Forward);
 
+    if (drawUi)
+    {
+        m_gameObjectManager->onScreenSpacePass(uniformData);
+    }
+
     if (writeToFrameBuffer != nullptr)
     {
         writeToFrameBuffer->UnBind();
     }
 
-    // ui canvas of some sort with the ui camera
 }
 
 void Scene::onResize(Vector2 size)

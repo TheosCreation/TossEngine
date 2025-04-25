@@ -804,6 +804,14 @@ void TossEditor::onUpdateInternal()
                 ImGui::CloseCurrentPopup();
             }
 
+            if (ImGui::MenuItem("Font")) {
+                fontFilePath = TossEngine::GetInstance().openFileDialog("*.ttf;*.otf");
+                if (!fontFilePath.empty()) {
+                    openFontCreationNextFrame = true;
+                }
+                ImGui::CloseCurrentPopup();
+            }
+
             ImGui::EndPopup();
         }
 
@@ -1176,6 +1184,7 @@ void TossEditor::onUpdateInternal()
         openSoundCreationNextFrame = false;
     }
 
+
     // Show the popup to name the shader
     if (ImGui::BeginPopupModal("Enter Sound ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::InputText("Sound ID", IDBuffer, sizeof(IDBuffer));
@@ -1191,6 +1200,40 @@ void TossEditor::onUpdateInternal()
                 desc.filepath = soundFilePathRel.string();
                 resourceManager.createSound(desc, soundId);
                 Debug::Log("Created sound: " + soundId);
+
+                // Reset state
+                IDBuffer[0] = '\0';
+
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel")) {
+            IDBuffer[0] = '\0';
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
+    if (openFontCreationNextFrame) {
+        ImGui::OpenPopup("Enter Font ID");
+        openFontCreationNextFrame = false;
+    }
+    if (ImGui::BeginPopupModal("Enter Font ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::InputText("Font ID", IDBuffer, sizeof(IDBuffer));
+
+        if (ImGui::Button("Create")) {
+            if (strlen(IDBuffer) > 0) {
+
+                std::filesystem::path root = getProjectRoot();
+                std::filesystem::path fontFilePathRel = std::filesystem::relative(fontFilePath, root);
+                std::string fontId = IDBuffer;
+                resourceManager.createFont(fontId, fontFilePathRel.string());
+                Debug::Log("Created font: " + fontId);
 
                 // Reset state
                 IDBuffer[0] = '\0';

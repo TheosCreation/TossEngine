@@ -30,7 +30,13 @@ VertexArrayObject::VertexArrayObject(const VertexBufferDesc& _data)
 	glGenBuffers(1, &m_vertexBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferID);
 	// Allocate memory and upload vertex data to the buffer
-	glBufferData(GL_ARRAY_BUFFER, _data.vertexSize * _data.listSize, _data.verticesList, GL_STATIC_DRAW);
+    GLenum usage = _data.isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        _data.vertexSize * _data.listSize,
+        _data.verticesList,
+        usage
+    );
 
 	// Set up vertex attributes based on the attributes list in the vertex buffer descriptor
 	size_t offset = 0; // Initialize offset for attribute pointers

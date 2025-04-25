@@ -204,7 +204,6 @@ void GameObject::OnInspectorGUI()
     }
     ImGui::Separator();
 
-    // "Add Component" button and popup remain unchanged.
     if (ImGui::Button("Add Component"))
     {
         ImGui::OpenPopup("Add Component Popup");

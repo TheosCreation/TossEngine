@@ -3,6 +3,7 @@
 #include "VertexArrayObject.h"
 #include "Material.h"
 #include "Shader.h"
+#include "GameObject.h"
 
 void Image::onCreate()
 {
@@ -50,7 +51,7 @@ void Image::updateVertices()
     };
 
     // Create a new VBO
-    m_vbo = GraphicsEngine::GetInstance().createVertexArrayObject(
+    m_vao = GraphicsEngine::GetInstance().createVertexArrayObject(
         //vertex buffer
         {
                 (void*)verticesList,
@@ -69,10 +70,18 @@ void Image::updateVertices()
 
 void Image::Render(UniformData data, RenderingPath renderPath)
 {
+    if (!m_material) return;
+
     ShaderPtr shader = m_material->GetShader();
     // Set the shader for the lighting pass
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.setShader(shader);
+
+    //have to check if it has an owner because image is used from drawing the scene and game view windows
+    if (m_owner)
+    {
+        shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
+    }
 
     if (m_texture)
     {
@@ -82,8 +91,8 @@ void Image::Render(UniformData data, RenderingPath renderPath)
     // Prepare the graphics engine for rendering
     graphicsEngine.setFaceCulling(CullType::None); // Disable face culling
     graphicsEngine.setWindingOrder(WindingOrder::ClockWise); // Set winding order
-    graphicsEngine.setVertexArrayObject(m_vbo); // Bind the vertex array object for the mesh
-    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_vbo->getNumIndices()); // Draw the indexed triangles
+    graphicsEngine.setVertexArrayObject(m_vao); // Bind the vertex array object for the mesh
+    graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_vao->getNumIndices()); // Draw the indexed triangles
 }
 
 

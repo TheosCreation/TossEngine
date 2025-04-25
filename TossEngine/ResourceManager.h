@@ -35,6 +35,28 @@ public:
     ResourceManager(const ResourceManager& _copy) = delete;
     ResourceManager& operator=(const ResourceManager& _copy) = delete;
 
+    template<typename T>
+    std::shared_ptr<T> get(const std::string& id)
+    {
+        auto it = m_mapResources.find(id);
+        if (!id.empty() && it != m_mapResources.end())
+            return std::dynamic_pointer_cast<T>(it->second);
+        return nullptr;
+    }
+    template<typename T>
+        void registerResource() {
+        // T must have:
+        //   T(const std::string& uid, ResourceManager* mgr, const json& data);
+        std::string typeName = getClassName(typeid(T));
+        resourceFactories[typeName] =
+            [](const std::string& uid, ResourceManager* mgr, const json& data) -> ResourcePtr {
+            return std::make_shared<T>(uid, mgr, data);
+            };
+    }
+    CoroutineTask loadResourcesFromFile(const std::string& filepath);
+    ResourcePtr createResourceFromData(const std::string& typeName, const json& data);
+
+    // replace the getters with a typed function
     ShaderPtr getShader(const std::string& uniqueId);
     MeshPtr getMesh(const std::string& uniqueId, bool createIfNotFound = true);
     TextureCubeMapPtr getTextureCubeMap(const std::string& uniqueId);
@@ -43,6 +65,7 @@ public:
     PhysicsMaterialPtr getPhysicsMaterial(const std::string& uniqueId);
     SoundPtr getSound(const std::string& uniqueId);
     PrefabPtr getPrefab(const std::string& uniqueId);
+    FontPtr getFont(const std::string& uniqueId);
     vector<PrefabPtr> getPrefabs() const;
 
     // Methods to create various resources
@@ -51,6 +74,7 @@ public:
     TextureCubeMapPtr createCubeMapTextureFromFile(const std::vector<std::string>& filepaths, const string& uniqueId);
     Texture2DPtr createTexture2DFromFile(const string& filepath, const string& uniqueId, TextureType type = TextureType::Default);
     Texture2DPtr createTexture2D(Texture2DDesc desc, string textureName = "NoTextureName");
+    FontPtr createFont(const string& uniqueId, const string& filepath);
     MeshPtr createMesh(MeshDesc desc, const string& uniqueId);
     HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
     SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID);
@@ -63,6 +87,8 @@ public:
     CoroutineTask saveResourcesDescs(const std::string& filepath);
     CoroutineTask loadResourceDesc(const std::string& filepath);
     void ClearInstancesFromMeshes();
+
+
 
     CoroutineTask createResourcesFromDescs();
     void onUpdateInternal();
@@ -89,11 +115,14 @@ protected:
     bool hasCreatedResources = false;
     std::map<string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
 
+    std::unordered_map<std::string, std::function<ResourcePtr(const std::string& uniqueId, ResourceManager* mgr, const json& data)>> resourceFactories;
+
     std::set<string> m_resourcesToDestroy;
     ResourcePtr m_selectedResource = nullptr; // for editor use
     size_t m_nextAvailableId = 1;
     std::unordered_map<string, ShaderDesc> shaderDescriptions;
     std::unordered_map<string, string> texture2DFilePaths;
+    std::unordered_map<string, string> m_fontTtfFilepaths;
     std::unordered_map<string, vector<string>> cubemapTextureFilePaths;
     std::unordered_map<string, MaterialDesc> materialDescs;
     std::unordered_map<string, MeshDesc> meshDescriptions;
@@ -106,3 +135,8 @@ private:
     ~ResourceManager() = default;
 };
 
+#define REGISTER_RESOURCE(T) \
+    static bool _registered_##T = []() { \
+        ResourceManager::GetInstance().registerResource<T>(); \
+        return true; \
+    }();

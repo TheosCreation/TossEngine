@@ -95,6 +95,7 @@ public:
     void Render(UniformData _data) const;
     void onTransparencyPass(UniformData _data) const;
     void onSkyboxPass(UniformData _data) const;
+    void onScreenSpacePass(UniformData _data) const;
 
     /**
      * @brief Called every frame to update the GameObject system at a fixed frame rate.
