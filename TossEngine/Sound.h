@@ -72,7 +72,7 @@ inline void to_json(json& j, SoundPtr const& sound) {
 }
 
 inline void from_json(json const& j, SoundPtr& sound) {
-    if (j.contains("id")) sound = ResourceManager::GetInstance().getSound(j["id"].get<string>());
+    if (j.contains("id")) sound = ResourceManager::GetInstance().get<Sound>(j["id"].get<string>());
 }
 
 

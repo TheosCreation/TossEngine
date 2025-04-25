@@ -71,5 +71,5 @@ inline void to_json(json& j, TextureCubeMapPtr const& cubemap) {
 }
 
 inline void from_json(json const& j, TextureCubeMapPtr& cubemap) {
-    if (j.contains("id")) cubemap = ResourceManager::GetInstance().getTextureCubeMap(j["id"].get<string>());
+    if (j.contains("id")) cubemap = ResourceManager::GetInstance().get<TextureCubeMap>(j["id"].get<string>());
 }

@@ -85,8 +85,8 @@ void Scene::onCreate()
     auto& resourceManager = ResourceManager::GetInstance();
 
     //hard coded for now as i need to internalize some shaders and materials so they dont go corrupt by user
-    m_deferredSSRQMaterial = resourceManager.createMaterial(MaterialDesc{ "SSQLightingShader" }, "DeferredSSRQMaterial");
-    m_postProcessSSRQMaterial = resourceManager.createMaterial(MaterialDesc{ "DefaultFullscreenShader" }, "PostProcessSSRQMaterial");
+    m_deferredSSRQMaterial = resourceManager.get<Material>("DeferredSSRQMaterial");
+    m_postProcessSSRQMaterial = resourceManager.get<Material>("PostProcessSSRQMaterial");
 
     json sceneJson = JsonUtility::OpenJsonFile(m_filePath, true);
     if (!sceneJson.empty())
@@ -100,7 +100,7 @@ void Scene::onCreate()
         //Creates default objects that are usually required for a scene
         GameObjectPtr skyboxObject = m_gameObjectManager->createGameObject<GameObject>("Skybox");
         Skybox* skybox = skyboxObject->addComponent<Skybox>();
-        skybox->setMesh(resourceManager.getMesh("Resources/Meshes/cube.obj"));
+        skybox->setMesh(resourceManager.get<Mesh>("Resources/Meshes/cube.obj"));
 
         GameObjectPtr directionalLightObject = m_gameObjectManager->createGameObject<GameObject>("Directional Light");
         directionalLightObject->m_transform.rotation = Quaternion::FromEuler(Vector3(30,40,50));

@@ -65,5 +65,5 @@ inline void to_json(json& j, MaterialPtr const& material) {
 }
 
 inline void from_json(json const& j, MaterialPtr& material) {
-    if (j.contains("id")) material = ResourceManager::GetInstance().getMaterial(j["id"].get<string>());
+    if (j.contains("id")) material = ResourceManager::GetInstance().get<Material>(j["id"].get<string>());
 }

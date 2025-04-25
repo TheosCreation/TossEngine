@@ -46,7 +46,7 @@ void Collider::deserialize(const json& data)
         string id = data["physicsMaterial"].get<string>();
         if (!id.empty())
         {
-            m_physicsMaterial = ResourceManager::GetInstance().getPhysicsMaterial(id);
+            m_physicsMaterial = ResourceManager::GetInstance().get<PhysicsMaterial>(id);
         }
     }
 

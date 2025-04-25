@@ -64,7 +64,7 @@ public:
 
     bool IsResourceLoaded(const std::string& uniqueId) const;
     std::map<std::string, ResourcePtr>& GetAllResources() { return m_mapResources; }
-    void SetSelectedResource(ResourcePtr selectedResource);
+    void SetSelectedResource(const ResourcePtr& selectedResource);
     ResourcePtr GetSelectedResource();
     ResourcePtr GetResourceByUniqueID(const std::string& id);
     void RenameResource(ResourcePtr resource, const std::string& newId);
@@ -74,47 +74,9 @@ public:
     void CleanUp();
 
 
-    void LoadPrefabs();
-    void DeletePrefabs();
-
-    //old functions
-    // replace the getters with a typed function
-    ShaderPtr getShader(const std::string& uniqueId);
-    MeshPtr getMesh(const std::string& uniqueId, bool createIfNotFound = true);
-    TextureCubeMapPtr getTextureCubeMap(const std::string& uniqueId);
-    Texture2DPtr getTexture2D(const std::string& uniqueId);
-    MaterialPtr getMaterial(const std::string& uniqueId);
-    PhysicsMaterialPtr getPhysicsMaterial(const std::string& uniqueId);
-    SoundPtr getSound(const std::string& uniqueId);
-    PrefabPtr getPrefab(const std::string& uniqueId);
-    FontPtr getFont(const std::string& uniqueId);
     vector<PrefabPtr> getPrefabs() const;
-
-    // Methods to create various resources
-    ShaderPtr createShader(const ShaderDesc& desc, const std::string& uniqueID);
-    ShaderPtr createComputeShader(const string& computeShaderFilename);
-    TextureCubeMapPtr createCubeMapTextureFromFile(const std::vector<std::string>& filepaths, const string& uniqueId);
-    Texture2DPtr createTexture2DFromFile(const string& filepath, const string& uniqueId, TextureType type = TextureType::Default);
-    Texture2DPtr createTexture2D(Texture2DDesc desc, string textureName = "NoTextureName");
-    FontPtr createFont(const string& uniqueId, const string& filepath);
-    MeshPtr createMesh(MeshDesc desc, const string& uniqueId);
-    HeightMapPtr createHeightMap(HeightMapInfo& _buildInfo);
-    SoundPtr createSound(const SoundDesc& desc, const std::string& uniqueID);
-    MaterialPtr createMaterial(const MaterialDesc& materialDesc, const std::string& uniqueID);
-    PhysicsMaterialPtr createPhysicsMaterial(const PhysicsMaterialDesc& desc, const std::string& uniqueID);
-    PhysicsMaterialPtr createPhysicsMaterial(const std::string& uniqueID, const json& data = nullptr);
-    PrefabPtr createPrefab(const string& id, const json& data = nullptr);
-
-    void deleteTexture(Texture2DPtr texture);
-    CoroutineTask saveResourcesDescs(const std::string& filepath);
-    CoroutineTask loadResourceDesc(const std::string& filepath);
-    void ClearInstancesFromMeshes();
-
-
-
-    CoroutineTask createResourcesFromDescs();
-
-    void DeleteFromSavedData(const std::shared_ptr<Resource>& resource, const std::string& uniqueId);
+    void DeletePrefabs();
+    void LoadPrefabs();
 
 protected:
     bool hasLoadedResources = false;
@@ -127,18 +89,8 @@ protected:
     std::set<string> m_resourcesToDestroy;
     ResourcePtr m_selectedResource = nullptr; // for editor use
     size_t m_nextAvailableId = 1;
+    string m_currentFilePath = "";
 
-    //old
-    std::unordered_map<string, ShaderDesc> shaderDescriptions;
-    std::unordered_map<string, string> texture2DFilePaths;
-    std::unordered_map<string, string> m_fontTtfFilepaths;
-    std::unordered_map<string, vector<string>> cubemapTextureFilePaths;
-    std::unordered_map<string, MaterialDesc> materialDescs;
-    std::unordered_map<string, MeshDesc> meshDescriptions;
-    std::unordered_map<string, json> physicsMaterialDescriptions;
-    std::unordered_map<string, json> m_prefabDescs;
-    std::unordered_map<string, SoundDesc> m_soundDescs;
-    //
 private:
     ResourceManager() = default;
     ~ResourceManager() = default;

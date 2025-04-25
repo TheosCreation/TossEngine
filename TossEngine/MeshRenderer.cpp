@@ -61,36 +61,36 @@ void MeshRenderer::deserialize(const json& data)
     if (data.contains("mesh"))
     {
         std::string meshId = data["mesh"];
-        m_mesh = resourceManager.getMesh(meshId);
+        m_mesh = resourceManager.get<Mesh>(meshId);
     }
 
     // Deserialize shaders
     if (data.contains("shader"))
     {
         std::string shaderId = data["shader"];
-        m_shader = resourceManager.getShader(shaderId);
+        m_shader = resourceManager.get<Shader>(shaderId);
     }
     if (data.contains("geometryShader"))
     {
         std::string geometryId = data["geometryShader"];
-        m_geometryShader = resourceManager.getShader(geometryId);
+        m_geometryShader = resourceManager.get<Shader>(geometryId);
     }
     if (data.contains("shadowShader"))
     {
         std::string shadowShaderId = data["shadowShader"];
-        m_shadowShader = resourceManager.getShader(shadowShaderId);
+        m_shadowShader = resourceManager.get<Shader>(shadowShaderId);
     }
 
     // Deserialize textures
     if (data.contains("texture"))
     {
         std::string textureName = data["texture"];
-        m_texture = resourceManager.getTexture2D(textureName); // Replace with appropriate method to load texture
+        m_texture = resourceManager.get<Texture2D>(textureName); // Replace with appropriate method to load texture
     }
     if (data.contains("reflectiveMap"))
     {
         std::string reflectiveMapName = data["reflectiveMap"];
-        m_reflectiveMap = resourceManager.getTexture2D(reflectiveMapName);
+        m_reflectiveMap = resourceManager.get<Texture2D>(reflectiveMapName);
     }
 
     // Deserialize material properties

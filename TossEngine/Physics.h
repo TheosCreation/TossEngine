@@ -126,7 +126,7 @@ public:
     Vector3 GetGravity() const { return m_gravity; }
 
 
-    RaycastHit Raycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f, LayerBit hitLayers = 0xFFFFFFFF);
+    RaycastHit Raycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f, LayerBit hitLayers = 65535);
 
     void DrawDebug(UniformData data) const;
 

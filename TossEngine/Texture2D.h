@@ -108,5 +108,5 @@ inline void to_json(json& j, Texture2DPtr const& texture) {
 }
 
 inline void from_json(json const& j, Texture2DPtr& texture) {
-    if (j.contains("id")) texture = ResourceManager::GetInstance().getTexture2D(j["id"].get<string>());
+    if (j.contains("id")) texture = ResourceManager::GetInstance().get<Texture2D>(j["id"].get<string>());
 }

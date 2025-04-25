@@ -29,8 +29,6 @@ public:
 	 */
 	Framebuffer(Vector2 _windowSize);
 
-	Framebuffer(const Framebuffer& other);
-
 	/**
 	 * @brief Destructor for the Framebuffer class.
 	 */
@@ -40,7 +38,7 @@ public:
 	 * @brief Resizes the framebuffer to the new specified window size.
 	 * @param _newWindowSize The new size for the framebuffer.
 	 */
-	void onResize(Vector2 size) override;
+	void onResize(Vector2 newSize) override;
 
 	/**
 	 * @brief Binds the framebuffer for rendering.
@@ -56,11 +54,10 @@ public:
 	void PopulateShader(ShaderPtr shader);
 
 	uint getId();
-
-	Texture2DPtr RenderTexture;
-	//uint RenderTexture; // Identifier for the texture used for rendering.
+    uint getRenderTextureId() const { return RenderTexture; }
 
 private:
+    uint RenderTexture;
 	uint FBO; // Frame Buffer Object identifier.
 	uint RBO; // Render Buffer Object identifier.
 };

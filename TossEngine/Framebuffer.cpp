@@ -20,83 +20,52 @@ Mail : theo.morris@mds.ac.nz
 Framebuffer::Framebuffer(Vector2 _windowSize)
 {
     m_size = _windowSize;
+    int width = int(_windowSize.x);
+    int height = int(_windowSize.y);
 
-
-    // Generate and bind the framebuffer
+    // 1) Create & bind FBO
     glGenFramebuffers(1, &FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
-    //// Generate and bind the texture
-    //glGenTextures(1, &RenderTexture);
-    //glBindTexture(GL_TEXTURE_2D, RenderTexture);
-    //
-    //// Define the texture parameters
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int)_windowSize.x, (int)_windowSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // 2) Create the color texture
+    glGenTextures(1, &RenderTexture);
+    glBindTexture(GL_TEXTURE_2D, RenderTexture);
+    // Allocate storage for the texture (RGBA8)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0,
+        GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    // Set filtering/wrap
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    Texture2DDesc textureDesc;
-    textureDesc.textureSize = { (int)_windowSize.x, (int)_windowSize.y };
-    textureDesc.numChannels = 4;
-    RenderTexture = ResourceManager::GetInstance().createTexture2D(textureDesc, "FBORenderTexture" + FBO);
+    // Attach to framebuffer
+    glFramebufferTexture2D(GL_FRAMEBUFFER,
+        GL_COLOR_ATTACHMENT0,
+        GL_TEXTURE_2D,
+        RenderTexture,
+        0);
 
-    // Attach the texture to the framebuffer
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RenderTexture->getId(), 0);
 
-    // Generate and bind the renderbuffer for depth and stencil
+    // 3) Create & bind RBO for depth+stencil
     glGenRenderbuffers(1, &RBO);
     glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (int)_windowSize.x, (int)_windowSize.y);
+    glRenderbufferStorage(GL_RENDERBUFFER,
+        GL_DEPTH24_STENCIL8,
+        width,
+        height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+        GL_DEPTH_STENCIL_ATTACHMENT,
+        GL_RENDERBUFFER,
+        RBO);
 
-    // Attach the renderbuffer to the framebuffer
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-
-    // Check if the framebuffer is complete
+    // 4) Check completeness
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
         std::cerr << "Framebuffer is not complete!" << std::endl;
-    }
-    
+
+    // 5) Unbind
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
-
-Framebuffer::Framebuffer(const Framebuffer& other)
-{
-    m_size = other.m_size;
-
-    // Generate and bind a new framebuffer
-    glGenFramebuffers(1, &FBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-
-    // Create a new texture for the framebuffer
-    Texture2DDesc textureDesc;
-    textureDesc.textureSize = { (int)m_size.x, (int)m_size.y };
-    textureDesc.numChannels = 4;
-    RenderTexture = ResourceManager::GetInstance().createTexture2D(textureDesc);
-
-    // Attach the new texture to the framebuffer
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RenderTexture->getId(), 0);
-
-    // Generate and bind a new renderbuffer
-    glGenRenderbuffers(1, &RBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (int)m_size.x, (int)m_size.y);
-
-    // Attach the renderbuffer to the framebuffer
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-
-    // Check if the new framebuffer is complete
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cerr << "Copied Framebuffer is not complete!" << std::endl;
-    }
-
-    // Unbind framebuffer and renderbuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-}
-
 
 Framebuffer::~Framebuffer()
 {
@@ -104,42 +73,50 @@ Framebuffer::~Framebuffer()
     glDeleteRenderbuffers(1, &RBO);
 }
 
-void Framebuffer::onResize(Vector2 size)
+void Framebuffer::onResize(Vector2 newSize)
 {
-    if (size.x <= 2 || size.y <= 2) return; // safety measure 
-
-    Resizable::onResize(size);
+    if (newSize.x <= 2 || newSize.y <= 2) return;
+    Resizable::onResize(newSize);
     
-    // Bind the framebuffer to update its attachments
+    int width = int(newSize.x);
+    int height = int(newSize.y);
+    
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-
-    // Resize the existing texture
-    RenderTexture->resize(Rect((int)size.x, (int)size.y));
-
-    // Attach the new texture to the framebuffer
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RenderTexture->getId(), 0);
-
-    // Delete the existing renderbuffer
+    
+    glBindTexture(GL_TEXTURE_2D, RenderTexture);
+    glTexImage2D(GL_TEXTURE_2D,
+        0,                  // mipmap level
+        GL_RGBA8,           // internal format
+        width, height,      // new dimensions
+        0,                  // border
+        GL_RGBA,            // format of provided data
+        GL_UNSIGNED_BYTE,   // type of provided data
+        nullptr);           // no initial data
+    
+    glFramebufferTexture2D(GL_FRAMEBUFFER,
+        GL_COLOR_ATTACHMENT0,
+        GL_TEXTURE_2D,
+        RenderTexture,
+        0);
+    
     glDeleteRenderbuffers(1, &RBO);
-
-    // Generate and bind a new renderbuffer for depth and stencil with the updated size
     glGenRenderbuffers(1, &RBO);
     glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (int)size.x, (int)size.y);
-
-    // Attach the new renderbuffer to the framebuffer
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-
-    // Check if the framebuffer is complete
+    glRenderbufferStorage(GL_RENDERBUFFER,
+        GL_DEPTH24_STENCIL8,
+        width,
+        height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+        GL_DEPTH_STENCIL_ATTACHMENT,
+        GL_RENDERBUFFER,
+        RBO);
+    
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cerr << "Framebuffer resize failed: Framebuffer is not complete!" << std::endl;
-    }
-
-    // Unbind texture, framebuffer, and renderbuffer
+        std::cerr << "Framebuffer resize failed: not complete\n";
+    
     glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 // Bind the framebuffer

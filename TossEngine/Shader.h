@@ -210,5 +210,5 @@ inline void to_json(json& j, ShaderPtr const& shader) {
 }
 
 inline void from_json(json const& j, ShaderPtr& shader) {
-    if (j.contains("id")) shader = ResourceManager::GetInstance().getShader(j["id"].get<string>());
+    if (j.contains("id")) shader = ResourceManager::GetInstance().get<Shader>(j["id"].get<string>());
 }

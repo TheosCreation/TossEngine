@@ -79,5 +79,5 @@ inline void to_json(json& j, MeshPtr const& mesh) {
 }
 
 inline void from_json(json const& j, MeshPtr& mesh) {
-    if (j.contains("id")) mesh = ResourceManager::GetInstance().getMesh(j["id"].get<string>());
+    if (j.contains("id")) mesh = ResourceManager::GetInstance().get<Mesh>(j["id"].get<string>());
 }

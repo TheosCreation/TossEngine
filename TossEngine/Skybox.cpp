@@ -32,14 +32,14 @@ void Skybox::deserialize(const json& data)
     if (data.contains("mesh"))
     {
         std::string meshId = data["mesh"];
-        m_mesh = resourceManager.getMesh(meshId);
+        m_mesh = resourceManager.get<Mesh>(meshId);
     }
     
     // Deserialize material
     if (data.contains("material"))
     {
         std::string materialName = data["material"];
-        m_material = resourceManager.getMaterial(materialName);
+        m_material = resourceManager.get<Material>(materialName);
     }
 }
 

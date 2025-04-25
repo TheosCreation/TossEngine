@@ -43,5 +43,5 @@ inline void to_json(json& j, PrefabPtr const& prefab) {
 }
 
 inline void from_json(json const& j, PrefabPtr& prefab) {
-    if (j.contains("id")) prefab = ResourceManager::GetInstance().getPrefab(j["id"].get<string>());
+    if (j.contains("id")) prefab = ResourceManager::GetInstance().get<Prefab>(j["id"].get<string>());
 }

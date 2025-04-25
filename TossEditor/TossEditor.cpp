@@ -32,8 +32,7 @@ TossEditor::TossEditor()
     AudioEngine::GetInstance().Init();
 
     ResourceManager& resourceManager = ResourceManager::GetInstance();
-    tossEngine.StartCoroutine(resourceManager.loadResourcesFromFile("Resources/ResourcesNew.json"));
-    //tossEngine.StartCoroutine(resourceManager.createResourcesFromDescs());
+    tossEngine.StartCoroutine(resourceManager.loadResourcesFromFile("Resources/Resources.json"));
 
 
     m_playerSettings = std::make_unique<TossPlayerSettings>();
@@ -348,7 +347,7 @@ void TossEditor::onUpdateInternal()
 
 
         // Get the updated texture after rendering.
-        ImTextureID gameViewTexture = (ImTextureID)m_gameViewFrameBuffer->RenderTexture->getId();
+        ImTextureID gameViewTexture = (ImTextureID)m_gameViewFrameBuffer->getRenderTextureId();
 
         // Display the rendered scene scaled to the available region.
         ImGui::Image(gameViewTexture, availSize,
@@ -376,7 +375,7 @@ void TossEditor::onUpdateInternal()
             scene->onGraphicsUpdate(camera, m_sceneFrameBuffer);
 
             // Get the updated texture after rendering.
-            ImTextureID sceneViewTexture = (ImTextureID)m_sceneFrameBuffer->RenderTexture->getId();
+            ImTextureID sceneViewTexture = (ImTextureID)m_sceneFrameBuffer->getRenderTextureId();
 
             // Display the rendered scene scaled to the available region.
             ImGui::Image(sceneViewTexture, availSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
@@ -858,7 +857,7 @@ void TossEditor::onUpdateInternal()
                 Prefab::recurseSerialize(droppedObject, jsonData);
 
                 // Create a prefab using the GameObject's name and JSON data.
-                resourceManager.createPrefab(droppedObject->name, jsonData);
+                resourceManager.createResourceFromData(droppedObject->name, jsonData);
 
                 Debug::Log("Created prefab '%s' from dragged GameObject", droppedObject->name.c_str());
             }
@@ -966,8 +965,7 @@ void TossEditor::onQuit()
         scene->onQuit();
     }
     ResourceManager& resourceManager = ResourceManager::GetInstance();
-    //TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesDescs("Resources/Resources.json"));
-    TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesToFile("Resources/ResourcesNew.json"));
+    TossEngine::GetInstance().StartCoroutine(resourceManager.saveResourcesToFile("Resources/Resources.json"));
     resourceManager.CleanUp();
     Physics::GetInstance().UnLoadPrefabWorld();
     editorPreferences.SaveToFile("EditorPreferences.json");
@@ -1120,7 +1118,7 @@ void TossEditor::PerformSafeDllReload()
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     //Save();
     auto scene = TossEngine::GetInstance().getCurrentScene();
-    resourceManager.saveResourcesDescs("Resources/Resources.json"); // save resources just in case of crash and to save prefabs
+    resourceManager.saveResourcesToFile("Resources/Resources.json"); // save resources just in case of crash and to save prefabs
     selectedSelectable = nullptr; //because we are reloading the scene we can have to pointing to a old object
     canUpdateInternal = false;
     if (scene) scene->clean();

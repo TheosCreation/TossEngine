@@ -81,7 +81,7 @@ void Material::deserialize(const json& data)
     if (data.contains("shader"))
     {
         std::string shaderId = data["shader"];
-        m_shader = resourceManager.getShader(shaderId);
+        m_shader = resourceManager.get<Shader>(shaderId);
         UpdateBindings(); // Must call to prepare the uniform map
     }
 
@@ -122,7 +122,7 @@ void Material::deserialize(const json& data)
                 {
                     if (value.contains("id"))
                     {
-                        existingValue.texture = resourceManager.getTexture2D(value["id"]);
+                        existingValue.texture = resourceManager.get<Texture2D>(value["id"]);
                         if (value.contains("slot"))
                             existingValue.slot = value["slot"];
                     }
@@ -131,7 +131,7 @@ void Material::deserialize(const json& data)
                 {
                     if (value.contains("id"))
                     {
-                        existingValue.texture = resourceManager.getTextureCubeMap(value["id"]);
+                        existingValue.texture = resourceManager.get<TextureCubeMap>(value["id"]);
                         if (value.contains("slot"))
                             existingValue.slot = value["slot"];
                     }
