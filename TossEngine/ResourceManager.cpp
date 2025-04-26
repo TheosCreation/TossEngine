@@ -144,7 +144,7 @@ void ResourceManager::LoadPrefabs()
     for (auto& [uid, prefabData] : m_resourceDataMap)
     {
         // This will internally call Prefab::onCreate() and onCreateLate()
-        createResourceFromData("Prefab", prefabData);
+        createResourceFromDataToMap("Prefab", prefabData);
     }
 
     // Clear the backup now that everything is back in m_mapResources
@@ -176,7 +176,7 @@ void ResourceManager::loadResourcesFromFile(const std::string& filepath)
         if (resourceData.contains("type"))
         {
             std::string typeName = resourceData["type"];
-            createResourceFromData(typeName, resourceData);
+            createResourceFromDataToMap(typeName, resourceData);
         }
     }
 
@@ -195,7 +195,7 @@ void ResourceManager::loadResourcesFromFile(const std::string& filepath)
 }
 
 
-ResourcePtr ResourceManager::createResourceFromData(const std::string& typeName, const json& data)
+ResourcePtr ResourceManager::createResourceFromDataToMap(const std::string& typeName, const json& data)
 {
     auto it = resourceFactories.find(typeName);
     if (it == resourceFactories.end()) {
@@ -220,7 +220,7 @@ ResourcePtr ResourceManager::createResourceFromData(const std::string& typeName,
     return nullptr;
 }
 
-ResourcePtr ResourceManager::createResource(const std::string& typeName, const std::string& uid)
+ResourcePtr ResourceManager::createResource(const std::string& typeName, const std::string& uid, const json& data)
 {
     auto it = resourceFactories.find(typeName);
     if (it == resourceFactories.end()) {
@@ -232,6 +232,7 @@ ResourcePtr ResourceManager::createResource(const std::string& typeName, const s
     if (res) {
         m_mapResources.emplace(uid, res);
         res->onCreate();
+        if (data != nullptr) res->deserialize(data);
         res->onCreateLate();
     }
     return res;

@@ -42,12 +42,6 @@ GameObject::GameObject(const GameObject& other) : m_transform(this)
 
 GameObject::~GameObject()
 {
-    for (auto& pair : m_components)
-    {
-        // Free allocated memory
-        delete pair.second;
-    }
-    m_components.clear();
 }
 
 json GameObject::serialize() const

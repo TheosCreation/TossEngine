@@ -1,6 +1,7 @@
 #include "PlayerController.h"
 #include "AudioEngine.h"
 #include "GroundCheck.h"
+#include "UiManager.h"
 
 void PlayerController::OnInspectorGUI()
 {

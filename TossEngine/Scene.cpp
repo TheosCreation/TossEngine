@@ -325,10 +325,12 @@ GameObjectManager* Scene::getObjectManager()
 
 void Scene::onQuit()
 {
+    m_gameObjectManager->onDestroy();
     m_gameObjectManager->clearGameObjects();
+    m_gameObjectManager.release();
     m_deferredSSRQMaterial.reset();
     m_postProcessSSRQMaterial.reset();
-    m_SSRQ.reset();
+    m_SSRQ.release();
     Physics::GetInstance().UnLoadWorld();
 }
 

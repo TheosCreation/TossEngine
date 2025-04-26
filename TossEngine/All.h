@@ -47,6 +47,7 @@ Mail : theo.morris@mds.ac.nz
 #include "TextureCubeMap.h"
 #include "HeightMap.h"
 #include "Prefab.h"
+#include "Font.h"
 
 //Components
 #include "ComponentRegistry.h"
@@ -60,3 +61,4 @@ Mail : theo.morris@mds.ac.nz
 #include "Spotlight.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
+#include "Text.h"

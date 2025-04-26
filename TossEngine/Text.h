@@ -2,12 +2,15 @@
 #include "Renderer.h"
 #include "Font.h"
 
-class Text : public Renderer 
+class TOSSENGINE_API Text : public Renderer 
 {
 public:
     void onCreateLate() override;
     void OnInspectorGUI() override;
     void Render(UniformData data, RenderingPath renderPath) override;
+
+    void SetText(const string text);
+    string GetText() const;
 private:
     void RebuildMesh();
     VertexArrayObjectPtr m_vao;

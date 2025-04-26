@@ -14,8 +14,8 @@ uniform bool useTexture;
 uniform vec3 uColor;
 uniform float alpha = 1.0f;
 
-uniform samplerCube Texture_Skybox;
 uniform sampler2D ReflectionMap;
+layout(binding = 6) uniform samplerCube   Texture_Skybox;
 
 // Shadow maps and light space matrices
 uniform sampler2D Texture_ShadowMap[MAX_DIR_LIGHTS]; // Array for shadow maps

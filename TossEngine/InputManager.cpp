@@ -37,6 +37,7 @@ void InputManager::Init(ProjectSettingsPtr& projectSettings)
 	glfwSetScrollCallback(WindowPtr, scroll_callback); // Set the scroll callback function
 	glfwSetKeyCallback(WindowPtr, key_callback);       // Set the key callback function
 	glfwSetMouseButtonCallback(WindowPtr, mouse_button_callback); // Set the mouse button callback function
+    glfwSetCharCallback(WindowPtr, char_callback); // Set the char callback function
 
 	isInitilized = true;
 }
@@ -49,6 +50,7 @@ void InputManager::Init(TossPlayerSettingsPtr& playerSettings)
     glfwSetScrollCallback(WindowPtr, scroll_callback); // Set the scroll callback function
     glfwSetKeyCallback(WindowPtr, key_callback);       // Set the key callback function
     glfwSetMouseButtonCallback(WindowPtr, mouse_button_callback); // Set the mouse button callback function
+    glfwSetCharCallback(WindowPtr, char_callback); // Set the char callback function
 
     isInitilized = true;
 }
@@ -205,20 +207,14 @@ void InputManager::scroll_callback(GLFWwindow* window, double xOffset, double yO
 	scrollX = xOffset;
 	scrollY = yOffset;
 
-	if (ImGui::GetIO().WantCaptureMouse)
-	{
-		ImGui_ImplGlfw_ScrollCallback(window, xOffset, yOffset);
-	}
+    ImGui_ImplGlfw_ScrollCallback(window, xOffset, yOffset);
 }
 
 void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	Key translatedKey = static_cast<Key>(key);
 
-	if (ImGui::GetIO().WantCaptureKeyboard)
-	{
-        ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-	}
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 
 	if (action == GLFW_PRESS && !currentKeyStates[translatedKey]) {
 		currentKeyStates[translatedKey] = true;
@@ -232,10 +228,7 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
 {
 	MouseButton translatedButton = static_cast<MouseButton>(button);
 
-    if (ImGui::GetIO().WantCaptureMouse)
-    {
-        ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-    }
+    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 
 	if (action == GLFW_PRESS && !currentMouseStates[translatedButton]) {
 		currentMouseStates[translatedButton] = true;
@@ -243,4 +236,9 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
 	else if (action == GLFW_RELEASE) {
 		currentMouseStates[translatedButton] = false;
 	}
+}
+
+void InputManager::char_callback(GLFWwindow* window, unsigned int c)
+{
+    ImGui_ImplGlfw_CharCallback(window, c);
 }

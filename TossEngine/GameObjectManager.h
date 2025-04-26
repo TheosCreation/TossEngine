@@ -101,6 +101,7 @@ public:
      * @brief Called every frame to update the GameObject system at a fixed frame rate.
      */
     void onFixedUpdate() const;
+    void onDestroy() const;
 
     /**
      * @brief Gets all camera entities.

@@ -20,7 +20,7 @@ public:
     void LoadGenericResources();
     void TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName, bool maximized = false);
     Window* GetWindow() const;
-    Scene* getCurrentScene() const;
+    ScenePtr getCurrentScene() const;
     GameObjectManager* getGameObjectManager() const;
     void PollEvents();
     void CleanUp();

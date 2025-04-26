@@ -189,6 +189,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="RainbowLight.cpp" />
+    <ClCompile Include="UiManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Dependencies\IMGUIZMO\GraphEditor.h" />
@@ -207,6 +208,7 @@
     <ClInclude Include="..\..\Dependencies\IMGUI\imstb_rectpack.h" />
     <ClInclude Include="..\..\Dependencies\IMGUI\imstb_textedit.h" />
     <ClInclude Include="..\..\Dependencies\IMGUI\imstb_truetype.h" />
+    <ClInclude Include="..\..\TossEngine\stb_truetype.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemySpawner.h" />
     <ClInclude Include="GroundCheck.h" />
@@ -219,6 +221,7 @@
     <ClInclude Include="DestroyObjectWithTime.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="RainbowLight.h" />
+    <ClInclude Include="UiManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

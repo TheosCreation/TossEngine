@@ -88,9 +88,9 @@ Window* TossEngine::GetWindow() const
     return m_window.get();
 }
 
-Scene* TossEngine::getCurrentScene() const
+ScenePtr TossEngine::getCurrentScene() const
 {
-    return m_currentScene.get();
+    return m_currentScene;
 }
 
 GameObjectManager* TossEngine::getGameObjectManager() const
@@ -133,15 +133,11 @@ void TossEngine::ReloadScripts() const
 
 void TossEngine::OpenScene(shared_ptr<Scene> _scene, bool callStartMethods)
 {
-    if (_scene == nullptr)
-    {
-        m_currentScene.reset();
-        return;
-    }
-    // if there is a current scene, call onQuit
+    // if there is a current scene, call onDestroy
     if (m_currentScene != nullptr)
     {
         m_currentScene->onQuit();
+        m_currentScene.reset();
     }
 
 

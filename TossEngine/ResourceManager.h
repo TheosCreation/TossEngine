@@ -55,8 +55,7 @@ public:
     }
     void loadResourcesFromFile(const std::string& filepath);
     void saveResourcesToFile(const std::string& filepath);
-    ResourcePtr createResourceFromData(const std::string& typeName, const json& data);
-    ResourcePtr createResource(const std::string& typeName, const std::string& uid);
+    ResourcePtr createResource(const std::string& typeName, const std::string& uid, const json& data = nullptr);
 
     vector<string> GetCreatableResourceTypes() const;
 
@@ -94,6 +93,8 @@ protected:
 private:
     ResourceManager() = default;
     ~ResourceManager() = default;
+
+    ResourcePtr createResourceFromDataToMap(const std::string& typeName, const json& data);
 };
 
 #define REGISTER_RESOURCE(T) \

@@ -119,6 +119,17 @@ struct Vertex
     Vector3 normal;     // The normal vector at the vertex used for lighting calculations (x, y, z)
 };
 
+struct TextMeshData {
+    vector<Vertex>    verts;
+    vector<uint32_t>  idxs;
+};
+
+typedef struct
+{
+    unsigned short x0, y0, x1, y1; // coordinates of bbox in bitmap
+    float xoff, yoff, xadvance;
+} Glyph;
+
 // Structure representing a vertex in 3D space
 struct DebugVertex
 {

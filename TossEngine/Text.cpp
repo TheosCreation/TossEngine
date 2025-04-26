@@ -5,7 +5,7 @@
 
 void Text::onCreateLate()
 {
-    if (m_font->isLoaded)
+    if (m_font && m_font->isLoaded)
         RebuildMesh();
 }
 
@@ -20,7 +20,10 @@ void Text::OnInspectorGUI()
 
     if (ImGui::InputText("Text", &m_text))
     {
-        RebuildMesh();
+        if (!m_text.empty())
+        {
+            RebuildMesh();
+        }
     }
     ImGui::ColorEdit3("Color", m_color.Data());
 }
@@ -54,64 +57,44 @@ void Text::Render(UniformData data, RenderingPath renderPath)
     graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_vao->getNumIndices()); // Draw the indexed triangles
 }
 
+void Text::SetText(const string text)
+{
+    m_text = text;
+    RebuildMesh();
+}
+
+string Text::GetText() const
+{
+    return m_text;
+}
+
 void Text::RebuildMesh()
 {
-    if (!m_font) return;
+    if (!m_font && m_text.empty()) return;
 
-    std::vector<Vertex>   verts;
-    std::vector<uint> idxs;
-    float cursorX = 0, cursorY = 0;
-
-    auto& font = *m_font;
-    int   atlasW = font.getAtlasWidth();
-    int   atlasH = font.getAtlasHeight();
-    auto& chardata = font.getCharData();
-
-    for (char c : m_text) {
-        if (c < 32 || c >= 128) continue;
-        stbtt_aligned_quad q;
-        stbtt_GetBakedQuad(
-            chardata.data(), atlasW, atlasH,
-            c - 32, &cursorX, &cursorY,
-            &q, 1
-        );
-
-        // 4 verts per glyph
-        uint base = (uint)verts.size();
-        verts.push_back({ {q.x0, q.y0, 0}, {q.s0, q.t1} });
-        verts.push_back({ {q.x1, q.y0, 0}, {q.s1, q.t1} });
-        verts.push_back({ {q.x1, q.y1, 0}, {q.s1, q.t0} });
-        verts.push_back({ {q.x0, q.y1, 0}, {q.s0, q.t0} });
-
-        // 2 triangles
-        idxs.push_back(base + 0);
-        idxs.push_back(base + 1);
-        idxs.push_back(base + 2);
-        idxs.push_back(base + 2);
-        idxs.push_back(base + 3);
-        idxs.push_back(base + 0);
-    }
+    // 1) get the ready-made mesh
+    TextMeshData data = m_font->buildTextMesh(m_text);
 
     // 2) set up your attrib layout
     static const VertexAttribute attribs[] = {
-        {3}, // pos
-        {2}  // uv
+        { 3 }, // pos
+        { 2 }  // uv
     };
 
-    // 3) upload
+    // 3) upload using data.verts / data.idxs instead of your old locals
     m_vao = GraphicsEngine::GetInstance().createVertexArrayObject(
         // VBO
         {
-          verts.data(),
-          sizeof(Vertex),
-          (uint)verts.size(),
-          (VertexAttribute*)attribs,
-          2
+            data.verts.data(),                  // pointer
+            sizeof(Vertex),                     // stride
+            static_cast<uint>(data.verts.size()), // count
+            const_cast<VertexAttribute*>(attribs),
+            2
         },
         // IBO
-      {
-        idxs.data(),
-        (uint)idxs.size()
-      }
+        {
+            data.idxs.data(),
+            static_cast<uint>(data.idxs.size())
+        }
     );
 }

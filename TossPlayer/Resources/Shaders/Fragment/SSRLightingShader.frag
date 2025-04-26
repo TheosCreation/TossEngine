@@ -12,7 +12,7 @@ uniform sampler2D Texture_Normal;           // G-buffer: Fragment normal
 uniform sampler2D Texture_AlbedoShininess;  // G-buffer: Albedo and shininess
 uniform sampler2D Texture_Depth;            // G-buffer: Depth
 uniform sampler2D Texture_Reflectivity;     // G-buffer: Reflectivity
-uniform samplerCube Texture_Skybox;         // Skybox Texture: Reflectivity
+layout(binding = 6) uniform samplerCube   Texture_Skybox;
 
 // Shadow maps and light space matrices
 uniform sampler2D Texture_ShadowMap[MAX_DIR_LIGHTS]; // Array for shadow maps

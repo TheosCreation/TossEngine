@@ -117,5 +117,8 @@
     <ClInclude Include="..\Dependencies\IMGUI\imgui_stdlib.h">
       <Filter>ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="..\TossEngine\stb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

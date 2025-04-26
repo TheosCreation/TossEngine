@@ -309,6 +309,8 @@ void TossEditor::onUpdateInternal()
             if (m_gameRunning)
             {
                 m_gameRunning = false;
+                selectedSelectable = nullptr;
+
                 Time::TimeScale = 0.0f;
 
                 string filePath = editorPreferences.lastKnownOpenScenePath;
@@ -319,7 +321,6 @@ void TossEditor::onUpdateInternal()
                     TossEngine::GetInstance().OpenScene(scene, false);
                 }
                 
-                selectedSelectable = nullptr;
             }
         }
         ImGui::EndMainMenuBar();
@@ -856,7 +857,7 @@ void TossEditor::onUpdateInternal()
                 jsonData["uniqueId"] = droppedObject->name;
 
                 // Create a prefab using the GameObject's name and JSON data.
-                resourceManager.createResourceFromData("Prefab", jsonData);
+                resourceManager.createResource("Prefab", droppedObject->name, jsonData);
 
                 Debug::Log("Created prefab '%s' from dragged GameObject", droppedObject->name.c_str());
             }
@@ -1067,6 +1068,11 @@ void TossEditor::LoadWatchAndCompileScripts()
 
 void TossEditor::PerformSafeBuild()
 {
+    ResourceManager& resourceManager = ResourceManager::GetInstance();
+    auto scene = TossEngine::GetInstance().getCurrentScene();
+    resourceManager.saveResourcesToFile("Resources/Resources.json"); // save resources just in case of crash and to save prefabs
+    selectedSelectable = nullptr;
+    canUpdateInternal = false;
     std::string msBuildPath = getMSBuildPath();
     std::string solutionPath = FindSolutionPath(); //this needs to change to proper name of the solution on the release build of the engine
     std::string config;
@@ -1087,12 +1093,13 @@ void TossEditor::PerformSafeBuild()
         return;
     }
 
+    if (scene) scene->clean();
+    resourceManager.DeletePrefabs();
     TossEngine& tossEngine = TossEngine::GetInstance();
-    tossEngine.UnLoadScripts();
-
+    tossEngine.UnLoadScripts();;
     std::string command = std::string("cmd /C \"\"") + msBuildPath +
         "\" \"" + solutionPath +
-        "\" /t:TossPlayer /p:Configuration=" + config + " /p:Platform=x64\"";
+        "\" /t:TossPlayer /p:Configuration=" + config + " /p:Platform=x64 /m\"";
 
     int result = system(command.c_str());
 
@@ -1104,6 +1111,10 @@ void TossEditor::PerformSafeBuild()
     }
 
     tossEngine.LoadScripts();
+    resourceManager.LoadPrefabs();
+    if (scene) scene->reload();
+
+    canUpdateInternal = true;
 }
 
 void TossEditor::PerformSafeDllReload()

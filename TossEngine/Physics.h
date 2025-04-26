@@ -137,7 +137,6 @@ public:
     void LoadPrefabWorld();
     void UnLoadPrefabWorld();
     void DestroyShape(rp3d::CollisionShape* shape);
-    void DestroyBody(rp3d::RigidBody* body, PhysicsWorld* world);
 
 private:
     Physics() = default;
@@ -161,7 +160,6 @@ private:
     vector<RaycastDebugEntry> m_raycastDebugEntries;
 
     std::vector<rp3d::CollisionShape*> m_shapesToDestroy;
-    std::map<rp3d::RigidBody*, PhysicsWorld*> m_bodiesToDestroy;
 
     bool isPaused = false;
 };

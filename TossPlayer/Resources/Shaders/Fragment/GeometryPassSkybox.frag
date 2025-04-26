@@ -6,7 +6,7 @@ layout(location = 2) out vec4 Texture_AlbedoShininess;   // G-buffer: Albedo and
 
 in vec3 FragTexcoord; // Input from vertex shader (texture coordinates for the skybox)
 
-uniform samplerCube Texture_Skybox; // Skybox texture
+layout(binding = 6) uniform samplerCube Texture_Skybox; // Skybox texture
 
 void main()
 {

@@ -167,6 +167,7 @@ private:
     static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+    static void char_callback(GLFWwindow* window, unsigned int c);
 
     static float currentMouseX; // Current mouse x position
     static float currentMouseY; // Current mouse y position

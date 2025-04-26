@@ -27,10 +27,6 @@ Physics& Physics::GetInstance()
 
 void Physics::UpdateInternal()
 {
-    for (const auto& pair : m_bodiesToDestroy)
-    {
-        pair.second->destroyRigidBody(pair.first);
-    }
     for (rp3d::CollisionShape* shape : m_shapesToDestroy)
     {
         switch (shape->getType()) {
@@ -50,7 +46,6 @@ void Physics::UpdateInternal()
 
     }
     m_shapesToDestroy.clear();
-    m_bodiesToDestroy.clear();
 }
 
 void Physics::Update()
@@ -451,9 +446,4 @@ void Physics::UnLoadPrefabWorld()
 void Physics::DestroyShape(rp3d::CollisionShape* shape)
 {
     m_shapesToDestroy.push_back(shape);
-}
-
-void Physics::DestroyBody(rp3d::RigidBody* body, PhysicsWorld* world)
-{
-    m_bodiesToDestroy.emplace(body, world);
 }

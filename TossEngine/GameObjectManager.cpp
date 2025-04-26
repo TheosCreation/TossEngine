@@ -444,6 +444,17 @@ void GameObjectManager::onFixedUpdate() const
     }
 }
 
+void GameObjectManager::onDestroy() const
+{
+
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue;
+
+        pair.second->onDestroy();
+    }
+}
+
 std::vector<Camera*> GameObjectManager::getCameras() const
 {
     std::vector<Camera*> cameras;
