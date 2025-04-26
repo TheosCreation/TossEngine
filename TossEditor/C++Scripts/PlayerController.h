@@ -10,6 +10,7 @@ public:
 
     void onCreate() override;
     void onStart() override;
+    void onLateStart() override;
     void onUpdate() override;
     void onFixedUpdate() override;
 
@@ -20,6 +21,7 @@ private:
     float m_airAcceleration = 10000.0f;
     float m_jumpForce = 2000.0f;
     float m_jumpCooldown = 0.5f;
+    float m_currentLevelTime = 60.0f;
 
     float jumpTimer = 0.0f;
 
@@ -35,7 +37,7 @@ private:
     Texture2DPtr m_texture = nullptr;
     TextureCubeMapPtr m_cubeMapTexture = nullptr;
 
-    SERIALIZABLE_MEMBERS(m_health, m_movementSpeed, m_acceleration, m_airAcceleration, m_jumpForce, m_jumpCooldown, m_layerNames, m_texture, m_cubeMapTexture)
+    SERIALIZABLE_MEMBERS(m_health, m_movementSpeed, m_acceleration, m_airAcceleration, m_jumpForce, m_jumpCooldown, m_layerNames, m_texture, m_cubeMapTexture, m_currentLevelTime)
 };
 
 REGISTER_COMPONENT(PlayerController);

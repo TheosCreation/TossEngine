@@ -72,35 +72,38 @@ void Font::GenerateFont()
     isLoaded = true;
 }
 
-TextMeshData Font::buildTextMesh(const std::string& text) const {
-
-    std::vector<stbtt_bakedchar> baked;
-    baked.reserve(m_charData.size());
-    for (auto const& g : m_charData) {
-        stbtt_bakedchar b{};
-        b.x0 = static_cast<unsigned char>(g.x0);
-        b.y0 = static_cast<unsigned char>(g.y0);
-        b.x1 = static_cast<unsigned char>(g.x1);
-        b.y1 = static_cast<unsigned char>(g.y1);
-        b.xoff = g.xoff;
-        b.yoff = g.yoff;
-        b.xadvance = g.xadvance;
-        baked.push_back(b);
-    }
-
+TextMeshData Font::buildTextMesh(const std::string& text) const
+{
     TextMeshData out;
     float cursorX = 0, cursorY = 0;
     int atlasW = getAtlasWidth();
     int atlasH = getAtlasHeight();
 
+    // 1) Actually size the array so data() is valid
+    std::vector<stbtt_bakedchar> baked;
+    baked.resize(m_charData.size());
+
+    // 2) Copy your Glyph back into true stbtt_bakedchar (unsigned short!)
+    for (size_t i = 0; i < m_charData.size(); ++i) {
+        auto const& g = m_charData[i];
+        stbtt_bakedchar& b = baked[i];
+        b.x0 = static_cast<unsigned short>(g.x0);
+        b.y0 = static_cast<unsigned short>(g.y0);
+        b.x1 = static_cast<unsigned short>(g.x1);
+        b.y1 = static_cast<unsigned short>(g.y1);
+        b.xoff = g.xoff;
+        b.yoff = g.yoff;
+        b.xadvance = g.xadvance;
+    }
+
+    // 3) Generate quads safely
     for (char c : text) {
         if (c < 32 || c >= 128) continue;
 
         stbtt_aligned_quad q;
         stbtt_GetBakedQuad(
             baked.data(), atlasW, atlasH,
-            c - 32,                   // our char index
-            &cursorX, &cursorY,
+            c - 32, &cursorX, &cursorY,
             &q, 1
         );
 
@@ -110,12 +113,10 @@ TextMeshData Font::buildTextMesh(const std::string& text) const {
         out.verts.push_back({ {q.x1, q.y1, 0}, {q.s1, q.t0} });
         out.verts.push_back({ {q.x0, q.y1, 0}, {q.s0, q.t0} });
 
-        out.idxs.push_back(base + 0);
-        out.idxs.push_back(base + 1);
-        out.idxs.push_back(base + 2);
-        out.idxs.push_back(base + 2);
-        out.idxs.push_back(base + 3);
-        out.idxs.push_back(base + 0);
+        out.idxs.insert(out.idxs.end(), {
+            base + 0, base + 1, base + 2,
+            base + 2, base + 3, base + 0
+            });
     }
 
     return out;
@@ -152,6 +153,19 @@ void Font::OnInspectorGUI()
 
         ImGui::EndTable();
     }
+
+    if (FloatSliderField("Pixel Height", m_pixelHeight))
+    {
+        GenerateFont();
+    }
+    if (IntSliderField("Atlas Width", m_atlasWidth))
+    {
+        GenerateFont();
+    }
+    if (IntSliderField("Atlas Height", m_atlasHeight))
+    {
+        GenerateFont();
+    }
 }
 
 uint Font::getId() const
@@ -167,4 +181,9 @@ int Font::getAtlasWidth() const
 int Font::getAtlasHeight() const
 {
     return m_atlasHeight;
+}
+
+float Font::getPixelHeight() const
+{
+    return m_pixelHeight;
 }

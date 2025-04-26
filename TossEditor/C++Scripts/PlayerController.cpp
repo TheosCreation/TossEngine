@@ -13,6 +13,7 @@ void PlayerController::OnInspectorGUI()
     FloatSliderField("Air Acceleration", m_airAcceleration, 0.1f);
     FloatSliderField("Jump Force", m_jumpForce, 1.0f);
     FloatSliderField("Jump Cooldown", m_jumpCooldown, 0.1f, 0.1f, 2.0f);
+    FloatSliderField("Level Time", m_currentLevelTime);
     ResourceAssignableField(m_texture, "Texture");
 
     vector<std::string> layers = m_layerNames;
@@ -36,6 +37,11 @@ void PlayerController::onStart()
     inputManager.enablePlayMode(true);
 }
 
+void PlayerController::onLateStart()
+{
+    UiManager::Get()->UpdateLevelTimer(m_currentLevelTime);
+}
+
 void PlayerController::onUpdate()
 {
     auto& inputManager = InputManager::GetInstance();
@@ -55,6 +61,9 @@ void PlayerController::onUpdate()
         m_pitch = 89.0f;
     if (m_pitch < -89.0f)
         m_pitch = -89.0f;
+
+    m_currentLevelTime -= Time::DeltaTime;
+    UiManager::Get()->UpdateLevelTimer(m_currentLevelTime);
     
     // Create quaternions for yaw (around the y-axis) and pitch (around the x-axis)
     glm::quat yawRotation = glm::angleAxis(glm::radians(m_yaw), glm::vec3(0.0f, 1.0f, 0.0f));

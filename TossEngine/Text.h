@@ -16,10 +16,11 @@ private:
     VertexArrayObjectPtr m_vao;
 
     string m_text = "";
+    int m_fontSize = 16;
     FontPtr m_font = nullptr;
     Vector3 m_color = Color::Black;
 
-    SERIALIZABLE_MEMBERS(m_text, m_material, m_font, m_color)
+    SERIALIZABLE_MEMBERS(m_text, m_material, m_font, m_color, m_fontSize)
 };
 
 REGISTER_COMPONENT(Text);

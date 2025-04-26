@@ -15,6 +15,7 @@ public:
     uint getId() const;
     int getAtlasWidth() const;
     int getAtlasHeight() const;
+    float getPixelHeight() const;
 private:
     int m_atlasHeight = 512;
     int m_atlasWidth = 512;

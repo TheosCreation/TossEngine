@@ -1,4 +1,5 @@
 #include "Gun.h"
+#include "UiManager.h"
 
 void Gun::OnInspectorGUI()
 {

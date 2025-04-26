@@ -25,6 +25,14 @@ void Text::OnInspectorGUI()
             RebuildMesh();
         }
     }
+
+    if(IntSliderField("Font Size", m_fontSize))
+    {
+        if (!m_text.empty())
+        {
+            RebuildMesh();
+        }
+    }
     ImGui::ColorEdit3("Color", m_color.Data());
 }
 
@@ -70,31 +78,39 @@ string Text::GetText() const
 
 void Text::RebuildMesh()
 {
-    if (!m_font && m_text.empty()) return;
+    if (!m_font || m_text.empty()) return;
 
     // 1) get the ready-made mesh
     TextMeshData data = m_font->buildTextMesh(m_text);
 
-    // 2) set up your attrib layout
+    // 2) figure out scale factor
+    float originalH = m_font->getPixelHeight();
+    float scale = m_fontSize / originalH;
+
+    // 3) apply scale to all positions
+    for (auto& v : data.verts) {
+        v.position.x *= scale;
+        v.position.y *= scale;
+    }
+
+    // 4) set up attrib layout & upload
     static const VertexAttribute attribs[] = {
         { 3 }, // pos
         { 2 }  // uv
     };
-
-    // 3) upload using data.verts / data.idxs instead of your old locals
     m_vao = GraphicsEngine::GetInstance().createVertexArrayObject(
         // VBO
         {
-            data.verts.data(),                  // pointer
-            sizeof(Vertex),                     // stride
-            static_cast<uint>(data.verts.size()), // count
+            data.verts.data(),
+            sizeof(Vertex),
+            (uint)data.verts.size(),
             const_cast<VertexAttribute*>(attribs),
             2
         },
         // IBO
         {
             data.idxs.data(),
-            static_cast<uint>(data.idxs.size())
+            (uint)data.idxs.size()
         }
     );
 }

@@ -18,8 +18,6 @@ private:
     PrefabPtr m_projectile = nullptr;
     GameObjectPtr m_muzzlePosition = nullptr;
     SoundPtr fireSound = nullptr;
-    int m_ammoReserve = 120;
-    int m_magSize = 30;
 
 
     Camera* playerCamera = nullptr;
@@ -28,7 +26,7 @@ private:
     bool m_isAiming = false;
     int m_ammoLeft = 0;
 
-    SERIALIZABLE_MEMBERS(m_fireRate, m_projectile, m_muzzlePosition, fireSound, m_ammoReserve, m_magSize)
+    SERIALIZABLE_MEMBERS(m_fireRate, m_projectile, m_muzzlePosition, fireSound)
 };
 
 REGISTER_COMPONENT(Gun)
