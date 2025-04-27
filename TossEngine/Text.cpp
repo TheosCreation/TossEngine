@@ -17,7 +17,7 @@ void Text::OnInspectorGUI()
     {
         RebuildMesh();
     }
-
+    ImGui::Checkbox("Is Ui", &m_isUi);
     if (ImGui::InputText("Text", &m_text))
     {
         if (!m_text.empty())
@@ -49,7 +49,14 @@ void Text::Render(UniformData data, RenderingPath renderPath)
     if (m_owner)
     {
         shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
-        shader->setMat4("projectionMatrix", data.uiProjectionMatrix);
+        if (m_isUi)
+        {
+            shader->setMat4("VPMatrix", data.uiProjectionMatrix);
+        }
+        else
+        {
+            shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
+        }
     }
 
     if (m_font)
@@ -74,6 +81,11 @@ void Text::SetText(const string text)
 string Text::GetText() const
 {
     return m_text;
+}
+
+bool Text::GetIsUi() const
+{
+    return m_isUi;
 }
 
 void Text::RebuildMesh()

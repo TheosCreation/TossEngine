@@ -400,6 +400,13 @@ void GameObjectManager::onTransparencyPass(UniformData _data) const
 
             meshRenderer->Render(_data, RenderingPath::Forward); // we render the transparent renderers last with forward rendering
         }
+
+        if (auto text = pair.second->getComponent<Text>())
+        {
+            if (text->GetIsUi()) continue;
+
+            text->Render(_data, RenderingPath::Forward);
+        }
     }
 }
 
@@ -429,6 +436,8 @@ void GameObjectManager::onScreenSpacePass(UniformData _data) const
 
         if (auto text = pair.second->getComponent<Text>())
         {
+            if (!text->GetIsUi()) continue;
+
             text->Render(_data, RenderingPath::Forward);
         }
     }

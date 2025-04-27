@@ -11,6 +11,7 @@ public:
 
     void SetText(const string text);
     string GetText() const;
+    bool GetIsUi() const;
 private:
     void RebuildMesh();
     VertexArrayObjectPtr m_vao;
@@ -19,8 +20,9 @@ private:
     int m_fontSize = 16;
     FontPtr m_font = nullptr;
     Vector3 m_color = Color::Black;
+    bool m_isUi = true;
 
-    SERIALIZABLE_MEMBERS(m_text, m_material, m_font, m_color, m_fontSize)
+    SERIALIZABLE_MEMBERS(m_text, m_material, m_font, m_color, m_fontSize, m_isUi)
 };
 
 REGISTER_COMPONENT(Text);

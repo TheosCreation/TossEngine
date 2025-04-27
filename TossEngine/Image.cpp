@@ -81,7 +81,7 @@ void Image::Render(UniformData data, RenderingPath renderPath)
     if (m_owner)
     {
         shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
-        shader->setMat4("projectionMatrix", data.uiProjectionMatrix);
+        shader->setMat4("VPMatrix", data.uiProjectionMatrix);
     }
 
     if (m_texture)
