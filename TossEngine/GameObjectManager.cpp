@@ -407,6 +407,13 @@ void GameObjectManager::onTransparencyPass(UniformData _data) const
 
             text->Render(_data, RenderingPath::Forward);
         }
+
+        if (auto image = pair.second->getComponent<Image>())
+        {
+            if (image->GetIsUi()) continue;
+
+            image->Render(_data, RenderingPath::Forward);
+        }
     }
 }
 
@@ -431,6 +438,8 @@ void GameObjectManager::onScreenSpacePass(UniformData _data) const
 
         if (auto image = pair.second->getComponent<Image>())
         {
+            if (!image->GetIsUi()) continue;
+
             image->Render(_data, RenderingPath::Forward);
         }
 

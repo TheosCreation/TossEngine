@@ -15,10 +15,10 @@ void Image::updateVertices()
     Vector3 position_list[] =
     {
         //front face
-        { Vector3(m_size.x / 2, -m_size.y / 2, 0.5f) },
-        { Vector3(m_size.x / 2, m_size.y / 2, 0.5f) },
-        { Vector3(-m_size.x / 2, m_size.y / 2, 0.5f)},
-        { Vector3(-m_size.x / 2, -m_size.y / 2, 0.5f) }
+        { Vector3(m_size.x / 2,  -m_size.y / 2, 0.0f) },
+        { Vector3(m_size.x / 2,   m_size.y / 2, 0.0f) },
+        { Vector3(-m_size.x / 2,   m_size.y / 2, 0.0f) },
+        { Vector3(-m_size.x / 2,  -m_size.y / 2, 0.0f) }
     };
 
     glm::vec2 texcoord_list[] =
@@ -80,8 +80,17 @@ void Image::Render(UniformData data, RenderingPath renderPath)
     //have to check if it has an owner because image is used from drawing the scene and game view windows
     if (m_owner)
     {
-        shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
-        shader->setMat4("VPMatrix", data.uiProjectionMatrix);
+        if (m_isUi)
+        {
+            shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
+            shader->setMat4("VPMatrix", data.uiProjectionMatrix);
+            
+        }
+        else
+        {
+            shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
+            shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
+        }
     }
 
     if (m_texture)
