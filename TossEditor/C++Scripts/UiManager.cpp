@@ -34,7 +34,7 @@ void UiManager::OnInspectorGUI()
     GameObjectAssignableField(m_levelTimeTextObject, "Level Time Text");
 }
 
-void UiManager::UpdateLevelTimer(float secondsLeft)
+void UiManager::UpdateLevelTimer(float secondsLeft) const
 {
     if (m_levelTimeText)
     {

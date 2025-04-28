@@ -11,7 +11,7 @@ public:
     void onDestroy() override;
     void OnInspectorGUI() override;
 
-    void UpdateLevelTimer(float secondsLeft);
+    void UpdateLevelTimer(float secondsLeft) const;
 
 
 private:

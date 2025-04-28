@@ -8,8 +8,9 @@ public:
     static void Log(const std::string& message) {
         PrintMessage(message, "Log");
     }
-    static void Log(const char* format, ...) {
-        // Create a buffer to hold the formatted string.
+
+    static void LogFormat(const char* format, ...)
+    {
         char buffer[1024];
 
         va_list args;
@@ -17,7 +18,6 @@ public:
         vsnprintf(buffer, sizeof(buffer), format, args);
         va_end(args);
 
-        // Pass the formatted string to PrintMessage.
         PrintMessage(std::string(buffer), "Log");
     }
 
@@ -46,7 +46,7 @@ private:
         // Output to standard console
         printf("%s\n", fullMessage.c_str());
         // Also add to the ImGui logger
-        s_imguiLogger.AddLog("%s", fullMessage.c_str());
+        s_imguiLogger.AddLog(fullMessage);
     }
 private:
     // Static instance of the ImGui logger

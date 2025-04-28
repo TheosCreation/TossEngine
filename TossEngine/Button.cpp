@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Image.h"
 #include "InputManager.h"
+//#include "TossEngine.h"
 
 void Button::onCreateLate()
 {
@@ -23,25 +24,25 @@ void Button::onUpdate()
 {
     auto& inputManager = InputManager::GetInstance();
     Vector2 mousePos = inputManager.getMousePosition();
-    //Debug::Log(mousePos);
+    Debug::Log(mousePos);
 
-    Rect buttonRect = m_graphic->getWorldRect();
 
+    Rect buttonRect = getScreenRect(); // <-- now screen space
+
+    //Debug::Log(buttonRect.ToString());
     m_isHovered = buttonRect.Contains(mousePos);
 
-    // Trigger onEnter event
     if (m_isHovered && !m_wasHovered && onEnter)
     {
+        Debug::Log("Mouse Entered");
         onEnter();
     }
-
-    // Trigger onExit event
     if (!m_isHovered && m_wasHovered && onExit)
     {
+        Debug::Log("Mouse Exited");
         onExit();
     }
 
-    // Check for click
     bool isPressed = inputManager.isMouseDown(MouseButton::MouseButtonLeft);
     if (m_isHovered && isPressed && !m_wasPressed && onClick)
     {
@@ -49,7 +50,28 @@ void Button::onUpdate()
         onClick();
     }
 
-    // Update previous states
     m_wasHovered = m_isHovered;
     m_wasPressed = isPressed;
+}
+
+Rect Button::getScreenRect() const
+{
+    Rect worldRect = m_graphic->getWorldRect();
+//
+//auto& inputManager = InputManager::GetInstance();
+//Rect viewport = inputManager.getViewport();
+//
+//Vector2 windowSize = TossEngine::GetInstance().GetWindow()->getInnerSize();
+//
+//float scaleX = viewport.width / windowSize.x;
+//float scaleY = viewport.height / windowSize.y;
+//
+    // Now remap
+    //Rect screenRect;
+    //screenRect.left = viewport.left + worldRect.left * scaleX;
+    //screenRect.top = viewport.top + worldRect.top * scaleY;
+    //screenRect.width = viewport.left + worldRect.width * scaleX;
+    //screenRect.height = viewport.top + worldRect.height * scaleY;
+
+    return worldRect;
 }

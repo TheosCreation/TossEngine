@@ -10,6 +10,8 @@ public:
     void onStart() override;
     void onUpdate() override;
 
+    Rect getScreenRect() const;
+
     std::function<void()> onClick;
     std::function<void()> onEnter;
     std::function<void()> onExit;

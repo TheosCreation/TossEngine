@@ -57,6 +57,14 @@ public:
     int height = 0; // The height of the rectangle
     int left = 0;   // The left position of the rectangle
     int top = 0;    // The top position of the rectangle
+
+
+    std::string ToString() const
+    {
+        std::ostringstream oss;
+        oss << "(" << left << ", " << top << ", " << width << ", " << height << ")";
+        return oss.str();
+    }
 };
 
 inline void to_json(json& j, Rect const& r) {
