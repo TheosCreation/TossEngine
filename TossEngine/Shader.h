@@ -26,7 +26,7 @@ public:
      * @brief Constructor for the standard Shader class.
      * @param desc A description of the shader.
      */
-    Shader(const ShaderDesc& desc, const string& uniqueId, ResourceManager* manager);
+    //Shader(const ShaderDesc& desc, const string& uniqueId, ResourceManager* manager);
 
 
     Shader(const std::string& uid, ResourceManager* mgr);

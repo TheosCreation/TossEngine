@@ -20,7 +20,7 @@ TossEditor::TossEditor()
     auto& tossEngine = TossEngine::GetInstance();
     tossEngine.Init();
     tossEngine.TryCreateWindow(this, editorPreferences.windowSize, "TossEditor", editorPreferences.maximized);
-    tossEngine.LoadScripts();
+    tossEngine.ReloadScripts();
     tossEngine.SetDebugMode(true);
 
     m_projectSettings = std::make_unique<ProjectSettings>();

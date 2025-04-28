@@ -131,7 +131,7 @@
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;reactphysics3d_d.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)DebugSymbols\$(TargetName).pdb</ProgramDatabaseFile>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
       <Command>copy /y "..\..\TossEditor\C++Scripts.dll" "..\..\TossPlayer"</Command>

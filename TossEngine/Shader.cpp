@@ -16,14 +16,14 @@ Mail : theo.morris@mds.ac.nz
 #include "TossEngine.h"
 
 
-Shader::Shader(const ShaderDesc& desc, const string& uniqueId, ResourceManager* manager) : Resource("", uniqueId, manager)
-{
-    m_programId = glCreateProgram();
-    Attach(desc.vertexShaderFilePath, ShaderType::VertexShader);
-    Attach(desc.fragmentShaderFilePath, ShaderType::FragmentShader);
-    link();
-    isLoaded = true;
-}
+//Shader::Shader(const ShaderDesc& desc, const string& uniqueId, ResourceManager* manager) : Resource("", uniqueId, manager)
+//{
+//    m_programId = glCreateProgram();
+//    Attach(desc.vertexShaderFilePath, ShaderType::VertexShader);
+//    Attach(desc.fragmentShaderFilePath, ShaderType::FragmentShader);
+//    link();
+//    isLoaded = true;
+//}
 
 Shader::Shader(const std::string& uid, ResourceManager* mgr) : Resource(uid, mgr)
 {
