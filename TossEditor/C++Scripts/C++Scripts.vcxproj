@@ -80,7 +80,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>..\..\Dependencies\GLFW;..\..\Dependencies\GLEW;..\..\Dependencies\FMOD\Lib;..\..\Dependencies\TOSSENGINE;..\..\Dependencies/REACTPHYSICS3D/Lib;$(LibraryPath)</LibraryPath>
     <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/tinyobjloader;..\..\Dependencies/GLFW;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\TossEngine/</ExternalIncludePath>
-    <OutDir>..\..\TossEditor</OutDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
@@ -131,7 +130,7 @@
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;reactphysics3d_d.lib;TossEngine.lib;Gdi32.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)DebugSymbols\$(TargetName).pdb</ProgramDatabaseFile>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
       <Command>copy /y "..\..\TossEditor\C++Scripts.dll" "..\..\TossPlayer"</Command>

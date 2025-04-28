@@ -11,9 +11,8 @@ public:
 
     void unloadDLL();
     void loadDLL();
-    static void CompileScriptsProject();
+    void CompileScriptsProject();
 
 private:
-
     HMODULE scriptsDll;
 };

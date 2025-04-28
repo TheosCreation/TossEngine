@@ -57,6 +57,7 @@ public:
     Vector3 operator*(const Vector3& v) const;
 
     static Quaternion FromEuler(Vector3 eulerAngles);
-
+    static Quaternion FromLookDirection(const Vector3& forward, const Vector3& up);
     static Quaternion LookAt(const Vector3& direction, const Vector3& up = Vector3(0.0f, 1.0f, 0.0f));
+    static Quaternion Slerp(const Quaternion& quat1, const Quaternion& quat2, float t);
 };

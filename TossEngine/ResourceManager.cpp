@@ -19,6 +19,10 @@ Mail : theo.morris@mds.ac.nz
 #include <filesystem>
 #include <fstream>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 bool ResourceManager::IsResourceLoaded(const std::string& uniqueId) const
 {
     return m_mapResources.find(uniqueId) != m_mapResources.end();
@@ -93,6 +97,41 @@ void ResourceManager::CleanUp()
     resourceFactories.clear();
 }
 
+void ResourceManager::addResourceModule(const std::type_info& typeInfo)
+{
+    std::string typeName = getClassName(typeInfo);  // Always get the type name
+
+    void* moduleHandle = nullptr;
+
+#ifdef _WIN32
+    // Get module (DLL) handle from the RTTI object address
+    MEMORY_BASIC_INFORMATION mbi;
+    if (VirtualQuery((void*)&typeInfo, &mbi, sizeof(mbi))) {
+        moduleHandle = mbi.AllocationBase;
+    }
+#endif
+
+    m_resourceModules[typeName] = moduleHandle;
+}
+
+void ResourceManager::CleanUpModule(void* moduleHandle)
+{
+    for (auto it = m_resourceModules.begin(); it != m_resourceModules.end(); )
+    {
+        if (it->second == moduleHandle)
+        {
+            std::string typeName = it->first;
+            Debug::Log("Unregistering component: " + typeName);
+
+            resourceFactories.erase(typeName);
+            it = m_resourceModules.erase(it); // remove from modules and move iterator forward
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
 
 vector<PrefabPtr> ResourceManager::getPrefabs() const
 {

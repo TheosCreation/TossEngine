@@ -43,13 +43,26 @@ public:
             return std::dynamic_pointer_cast<T>(it->second);
         return nullptr;
     }
+
     template<typename T>
-        void registerResource() {
-        // T must have:
-        //   T(const std::string& uid, ResourceManager* mgr);
+        void registerResource()
+    {
+        // T must have a constructor: T(const std::string& uid, ResourceManager* mgr);
+
         std::string typeName = getClassName(typeid(T));
-        resourceFactories[typeName] =
-            [](const std::string& uid, ResourceManager* mgr) -> ResourcePtr {
+
+        auto it = resourceFactories.find(typeName);
+
+        if (it != resourceFactories.end())
+        {
+            return; // Already registered — skip
+        }
+        else
+        {
+            addResourceModule(typeid(T));
+        }
+
+        resourceFactories[typeName] = [](const std::string& uid, ResourceManager* mgr) -> ResourcePtr {
             return std::make_shared<T>(uid, mgr);
             };
     }
@@ -71,6 +84,8 @@ public:
     void DeleteResource(const std::string& uniqueId);
     void Reload();
     void CleanUp();
+    void addResourceModule(const std::type_info& typeInfo);
+    void CleanUpModule(void* moduleHandle);
 
 
     vector<PrefabPtr> getPrefabs() const;
@@ -84,6 +99,7 @@ protected:
     std::unordered_map<string, json> m_resourceDataMap;
 
     std::unordered_map<std::string, std::function<ResourcePtr(const std::string& uniqueId, ResourceManager* mgr)>> resourceFactories;
+    std::unordered_map<std::string, void*> m_resourceModules;
 
     std::set<string> m_resourcesToDestroy;
     ResourcePtr m_selectedResource = nullptr; // for editor use

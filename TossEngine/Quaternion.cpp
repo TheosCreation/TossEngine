@@ -103,6 +103,20 @@ Quaternion Quaternion::FromEuler(Vector3 eulerAngles)
     return Quaternion(eulerAngles);
 }
 
+Quaternion Quaternion::FromLookDirection(const Vector3& forward, const Vector3& up)
+{
+    Vector3 f = forward.Normalized();
+    Vector3 r = Vector3::Cross(up, f).Normalized(); // right
+    Vector3 u = Vector3::Cross(f, r);                // real up
+
+    Mat3 rotMatrix;
+    rotMatrix.value[0] = r;
+    rotMatrix.value[1] = u;
+    rotMatrix.value[2] = f;
+
+    return Quaternion(rotMatrix);
+}
+
 Quaternion Quaternion::LookAt(const Vector3& direction, const Vector3& up)
 {
     // Ensure the direction is normalized
@@ -117,4 +131,9 @@ Quaternion Quaternion::LookAt(const Vector3& direction, const Vector3& up)
 
     // Convert the matrix to a quaternion
     return Quaternion(rotationMatrix);
+}
+
+Quaternion Quaternion::Slerp(const Quaternion& quat1, const Quaternion& quat2, float t)
+{
+    return glm::slerp(static_cast<glm::quat>(quat1), static_cast<glm::quat>(quat2), t);
 }

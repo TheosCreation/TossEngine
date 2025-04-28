@@ -19,7 +19,8 @@ typedef void (*SetImGuiContextFunc)(ImGuiContext*);
 
 void ScriptLoader::loadDLL()
 {
-    scriptsDll = LoadLibraryA("C++Scripts.dll");
+    string dllName = "C++Scripts.dll";
+    scriptsDll = LoadLibraryA(dllName.c_str());
     if (scriptsDll)
     {
         Debug::Log("Scripts DLL loaded.");
@@ -75,7 +76,8 @@ void ScriptLoader::CompileScriptsProject()
     std::string command = std::string("cmd /C \"\"") + msBuildPath +
         "\" \"" + projectPath + "\\C++Scripts\\C++Scripts.vcxproj" +
         "\" /p:Configuration=" + config +
-        " /p:Platform=x64 /m";
+        " /p:Platform=x64" +
+        " /m";
 
     if (config == "Debug") {
         command += " /p:AdditionalOptions=\\\"/FS\\\"";
