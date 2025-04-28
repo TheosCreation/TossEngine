@@ -286,8 +286,6 @@ RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, flo
 }
 
 void Physics::onContact(const rp3d::CollisionCallback::CallbackData& data) {
-    // Build a set for current active collision pairs.
-    std::unordered_set<CollisionPair> currentCollisionPairs;
 
     int nbContactPairs = data.getNbContactPairs();
     if (nbContactPairs == 0) {
@@ -331,9 +329,6 @@ void Physics::onContact(const rp3d::CollisionCallback::CallbackData& data) {
 }
 
 void Physics::onTrigger(const rp3d::OverlapCallback::CallbackData& data) {
-    // Create a set to hold the current trigger pairs.
-    std::unordered_set<TriggerPair> currentTriggerPairs;
-
     int nbOverlapPairs = data.getNbOverlappingPairs();
     for (int i = 0; i < nbOverlapPairs; i++) {
         const rp3d::OverlapCallback::OverlapPair& overlapPair = data.getOverlappingPair(i);
@@ -341,36 +336,38 @@ void Physics::onTrigger(const rp3d::OverlapCallback::CallbackData& data) {
         rp3d::Collider* collider1 = overlapPair.getCollider1();
         rp3d::Collider* collider2 = overlapPair.getCollider2();
 
-        if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapStart) {
-            // Trigger enter logic
-            if (collider1 && collider2) {
+        if (!collider1 || !collider2) continue;
 
-                Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
-                Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
-                if (customCollider1->GetTrigger()) {
-                    customCollider1->OnTriggerEnter(customCollider2);
-                }
-                if (customCollider2->GetTrigger()) {
-                    customCollider2->OnTriggerEnter(customCollider1);
-                }
+        Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
+        Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
+
+        if (!customCollider1 || !customCollider2) continue;
+
+        if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapStart) {
+            Debug::Log("Trigger event enter");
+
+            if (customCollider1->GetTrigger()) {
+
+                customCollider1->OnTriggerEnter(customCollider2);
+            }
+            if (customCollider2->GetTrigger()) {
+
+                customCollider2->OnTriggerEnter(customCollider1);
             }
         }
         else if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapExit) {
-            // Trigger exit logic
-            if (collider1 && collider2) {
+            Debug::Log("Trigger event exit");
 
-                Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
-                Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
-                if (customCollider1->GetTrigger()) {
-                    customCollider1->OnTriggerExit(customCollider2);
-                }
-                if (customCollider2->GetTrigger()) {
-                    customCollider2->OnTriggerExit(customCollider1);
-                }
+            if (customCollider1->GetTrigger()) {
+
+                customCollider1->OnTriggerExit(customCollider2);
+            }
+            if (customCollider2->GetTrigger()) {
+
+                customCollider2->OnTriggerExit(customCollider1);
             }
         }
     }
-
 }
 
 void Physics::LoadWorld()
