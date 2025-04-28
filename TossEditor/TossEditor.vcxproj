@@ -136,8 +136,8 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>msbuild "C++Scripts\C++Scripts.vcxproj" /p:Configuration=$(Configuration) /p:Platform=$(Platform)
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -160,8 +160,8 @@
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;fmod_vc.lib;fmodstudio_vc.lib;TossEngine.lib;Gdi32.lib;release_reactphysics3d.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>msbuild "C++Scripts\C++Scripts.vcxproj" /p:Configuration=$(Configuration) /p:Platform=$(Platform)
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

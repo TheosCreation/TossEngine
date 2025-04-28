@@ -52,7 +52,8 @@ public:
     static Vector3 Lerp(Vector3 startVector, Vector3 endVector, float t);
 
     Mat4 ToTranslation() const;
-    Mat4 ToScale() const; 
+    Mat4 ToScale() const;
+    bool Equals(const Vector3& other, float epsilon) const;
 
     Vector3 ToDegrees() const {
         return Vector3(glm::degrees(static_cast<glm::vec3>(*this)));

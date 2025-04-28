@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TossEngine", "TossEngine\TossEngine.vcxproj", "{0FBF6FBE-001B-470B-A304-4E11123675C0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TossEditor", "TossEditor\TossEditor.vcxproj", "{43241BDF-7CE9-4E61-BEC5-4C1A61EDC146}"
+	ProjectSection(ProjectDependencies) = postProject
+		{71D94A3B-E2A4-4D01-956F-25140D135D80} = {71D94A3B-E2A4-4D01-956F-25140D135D80}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TossPlayer", "TossPlayer\TossPlayer.vcxproj", "{9D6B7201-2B77-4788-8F33-233CA445F7E0}"
 EndProject

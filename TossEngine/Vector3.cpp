@@ -44,6 +44,12 @@ Vector3 Vector3::Lerp(Vector3 startVector, Vector3 endVector, float t)
     return startVector + (endVector - startVector) * t;
 }
 
+bool Vector3::Equals(const Vector3& other, float epsilon) const
+{
+    return glm::all(glm::lessThan(glm::abs(glm::vec3(x, y, z) - glm::vec3(other.x, other.y, other.z)),
+        glm::vec3(epsilon)));
+}
+
 Mat4 Vector3::ToTranslation() const
 {
     return Mat4(glm::translate(glm::mat4(1.0f), static_cast<glm::vec3>(*this)));
