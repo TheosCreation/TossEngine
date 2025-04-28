@@ -205,8 +205,6 @@ void Rigidbody::onUpdate()
         Quaternion currentRot = m_owner->m_transform.localRotation;
         if (m_owner->m_transform.parent)
         {
-           //Mat4 worldMatrix = m_owner->m_transform.GetMatrix();
-           //Quaternion worldRotation = Quaternion::ExtractRotation(worldMatrix);
             currentRot = m_owner->m_transform.rotation;
         }
         Quaternion newRot(rotation.w, rotation.x, rotation.y, rotation.z);
@@ -249,10 +247,16 @@ void Rigidbody::UpdateBodyTransform() const
 {
     if (m_Body)
     {
-        Mat4 worldMatrix = m_owner->m_transform.GetMatrix();
-
         Vector3 worldTranslation = m_owner->m_transform.position;
+        if (!m_owner->m_transform.parent)
+        {
+            worldTranslation = m_owner->m_transform.localPosition;
+        }
         Quaternion worldRotation = m_owner->m_transform.rotation;
+        if (!m_owner->m_transform.parent)
+        {
+            worldRotation = m_owner->m_transform.localRotation;
+        }
 
         rp3d::Transform bodyTransform(
             rp3d::Vector3(worldTranslation.x, worldTranslation.y, worldTranslation.z),

@@ -198,7 +198,6 @@ void TossEditor::onUpdateInternal()
 
     if (auto scene = TossEngine::GetInstance().getCurrentScene())
     {
-        scene->onUpdateInternal();
         if (m_gameRunning)
         {
             while (m_accumulatedTime >= Time::FixedDeltaTime)
@@ -219,7 +218,7 @@ void TossEditor::onUpdateInternal()
             scene->onLateUpdate();
         }
 
-
+        scene->onUpdateInternal();
     }
 
 
