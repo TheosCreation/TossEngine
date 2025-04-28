@@ -32,7 +32,13 @@ public:
     }
 
     operator glm::vec2() const { return glm::vec2(x, y); }
-    
+
+    operator std::string() const {
+        std::ostringstream oss;
+        oss << "(" << x << ", " << y << ")";
+        return oss.str();
+    }
+
     Vector2 operator-() const {
         return Vector2(-x, -y);
     }

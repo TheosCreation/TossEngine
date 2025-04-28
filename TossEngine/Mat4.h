@@ -4,6 +4,7 @@
 
 class Vector3;
 class Mat3;
+class Quaternion;
 
 class TOSSENGINE_API Mat4 {
 public:
@@ -13,8 +14,10 @@ public:
     Mat4(float diagonal) : value(diagonal) {}
     Mat4(const glm::mat4& m) : value(m) {}
     Mat4(const Mat3& mat);
+    Mat4(const Quaternion& quat);
 
     Mat4 Inverse();
+    Vector3 TransformPoint(const Vector3& point) const;
 
     std::string ToString() const
     {

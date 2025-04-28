@@ -10,6 +10,42 @@ void Image::onCreate()
     updateVertices();
 }
 
+Rect Image::getWorldRect()
+{
+    // Define the four corners of the rectangle in local space
+    Vector3 localCorners[4] = {
+        Vector3(-m_size.x / 2, -m_size.y / 2, 0.0f), // Bottom-left
+        Vector3(-m_size.x / 2,  m_size.y / 2, 0.0f), // Top-left
+        Vector3(m_size.x / 2,  m_size.y / 2, 0.0f), // Top-right
+        Vector3(m_size.x / 2, -m_size.y / 2, 0.0f)  // Bottom-right
+    };
+
+    // Transform the local corners to world space
+    Vector3 worldCorners[4];
+    Mat4 worldMatrix = m_owner->m_transform.GetMatrix();
+    for (int i = 0; i < 4; ++i)
+    {
+        worldCorners[i] = worldMatrix.TransformPoint(localCorners[i]);
+    }
+
+    // Determine the minimum and maximum X and Y values among the world corners
+    float minX = worldCorners[0].x;
+    float maxX = worldCorners[0].x;
+    float minY = worldCorners[0].y;
+    float maxY = worldCorners[0].y;
+
+    for (int i = 1; i < 4; ++i)
+    {
+        if (worldCorners[i].x < minX) minX = worldCorners[i].x;
+        if (worldCorners[i].x > maxX) maxX = worldCorners[i].x;
+        if (worldCorners[i].y < minY) minY = worldCorners[i].y;
+        if (worldCorners[i].y > maxY) maxY = worldCorners[i].y;
+    }
+
+    // Create and return the Rect representing the world-space rectangle
+    return Rect(Vector2(minX, minY), Vector2(maxX - minX, maxY - minY));
+}
+
 void Image::updateVertices()
 {
     Vector3 position_list[] =

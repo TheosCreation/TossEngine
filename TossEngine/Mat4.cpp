@@ -2,10 +2,20 @@
 #include "Vector3.h"
 #include "Mat3.h"
 #include "Vector4.h"
+#include "Quaternion.h"
 
 Mat4::Mat4(const Mat3& mat)
 {
     value = glm::mat4(mat.value);
+}
+
+Mat4::Mat4(const Quaternion& quat)
+{
+    // Convert your custom Quaternion to glm::quat
+    glm::quat glmQuat(quat.w, quat.x, quat.y, quat.z);
+
+    // Use glm::mat4_cast to convert the quaternion to a 4x4 rotation matrix
+    value = glm::mat4_cast(glmQuat);
 }
 
 Mat4 Mat4::Inverse()
@@ -41,4 +51,10 @@ Mat4 Mat4::Scale(const Vector3& scale)
 Mat4 Mat4::Rotate(float angleRadians, const Vector3& axis)
 {
     return Mat4(glm::rotate(glm::mat4(1.0f), angleRadians, static_cast<glm::vec3>(axis)));
+}
+
+Vector3 Mat4::TransformPoint(const Vector3& point) const
+{
+    glm::vec4 temp = value * glm::vec4(point.x, point.y, point.z, 1.0f);
+    return Vector3(temp.x, temp.y, temp.z);
 }

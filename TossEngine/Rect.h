@@ -13,6 +13,8 @@ Mail : theo.morris@mds.ac.nz
 #pragma once
 #include "Math.h"
 
+class Vector2;
+
 /**
  * @class Rect
  * @brief A rectangle container class.
@@ -47,7 +49,10 @@ public:
      */
     Rect(const Rect& rect) : left(rect.left), top(rect.top), width(rect.width), height(rect.height) {}
 
-public:
+    Rect(const Vector2& position, const Vector2& size);
+
+    bool Contains(Vector2 vector) const;
+
     int width = 0;  // The width of the rectangle
     int height = 0; // The height of the rectangle
     int left = 0;   // The left position of the rectangle

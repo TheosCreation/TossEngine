@@ -33,6 +33,8 @@ public:
 
     bool GetIsUi() const { return m_isUi; }
 
+    Rect getWorldRect();
+
 
 private:
 	void updateVertices();
