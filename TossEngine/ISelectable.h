@@ -56,7 +56,7 @@ public:
      * @param _gameObject Reference to the GameObject pointer to modify.
      * @param fieldName The label to display in the Inspector.
      */
-    static void GameObjectAssignableField(GameObjectPtr& _gameObject, const std::string& fieldName);
+    static bool GameObjectAssignableField(GameObjectPtr& _gameObject, const std::string& fieldName);
 
     /**
      * @brief Renders a resource assignment field using a table layout.
@@ -229,4 +229,67 @@ public:
      * @return True if the value changed.
      */
     static bool BoolCheckboxField(const std::string& name, bool& value);
+
+    template<typename T>
+    void VectorField(std::vector<T>& vec, const std::string& label)
+    {
+        if (ImGui::CollapsingHeader((label + " List").c_str()))
+        {
+            int toRemoveIndex = -1;
+
+            ImGui::Columns(2, nullptr, false); // Start 2 columns for all items
+
+            for (size_t i = 0; i < vec.size(); ++i)
+            {
+                ImGui::PushID(static_cast<int>(i));
+
+                std::string elementLabel = label + " " + std::to_string(i);
+                DrawVectorElementField(elementLabel, vec[i]); // Left side: the field
+
+                ImGui::NextColumn(); // Move to right column
+
+                if (ImGui::SmallButton("Remove"))
+                {
+                    toRemoveIndex = static_cast<int>(i);
+                }
+
+                ImGui::NextColumn(); // Important! Go back to first column for next item
+
+                ImGui::PopID();
+            }
+
+            ImGui::Columns(1); // End columns cleanly
+
+            if (toRemoveIndex >= 0 && toRemoveIndex < static_cast<int>(vec.size()))
+            {
+                vec.erase(vec.begin() + toRemoveIndex);
+            }
+
+            if (ImGui::Button(("Add " + label).c_str()))
+            {
+                vec.emplace_back(T{});
+            }
+        }
+    }
 };
+// just hard coded this so we route it to the right place
+inline bool DrawVectorElementField(const std::string& label, int& val) {
+    return ISelectable::IntSliderField(label, val);
+}
+
+inline bool DrawVectorElementField(const std::string& label, float& val) {
+    return ISelectable::FloatSliderField(label, val);
+}
+
+inline bool DrawVectorElementField(const std::string& label, bool& val) {
+    return ISelectable::BoolCheckboxField(label, val);
+}
+
+template <typename T>
+inline bool DrawVectorElementField(const std::string& label, std::shared_ptr<T>& val) {
+    return ISelectable::ResourceAssignableField<T>(val, label);
+}
+
+inline bool DrawVectorElementField(const std::string& label, GameObjectPtr& val) {
+    return ISelectable::GameObjectAssignableField(val, label);;
+}

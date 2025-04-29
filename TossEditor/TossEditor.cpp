@@ -30,6 +30,7 @@ TossEditor::TossEditor()
     Physics::GetInstance().SetDebug(true);
     Physics::GetInstance().LoadPrefabWorld();
     AudioEngine::GetInstance().Init();
+    Random::Init();
 
     ResourceManager::GetInstance().loadResourcesFromFile("Resources/Resources.json");
 

@@ -96,18 +96,18 @@ void ParticleSystem::Render(UniformData data, RenderingPath renderPath)
 	graphicsEngine.setShader(m_computeShader);
 
 	// Set the uniform values for the compute shader
-	int seedLife = static_cast<int>(randomRange(1000.0f, 10000.0f));
-	int seedX = static_cast<int>(randomRange(1000.0f, 10000.0f));
-	int seedY = static_cast<int>(randomRange(1000.0f, 10000.0f));
-	int seedZ = static_cast<int>(randomRange(1000.0f, 10000.0f));
-
-	// Pass seed values and other data to the compute shader
-	m_computeShader->setInt("SeedLife", seedLife);
-	m_computeShader->setInt("SeedX", seedX);
-	m_computeShader->setInt("SeedY", seedY);
-	m_computeShader->setInt("SeedZ", seedZ);
-	m_computeShader->setVec4("VelocityLifeChange", VelocityLifeChange);
-	m_computeShader->setVec3("EmitterOrigin", EmitterOrigin);
+	//int seedLife = static_cast<int>(randomRange(1000.0f, 10000.0f));
+	//int seedX = static_cast<int>(randomRange(1000.0f, 10000.0f));
+	//int seedY = static_cast<int>(randomRange(1000.0f, 10000.0f));
+	//int seedZ = static_cast<int>(randomRange(1000.0f, 10000.0f));
+    //
+	//// Pass seed values and other data to the compute shader
+	//m_computeShader->setInt("SeedLife", seedLife);
+	//m_computeShader->setInt("SeedX", seedX);
+	//m_computeShader->setInt("SeedY", seedY);
+	//m_computeShader->setInt("SeedZ", seedZ);
+	//m_computeShader->setVec4("VelocityLifeChange", VelocityLifeChange);
+	//m_computeShader->setVec3("EmitterOrigin", EmitterOrigin);
 
 	// Pass a uniform to control whether new particles should be emitted
 	m_computeShader->setBool("EmitNewParticles", isEmitting);

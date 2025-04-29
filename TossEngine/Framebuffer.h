@@ -3,7 +3,7 @@ Bachelor of Software Engineering
 Media Design School
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2025 Media Design School
 File Name : Framebuffer.h
 Description : A class representing a frame buffer for rendering.
 Author : Theo Morris

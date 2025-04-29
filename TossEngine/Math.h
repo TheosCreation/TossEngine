@@ -39,36 +39,6 @@ using json = nlohmann::json;
 #endif
 
 /**
- * @brief Initializes the random seed using the current time.
- *        Call once during application startup to ensure variability.
- */
-inline void initRandomSeed()
-{
-    srand(static_cast<unsigned int>(time(nullptr)));
-}
-
-/**
- * @brief Generates a random float between 0 and max.
- * @param max The upper bound of the range.
- * @return Random float between [0, max].
- */
-inline float randomNumber(float max)
-{
-    return static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * max;
-}
-
-/**
- * @brief Generates a random float between min and max.
- * @param min The lower bound of the range.
- * @param max The upper bound of the range.
- * @return Random float between [min, max].
- */
-inline float randomRange(float min, float max)
-{
-    return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
-}
-
-/**
  * @brief Clamps a value between a given min and max using std::clamp.
  * @tparam T The type being clamped (must support comparison).
  * @param value The value to clamp.

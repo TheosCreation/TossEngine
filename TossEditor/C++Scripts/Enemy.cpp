@@ -13,7 +13,7 @@ void Enemy::OnInspectorGUI()
     IntSliderField("Health", m_health);
     FloatSliderField("Speed", m_speed);
     FloatSliderField("Wall Detection Distance", m_wallDetectDistance);
-
+    
     vector<std::string> layers = m_layerNames;
     if (LayerDropdownField("Raycast hit layers", layers))
     {
@@ -43,22 +43,22 @@ void Enemy::onFixedUpdate()
 
     Vector3 dir = delta / dist; // unit vector toward player
 
-    // Current forward direction (world forward, assume Z+)
-    Vector3 forward = transform.GetForward();
-    forward.y = 0.0f;
+    Vector3 forward = dir; // Forward = direction to player
     forward.Normalize();
 
-    Quaternion yaw45 = Quaternion::FromEuler(Vector3(0, 45, 0));
-    Quaternion yawM45 = Quaternion::FromEuler(Vector3(0, -45, 0));
+    Quaternion yaw45 = Quaternion::FromEuler(Vector3(0, glm::radians(45.0f), 0));
+    Quaternion yawM45 = Quaternion::FromEuler(Vector3(0, glm::radians(-45.0f), 0));
     Vector3 left45 = yaw45 * forward;
     Vector3 right45 = yawM45 * forward;
 
-    Vector3 origin = myPos + Vector3(0, 0.5f, 0);
+    Vector3 origin = myPos + Vector3(0, 0.5f, 0) + forward * 0.25f; // origin now forward & elevated
+
     unsigned short maskBits = 0;
     for (auto& name : m_layerNames)
     {
         maskBits |= static_cast<unsigned short>(LayerManager::GetInstance().GetLayer(name));
     }
+
     auto& phys = Physics::GetInstance();
     RaycastHit hitC = phys.Raycast(origin, forward, m_wallDetectDistance, maskBits);
     RaycastHit hitL = phys.Raycast(origin, left45, m_wallDetectDistance, maskBits);
@@ -86,11 +86,10 @@ void Enemy::onFixedUpdate()
     m_rigidbody->SetLinearVelocity(vel);
 
     // Smooth rotation toward movement direction
-    if (blended.Length() > 0.001f)
+    if (blended.Length() > 0.01f)
     {
-        // Calculate yaw-only rotation
         float targetYaw = std::atan2(blended.x, blended.z); // radians
-        Quaternion targetRot = Quaternion::FromEuler(Vector3(0.0f, glm::degrees(targetYaw), 0.0f)); // Only Y rotation
+        Quaternion targetRot = Quaternion::FromEuler(Vector3(0.0f, targetYaw, 0.0f)); // radians
 
         float rotationSpeed = 10.0f;
         transform.localRotation = Quaternion::Slerp(transform.localRotation, targetRot, Time::FixedDeltaTime * rotationSpeed);

@@ -257,6 +257,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/Toss
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Prefab.cpp" />
     <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="Random.cpp" />
     <ClCompile Include="Rect.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Resizable.cpp" />
@@ -332,6 +333,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/Toss
     <ClInclude Include="PhysicsMaterial.h" />
     <ClInclude Include="Prefab.h" />
     <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="SerializationMacros.h" />
     <ClInclude Include="stb_truetype.h" />
     <ClInclude Include="Text.h" />

@@ -25,7 +25,7 @@ TossPlayer::TossPlayer()
     tossEngine.LoadScripts();
     tossEngine.SetPlayerSettings(m_playerSettings.get());
 
-    initRandomSeed();
+    Random::Init();
 
     AudioEngine::GetInstance().Init();
 

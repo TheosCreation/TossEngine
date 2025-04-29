@@ -3,7 +3,7 @@ Bachelor of Software Engineering
 Media Design School
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2025 Media Design School
 File Name : All.h
 Description : header file contains includes to all the core frameworks inside the engine
 Author : Theo Morris
@@ -35,6 +35,7 @@ Mail : theo.morris@mds.ac.nz
 #include "GeometryBuffer.h"
 #include "CoroutineTask.h"
 #include "JsonUtility.h"
+#include "Random.h"
 #include <imgui.h>
 
 //Resources

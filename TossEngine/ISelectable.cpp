@@ -3,9 +3,10 @@
 #include "Material.h"
 #include "TossEngine.h"
 
-void ISelectable::GameObjectAssignableField(GameObjectPtr& _gameObject, const string& fieldName)
+bool ISelectable::GameObjectAssignableField(GameObjectPtr& _gameObject, const string& fieldName)
 {
     GameObjectManager* gameObjectManager = TossEngine::GetInstance().getGameObjectManager();
+    bool changed = false;
 
     string label = (_gameObject)
         ? (fieldName + ": " + _gameObject->name)
@@ -29,7 +30,11 @@ void ISelectable::GameObjectAssignableField(GameObjectPtr& _gameObject, const st
             bool noneSelected = (_gameObject == nullptr);
             if (ImGui::Selectable("None", noneSelected))
             {
-                _gameObject = nullptr;
+                if (_gameObject != nullptr)
+                {
+                    _gameObject = nullptr;
+                    changed = true;
+                }
             }
 
             for (const auto& [id, gameObject] : gameObjectManager->m_gameObjects)
@@ -39,13 +44,19 @@ void ISelectable::GameObjectAssignableField(GameObjectPtr& _gameObject, const st
                 bool isSelected = (_gameObject && _gameObject->getId() == id);
                 if (ImGui::Selectable(gameObject->name.c_str(), isSelected))
                 {
-                    _gameObject = gameObject;
+                    if (!_gameObject || _gameObject->getId() != id)
+                    {
+                        _gameObject = gameObject;
+                        changed = true;
+                    }
                 }
             }
             ImGui::EndPopup();
         }
         ImGui::EndTable();
     }
+
+    return changed;
 }
 
 bool ISelectable::FileSelectionTableField(
