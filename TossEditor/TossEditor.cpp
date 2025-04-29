@@ -1160,7 +1160,6 @@ void TossEditor::PerformSafeBuild()
 
 
     if (scene) scene->clean();
-    resourceManager.DeletePrefabs();
     TossEngine& tossEngine = TossEngine::GetInstance();
     tossEngine.UnLoadScripts();
 
@@ -1174,7 +1173,6 @@ void TossEditor::PerformSafeBuild()
     }
 
     tossEngine.LoadScripts();
-    resourceManager.LoadPrefabs();
     if (scene) scene->reload();
 
     canUpdateInternal = true;
@@ -1189,9 +1187,7 @@ void TossEditor::PerformSafeDllReload()
     selectedSelectable = nullptr; //because we are reloading the scene we can have to pointing to a old object
     canUpdateInternal = false;
     if (scene) scene->clean();
-    resourceManager.DeletePrefabs();
     TossEngine::GetInstance().ReloadScripts();
-    resourceManager.LoadPrefabs();
     if (scene) scene->reload(); // reloading scene for new script types or changes to scripts
 
     canUpdateInternal = true;
