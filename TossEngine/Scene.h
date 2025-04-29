@@ -3,7 +3,7 @@ Bachelor of Software Engineering
 Media Design School
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2025 Media Design School
 File Name : Scene.h
 Description : Base class representing a game scene, providing essential methods for rendering and updating the game logic.
 Author : Theo Morris

@@ -31,11 +31,12 @@ public:
 
     void DeleteSelected();
 
-    void CreateSceneFileViaFileSystem();
     void OpenSceneViaFileSystem();
+    void CreateScene();
 
 protected:
     void onUpdateInternal();
+    void onRenderInternal();
     void onLateUpdateInternal();
     void FindSceneFiles();
     /**

@@ -38,11 +38,6 @@ GameObjectManager::GameObjectManager(const GameObjectManager& other)
     m_gameObjectsToDestroy = other.m_gameObjectsToDestroy;
 }
 
-Scene* GameObjectManager::getScene() const
-{
-    return m_scene;
-}
-
 GameObjectPtr GameObjectManager::Instantiate(const PrefabPtr& prefab, Transform* parent, Vector3 positionalOffset, Quaternion rotationOffset, bool hasStarted)
 {
     GameObjectPtr newObject = prefab->Instantiate();

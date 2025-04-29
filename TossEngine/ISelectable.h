@@ -1,25 +1,76 @@
+/***
+Bachelor of Software Engineering
+Media Design School
+Auckland
+New Zealand
+(c) 2025 Media Design School
+File Name : ISelectable.h
+Description : Provides an interface for objects that can be selected and displayed in the TossEngine editor inspector.
+              Also provides various helper functions for ImGui-based field rendering.
+Author : Theo Morris
+Mail : theo.morris@mds.ac.nz
+***/
+
 #pragma once
+
 #include "Utils.h"
 #include "ResourceManager.h"
 
 class GameObject;
 
+/**
+ * @class ISelectable
+ * @brief Interface for any object that can be selected in the editor and shown in the Inspector window.
+ */
 class TOSSENGINE_API ISelectable
 {
 public:
+    // ----- Virtual Inspector Methods -----
+
+    /**
+     * @brief Called to render the object's custom fields in the Inspector.
+     */
     virtual void OnInspectorGUI() {}
+
+    /**
+     * @brief Called when the object is selected.
+     */
     virtual void OnSelect() {}
+
+    /**
+     * @brief Called when the object is deselected.
+     */
     virtual void OnDeSelect() {}
-    virtual bool Delete(bool deleteSelf = true) { return false;  }
 
-    static void GameObjectAssignableField(GameObjectPtr& _gameObject, const string& fieldName);
+    /**
+     * @brief Called when the object should be deleted.
+     * @param deleteSelf If true, the object should delete itself.
+     * @return True if the object was successfully deleted.
+     */
+    virtual bool Delete(bool deleteSelf = true) { return false; }
 
+    // ----- Static Helper Methods -----
+
+    /**
+     * @brief Renders a selectable GameObject assignment field.
+     * @param _gameObject Reference to the GameObject pointer to modify.
+     * @param fieldName The label to display in the Inspector.
+     */
+    static void GameObjectAssignableField(GameObjectPtr& _gameObject, const std::string& fieldName);
+
+    /**
+     * @brief Renders a resource assignment field using a table layout.
+     * @tparam T The resource type (must inherit from Resource).
+     * @param resourcePtr Reference to the resource pointer to modify.
+     * @param fieldName The label to display in the Inspector.
+     * @return True if the resource was changed.
+     */
     template<typename T>
     bool ResourceAssignableField(std::shared_ptr<T>& resourcePtr, const std::string& fieldName)
     {
         static_assert(std::is_base_of<Resource, T>::value, "T must derive from Resource");
-        ResourceManager& rm = ResourceManager::GetInstance();
 
+        ResourceManager& rm = ResourceManager::GetInstance();
         bool changed = false;
         std::string label = resourcePtr
             ? fieldName + ": " + resourcePtr->getUniqueID()
@@ -40,17 +91,18 @@ public:
 
             if (ImGui::BeginPopup((fieldName + "Dropdown").c_str()))
             {
-                // “None” option
+                // "None" option
                 if (ImGui::Selectable("None", resourcePtr == nullptr))
                 {
-                    if (resourcePtr) {
+                    if (resourcePtr)
+                    {
                         resourcePtr.reset();
                         rm.SetSelectedResource(nullptr);
                         changed = true;
                     }
                 }
 
-                // all resources of type T
+                // List all available resources of type T
                 auto& all = rm.GetAllResources();
                 for (auto& [id, res] : all)
                 {
@@ -77,31 +129,37 @@ public:
         return changed;
     }
 
+    /**
+     * @brief Renders a dropdown selection field for selecting a resource.
+     * @tparam T The resource type (must inherit from Resource).
+     * @param resourcePtr Reference to the resource pointer to modify.
+     * @param fieldName The label to display in the Inspector.
+     * @return True if a new resource was selected.
+     */
     template<typename T>
     bool ResourceDropdownField(std::shared_ptr<T>& resourcePtr, const std::string& fieldName)
     {
         static_assert(std::is_base_of<Resource, T>::value, "T must derive from Resource");
 
         ResourceManager& resourceManager = ResourceManager::GetInstance();
-        
         std::string previewLabel = (resourcePtr) ? resourcePtr->getUniqueID() : "None";
-        
+
         if (ImGui::BeginCombo(fieldName.c_str(), previewLabel.c_str()))
         {
             bool didSelect = false;
-            // Option: None
+
+            // "None" option
             bool noneSelected = (resourcePtr == nullptr);
             if (ImGui::Selectable("None", noneSelected))
             {
                 resourcePtr = nullptr;
                 resourceManager.SetSelectedResource(nullptr);
             }
-        
+
             // List all resources of the correct type
             auto& resources = resourceManager.GetAllResources();
             for (const auto& [id, resource] : resources)
             {
-                // Only include resources that match the requested type
                 auto casted = std::dynamic_pointer_cast<T>(resource);
                 if (casted)
                 {
@@ -112,23 +170,63 @@ public:
                         resourceManager.SetSelectedResource(resourcePtr);
                         didSelect = true;
                     }
-        
-                    // Highlight the selected item
+
                     if (isSelected)
                         ImGui::SetItemDefaultFocus();
                 }
             }
-        
+
             ImGui::EndCombo();
             return didSelect;
         }
         return false;
     }
+
+    /**
+     * @brief Displays a file selection table.
+     * @param tableID The ID of the ImGui table.
+     * @param rowLabels Labels for each row.
+     * @param filePaths Selected file paths to modify.
+     * @param filter File extension filter.
+     * @return True if the selection changed.
+     */
     static bool FileSelectionTableField(const char* tableID, const std::vector<std::string>& rowLabels, std::vector<std::string>& filePaths, const char* filter);
-    static bool FloatSliderField(const string& name, float& value, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
-    static bool IntSliderField(const string& name, int& value, int speed = 1, int min = 0, int max = 0);
 
-    static bool LayerDropdownField(const string& name, vector<string>& value);
+    /**
+     * @brief Displays a float slider field.
+     * @param name Label for the field.
+     * @param value Reference to the float to modify.
+     * @param speed Slider sensitivity.
+     * @param min Minimum slider value.
+     * @param max Maximum slider value.
+     * @return True if the value changed.
+     */
+    static bool FloatSliderField(const std::string& name, float& value, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
 
-    static bool BoolCheckboxField(const string& name, bool& value);
+    /**
+     * @brief Displays an int slider field.
+     * @param name Label for the field.
+     * @param value Reference to the int to modify.
+     * @param speed Slider sensitivity.
+     * @param min Minimum slider value.
+     * @param max Maximum slider value.
+     * @return True if the value changed.
+     */
+    static bool IntSliderField(const std::string& name, int& value, int speed = 1, int min = 0, int max = 0);
+
+    /**
+     * @brief Displays a dropdown for selecting layers.
+     * @param name Label for the field.
+     * @param value Vector of selected layers.
+     * @return True if the selection changed.
+     */
+    static bool LayerDropdownField(const std::string& name, std::vector<std::string>& value);
+
+    /**
+     * @brief Displays a boolean checkbox field.
+     * @param name Label for the field.
+     * @param value Reference to the bool to modify.
+     * @return True if the value changed.
+     */
+    static bool BoolCheckboxField(const std::string& name, bool& value);
 };

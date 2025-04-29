@@ -1,3 +1,16 @@
+/***
+Bachelor of Software Engineering
+Media Design School
+Auckland
+New Zealand
+(c) 2025 Media Design School
+File Name : InputManager.h
+Description : Handles keyboard, mouse, and play mode input states for TossEngine.
+              Supports real-time input querying, cursor locking, and state transitions.
+Author : Theo Morris
+Mail : theo.morris@mds.ac.nz
+***/
+
 #pragma once
 
 #include "Utils.h"
@@ -7,7 +20,7 @@
 
 /**
  * @class InputManager
- * @brief Handles inputs from the player/user of the program.
+ * @brief Singleton class that manages real-time user input, including keyboard, mouse, and cursor control.
  */
 class TOSSENGINE_API InputManager
 {
@@ -22,173 +35,174 @@ public:
         return instance;
     }
 
-    /**
-     * @brief Deleted copy constructor to prevent copying.
-     */
+    // Deleted copy constructor and assignment to enforce singleton pattern
     InputManager(const InputManager&) = delete;
-
-    /**
-     * @brief Deleted assignment operator to prevent assignment.
-     */
     void operator=(const InputManager&) = delete;
 
+    /**
+     * @brief Initializes input manager with project settings (Editor usage).
+     * @param projectSettings The project settings.
+     */
     void Init(ProjectSettingsPtr& projectSettings);
+
+    /**
+     * @brief Initializes input manager with player settings (Game runtime usage).
+     * @param playerSettings The player settings.
+     */
     void Init(TossPlayerSettingsPtr& playerSettings);
 
     /**
-     * @brief Returns true if key is currently being held down.
-     *
-     * This method fires every frame that the key is held down, and if
-     * checkPlayMode is true it will always return false when play mode
-     * is disabled so you wont get accidental pressed events in edit mode.
-     *
-     * @param key           The key code to query.
-     * @param checkPlayMode If true (the default) ignores presses entirely
-     *                      when not in play mode.
-     * @return              True if the key is held this frame (and play
-     *                      mode is on if checking) false otherwise.
+     * @brief Returns true if the specified key is currently being held down.
+     * @param key The key code to query.
+     * @param checkPlayMode Whether to require play mode to be enabled.
+     * @return True if the key is down.
      */
     bool isKeyDown(Key key, bool checkPlayMode = true) const;
 
     /**
-     * @brief Returns true on the exact frame that the key transitions from up to down.
-     *
-     * This method only fires once per press (not continuous), and if
-     * checkPlayMode is true it will always return false when play mode
-     * is disabled so you wont get accidental pressed events in edit mode.
-     *
-     * @param key           The key code to query.
-     * @param checkPlayMode If true (the default) ignores presses entirely
-     *                      when not in play mode.
-     * @return              True if the key was pressed this frame (and play
-     *                      mode is on if checking) false otherwise.
+     * @brief Returns true if the specified key was pressed this frame.
+     * @param key The key code to query.
+     * @param checkPlayMode Whether to require play mode to be enabled.
+     * @return True if the key was pressed this frame.
      */
     bool isKeyPressed(Key key, bool checkPlayMode = true) const;
 
     /**
-     * @brief Checks if the specified key is currently not being held down.
-     * @param key The key to check.
-     * @param checkPlayMode
-     * @return True if the key is up, false otherwise.
+     * @brief Returns true if the specified key is currently not being held down.
+     * @param key The key code to query.
+     * @param checkPlayMode Whether to require play mode to be enabled.
+     * @return True if the key is up.
      */
     bool isKeyUp(Key key, bool checkPlayMode = true) const;
 
     /**
      * @brief Checks if the specified mouse button is currently being held down.
-     * @param button The mouse button to check.
-     * @param checkPlayMode
-     * @return True if the mouse button is down, false otherwise.
+     * @param button The mouse button to query.
+     * @param checkPlayMode Whether to require play mode to be enabled.
+     * @return True if the mouse button is down.
      */
     bool isMouseDown(MouseButton button, bool checkPlayMode = true) const;
 
     /**
-     * @brief Checks if the specified mouse button was pressed.
-     * @param button The mouse button to check.
-     * @param checkPlayMode
-     * @return True if the mouse button was pressed, false otherwise.
+     * @brief Checks if the specified mouse button was pressed this frame.
+     * @param button The mouse button to query.
+     * @param checkPlayMode Whether to require play mode to be enabled.
+     * @return True if the mouse button was pressed this frame.
      */
     bool isMousePressed(MouseButton button, bool checkPlayMode = true) const;
 
     /**
      * @brief Checks if the specified mouse button is currently not being held down.
-     * @param button The mouse button to check.
-     * @param checkPlayMode
-     * @return True if the mouse button is up, false otherwise.
+     * @param button The mouse button to query.
+     * @param checkPlayMode Whether to require play mode to be enabled.
+     * @return True if the mouse button is up.
      */
     bool isMouseUp(MouseButton button, bool checkPlayMode = true) const;
 
     /**
-     * @brief Returns the current mouse movement along the x-axis.
-     * @return The mouse movement along the x-axis: -1 (left), 1 (right).
+     * @brief Returns current horizontal mouse movement.
+     * @param checkPlayMode Whether to require play mode to be enabled.
+     * @return Horizontal movement delta (-1.0f to 1.0f).
      */
     float getMouseXAxis(bool checkPlayMode = true) const;
 
     /**
-     * @brief Returns the current mouse movement along the y-axis.
-     * @return The mouse movement along the y-axis: -1 (bottom), 1 (top).
+     * @brief Returns current vertical mouse movement.
+     * @param checkPlayMode Whether to require play mode to be enabled.
+     * @return Vertical movement delta (-1.0f to 1.0f).
      */
     float getMouseYAxis(bool checkPlayMode = true) const;
 
     /**
-     * @brief Returns the current mouse position as a vector2.
-     * @return The current mouse position.
+     * @brief Gets the current mouse position.
+     * @return Mouse position in screen coordinates.
      */
     static Vector2 getMousePosition();
 
     /**
-     * @brief Returns the current mouse scroll as a vector2.
-     * @return The current mouse scroll.
+     * @brief Gets the current mouse scroll offset.
+     * @return Mouse scroll delta.
      */
     static Vector2 getMouseScroll();
 
     /**
-     * @brief Enables or disables play mode, which hides the cursor and locks it at the center of the screen.
-     * @param enable True to enable play mode, false to disable.
+     * @brief Enables or disables play mode.
+     * @param enable True to enable, false to disable.
+     * @param alsoChangeGameplayMode True to also toggle internal game mode flag.
      */
     void enablePlayMode(bool enable, bool alsoChangeGameplayMode = true);
-    void togglePlayMode(bool alsoChangeGameplayMode = true);
-
-    bool isPlayModeEnabled() const;
-    bool isGameModeEnabled() const;
-
 
     /**
-     * @brief Sets the screen area the cursor will be locked into when play mode is enabled.
-     * @param area The screen area to set.
+     * @brief Toggles the play mode state.
+     * @param alsoChangeGameplayMode True to also toggle internal game mode flag.
+     */
+    void togglePlayMode(bool alsoChangeGameplayMode = true);
+
+    /**
+     * @brief Checks if play mode is currently enabled.
+     * @return True if play mode is active.
+     */
+    bool isPlayModeEnabled() const;
+
+    /**
+     * @brief Checks if gameplay mode is currently enabled.
+     * @return True if game mode is active.
+     */
+    bool isGameModeEnabled() const;
+
+    /**
+     * @brief Sets the screen area for mouse lock when in play mode.
+     * @param area The size of the screen area.
      */
     void setScreenArea(const Vector2& area);
 
     /**
-     * @brief Updates the input states.
+     * @brief Updates input states (should be called every frame).
      */
     void onUpdate();
 
     /**
-     * @brief Update late post graphics update/render.
+     * @brief Post-render update (late frame adjustments).
      */
     void onLateUpdate();
 
 private:
-    /**
-     * @brief Private constructor to prevent external instantiation.
-     */
+    // Private constructor and destructor
     InputManager() = default;
-
-    /**
-     * @brief Private destructor.
-     */
     ~InputManager() = default;
 
-    bool isInitilized = false;
+    bool isInitilized = false; //!< Tracks whether the input manager is initialized.
 
-    /**
-     * @brief Static callback functions for handling input events.
-     */
+    // GLFW input callbacks
     static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
     static void char_callback(GLFWwindow* window, unsigned int c);
 
-    static float currentMouseX; // Current mouse x position
-    static float currentMouseY; // Current mouse y position
+    // Mouse position and scroll tracking
+    static float currentMouseX; //!< Current mouse x position.
+    static float currentMouseY; //!< Current mouse y position.
+    static double scrollX;      //!< Current scroll x offset.
+    static double scrollY;      //!< Current scroll y offset.
 
-    static double scrollX; // Current mouse x scroll
-    static double scrollY; // Current mouse y scroll
+    // Input state tracking
+    static std::map<Key, bool> currentKeyStates; //!< Current key states.
+    static std::map<Key, bool> previousKeyStates; //!< Previous key states.
+    static std::map<MouseButton, bool> currentMouseStates; //!< Current mouse button states.
+    static std::map<MouseButton, bool> previousMouseStates; //!< Previous mouse button states.
 
-    static std::map<Key, bool> currentKeyStates; // Map of all current key states
-    static std::map<Key, bool> previousKeyStates; // Map of all previous frames key states
-    static std::map<MouseButton, bool> currentMouseStates; // Map of all current mouse button states
-    static std::map<MouseButton, bool> previousMouseStates; // Map of all previous frames mouse button states
+    /**
+     * @brief Resets the mouse scroll deltas.
+     */
+    static void resetMouseScroll();
 
-    const double MOUSE_MOVEMENT_THRESHOLD = 0.00001f; // Const for the mouse movement threshold
+    // Internal variables
+    GLFWwindow* WindowPtr = nullptr; //!< Pointer to the GLFW window context.
+    bool m_playEnable = false; //!< Indicates if play mode is active.
+    bool m_gameMode = false;   //!< Indicates if game mode is active.
+    Vector2 m_oldMousePos{};   //!< Previous mouse position for delta calculations.
+    Vector2 m_screenArea;      //!< Screen area used for cursor locking.
+    Vector2 m_deltaMouse{};    //!< Delta movement of the mouse this frame.
 
-    static void resetMouseScroll(); // Resets scroll x and y to 0
-
-    GLFWwindow* WindowPtr = nullptr; // Pointer to the GLFW window
-
-    bool m_playEnable = false; // Indicates whether play mode is enabled
-    bool m_gameMode = false;
-    Vector2 m_oldMousePos{}; // Previous mouse position
-    Vector2 m_screenArea; // Screen area for cursor locking
-    Vector2 m_deltaMouse{}; // Mouse movement delta
+    static constexpr double MOUSE_MOVEMENT_THRESHOLD = 0.00001; //!< Movement threshold to avoid tiny unintentional drifts.
 };

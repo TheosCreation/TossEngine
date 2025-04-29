@@ -3,7 +3,7 @@ Bachelor of Software Engineering
 Media Design School
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2025 Media Design School
 File Name : VertexArrayObject.h
 Description : VertexArrayObject class is a representation of a VAO to be used by the graphics engine class
 Author : Theo Morris
