@@ -134,10 +134,10 @@ void TossEngine::ReloadScripts() const
 
 void TossEngine::onUpdateInternal()
 {
-    if (m_sceneToDestroy)
+    if (sceneToOpen)
     {
-        m_sceneToDestroy->onQuit();
-        m_sceneToDestroy = nullptr;
+        OpenScene(sceneToOpen);
+        sceneToOpen = nullptr;
     }
 }
 
@@ -146,7 +146,8 @@ void TossEngine::OpenScene(shared_ptr<Scene> _scene, bool callStartMethods)
     // if there is a current scene, call onDestroy
     if (m_currentScene != nullptr)
     {
-        m_sceneToDestroy = m_currentScene.get();
+        m_currentScene->onQuit();
+        m_currentScene = nullptr;
     }
 
 
@@ -170,12 +171,6 @@ void TossEngine::OpenScene(const string& sceneName)
         return;
     }
 
-    // if there is a current scene, call onDestroy
-    if (m_currentScene != nullptr)
-    {
-        m_currentScene->onQuit();
-        m_currentScene.reset();
-    }
     std::string foundPath;
     for (const auto& path : m_currentPlayerSettings->selectedSceneFilePaths)
     {
@@ -193,13 +188,7 @@ void TossEngine::OpenScene(const string& sceneName)
     }
 
     auto scene = std::make_shared<Scene>(foundPath);
-    // set the current scene to the new scene
-    m_currentScene = std::move(scene);
-    m_currentScene->onCreate();
-    m_currentScene->onCreateLate();
-
-    m_currentScene->onStart();
-    m_currentScene->onLateStart();
+    sceneToOpen = scene;
 }
 
 void TossEngine::SetPlayerSettings(TossPlayerSettings* playerSettings)

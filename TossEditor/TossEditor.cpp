@@ -926,6 +926,7 @@ void TossEditor::onUpdateInternal()
                     editorPreferences.lastKnownOpenScenePath = savePath;
 
                     TossEngine::GetInstance().OpenScene(newScene, false);
+                    //m_gameRunning = false;
                 }
 
                 // Reset

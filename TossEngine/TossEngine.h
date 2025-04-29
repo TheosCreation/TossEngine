@@ -58,8 +58,8 @@ private:
 
     void CoroutineRunner();
 
-    shared_ptr<Scene> m_currentScene = nullptr;
-    Scene* m_sceneToDestroy = nullptr;
+    ScenePtr m_currentScene = nullptr;
+    ScenePtr sceneToOpen = nullptr;
 
     /**
      * @brief Private constructor to prevent external instantiation.
