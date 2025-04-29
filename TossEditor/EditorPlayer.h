@@ -26,7 +26,7 @@ public:
      */
     void Update(float deltaTime);
 
-    Camera* getCamera();
+    Camera* getCamera() const;
 
 private:
     TossEditor* Editor = nullptr;

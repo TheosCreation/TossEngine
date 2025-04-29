@@ -130,7 +130,6 @@ public:
 
     bool isPlayModeEnabled() const;
     bool isGameModeEnabled() const;
-    Rect getViewport();
 
 
     /**
@@ -138,8 +137,6 @@ public:
      * @param area The screen area to set.
      */
     void setScreenArea(const Vector2& area);
-    void setViewport(float x, float y, float width, float height);
-    void disableViewport();
 
     /**
      * @brief Updates the input states.
@@ -194,7 +191,4 @@ private:
     Vector2 m_oldMousePos{}; // Previous mouse position
     Vector2 m_screenArea; // Screen area for cursor locking
     Vector2 m_deltaMouse{}; // Mouse movement delta
-
-    Rect m_viewport = { 0, 0, 1, 1 }; // normalized [0,1] for full window by default
-    bool m_viewportEnabled = false;
 };

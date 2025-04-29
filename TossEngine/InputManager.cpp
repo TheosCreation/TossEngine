@@ -160,57 +160,28 @@ bool InputManager::isGameModeEnabled() const
     return m_gameMode;
 }
 
-Rect InputManager::getViewport()
-{
-    return m_viewport;
-}
-
 void InputManager::setScreenArea(const Vector2& area)
 {
 	m_screenArea = area;
 }
 
-void InputManager::setViewport(float x, float y, float width, float height)
-{
-    m_viewport = { static_cast<int>(x), static_cast<int>(y), static_cast<int>(width), static_cast<int>(height) };
-    m_viewportEnabled = true;
-}
-
-void InputManager::disableViewport()
-{
-    m_viewportEnabled = false;
-}
 void InputManager::onUpdate()
 {
     double newMouseX, newMouseY;
     glfwGetCursorPos(WindowPtr, &newMouseX, &newMouseY);
 
-    if (m_viewportEnabled)
-    {
-        // Mouse relative to viewport top-left
-        currentMouseX = static_cast<float>(newMouseX) - m_viewport.left;
-        currentMouseY = static_cast<float>(newMouseY) - m_viewport.top;
-    }
-    else
-    {
-        // Mouse relative to whole window
-        currentMouseX = static_cast<float>(newMouseX);
-        currentMouseY = static_cast<float>(newMouseY);
-    }
+    currentMouseX = static_cast<float>(newMouseX);
+    currentMouseY = static_cast<float>(newMouseY);
 
     if (m_playEnable)
     {
-        float centerX = m_viewportEnabled ? (m_viewport.width * 0.5f) : (m_screenArea.x * 0.5f);
-        float centerY = m_viewportEnabled ? (m_viewport.height * 0.5f) : (m_screenArea.y * 0.5f);
+        float centerX = (m_screenArea.x * 0.5f);
+        float centerY = (m_screenArea.y * 0.5f);
 
         // m_deltaMouse is relative inside viewport!
         m_deltaMouse = Vector2(currentMouseX - centerX, currentMouseY - centerY);
 
-        // Move the real OS mouse cursor back to center of viewport
-        if (m_viewportEnabled)
-            glfwSetCursorPos(WindowPtr, m_viewport.left + centerX, m_viewport.top + centerY);
-        else
-            glfwSetCursorPos(WindowPtr, centerX, centerY);
+        glfwSetCursorPos(WindowPtr, centerX, centerY);
     }
     else
     {
@@ -227,12 +198,9 @@ void InputManager::onLateUpdate()
 
     if (m_playEnable)
     {
-        float centerX = m_viewportEnabled ? (m_viewport.width * 0.5f) : (m_screenArea.x * 0.5f);
-        float centerY = m_viewportEnabled ? (m_viewport.height * 0.5f) : (m_screenArea.y * 0.5f);
+        float centerX = (m_screenArea.x * 0.5f);
+        float centerY = (m_screenArea.y * 0.5f);
 
-        if (m_viewportEnabled)
-            glfwSetCursorPos(WindowPtr, m_viewport.left + centerX, m_viewport.top + centerY);
-        else
             glfwSetCursorPos(WindowPtr, centerX, centerY);
     }
 

@@ -5,6 +5,7 @@
 #include <windows.h>
 #include "tinyfiledialogs.h"
 #include "ScriptLoader.h"
+#include "TossPlayerSettings.h"
 
 void TossEngine::Init()
 {
@@ -131,13 +132,21 @@ void TossEngine::ReloadScripts() const
     m_scriptLoader->reloadDLL();
 }
 
+void TossEngine::onUpdateInternal()
+{
+    if (m_sceneToDestroy)
+    {
+        m_sceneToDestroy->onQuit();
+        m_sceneToDestroy = nullptr;
+    }
+}
+
 void TossEngine::OpenScene(shared_ptr<Scene> _scene, bool callStartMethods)
 {
     // if there is a current scene, call onDestroy
     if (m_currentScene != nullptr)
     {
-        m_currentScene->onQuit();
-        m_currentScene.reset();
+        m_sceneToDestroy = m_currentScene.get();
     }
 
 
@@ -151,6 +160,51 @@ void TossEngine::OpenScene(shared_ptr<Scene> _scene, bool callStartMethods)
         m_currentScene->onStart();
         m_currentScene->onLateStart();
     }
+}
+
+void TossEngine::OpenScene(const string& sceneName)
+{
+    if (!m_currentPlayerSettings)
+    {
+        Debug::LogError("Player Settings has not been set in the Toss Engine, cannot open Scene");
+        return;
+    }
+
+    // if there is a current scene, call onDestroy
+    if (m_currentScene != nullptr)
+    {
+        m_currentScene->onQuit();
+        m_currentScene.reset();
+    }
+    std::string foundPath;
+    for (const auto& path : m_currentPlayerSettings->selectedSceneFilePaths)
+    {
+        if (path.find(sceneName) != std::string::npos)
+        {
+            foundPath = path;
+            break;
+        }
+    }
+
+    if (foundPath.empty())
+    {
+        Debug::LogError("Scene not found: " + sceneName);
+        return;
+    }
+
+    auto scene = std::make_shared<Scene>(foundPath);
+    // set the current scene to the new scene
+    m_currentScene = std::move(scene);
+    m_currentScene->onCreate();
+    m_currentScene->onCreateLate();
+
+    m_currentScene->onStart();
+    m_currentScene->onLateStart();
+}
+
+void TossEngine::SetPlayerSettings(TossPlayerSettings* playerSettings)
+{
+    m_currentPlayerSettings = playerSettings;
 }
 
 float TossEngine::GetTime()
@@ -182,4 +236,11 @@ std::string TossEngine::openFileDialog(const std::string& filter)
     const char* filePath = tinyfd_openFileDialog("Select File", "", 1, filterArray, "Select a File", 0);
 
     return filePath ? std::string(filePath) : "";
+}
+
+string TossEngine::openFolderDialog()
+{
+    const char* folderPath = tinyfd_selectFolderDialog("Select Folder", "");
+
+    return folderPath ? std::string(folderPath) : "";
 }

@@ -27,13 +27,17 @@ public:
     void UnLoadScripts() const;
     void LoadScripts() const;
     void ReloadScripts() const;
+    void onUpdateInternal();
 
     void OpenScene(shared_ptr<Scene> _scene, bool callStartMethods = true);
+    void OpenScene(const string& sceneName);
+    void SetPlayerSettings(TossPlayerSettings* playerSettings);
     static float GetTime();
 
     std::shared_ptr<bool> StartCoroutine(CoroutineTask&& coroutine);
 
-    string openFileDialog(const std::string& filter);
+    static string openFileDialog(const std::string& filter);
+    static string openFolderDialog();
 
     bool IsDebugMode();
     void SetDebugMode(bool enabled);
@@ -42,6 +46,7 @@ private:
     bool isDebugMode = false;
     std::unique_ptr<Window> m_window = nullptr;
     ScriptLoader* m_scriptLoader = nullptr;
+    TossPlayerSettings* m_currentPlayerSettings = nullptr;
 
 
     std::atomic<bool> running = false;
@@ -54,6 +59,7 @@ private:
     void CoroutineRunner();
 
     shared_ptr<Scene> m_currentScene = nullptr;
+    Scene* m_sceneToDestroy = nullptr;
 
     /**
      * @brief Private constructor to prevent external instantiation.
@@ -65,8 +71,6 @@ private:
      */
     ~TossEngine() = default;
 };
-
-
 
 
 inline void to_json(json& j, GameObjectPtr const& gameObject) {

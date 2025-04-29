@@ -80,6 +80,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>..\..\Dependencies\GLFW;..\..\Dependencies\GLEW;..\..\Dependencies\FMOD\Lib;..\..\Dependencies\TOSSENGINE;..\..\Dependencies/REACTPHYSICS3D/Lib;$(LibraryPath)</LibraryPath>
     <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/tinyobjloader;..\..\Dependencies/GLFW;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\TossEngine/</ExternalIncludePath>
+    <OutDir>..\..\TossEditor\</OutDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
@@ -180,6 +181,7 @@
     <ClCompile Include="GroundCheck.cpp" />
     <ClCompile Include="Gun.cpp" />
     <ClCompile Include="GunHolder.cpp" />
+    <ClCompile Include="MainMenuManager.cpp" />
     <ClCompile Include="PlayerController.cpp">
       <SubType>
       </SubType>
@@ -213,6 +215,7 @@
     <ClInclude Include="GroundCheck.h" />
     <ClInclude Include="Gun.h" />
     <ClInclude Include="GunHolder.h" />
+    <ClInclude Include="MainMenuManager.h" />
     <ClInclude Include="PlayerController.h">
       <SubType>
       </SubType>

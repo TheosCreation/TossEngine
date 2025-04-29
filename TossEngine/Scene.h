@@ -22,6 +22,7 @@ class Camera;
 class Player;
 class LightManager;
 class Physics;
+class Window;
 
 /**
  * @class Scene
@@ -107,6 +108,7 @@ public:
 
     LightManager* getLightManager();
     GameObjectManager* getObjectManager();
+    Window* getWindow();
 
     /**
      * @brief Called when the game is quitting.

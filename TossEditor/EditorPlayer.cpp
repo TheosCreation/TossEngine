@@ -144,7 +144,7 @@ void EditorPlayer::Update(float deltaTime)
     m_transform.UpdateWorldTransform();
 }
 
-Camera* EditorPlayer::getCamera()
+Camera* EditorPlayer::getCamera() const
 {
     return m_cam;
 }

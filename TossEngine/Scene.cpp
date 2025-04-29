@@ -112,11 +112,15 @@ void Scene::onCreate()
 
 void Scene::onStart()
 {
+    if (!m_initilized) return;
+
     m_gameObjectManager->onStart();
 }
 
 void Scene::onLateStart()
 {
+    if (!m_initilized) return;
+
     m_gameObjectManager->onLateStart();
 }
 
@@ -128,30 +132,42 @@ void Scene::onCreateLate()
         // Set the screen area for all cameras
         camera->setScreenArea(tossEngine.GetWindow()->getInnerSize());
     }
+
+    m_initilized = true;
 }
 
 void Scene::onUpdate()
 {
-    m_gameObjectManager->onUpdate();
+    if (!m_initilized) return;
+
+    if (m_gameObjectManager) m_gameObjectManager->onUpdate();
 }
 
 void Scene::onUpdateInternal()
 {
-    m_gameObjectManager->onUpdateInternal();
+    if (!m_initilized) return;
+
+    if (m_gameObjectManager) m_gameObjectManager->onUpdateInternal();
 }
 
 void Scene::onFixedUpdate()
 {
-    m_gameObjectManager->onFixedUpdate();
+    if (!m_initilized) return;
+
+    if (m_gameObjectManager) m_gameObjectManager->onFixedUpdate();
 }
 
 void Scene::onLateUpdate()
 {
-    m_gameObjectManager->onLateUpdate();
+    if (!m_initilized) return;
+
+    if (m_gameObjectManager)  m_gameObjectManager->onLateUpdate();
 }
 
 void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writeToFrameBuffer)
 {
+    if (!m_initilized) return;
+
     auto& tossEngine = TossEngine::GetInstance();
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.clear(glm::vec4(0, 0, 0, 1));
@@ -323,15 +339,21 @@ GameObjectManager* Scene::getObjectManager()
     return m_gameObjectManager.get();
 }
 
+Window* Scene::getWindow()
+{
+    return TossEngine::GetInstance().GetWindow();
+}
+
 void Scene::onQuit()
 {
     m_gameObjectManager->onDestroy();
     m_gameObjectManager->clearGameObjects();
-    m_gameObjectManager.release();
+    m_gameObjectManager.reset();
     m_deferredSSRQMaterial.reset();
     m_postProcessSSRQMaterial.reset();
-    m_SSRQ.release();
+    m_SSRQ.reset();
     Physics::GetInstance().UnLoadWorld();
+    m_initilized = false;
 }
 
 void Scene::Save()

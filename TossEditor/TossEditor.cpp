@@ -74,6 +74,7 @@ void TossEditor::run()
 
         while (!tossEngine.GetWindow()->shouldClose())
         {
+            tossEngine.onUpdateInternal();
             if (canUpdateInternal)
             {
                 onUpdateInternal();
@@ -294,6 +295,7 @@ void TossEditor::onUpdateInternal()
 
                 if (auto scene = TossEngine::GetInstance().getCurrentScene())
                 {
+                    TossEngine::GetInstance().SetPlayerSettings(m_playerSettings.get());
                     Time::TimeScale = 1.0f;
                     m_gameRunning = true;
                     scene->onStart();
@@ -326,30 +328,26 @@ void TossEditor::onUpdateInternal()
     }
 
     Debug::DrawConsole();
+
     ImGui::Begin("Game", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     {
         auto scene = TossEngine::GetInstance().getCurrentScene();
-        // Get the available size for the Scene window.
         ImVec2 availSize = ImGui::GetContentRegionAvail();
-
-        // Convert to your Vector2 type (assuming Vector2 takes width and height).
+        ImVec2 windowPos = ImGui::GetCursorScreenPos();
         Vector2 newSize(availSize.x, availSize.y);
+        Vector2 newPostion(windowPos.x, windowPos.y);
         m_gameViewFrameBuffer->onResize(newSize);
-        // Resize the scene's framebuffer to match the current window size.
         if (scene)
         {
+            scene->onReposition(newPostion);
             scene->onResize(newSize);
             scene->onGraphicsUpdate(nullptr, m_gameViewFrameBuffer);
         }
 
-
-        // Get the updated texture after rendering.
         ImTextureID gameViewTexture = (ImTextureID)m_gameViewFrameBuffer->getRenderTextureId();
-
-        // Display the rendered scene scaled to the available region.
         ImGui::Image(gameViewTexture, availSize,
-            ImVec2{ 0.f, 1.f },  // UV0
-            ImVec2{ 1.f, 0.f }   // UV1 (flipped vertically if needed)
+            ImVec2{ 0.f, 1.f },
+            ImVec2{ 1.f, 0.f }
         );
     }
     ImGui::End();
@@ -358,13 +356,16 @@ void TossEditor::onUpdateInternal()
     {
         // Get the available size for the Scene window.
         ImVec2 availSize = ImGui::GetContentRegionAvail();
+        ImVec2 windowPos = ImGui::GetCursorScreenPos();
 
         if (auto scene = TossEngine::GetInstance().getCurrentScene())
         {
             Vector2 newSize(availSize.x, availSize.y);
+            Vector2 newPostion(windowPos.x, windowPos.y);
             Camera* camera = m_player->getCamera();
             // Resize the scene's framebuffer to match the current window size.
             camera->setScreenArea(newSize);
+            scene->onReposition(newPostion);
             scene->onResize(newSize);
             m_sceneFrameBuffer->onResize(newSize);
 
@@ -380,13 +381,6 @@ void TossEditor::onUpdateInternal()
             ImVec2 imgMin = ImGui::GetItemRectMin();
             ImVec2 imageMax = ImGui::GetItemRectMax();
             ImVec2 imgSize = ImGui::GetItemRectSize();
-
-            InputManager::GetInstance().setViewport(
-                imgMin.x,            // left
-                imgMin.y,            // top
-                imgSize.x,           // width
-                imgSize.y            // height
-            );
 
             // 2) pick an offset inside the image where your toolbar should sit
             const float margin = 8.0f;
@@ -905,6 +899,62 @@ void TossEditor::onUpdateInternal()
         ImGui::EndPopup();
     }
 
+    if (m_openSceneNamePopup)
+    {
+        ImGui::OpenPopup("Enter Scene Name");
+    }
+
+    if (ImGui::BeginPopupModal("Enter Scene Name", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::InputText("Scene Name", m_sceneNameBuffer, sizeof(m_sceneNameBuffer));
+
+        if (ImGui::Button("Create"))
+        {
+            if (strlen(m_sceneNameBuffer) > 0)
+            {
+                string filename = m_sceneNameBuffer;
+                string savePath = "Scenes/" + filename + ".json";
+
+                if (fs::exists(savePath))
+                {
+                    Debug::LogWarning("Scene file already exists: " + savePath);
+                }
+                else
+                {
+                    auto newScene = std::make_shared<Scene>(savePath);
+                    Debug::Log("Created scene at: " + savePath);
+                    editorPreferences.lastKnownOpenScenePath = savePath;
+
+                    TossEngine::GetInstance().OpenScene(newScene, false);
+                }
+
+                // Reset
+                memset(m_sceneNameBuffer, 0, sizeof(m_sceneNameBuffer));
+                m_pendingFolderPath.clear();
+                m_openSceneNamePopup = false;
+
+                ImGui::CloseCurrentPopup();
+            }
+            else
+            {
+                Debug::LogWarning("Scene name cannot be empty!");
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel"))
+        {
+            memset(m_sceneNameBuffer, 0, sizeof(m_sceneNameBuffer));
+            m_pendingFolderPath.clear();
+            m_openSceneNamePopup = false;
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
     graphicsEngine.renderImGuiFrame();
     
     Window* window = tossEngine.GetWindow();
@@ -1170,11 +1220,14 @@ void TossEditor::Save() const
 
 void TossEditor::CreateSceneFileViaFileSystem()
 {
+
+    m_pendingFolderPath = "Scenes/";
+    m_openSceneNamePopup = true;
 }
 
 void TossEditor::OpenSceneViaFileSystem()
 {
-    string sceneFilePath = TossEngine::GetInstance().openFileDialog("*.json");
+    string sceneFilePath = TossEngine::openFileDialog("*.json");
 
     if (!sceneFilePath.empty()) {
         fs::path selectedPath = sceneFilePath;

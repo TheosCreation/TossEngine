@@ -92,5 +92,9 @@ private:
     float m_previousTime = 0.0f;
     float m_accumulatedTime = 0; //The current frame's time
 
+    bool m_openSceneNamePopup = false;
+    std::string m_pendingFolderPath;
+    char m_sceneNameBuffer[256] = "";
+
     ImGuizmo::OPERATION m_currentManipulateOperation = ImGuizmo::OPERATION::TRANSLATE;
 };
