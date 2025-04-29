@@ -4,7 +4,8 @@
 class TOSSENGINE_API Resizable
 {
 public:
-	virtual void onResize(Vector2 size);
+    virtual ~Resizable() = default;
+    virtual void onResize(Vector2 size);
 	virtual void onReposition(Vector2 position);
     virtual void onMaximize(int maximized);
     Vector2 getSize() const { return m_size;  }

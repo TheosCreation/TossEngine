@@ -400,8 +400,6 @@ void Physics::UnLoadWorld()
         m_commonSettings.destroyPhysicsWorld(m_world);
         m_world = nullptr;
         m_raycastDebugEntries.clear();
-
-        m_previousCollisionPairs.clear();
     }
 }
 

@@ -22,43 +22,42 @@ class Texture2D;
  */
 class TOSSENGINE_API Framebuffer : public Resizable
 {
-public: 
-	/**
-	 * @brief Constructor for the Framebuffer class.
-	 * @param _windowSize The initial size of the framebuffer.
-	 */
-	Framebuffer(Vector2 _windowSize);
+public:
+    /**
+     * @brief Constructor for the Framebuffer class.
+     * @param _windowSize The initial size of the framebuffer.
+     */
+    Framebuffer(Vector2 _windowSize);
 
-	/**
-	 * @brief Destructor for the Framebuffer class.
-	 */
-	~Framebuffer();
+    /**
+     * @brief Destructor for the Framebuffer class.
+     */
+    ~Framebuffer();
 
-	/**
-	 * @brief Resizes the framebuffer to the new specified window size.
-	 * @param _newWindowSize The new size for the framebuffer.
-	 */
-	void onResize(Vector2 newSize) override;
+    /**
+     * @brief Resizes the framebuffer to the new specified window size.
+     * @param _newWindowSize The new size for the framebuffer.
+     */
+    void onResize(Vector2 newSize) override;
 
-	/**
-	 * @brief Binds the framebuffer for rendering.
-	 */
-	void Bind();
+    /**
+     * @brief Binds the framebuffer for rendering.
+     */
+    void Bind();
 
-	/**
-	 * @brief Unbinds the framebuffer, restoring the default framebuffer.
-	 */
-	void UnBind();
+    /**
+     * @brief Unbinds the framebuffer, restoring the default framebuffer.
+     */
+    void UnBind();
 
-	void WriteDepth();
-	void PopulateShader(ShaderPtr shader);
+    void WriteDepth();
+    void PopulateShader(ShaderPtr shader);
 
-	uint getId();
+    uint getId();
     uint getRenderTextureId() const { return RenderTexture; }
 
 private:
     uint RenderTexture;
-	uint FBO; // Frame Buffer Object identifier.
-	uint RBO; // Render Buffer Object identifier.
+    uint FBO; // Frame Buffer Object identifier.
+    uint RBO; // Render Buffer Object identifier.
 };
-

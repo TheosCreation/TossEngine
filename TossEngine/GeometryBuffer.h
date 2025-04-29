@@ -3,93 +3,97 @@ Bachelor of Software Engineering
 Media Design School
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2025 Media Design School
 File Name : GeometryBuffer.h
-Description : A class representing a geometry buffer for rendering.
+Description : Manages a geometry buffer for deferred rendering.
+              Stores position, normal, albedo, and other attributes as textures.
 Author : Theo Morris
 Mail : theo.morris@mds.ac.nz
-**/
+***/
 
 #pragma once
+
 #include "Utils.h"
 
 class Shader;
 
 /**
  * @class GeometryBuffer
- * @brief A class representing a geometry buffer used for rendering.
+ * @brief Singleton class representing a geometry buffer used in deferred rendering.
+ *        Stores position, normal, albedo, and other surface properties in separate textures.
  */
 class TOSSENGINE_API GeometryBuffer
 {
 public:
-	/**
-	 * @brief Static method to get the singleton instance of the GeometryBuffer class.
-	 * @return The singleton instance of the GeometryBuffer.
-	 */
-	static GeometryBuffer& GetInstance()
-	{
-		static GeometryBuffer instance;
-		return instance;
-	}
-
-	/**
-	 * @brief Public method to initialize the GeometryBuffer with the specified window size.
-	 * @param _windowSize The size of the window for which the geometry buffer is being initialized.
-	 */
-	void Init(Vector2 _windowSize);
-
-	// Delete copy constructor and assignment operator to prevent copying.
-	GeometryBuffer(const GeometryBuffer&) = delete;
-	GeometryBuffer& operator=(const GeometryBuffer&) = delete;
-
-	/**
-	* @brief Binds the geometry buffer for rendering.
-	*/
-	void Bind();
-	
-	/**
-     * @brief Unbinds the geometry buffer.
+    /**
+     * @brief Retrieves the singleton instance of the GeometryBuffer.
+     * @return Reference to the GeometryBuffer instance.
      */
-	void UnBind();
+    static GeometryBuffer& GetInstance()
+    {
+        static GeometryBuffer instance;
+        return instance;
+    }
 
-	/**
-	 * @brief Writes depth information to the geometry buffer.
-	 */
-	void WriteDepth(uint writeBuffer = 0);
+    // Delete copy constructor and assignment operator to enforce singleton behavior.
+    GeometryBuffer(const GeometryBuffer&) = delete;
+    GeometryBuffer& operator=(const GeometryBuffer&) = delete;
 
-	/**
-	* @brief Populates the specified shader with uniform data related to the geometry buffer.
-	* @param _shader A shared pointer to the shader that will be populated with geometry buffer data.
-	*/
-	void PopulateShader(ShaderPtr _shader);
+    /**
+     * @brief Initializes the geometry buffer with a given window size.
+     * @param _windowSize The dimensions of the buffer (usually viewport or screen size).
+     */
+    void Init(Vector2 _windowSize);
 
-	/**
-	 * @brief Resizes the geometry buffer based on the new window size.
-	 * @param _windowSize The new size of the window.
-	 */
-	void Resize(Vector2 _windowSize);
+    /**
+     * @brief Binds the geometry buffer for rendering.
+     */
+    void Bind();
+
+    /**
+     * @brief Unbinds the geometry buffer and returns to the default framebuffer.
+     */
+    void UnBind();
+
+    /**
+     * @brief Enables writing to the geometry buffer's depth buffer.
+     * @param writeBuffer Optional attachment index to write to (default is 0).
+     */
+    void WriteDepth(uint writeBuffer = 0);
+
+    /**
+     * @brief Populates a shader with uniform data and G-buffer bindings.
+     * @param _shader Shader to populate (should match G-buffer layout).
+     */
+    void PopulateShader(ShaderPtr _shader);
+
+    /**
+     * @brief Resizes the geometry buffer to a new screen/window size.
+     * @param _windowSize The new dimensions for the buffer.
+     */
+    void Resize(Vector2 _windowSize);
 
 private:
-	/**
-	 * @brief Private contructor for the GeometryBuffer class.
-	 */
-	GeometryBuffer() = default;
+    /**
+     * @brief Private constructor to enforce singleton pattern.
+     */
+    GeometryBuffer() = default;
 
-	/**
-	 * @brief Private destructor for the GeometryBuffer class.
-	 */
-	~GeometryBuffer() = default;
+    /**
+     * @brief Private destructor.
+     */
+    ~GeometryBuffer() = default;
 
-	bool isInitilized = false;
+private:
+    bool isInitilized = false; //!< Tracks whether the buffer has been initialized.
+    Vector2 m_size = Vector2(0.0f); //!< Current dimensions of the buffer.
 
-	Vector2 m_size = Vector2(0.0f); // Stores the size of the geometry buffer.
-	uint FBO = 0; // Frame Buffer Object identifier.
+    uint FBO = 0; //!< Framebuffer Object ID.
 
-	// Texture identifiers for various data stored in the geometry buffer.
-	uint Texture_Position = 0; // Texture for position data.
-	uint Texture_Normal = 1; // Texture for normal data.
-	uint Texture_AlbedoShininess = 2; // Texture for albedo and shininess data.
-	uint Texture_Depth = 3; // Texture for depth data.
-	uint Texture_Reflectivity = 4; // Texture for reflectivity data.
+    // G-buffer texture attachments:
+    uint Texture_Position = 0;       //!< World-space position texture.
+    uint Texture_Normal = 1;         //!< World-space normal texture.
+    uint Texture_AlbedoShininess = 2; //!< Albedo + shininess (specular) texture.
+    uint Texture_Depth = 3;          //!< Depth texture.
+    uint Texture_Reflectivity = 4;   //!< Reflectivity (or custom material) texture.
 };
-

@@ -8,6 +8,7 @@
 /// alongside/in addition to use of FMOD Studio Sound Banks.
 ///
 /// @author Ross Hoyt
+/// @author Theo Morris
 /// @dependencies FMOD Studio & Core
 /// 
 #include <fmod_studio.hpp>

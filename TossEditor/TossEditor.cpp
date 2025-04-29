@@ -59,10 +59,6 @@ TossEditor::TossEditor()
     Time::TimeScale = 0.0f;
 }
 
-TossEditor::~TossEditor()
-{
-}
-
 void TossEditor::run()
 {
     auto& tossEngine = TossEngine::GetInstance();
@@ -78,7 +74,7 @@ void TossEditor::run()
             {
                 onUpdateInternal();
             }
-            //check again as it can change
+            onRenderInternal();
             if (canUpdateInternal)
             {
                 onLateUpdateInternal();
@@ -181,9 +177,6 @@ void TossEditor::onUpdateInternal()
 
     FindSceneFiles();
 
-    graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
-    graphicsEngine.createImGuiFrame();
-
     // delta time
     m_currentTime = TossEngine::GetTime();
     float deltaTimeInternal = m_currentTime - m_previousTime;
@@ -221,34 +214,43 @@ void TossEditor::onUpdateInternal()
 
         scene->onUpdateInternal();
     }
+}
 
+void TossEditor::onRenderInternal()
+{
+    TossEngine& tossEngine = TossEngine::GetInstance();
+    InputManager& inputManager = InputManager::GetInstance();
+    GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
+    ResourceManager& resourceManager = ResourceManager::GetInstance();
+    graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
+    graphicsEngine.createImGuiFrame();
 
     ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
     ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
 
     float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
     ImGuiViewport* viewport = ImGui::GetMainViewport();
-    
+
     ImVec2 dockPos = viewport->Pos;
     dockPos.y += menuBarHeight;  // Offset by the menu bar height
-    
+
     ImVec2 dockSize = viewport->Size;
     dockSize.y -= menuBarHeight; // Reduce the height accordingly
-    
+
     ImGui::SetNextWindowPos(dockPos, ImGuiCond_Always);
     ImGui::SetNextWindowSize(dockSize, ImGuiCond_Always);
     ImGui::SetNextWindowViewport(viewport->ID);
-   
+
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground;
-   
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("DockSpace", nullptr, window_flags);
     ImGui::PopStyleVar(3);
-    
+
     ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
     const ImGuiWindowClass* window_class = nullptr;
 
@@ -262,7 +264,7 @@ void TossEditor::onUpdateInternal()
         {
             if (ImGui::MenuItem("New", "CTRL+N"))
             {
-                CreateSceneFileViaFileSystem();
+                CreateScene();
             }
             ImGui::Separator();
             if (ImGui::MenuItem("Open", "CTRL+0"))
@@ -280,7 +282,7 @@ void TossEditor::onUpdateInternal()
                 Reload();
             }
             ImGui::Separator();
-            if (ImGui::MenuItem("Exit", "CTRL+ESC"))
+            if (ImGui::MenuItem("Exit"))
             {
                 Exit();
             }
@@ -321,7 +323,7 @@ void TossEditor::onUpdateInternal()
                     auto scene = std::make_shared<Scene>(filePath);
                     TossEngine::GetInstance().OpenScene(scene, false);
                 }
-                
+
             }
         }
         ImGui::EndMainMenuBar();
@@ -351,7 +353,7 @@ void TossEditor::onUpdateInternal()
         );
     }
     ImGui::End();
-    
+
     ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     {
         // Get the available size for the Scene window.
@@ -452,7 +454,7 @@ void TossEditor::onUpdateInternal()
             m_projectSettings->renderingPath = selectedPath;
             m_playerSettings->renderingPath = selectedPath;
         }
-        
+
         ImGui::Separator();
         ImGui::Text("Physics Settings");
 
@@ -956,7 +958,7 @@ void TossEditor::onUpdateInternal()
     }
 
     graphicsEngine.renderImGuiFrame();
-    
+
     Window* window = tossEngine.GetWindow();
     if (imGuiIo.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
@@ -967,8 +969,6 @@ void TossEditor::onUpdateInternal()
     // Render to window
     window->makeCurrentContext();
     window->present();
-
-
 }
 
 void TossEditor::onLateUpdateInternal()
@@ -1222,7 +1222,7 @@ void TossEditor::Save() const
     JsonUtility::SaveJsonFile("LayerManager.json", data);
 }
 
-void TossEditor::CreateSceneFileViaFileSystem()
+void TossEditor::CreateScene()
 {
 
     m_pendingFolderPath = "Scenes/";

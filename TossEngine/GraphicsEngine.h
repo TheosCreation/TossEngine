@@ -1,4 +1,18 @@
+/***
+Bachelor of Software Engineering
+Media Design School
+Auckland
+New Zealand
+(c) 2025 Media Design School
+File Name : GraphicsEngine.h
+Description : Singleton wrapper for OpenGL functionality, including state management, VAO, shader, texture binding,
+              and integration with ImGui. Used by the engine to abstract rendering details.
+Author : Theo Morris
+Mail : theo.morris@mds.ac.nz
+***/
+
 #pragma once
+
 #include "Utils.h"
 #include "Math.h"
 #include "ResourceManager.h"
@@ -8,14 +22,14 @@ struct ImGuiContext;
 
 /**
  * @class GraphicsEngine
- * @brief Contains all the render functionality of OpenGL.
+ * @brief Central rendering engine for OpenGL state control, shader binding, draw calls, and ImGui rendering.
  */
 class TOSSENGINE_API GraphicsEngine
 {
 public:
     /**
-     * @brief Provides access to the singleton instance of GraphicsEngine.
-     * @return A reference to the GraphicsEngine instance.
+     * @brief Retrieves the singleton instance of GraphicsEngine.
+     * @return Reference to the singleton.
      */
     static GraphicsEngine& GetInstance()
     {
@@ -23,149 +37,70 @@ public:
         return instance;
     }
 
-    // Delete the copy constructor and assignment operator to prevent copying
-    GraphicsEngine(const GraphicsEngine& other) = delete;
-    GraphicsEngine& operator=(const GraphicsEngine& other) = delete;
+    // Disable copy/assignment to enforce singleton
+    GraphicsEngine(const GraphicsEngine&) = delete;
+    GraphicsEngine& operator=(const GraphicsEngine&) = delete;
 
     void Init(ProjectSettingsPtr& projectSettings);
     void Init(TossPlayerSettingsPtr& playerSettings);
 
-    /**
-     * @brief Creates a Vertex Array Object (VAO) without an Index Buffer.
-     * @param vbDesc Description of the Vertex Buffer.
-     * @return A shared pointer to the created Vertex Array Object.
-     */
-    VertexArrayObjectPtr createVertexArrayObject(const VertexBufferDesc& vbDesc);
+    // --- Vertex Array Object Management ---
 
-    /**
-     * @brief Creates a Vertex Array Object (VAO) with an Index Buffer.
-     * @param vbDesc Description of the Vertex Buffer.
-     * @param ibDesc Description of the Index Buffer.
-     * @return A shared pointer to the created Vertex Array Object.
-     */
+    VertexArrayObjectPtr createVertexArrayObject(const VertexBufferDesc& vbDesc);
     VertexArrayObjectPtr createVertexArrayObject(const VertexBufferDesc& vbDesc, const IndexBufferDesc& ibDesc);
     void updateVertexArrayObject(const VertexArrayObjectPtr& vao, const void* vertexData, uint dataSize);
 
-    /**
-     * @brief Clears the screen with the specified color.
-     * @param color The color to clear the screen with.
-     */
+    // --- State + Viewport ---
+
     void clear(const glm::vec4& color, bool clearDepth = true, bool clearStencil = true);
+    void setViewport(const Vector2& size);
+    void setScissorSize(const Rect size);
+    void setScissor(bool enabled);
+    void setMultiSampling(bool enabled);
+
+    void setFaceCulling(const CullType& type);
+    void setDepthFunc(const DepthType& type);
+    void setWindingOrder(const WindingOrder& type);
+    void setBlendFunc(const BlendType& srcType, const BlendType& dstType);
+    void setStencil(const StencilOperationType& type);
+
+    // --- ImGui Integration ---
+
     void createImGuiFrame();
     ImGuiContext* getImGuiContext();
     void renderImGuiFrame();
 
-    /**
-     * @brief Sets the face culling mode.
-     * @param type The type of face culling to use.
-     */
-    void setFaceCulling(const CullType& type);
+    // --- Draw Calls ---
 
-    /**
-     * @brief Sets the depth function mode.
-     * @param type The type of depth type to use.
-     */
-    void setDepthFunc(const DepthType& type);
+    void drawTriangles(const TriangleType& triangleType, uint vertexCount, uint offset);
+    void drawIndexedTriangles(const TriangleType& triangleType, uint indicesCount);
+    void drawIndexedTrianglesInstanced(const TriangleType& triangleType, uint indicesCount, int instanceCount);
+    void drawLines(const LineType& lineType, uint vertexCount, uint offset);
 
-    void setScissorSize(const Rect size);
+    // --- Shader + Texture Binding ---
 
-    void setScissor(bool enabled);
-
-    void setBlendFunc(const BlendType& srcType, const BlendType& dstType);
-
-    /**
-     * @brief Sets the winding order for front-facing polygons.
-     * @param type The winding order to use.
-     */
-    void setWindingOrder(const WindingOrder& type);
-
-    void setStencil(const StencilOperationType& type);
-
-
-    /**
-     * @brief Sets the viewport size.
-     * @param size The size of the viewport.
-     */
-    void setViewport(const Vector2& size);
-
-    /**
-     * @brief Sets multisampling to enabled or disabled.
-     * @param enabled If multisampling should be enabled or disabled.
-     */
-    void setMultiSampling(bool enabled);
-
-    /**
-     * @brief Sets the active Vertex Array Object (VAO).
-     * @param vao A shared pointer to the Vertex Array Object to set.
-     */
-    void setVertexArrayObject(const VertexArrayObjectPtr& vao);
-    void setVertexArrayObject(const uint vaoId);
-
-    /**
-     * @brief Sets the active Shader program.
-     * @param program A shared pointer to the Shader program to set.
-     */
     void setShader(const ShaderPtr& program);
+    void setVertexArrayObject(const VertexArrayObjectPtr& vao);
+    void setVertexArrayObject(uint vaoId);
 
-    void setTexture2D(const uint textureId, uint slot, std::string bindingName);
+    void setTexture2D(const Texture2DPtr& texture, uint slot, std::string bindingName) const;
+    void setTexture2D(uint textureId, uint slot, std::string bindingName);
+    void setTextureCubeMap(const TextureCubeMapPtr& texture, uint slot, std::string bindingName) const;
+
+    // --- Rendering Mode ---
 
     RenderingPath getRenderingPath();
     void setRenderingPath(RenderingPath newRenderingPath);
 
-
-    /**
-     * @brief Sets the active 2D Texture.
-     * @param texture A shared pointer to the Texture2D to set.
-     * @param slot The texture slot to bind the texture to.
-     */
-    void setTexture2D(const Texture2DPtr& texture, uint slot, std::string bindingName) const;
-
-    /**
-     * @brief Sets the active Cube Map Texture.
-     * @param texture A shared pointer to the Texture2D to set.
-     * @param slot The texture slot to bind the texture to.
-     */
-    void setTextureCubeMap(const TextureCubeMapPtr& texture, uint slot, std::string bindingName) const;
-
-    /**
-     * @brief Draws triangles.
-     * @param triangleType The type of triangles to draw.
-     * @param vertexCount The number of vertices to draw.
-     * @param offset The offset to start drawing from.
-     */
-    void drawTriangles(const TriangleType& triangleType, uint vertexCount, uint offset);
-
-    /**
-     * @brief Draws indexed triangles.
-     * @param triangleType The type of triangles to draw.
-     * @param indicesCount The number of indices to draw.
-     */
-    void drawIndexedTriangles(const TriangleType& triangleType, uint indicesCount);
-
-    /**
-     * @brief Draws indexed triangles with instancing.
-     * @param triangleType The type of triangles to draw.
-     * @param indicesCount The number of indices to draw.
-     * @param instanceCount The number of instances to draw.
-     */
-    void drawIndexedTrianglesInstanced(const TriangleType& triangleType, uint indicesCount, int instanceCount);
-
-    void drawLines(const LineType& lineType, uint vertexCount, uint offset);
+    // --- Cleanup ---
 
     void CleanUp();
 
 private:
+    GraphicsEngine() = default;
+    ~GraphicsEngine() = default;
+
     bool isInitilized = false;
     ShaderPtr currentShader = nullptr;
     RenderingPath m_renderingPath;
-
-    /**
-     * @brief Private constructor to prevent external instantiation.
-     */
-    GraphicsEngine() = default;
-
-    /**
-     * @brief Private destructor to prevent external deletion.
-     */
-    ~GraphicsEngine() = default;
 };

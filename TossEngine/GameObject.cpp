@@ -374,7 +374,10 @@ void GameObject::onUpdateInternal()
     if (Time::TimeScale != 0.0f) return;
 
     for (auto& pair : m_components) {
-        pair.second->onUpdateInternal();
+        if (pair.second)
+        {
+            pair.second->onUpdateInternal();
+        }
     }
     
     for (MissingComponent* missingComponent : missingComponetsToDestroy)
@@ -510,6 +513,11 @@ void GameObject::removeMissingComponent(MissingComponent* component)
         return;
 
     missingComponetsToDestroy.push_back(component);
+}
+
+std::map<std::type_index, Component*>& GameObject::getAllComponents()
+{
+    return m_components;
 }
 
 bool GameObject::tryDeleteSelectedComponent()

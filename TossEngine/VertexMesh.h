@@ -3,7 +3,7 @@ Bachelor of Software Engineering
 Media Design School
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2025 Media Design School
 File Name : VertexMesh.h
 Description : VertexMesh is a standard representation for a mesh vertex.
 Author : Theo Morris
