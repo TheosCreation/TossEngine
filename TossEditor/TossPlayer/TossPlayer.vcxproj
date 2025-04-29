@@ -133,7 +133,8 @@
       <Command>xcopy "..\Scenes" ".\Scenes" /E /Y /I
 xcopy "..\Resources" ".\Resources" /E /Y /I
 xcopy "..\Internal" ".\Internal" /E /Y /I
-copy /Y "..\PlayerSettings.json" ".\PlayerSettings.json"</Command>
+copy /Y "..\PlayerSettings.json" ".\PlayerSettings.json"
+copy /Y "..\LayerManager.json" ".\LayerManager.json"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,7 +160,8 @@ copy /Y "..\PlayerSettings.json" ".\PlayerSettings.json"</Command>
       <Command>xcopy "..\Scenes" ".\Scenes" /E /Y /I
 xcopy "..\Resources" ".\Resources" /E /Y /I
 xcopy "..\Internal" ".\Internal" /E /Y /I
-copy /Y "..\PlayerSettings.json" ".\PlayerSettings.json"</Command>
+copy /Y "..\PlayerSettings.json" ".\PlayerSettings.json"
+copy /Y "..\LayerManager.json" ".\LayerManager.json"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

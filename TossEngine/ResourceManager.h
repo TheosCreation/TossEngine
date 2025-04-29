@@ -97,6 +97,7 @@ protected:
     bool hasCreatedResources = false;
     std::map<string, ResourcePtr> m_mapResources; // Map of resources keyed by their unique ids
     std::unordered_map<string, json> m_resourceDataMap;
+    std::unordered_map<string, json> m_prefabBackupData;
 
     std::unordered_map<std::string, std::function<ResourcePtr(const std::string& uniqueId, ResourceManager* mgr)>> resourceFactories;
     std::unordered_map<std::string, void*> m_resourceModules;

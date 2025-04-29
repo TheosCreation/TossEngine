@@ -148,7 +148,7 @@ vector<PrefabPtr> ResourceManager::getPrefabs() const
 
 void ResourceManager::DeletePrefabs()
 {
-    m_resourceDataMap.clear();
+    m_prefabBackupData.clear();
 
     std::vector<std::string> toRemove;
     toRemove.reserve(m_mapResources.size());
@@ -158,17 +158,12 @@ void ResourceManager::DeletePrefabs()
         if (auto prefab = std::dynamic_pointer_cast<Prefab>(resource))
         {
             // Backup its data
-
             json j = prefab->serialize();
             j["uniqueId"] = uid;
 
-            // Store the full payload
-            m_resourceDataMap[uid] = std::move(j);
+            m_prefabBackupData[uid] = std::move(j);
 
-            // Let the prefab clean up its runtime (e.g. detach from scene)
             prefab->onDestroy();
-
-            // Mark for removal from the live map
             toRemove.push_back(uid);
         }
     }
@@ -179,15 +174,12 @@ void ResourceManager::DeletePrefabs()
 
 void ResourceManager::LoadPrefabs()
 {
-    // Re-create each prefab from the JSON we saved
-    for (auto& [uid, prefabData] : m_resourceDataMap)
+    for (auto& [uid, prefabData] : m_prefabBackupData)
     {
-        // This will internally call Prefab::onCreate() and onCreateLate()
         createResourceFromDataToMap("Prefab", prefabData);
     }
 
-    // Clear the backup now that everything is back in m_mapResources
-    m_resourceDataMap.clear();
+    m_prefabBackupData.clear();
 }
 
 void ResourceManager::SetSelectedResource(const ResourcePtr& selectedResource)
