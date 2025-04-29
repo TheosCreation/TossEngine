@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Image.h"
 #include "InputManager.h"
+#include "TossEngine.h"
 //#include "TossEngine.h"
 
 void Button::onCreateLate()
@@ -57,21 +58,21 @@ void Button::onUpdate()
 Rect Button::getScreenRect() const
 {
     Rect worldRect = m_graphic->getWorldRect();
-//
-//auto& inputManager = InputManager::GetInstance();
-//Rect viewport = inputManager.getViewport();
-//
-//Vector2 windowSize = TossEngine::GetInstance().GetWindow()->getInnerSize();
-//
-//float scaleX = viewport.width / windowSize.x;
-//float scaleY = viewport.height / windowSize.y;
-//
+    
+    auto& inputManager = InputManager::GetInstance();
+    Rect viewport = inputManager.getViewport();
+    
+    Vector2 windowSize = TossEngine::GetInstance().GetWindow()->getInnerSize();
+    
+    float scaleX = viewport.width / windowSize.x;
+    float scaleY = viewport.height / windowSize.y;
+    
     // Now remap
-    //Rect screenRect;
-    //screenRect.left = viewport.left + worldRect.left * scaleX;
-    //screenRect.top = viewport.top + worldRect.top * scaleY;
-    //screenRect.width = viewport.left + worldRect.width * scaleX;
-    //screenRect.height = viewport.top + worldRect.height * scaleY;
+    Rect screenRect;
+    screenRect.left = viewport.left + worldRect.left * scaleX;
+    screenRect.top = viewport.top + worldRect.top * scaleY;
+    screenRect.width = viewport.left + worldRect.width * scaleX;
+    screenRect.height = viewport.top + worldRect.height * scaleY;
 
     return worldRect;
 }
