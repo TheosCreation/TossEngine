@@ -31,4 +31,5 @@ void MainMenuManager::Play()
 
 void MainMenuManager::Quit()
 {
+    TossEngine::GetInstance().Quit();
 }

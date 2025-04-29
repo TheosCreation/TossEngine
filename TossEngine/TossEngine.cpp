@@ -52,6 +52,19 @@ bool TossEngine::IsDebugMode()
     return isDebugMode;
 }
 
+
+void TossEngine::Quit()
+{
+    if (!isDebugMode)
+    {
+        m_window->close();
+    }
+    else
+    {
+        Debug::Log("Quit Called but did nothing in editor mode");
+    }
+}
+
 void TossEngine::SetDebugMode(bool enabled)
 {
     isDebugMode = enabled;

@@ -31,6 +31,7 @@ public:
 
     void OpenScene(shared_ptr<Scene> _scene, bool callStartMethods = true);
     void OpenScene(const string& sceneName);
+    void Quit();
     void SetPlayerSettings(TossPlayerSettings* playerSettings);
     static float GetTime();
 

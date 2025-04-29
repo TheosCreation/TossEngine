@@ -74,7 +74,6 @@ void TossEditor::run()
 
         while (!tossEngine.GetWindow()->shouldClose())
         {
-            tossEngine.onUpdateInternal();
             if (canUpdateInternal)
             {
                 onUpdateInternal();
@@ -85,6 +84,7 @@ void TossEditor::run()
                 onLateUpdateInternal();
             }
             tossEngine.PollEvents();
+            tossEngine.onUpdateInternal();
         }
 
         onQuit();
@@ -926,7 +926,6 @@ void TossEditor::onUpdateInternal()
                     editorPreferences.lastKnownOpenScenePath = savePath;
 
                     TossEngine::GetInstance().OpenScene(newScene, false);
-                    //m_gameRunning = false;
                 }
 
                 // Reset

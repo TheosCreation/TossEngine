@@ -68,6 +68,7 @@ void TossPlayer::run()
     {
         onUpdateInternal();
         tossEngine.PollEvents();
+        tossEngine.onUpdateInternal();
     }
 
     
