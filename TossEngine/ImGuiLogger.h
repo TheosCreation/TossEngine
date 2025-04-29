@@ -10,17 +10,9 @@
 
 class TOSSENGINE_API ImGuiLogger {
 public:
-    void AddLog(std::string message)
+    void AddLog(std::string& message)
     {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        if (m_Items.capacity() > 1000000 || m_Items.data() == nullptr)
-        {
-            m_Items.emplace_back(std::move(message));
-        }
-        else
-        {
-            printf("Wtf");
-        }
+        m_Items.emplace_back(message);
         m_ScrollToBottom = true;
         m_NeedsCollapseRecompute = true;
     }
@@ -40,10 +32,10 @@ public:
     void Draw(const char* title, bool* p_open = nullptr);
 
 private:
-    std::vector<std::string> m_Items = std::vector<std::string>();
+    std::vector<std::string> m_Items;
     std::mutex m_mutex;
     bool m_ScrollToBottom = false;
     bool m_Collapse = false;
     bool m_NeedsCollapseRecompute = true;
-    std::vector<std::string> m_CollapsedItems = std::vector<std::string>();
+    std::vector<std::string> m_CollapsedItems;
 };
