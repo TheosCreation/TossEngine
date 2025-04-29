@@ -5,7 +5,7 @@ Auckland
 New Zealand
 (c) 2024 Media Design School
 File Name : ShadowMap.h
-Description : ShadowMap class handles the creation and management of shadow maps for rendering shadows in a 3D scene.
+Description : ShadowMap class handles creation and management of depth textures for real-time shadow rendering.
 Author : Theo Morris
 Mail : theo.morris@mds.ac.nz
 ***/
@@ -18,36 +18,34 @@ Mail : theo.morris@mds.ac.nz
 
 /**
  * @class ShadowMap
- * @brief A class that represents a shadow map texture used for shadow rendering.
+ * @brief Represents a depth texture used for rendering real-time shadows.
  */
-class ShadowMap : public Texture
+class TOSSENGINE_API ShadowMap : public Texture
 {
 public:
     /**
-     * @brief Constructor for the ShadowMap class.
-     * @param _resolution The resolution of the shadow map.
+     * @brief Constructor.
+     * @param resolution Resolution of the shadow map (width and height).
      */
-    ShadowMap(Vector2 _resolution);
+    ShadowMap(Vector2 resolution);
 
     /**
-     * @brief Destructor for the ShadowMap class.
+     * @brief Destructor.
      */
     ~ShadowMap();
 
     /**
-     * @brief Binds the shadow map for rendering.
-     * This prepares the shadow map for use in rendering shadows.
+     * @brief Binds the shadow map framebuffer for writing depth information.
      */
-    virtual void Bind();
+    void Bind();
 
     /**
-     * @brief Unbinds the shadow map.
-     * This releases the shadow map from the current context.
+     * @brief Unbinds the shadow map framebuffer and restores the previous viewport.
      */
-    virtual void UnBind();
+    void UnBind();
 
 private:
-    uint FBO; // Framebuffer Object for the shadow map.
-    Vector2 m_resolution = Vector2(0); // Resolution of the shadow map.
-    GLint m_prevViewport[4]; // Original viewport size before binding
+    uint FBO = 0;              //!< Framebuffer Object ID used for depth rendering.
+    Vector2 m_resolution = {}; //!< Shadow map resolution.
+    GLint m_prevViewport[4] = { 0, 0, 0, 0 }; //!< Previous OpenGL viewport settings (restored after unbinding).
 };

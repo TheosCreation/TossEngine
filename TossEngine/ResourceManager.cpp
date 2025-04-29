@@ -28,6 +28,11 @@ bool ResourceManager::IsResourceLoaded(const std::string& uniqueId) const
     return m_mapResources.find(uniqueId) != m_mapResources.end();
 }
 
+std::map<std::string, ResourcePtr>& ResourceManager::GetAllResources()
+{
+    return m_mapResources;
+}
+
 ResourcePtr ResourceManager::GetSelectedResource()
 {
     return m_selectedResource;

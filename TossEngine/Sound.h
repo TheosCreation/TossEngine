@@ -1,27 +1,40 @@
-/// 
-/// @file SoundInfo.h
-/// @author Ross Hoyt
-///
-#ifndef SOUNDINFO_H
-#define SOUNDINFO_H
+/***
+Bachelor of Software Engineering
+Media Design School
+Auckland
+New Zealand
+(c) 2025 Media Design School
+File Name : Sound.h
+Description : Sound class representing a sound resource (2D or 3D) in TossEngine.
+Author : Theo Morris
+***/
+
+#pragma once
 
 #include "Resource.h"
 #include <string>
 #include <map>
 
+/**
+ * @class Sound
+ * @brief Represents a sound resource, supporting 2D/3D positioning, looping, volume, and reverb control.
+ */
 class TOSSENGINE_API Sound : public Resource
 {
 public:
     /**
-     * Constructor for SoundInfo.
-     * @param uniqueID A unique identifier for the sound.
-     * @param is3D Whether the sound is 3D.
-     * @param isLoop Whether the sound should loop.
-     * @param volume The volume of the sound (0.0 to 1.0).
-     * @param reverbAmount The amount of reverb to apply (0.0 to 1.0).
-     * @param filePath The path to the sound file.
+     * @brief Constructor for creating a Sound from a description.
+     * @param desc The descriptor containing sound settings.
+     * @param uniqueID Unique identifier for the sound.
+     * @param manager Pointer to the ResourceManager managing this sound.
      */
     Sound(const SoundDesc& desc, const std::string& uniqueID, ResourceManager* manager);
+
+    /**
+     * @brief Constructor for creating a Sound from deserialization.
+     * @param uid Unique identifier.
+     * @param mgr Pointer to ResourceManager.
+     */
     Sound(const std::string& uid, ResourceManager* mgr);
 
     void OnInspectorGUI() override;
@@ -33,37 +46,32 @@ public:
     float getVolume() const { return m_volume; }
     float getReverbAmount() const { return m_desc.reverbAmount; }
     bool isLoaded() const { return m_loaded; }
-    float getX() const { return x; }
-    float getY() const { return y; }
-    float getZ() const { return z; }
+    float getX() const { return m_position.x; }
+    float getY() const { return m_position.y; }
+    float getZ() const { return m_position.z; }
 
     // Setters
     void setVolume(float newVolume) { m_desc.volume = newVolume; }
     void setReverbAmount(float newReverbAmount) { m_desc.reverbAmount = newReverbAmount; }
     void setLoaded(bool isLoaded) { m_loaded = isLoaded; }
-    void set3DCoords(float newX, float newY, float newZ) {
-        x = newX;
-        y = newY;
-        z = newZ;
-    }
 
 private:
-    SoundDesc m_desc = {};
-    bool m_is3D = false;
-    bool m_isLoop = false;
-    float m_volume = 1.0f;
-    float m_reverbAmount = 0.0f;
+    SoundDesc m_desc = {};       //!< Sound descriptor.
+    bool m_is3D = false;          //!< Whether the sound is spatialized (3D).
+    bool m_isLoop = false;        //!< Whether the sound loops.
+    float m_volume = 1.0f;        //!< Volume of the sound [0.0 - 1.0].
+    bool m_loaded = false;        //!< Whether the sound is loaded into memory.
 
-    bool m_loaded = false;
-    float x, y, z;         // 3D coordinates for the sound
+    Vector3 m_position = Vector3(); //!< 3D position of the sound.
 
-    SERIALIZABLE_MEMBERS(m_path, m_is3D, m_isLoop, m_volume, m_reverbAmount)
+    SERIALIZABLE_MEMBERS(m_path, m_is3D, m_isLoop, m_volume, m_desc.reverbAmount)
 };
+
 REGISTER_RESOURCE(Sound)
 
+// JSON Serialization Helpers
 inline void to_json(json& j, SoundPtr const& sound) {
-    if (sound)
-    {
+    if (sound) {
         j = json{ { "id", sound->getUniqueID() } };
     }
     else {
@@ -72,8 +80,7 @@ inline void to_json(json& j, SoundPtr const& sound) {
 }
 
 inline void from_json(json const& j, SoundPtr& sound) {
-    if (j.contains("id")) sound = ResourceManager::GetInstance().get<Sound>(j["id"].get<string>());
+    if (j.contains("id")) {
+        sound = ResourceManager::GetInstance().get<Sound>(j["id"].get<std::string>());
+    }
 }
-
-
-#endif // SOUNDINFO_H

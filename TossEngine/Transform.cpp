@@ -187,6 +187,7 @@ Transform* Transform::LookupParentTransform(size_t parentID) const
     return nullptr;
 }
 
+
 void Transform::SetLocalScale(const Vector3& newScale)
 {
     Vector3 previousScale = localScale;

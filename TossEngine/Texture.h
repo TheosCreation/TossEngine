@@ -8,54 +8,67 @@ File Name : Texture.h
 Description : Texture class handles the loading and management of texture resources.
 Author : Theo Morris
 Mail : theo.morris@mds.ac.nz
-**/
+***/
 
 #pragma once
 #include "Resource.h"
 
 /**
  * @class Texture
- * @brief Handles the loading and management of texture resources.
+ * @brief Abstract base class for texture resources, managing GPU texture IDs.
  */
 class TOSSENGINE_API Texture : public Resource
 {
 public:
     /**
-     * @brief Constructor for the Texture class.
-     * @param path The file path to the texture.
-     * @param manager Pointer to the resource manager.
+     * @brief Default constructor for an uninitialized texture.
      */
     Texture();
 
     /**
-     * @brief Constructor for the Texture class with a file path.
-     * @param path The file path to the texture.
-     * @param manager Pointer to the resource manager.
+     * @brief Constructor with file path and unique ID.
+     * @param filePath Path to the texture file.
+     * @param uniqueId Unique identifier for the resource.
+     * @param manager Resource manager managing this texture.
      */
-    Texture(const string& filePath, const string& uniqueId, ResourceManager* manager);
-    Texture(const string& uniqueId, ResourceManager* manager);
+    Texture(const std::string& filePath, const std::string& uniqueId, ResourceManager* manager);
 
+    /**
+     * @brief Constructor with unique ID (used for deserialization).
+     * @param uniqueId Unique identifier.
+     * @param manager Resource manager managing this texture.
+     */
+    Texture(const std::string& uniqueId, ResourceManager* manager);
+
+    /**
+     * @brief Destructor, cleans up OpenGL texture resources.
+     */
+    virtual ~Texture();
+
+    /**
+     * @brief Draws the texture's properties in the Inspector UI.
+     */
     void OnInspectorGUI() override;
+
+    /**
+     * @brief Deletes the texture resource, optionally deleting itself from the manager.
+     * @param deleteSelf Whether to also unregister from ResourceManager.
+     * @return True if deleted successfully.
+     */
     bool Delete(bool deleteSelf = true) override;
 
     /**
-     * @brief Destructor for the Texture class.
-     * Cleans up resources associated with the texture.
+     * @brief Gets the OpenGL texture ID.
+     * @return The OpenGL texture ID.
      */
-    ~Texture();
+    uint getId() const noexcept { return m_textureId; }
 
     /**
-     * @brief Gets the ID of the texture.
-     * @return The ID of the texture.
+     * @brief Sets the OpenGL texture ID manually (should be used with caution).
+     * @param id The new texture ID.
      */
-    uint getId() const;
-
-    /**
-     * @brief Sets the ID of the texture.
-     * @param id The new ID for the texture.
-     */
-    void setId(uint id);
+    void setId(uint id) noexcept { m_textureId = id; }
 
 protected:
-    uint m_textureId = 0; // The ID of the texture.
+    uint m_textureId = 0; //!< OpenGL ID of the texture.
 };

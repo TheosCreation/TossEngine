@@ -38,13 +38,3 @@ bool Texture::Delete(bool deleteSelf)
 Texture::~Texture()
 {
 }
-
-uint Texture::getId() const
-{
-    return m_textureId;
-}
-
-void Texture::setId(uint id)
-{
-    m_textureId = id;
-}
