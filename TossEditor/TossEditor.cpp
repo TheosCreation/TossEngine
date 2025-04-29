@@ -1128,10 +1128,13 @@ void TossEditor::PerformSafeBuild()
     resourceManager.saveResourcesToFile("Resources/Resources.json"); // save resources just in case of crash and to save prefabs
     selectedSelectable = nullptr;
     canUpdateInternal = false;
-    std::string msBuildPath = getMSBuildPath();
-    std::string solutionPath = FindSolutionPath(); //this needs to change to proper name of the solution on the release build of the engine
-    std::string config;
 
+
+    std::string msBuildPath = getMSBuildPath();
+    //std::string solutionPath = FindSolutionPath();
+    std::string projectPath = getProjectRoot();
+    std::string config;
+    Debug::Log(projectPath);
     #ifdef _DEBUG
         config = "Debug";
     #else
@@ -1139,22 +1142,27 @@ void TossEditor::PerformSafeBuild()
     #endif
 
     if (msBuildPath.empty()) {
-        Debug::LogError("No buildpath (MSBuild.exe not found)", false);
+        Debug::LogError("No buildpath (MSBuild.exe not found) | Did not recompile scripts", false);
         return;
     }
 
-    if (solutionPath.empty()) {
-        Debug::LogError("Could not locate sln | did not compile build", false);
-        return;
+    std::string command = std::string("cmd /C \"\"") + msBuildPath +
+        "\" \"" + projectPath + "\\TossPlayer\\TossPlayer.vcxproj" +
+        "\" /p:Configuration=" + config +
+        " /p:Platform=x64" +
+        " /m";
+
+    if (config == "Debug") {
+        command += " /p:AdditionalOptions=\\\"/FS\\\"";
     }
+
+    command += "\"";
+
 
     if (scene) scene->clean();
     resourceManager.DeletePrefabs();
     TossEngine& tossEngine = TossEngine::GetInstance();
-    tossEngine.UnLoadScripts();;
-    std::string command = std::string("cmd /C \"\"") + msBuildPath +
-        "\" \"" + solutionPath +
-        "\" /t:TossPlayer /p:Configuration=" + config + " /p:Platform=x64 /m\"";
+    tossEngine.UnLoadScripts();
 
     int result = system(command.c_str());
 
