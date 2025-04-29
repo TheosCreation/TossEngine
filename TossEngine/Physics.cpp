@@ -344,8 +344,6 @@ void Physics::onTrigger(const rp3d::OverlapCallback::CallbackData& data) {
         if (!customCollider1 || !customCollider2) continue;
 
         if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapStart) {
-            Debug::Log("Trigger event enter");
-
             if (customCollider1->GetTrigger()) {
 
                 customCollider1->OnTriggerEnter(customCollider2);
@@ -356,8 +354,6 @@ void Physics::onTrigger(const rp3d::OverlapCallback::CallbackData& data) {
             }
         }
         else if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapExit) {
-            Debug::Log("Trigger event exit");
-
             if (customCollider1->GetTrigger()) {
 
                 customCollider1->OnTriggerExit(customCollider2);

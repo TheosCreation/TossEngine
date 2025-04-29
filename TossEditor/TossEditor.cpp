@@ -326,7 +326,6 @@ void TossEditor::onUpdateInternal()
     }
 
     Debug::DrawConsole();
-
     ImGui::Begin("Game", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     {
         auto scene = TossEngine::GetInstance().getCurrentScene();
@@ -381,6 +380,13 @@ void TossEditor::onUpdateInternal()
             ImVec2 imgMin = ImGui::GetItemRectMin();
             ImVec2 imageMax = ImGui::GetItemRectMax();
             ImVec2 imgSize = ImGui::GetItemRectSize();
+
+            InputManager::GetInstance().setViewport(
+                imgMin.x,            // left
+                imgMin.y,            // top
+                imgSize.x,           // width
+                imgSize.y            // height
+            );
 
             // 2) pick an offset inside the image where your toolbar should sit
             const float margin = 8.0f;

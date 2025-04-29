@@ -160,47 +160,85 @@ bool InputManager::isGameModeEnabled() const
     return m_gameMode;
 }
 
+Rect InputManager::getViewport()
+{
+    return m_viewport;
+}
+
 void InputManager::setScreenArea(const Vector2& area)
 {
 	m_screenArea = area;
 }
 
+void InputManager::setViewport(float x, float y, float width, float height)
+{
+    m_viewport = { static_cast<int>(x), static_cast<int>(y), static_cast<int>(width), static_cast<int>(height) };
+    m_viewportEnabled = true;
+}
+
+void InputManager::disableViewport()
+{
+    m_viewportEnabled = false;
+}
 void InputManager::onUpdate()
 {
-	double newMouseX, newMouseY;
-	glfwGetCursorPos(WindowPtr, &newMouseX, &newMouseY);
-	currentMouseX = static_cast<float>(newMouseX);
-	currentMouseY = static_cast<float>(newMouseY);
+    double newMouseX, newMouseY;
+    glfwGetCursorPos(WindowPtr, &newMouseX, &newMouseY);
 
-	if (m_playEnable) {
-		// Calculate delta mouse position
-		m_deltaMouse = Vector2(currentMouseX - m_screenArea.x / 2.0f, currentMouseY - m_screenArea.y / 2.0f);
-		// Reset the cursor to the center of the window
-		glfwSetCursorPos(WindowPtr, m_screenArea.x / 2.0f, m_screenArea.y / 2.0f);
-	}
-	else {
-		// Calculate delta mouse position based on the previous frame's position
-		m_deltaMouse = Vector2(currentMouseX - m_oldMousePos.x, currentMouseY - m_oldMousePos.y);
-	}
+    if (m_viewportEnabled)
+    {
+        // Mouse relative to viewport top-left
+        currentMouseX = static_cast<float>(newMouseX) - m_viewport.left;
+        currentMouseY = static_cast<float>(newMouseY) - m_viewport.top;
+    }
+    else
+    {
+        // Mouse relative to whole window
+        currentMouseX = static_cast<float>(newMouseX);
+        currentMouseY = static_cast<float>(newMouseY);
+    }
+
+    if (m_playEnable)
+    {
+        float centerX = m_viewportEnabled ? (m_viewport.width * 0.5f) : (m_screenArea.x * 0.5f);
+        float centerY = m_viewportEnabled ? (m_viewport.height * 0.5f) : (m_screenArea.y * 0.5f);
+
+        // m_deltaMouse is relative inside viewport!
+        m_deltaMouse = Vector2(currentMouseX - centerX, currentMouseY - centerY);
+
+        // Move the real OS mouse cursor back to center of viewport
+        if (m_viewportEnabled)
+            glfwSetCursorPos(WindowPtr, m_viewport.left + centerX, m_viewport.top + centerY);
+        else
+            glfwSetCursorPos(WindowPtr, centerX, centerY);
+    }
+    else
+    {
+        m_deltaMouse = Vector2(currentMouseX - m_oldMousePos.x, currentMouseY - m_oldMousePos.y);
+    }
 }
 
 void InputManager::onLateUpdate()
 {
-	previousKeyStates = currentKeyStates;
-	previousMouseStates = currentMouseStates;
+    previousKeyStates = currentKeyStates;
+    previousMouseStates = currentMouseStates;
 
-	// Reset mouse scroll
-	resetMouseScroll();
+    resetMouseScroll();
 
-	if (m_playEnable)
-	{
-		// Reset the cursor to the center of the window
-		glfwSetCursorPos(WindowPtr, m_screenArea.x / 2.0, m_screenArea.y / 2.0);
-	}
+    if (m_playEnable)
+    {
+        float centerX = m_viewportEnabled ? (m_viewport.width * 0.5f) : (m_screenArea.x * 0.5f);
+        float centerY = m_viewportEnabled ? (m_viewport.height * 0.5f) : (m_screenArea.y * 0.5f);
 
-	// Update old mouse position
-	m_oldMousePos = Vector2(currentMouseX, currentMouseY);
+        if (m_viewportEnabled)
+            glfwSetCursorPos(WindowPtr, m_viewport.left + centerX, m_viewport.top + centerY);
+        else
+            glfwSetCursorPos(WindowPtr, centerX, centerY);
+    }
+
+    m_oldMousePos = Vector2(currentMouseX, currentMouseY);
 }
+
 
 void InputManager::scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
 {
