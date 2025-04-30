@@ -465,6 +465,7 @@ void TossEditor::onRenderInternal()
 
         if (ImGui::DragFloat3("Gravity", m_projectSettings->gravity.Data(), 0.1f))
         {
+            m_playerSettings->gravity = m_projectSettings->gravity;
             Physics::GetInstance().SetGravity(m_projectSettings->gravity);
         }
 

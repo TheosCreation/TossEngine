@@ -64,6 +64,8 @@ public:
      */
     float getPixelHeight() const;
 
+    Glyph getGlyph(char c);
+
 private:
     int m_atlasHeight = 512;            //!< Height of the generated font atlas (pixels)
     int m_atlasWidth = 512;             //!< Width of the generated font atlas (pixels)

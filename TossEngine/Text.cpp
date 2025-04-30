@@ -11,7 +11,7 @@ void Text::onCreateLate()
 
 void Text::OnInspectorGUI()
 {
-    Renderer::OnInspectorGUI();
+    UiElement::OnInspectorGUI();
 
     if (ResourceAssignableField(m_font, "Font"))
     {
@@ -48,15 +48,29 @@ void Text::Render(UniformData data, RenderingPath renderPath)
     //have to check if it has an owner because image is used from drawing the scene and game view windows
     if (m_owner)
     {
-        shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
+        Mat4 modelMatrix = m_owner->m_transform.GetMatrix();
+
         if (m_isUi)
         {
+            Vector2 screenSize = data.uiScreenSize;
+            Vector2 textSize = GetTextSize();
+            Vector2 anchorOffset = GetAnchorOffset(screenSize, textSize, m_anchorPoint);
+            Vector2 pivotOffset = GetPivotOffsetFromCenter(textSize);
+
+            modelMatrix = Mat4::Translate(Vector3(anchorOffset.x, -anchorOffset.y, 0.0f)) * modelMatrix;
+            modelMatrix = Mat4::Translate(Vector3(-pivotOffset.x, -pivotOffset.y, 0.0f)) * modelMatrix;
+
             shader->setMat4("VPMatrix", data.uiProjectionMatrix);
         }
         else
         {
+            Vector2 textSize = GetTextSize();
+            Vector2 pivotOffset = GetPivotOffsetFromCenter(textSize);
+            modelMatrix = modelMatrix * Mat4::Translate(Vector3(-pivotOffset.x, -pivotOffset.y, 0.0f));
             shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
         }
+
+        shader->setMat4("modelMatrix", modelMatrix);
     }
 
     if (m_font)
@@ -86,6 +100,28 @@ string Text::GetText() const
 bool Text::GetIsUi() const
 {
     return m_isUi;
+}
+Vector2 Text::GetTextSize() const
+{
+    if (!m_font) return Vector2(0, 0);
+
+    float totalWidth = 0.0f;
+    float maxHeight = 0.0f;
+
+    for (char c : m_text)
+    {
+        Glyph glyph = m_font->getGlyph(c);
+        totalWidth += glyph.xadvance;
+
+        float glyphHeight = static_cast<float>(glyph.y1 - glyph.y0);
+        float glyphYOff = glyph.yoff;
+        float totalGlyphHeight = glyphHeight + glyphYOff;
+
+        if (totalGlyphHeight > maxHeight)
+            maxHeight = totalGlyphHeight;
+    }
+
+    return Vector2(totalWidth, maxHeight);
 }
 
 void Text::RebuildMesh()
@@ -125,4 +161,21 @@ void Text::RebuildMesh()
             (uint)data.idxs.size()
         }
     );
+}
+Vector2 Text::GetPivotOffsetFromCenter(Vector2 textSize) const
+{
+    Vector2 offset;
+    switch (m_pivotPoint)
+    {
+    case TopLeft:      offset = Vector2(0.0f, textSize.y); break;
+    case TopCenter:    offset = Vector2(0.5f * textSize.x, textSize.y); break;
+    case TopRight:     offset = Vector2(textSize.x, textSize.y); break;
+    case MiddleLeft:   offset = Vector2(0.0f, 0.5f * textSize.y); break;
+    case Center:       offset = Vector2(0.5f * textSize.x, 0.5f * textSize.y); break;
+    case MiddleRight:  offset = Vector2(textSize.x, 0.5f * textSize.y); break;
+    case BottomLeft:   offset = Vector2(0.0f, 0.0f); break;
+    case BottomCenter: offset = Vector2(0.5f * textSize.x, 0.0f); break;
+    case BottomRight:  offset = Vector2(textSize.x, 0.0f); break;
+    }
+    return offset;
 }

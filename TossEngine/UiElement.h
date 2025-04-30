@@ -37,5 +37,7 @@ protected:
     AnchorPoint m_pivotPoint = AnchorPoint::TopLeft;
     AnchorPoint m_anchorPoint = AnchorPoint::TopLeft;
 
+    Vector2 GetAnchorOffset(const Vector2& screenSize, const Vector2& size, AnchorPoint anchor);
+
 };
 

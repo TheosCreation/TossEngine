@@ -187,3 +187,15 @@ float Font::getPixelHeight() const
 {
     return m_pixelHeight;
 }
+
+Glyph Font::getGlyph(char c)
+{
+    // Clamp to valid baked character range (ASCII 32 - 126)
+    if (c < 32 || c >= 127) {
+        Debug::LogWarning("Font::getGlyph: character out of supported range: " + std::to_string(c));
+        return Glyph(); // return empty/default glyph
+    }
+
+    // Offset by 32 since baking starts at char 32
+    return m_charData[c - 32];
+}

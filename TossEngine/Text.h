@@ -12,8 +12,11 @@ public:
     void SetText(const string text);
     string GetText() const;
     bool GetIsUi() const;
+    Vector2 GetTextSize() const;
+
 private:
     void RebuildMesh();
+    Vector2 GetPivotOffsetFromCenter(Vector2 textSize) const;
     VertexArrayObjectPtr m_vao;
 
     string m_text = "";
