@@ -34,6 +34,8 @@ Mail : theo.morris@mds.ac.nz
 #include <mutex>
 #include <queue>
 #include <atomic>
+#include <boost/describe/enumerators.hpp>
+#include <boost/mp11/algorithm.hpp>
 #include <condition_variable>
 #include <glew.h>
 #include "Debug.h"
@@ -46,7 +48,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Transform.h"
 #include "Time.h"
 #include "imgui_stdlib.h"
-
 
 namespace fs = std::filesystem;
 
@@ -191,6 +192,7 @@ struct UniformData
     Mat4 uiProjectionMatrix;    // UI projection matrix
     float currentTime;          // Current time
     Vector3 cameraPosition;     // Camera Position
+    Vector2 uiScreenSize;     // screen size
 };
 
 struct NewExtraTextureData {
@@ -682,4 +684,25 @@ inline std::string toLower(const std::string& str)
     std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(),
         [](unsigned char c) { return std::tolower(c); });
     return lowerStr;
+}
+
+template<typename E>
+std::vector<const char*> get_enum_names()
+{
+    std::vector<const char*> names;
+    boost::mp11::mp_for_each<boost::describe::describe_enumerators<E>>([&](auto D) {
+        names.push_back(D.name);
+        });
+    return names;
+}
+
+template<typename E>
+E enum_from_string(const std::string& name)
+{
+    E result{};
+    boost::mp11::mp_for_each<boost::describe::describe_enumerators<E>>([&](auto D) {
+        if (name == D.name)
+            result = D.value;
+        });
+    return result;
 }

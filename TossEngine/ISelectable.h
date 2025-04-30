@@ -271,6 +271,9 @@ public:
             }
         }
     }
+
+    template<typename Enum>
+    static bool EnumDropdownField(const std::string& name, Enum& currentValue);
 };
 // just hard coded this so we route it to the right place
 inline bool DrawVectorElementField(const std::string& label, int& val) {

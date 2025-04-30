@@ -372,7 +372,7 @@ void GameObjectManager::Render(UniformData _data) const
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     for (const auto& pair : m_gameObjects)
     {
-        if (!pair.second) continue;
+        if (!pair.second || !pair.second->isActive) continue;
 
         if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
         {
@@ -387,7 +387,7 @@ void GameObjectManager::onTransparencyPass(UniformData _data) const
 {
     for (const auto& pair : m_gameObjects)
     {
-        if (!pair.second) continue;
+        if (!pair.second || !pair.second->isActive) continue;
 
         if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
         {
@@ -416,7 +416,7 @@ void GameObjectManager::onSkyboxPass(UniformData _data) const
 {
     for (const auto& pair : m_gameObjects)
     {
-        if (!pair.second) continue;
+        if (!pair.second || !pair.second->isActive) continue;
 
         if (auto skybox = pair.second->getComponent<Skybox>())
         {
@@ -429,7 +429,7 @@ void GameObjectManager::onScreenSpacePass(UniformData _data) const
 {
     for (const auto& pair : m_gameObjects)
     {
-        if (!pair.second) continue;
+        if (!pair.second || !pair.second->isActive) continue;
 
         if (auto image = pair.second->getComponent<Image>())
         {
@@ -451,7 +451,7 @@ void GameObjectManager::onFixedUpdate() const
 {
     for (const auto& pair : m_gameObjects)
     {
-        if (!pair.second) continue;
+        if (!pair.second || !pair.second->isActive) continue;
 
         pair.second->onFixedUpdate();
     }

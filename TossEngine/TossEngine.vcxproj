@@ -287,6 +287,8 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/Toss
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="TossEngine.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="UiElement.cpp" />
+    <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vector3.cpp" />
     <ClCompile Include="Vector4.cpp" />
     <ClCompile Include="VertexArrayObject.cpp" />
@@ -339,6 +341,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/Toss
     <ClInclude Include="Text.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="UiElement.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="HeightMap.h" />
     <ClInclude Include="Image.h" />

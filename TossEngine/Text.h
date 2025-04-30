@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include "Renderer.h"
+#include "UiElement.h"
 #include "Font.h"
 
-class TOSSENGINE_API Text : public Renderer 
+class TOSSENGINE_API Text : public UiElement
 {
 public:
     void onCreateLate() override;
@@ -22,7 +22,7 @@ private:
     Vector3 m_color = Color::Black;
     bool m_isUi = true;
 
-    SERIALIZABLE_MEMBERS(m_text, m_material, m_font, m_color, m_fontSize, m_isUi)
+    SERIALIZABLE_MEMBERS(m_text, m_material, m_font, m_color, m_fontSize, m_isUi, m_pivotPoint, m_anchorPoint)
 };
 
 REGISTER_COMPONENT(Text);

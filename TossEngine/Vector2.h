@@ -16,6 +16,8 @@ Mail : theo.morris@mds.ac.nz
 #include "TossEngineAPI.h"
 #include "Math.h"
 
+class Vector3;
+
 /**
  * @class Vector2
  * @brief A 2D vector structure for use in math, UI, and graphics operations.
@@ -103,6 +105,16 @@ public:
      * @brief Component-wise multiplication.
      */
     Vector2 operator*(const Vector2& other) const { return Vector2(x * other.x, y * other.y); }
+
+    /**
+     * @brief Component-wise addition.
+     */
+    Vector2 operator+(const Vector2& other) const { return Vector2(x + other.x, y + other.y); }
+
+    /**
+     * @brief Component-wise addition with Vector3 conversion.
+     */
+    Vector2 operator+(const Vector3& other) const;
 
     /**
      * @brief Component-wise subtraction assignment.

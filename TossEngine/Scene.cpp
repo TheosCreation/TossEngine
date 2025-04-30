@@ -174,6 +174,14 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
 
     // Populate the uniform data struct
     uniformData.currentTime = tossEngine.GetTime();
+    if (writeToFrameBuffer)
+    {
+        uniformData.uiScreenSize = writeToFrameBuffer->getSize();
+    }
+    else
+    {
+        uniformData.uiScreenSize = tossEngine.GetWindow()->getInnerSize();
+    }
 
     bool drawUi = true;
     if (cameraToRenderOverride != nullptr)

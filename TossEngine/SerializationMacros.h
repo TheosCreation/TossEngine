@@ -2,24 +2,26 @@
 #include <nlohmann/json.hpp>
 #include <boost/preprocessor/variadic/to_seq.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/describe/enum.hpp>
+#include <boost/describe/enum_to_string.hpp>
 #include "Utils.h"
 
 // --- Utility Macros for Serializable Classes ---
 
 // Helper: Expand and stringify an identifier
-#define STRINGIZE_DETAIL(x) #x
-#define STRINGIZE(x) STRINGIZE_DETAIL(x)
+#define SERIALIZE_STRINGIZE_DETAIL(x) #x
+#define SERIALIZE_STRINGIZE(x) SERIALIZE_STRINGIZE_DETAIL(x)
 
 // --- Internal macros used by the public SERIALIZABLE_MEMBERS ---
 
 // Serialize one member into JSON
 #define _SER_MEMBER(r, j, member) \
-    j[STRINGIZE(member)] = this->member;
+    j[SERIALIZE_STRINGIZE(member)] = this->member;
 
 // Deserialize one member from JSON
 #define _DESER_MEMBER(r, j, member) \
-    if ((j).contains(STRINGIZE(member)) && !(j)[STRINGIZE(member)].is_null()) \
-        (j).at(STRINGIZE(member)).get_to(this->member);
+    if ((j).contains(SERIALIZE_STRINGIZE(member)) && !(j)[SERIALIZE_STRINGIZE(member)].is_null()) \
+        (j).at(SERIALIZE_STRINGIZE(member)).get_to(this->member);
 
 // --- Public Macro: Declares automatic serialize()/deserialize() methods for the given fields ---
 

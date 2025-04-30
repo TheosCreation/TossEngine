@@ -1,5 +1,6 @@
 ﻿#include "GunHolder.h"
 #include "Gun.h"
+#include "UiManager.h"
 
 void GunHolder::OnInspectorGUI()
 {
@@ -34,10 +35,12 @@ void GunHolder::onUpdate()
 
     if (inputManager.isMouseDown(MouseButtonRight))
     {
+        UiManager::Get()->SetCrosshair(false);
         m_currentHeldGun->SetAiming(true);
     }
     else
     {
+        UiManager::Get()->SetCrosshair(true);
         m_currentHeldGun->SetAiming(false);
     }
 

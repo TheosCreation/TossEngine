@@ -46,6 +46,61 @@ Rect Image::getWorldRect()
     return Rect(Vector2(minX, maxY), Vector2(maxX - minX, maxY - minY));
 }
 
+Vector2 Image::GetPivotOffsetFromCenter() const
+{
+    float halfWidth = m_size.x * 0.5f;
+    float halfHeight = m_size.y * 0.5f;
+
+    float x = 0.0f;
+    float y = 0.0f;
+
+    switch (m_pivotPoint)
+    {
+    case AnchorPoint::TopLeft:      x = -halfWidth; y = halfHeight; break;
+    case AnchorPoint::Center:       x = 0.0f;       y = 0.0f;       break;
+    case AnchorPoint::BottomRight:  x = halfWidth; y = -halfHeight; break;
+    }
+
+    return Vector2(x, y);
+}
+
+Vector2 GetAnchorOffset(const Vector2& screenSize, const Vector2& size, AnchorPoint anchor)
+{
+    Vector2 offset;
+
+    switch (anchor)
+    {
+    case AnchorPoint::TopLeft:
+        offset = Vector2(0, 0);
+        break;
+    case AnchorPoint::TopCenter:
+        offset = Vector2((screenSize.x - size.x) / 2.0f, 0);
+        break;
+    case AnchorPoint::TopRight:
+        offset = Vector2(screenSize.x - size.x, 0);
+        break;
+    case AnchorPoint::MiddleLeft:
+    case AnchorPoint::Center:
+        offset = Vector2((screenSize.x - size.x) / 2.0f, (screenSize.y - size.y) / 2.0f);
+        break;
+    case AnchorPoint::MiddleRight:
+        offset = Vector2(screenSize.x - size.x, (screenSize.y - size.y) / 2.0f);
+        break;
+    case AnchorPoint::BottomLeft:
+        offset = Vector2(0, screenSize.y - size.y);
+        break;
+    case AnchorPoint::BottomCenter:
+        offset = Vector2((screenSize.x - size.x) / 2.0f, screenSize.y - size.y);
+        break;
+    case AnchorPoint::BottomRight:
+        offset = Vector2(screenSize.x - size.x, screenSize.y - size.y);
+        break;
+    }
+
+    return offset;
+}
+
+
 void Image::updateVertices()
 {
     Vector3 position_list[] =
@@ -116,15 +171,37 @@ void Image::Render(UniformData data, RenderingPath renderPath)
     //have to check if it has an owner because image is used from drawing the scene and game view windows
     if (m_owner)
     {
+        Mat4 modelMatrix;
+
         if (m_isUi)
         {
-            shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
+            Vector2 screenSize = data.uiScreenSize;
+            Vector2 anchorOffset = GetAnchorOffset(screenSize, m_size, m_anchorPoint);
+            Vector2 pivotOffset = GetPivotOffsetFromCenter();
+
+            // Build base model matrix from the object's transform
+            modelMatrix = m_owner->m_transform.GetMatrix();
+
+            // Apply anchor offset (position relative to screen)
+            modelMatrix = Mat4::Translate(Vector3(anchorOffset.x, -anchorOffset.y, 0.0f)) * modelMatrix;
+
+            // Then apply pivot offset relative to size
+            //modelMatrix = Mat4::Translate(Vector3(-pivotOffset.x, -pivotOffset.y, 0.0f)) * modelMatrix;
+
+            shader->setMat4("modelMatrix", modelMatrix);
             shader->setMat4("VPMatrix", data.uiProjectionMatrix);
-            
         }
         else
         {
-            shader->setMat4("modelMatrix", m_owner->m_transform.GetMatrix());
+            modelMatrix = m_owner->m_transform.GetMatrix();
+
+            if (m_pivotPoint != AnchorPoint::Center)
+            {
+                Vector2 pivotOffset = GetPivotOffsetFromCenter();
+                modelMatrix = modelMatrix * Mat4::Translate(Vector3(-pivotOffset.x, -pivotOffset.y, 0.0f));
+            }
+
+            shader->setMat4("modelMatrix", modelMatrix);
             shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
         }
     }

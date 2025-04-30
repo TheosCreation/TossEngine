@@ -134,7 +134,7 @@
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y "..\..\TossEditor\C++Scripts.dll" "..\..\TossPlayer"</Command>
+      <Command>copy /y "..\..\TossEditor\C++Scripts.dll" "..\TossPlayer"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

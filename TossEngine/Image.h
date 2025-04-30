@@ -1,7 +1,7 @@
 #pragma once
-#include "Renderer.h"
+#include "UiElement.h"
 
-class TOSSENGINE_API Image : public Renderer
+class TOSSENGINE_API Image : public UiElement
 {
 public:
 	Image() = default;
@@ -14,7 +14,7 @@ public:
     virtual void OnInspectorGUI() override
     {
         // Display the material from the base Renderer component.
-        Renderer::OnInspectorGUI();
+        UiElement::OnInspectorGUI();
 
         // Display the image's size.
         if (ImGui::DragFloat2("Size", m_size.Data(), 0.1f))
@@ -35,6 +35,8 @@ public:
 
     Rect getWorldRect();
 
+    Vector2 GetPivotOffsetFromCenter() const;
+
 
 private:
 	void updateVertices();
@@ -44,7 +46,7 @@ private:
 	Texture2DPtr m_texture;
     bool m_isUi = true;
 
-    SERIALIZABLE_MEMBERS(m_size, m_material, m_texture, m_isUi)
+    SERIALIZABLE_MEMBERS(m_size, m_material, m_texture, m_isUi, m_pivotPoint, m_anchorPoint)
 };
 
 REGISTER_COMPONENT(Image);

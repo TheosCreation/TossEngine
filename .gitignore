@@ -27,3 +27,5 @@ Dependencies/TOSSENGINE/TossEngine.exp
 Dependencies/TOSSENGINE/TossEngine.lib
 TossEditor/TossPlayer/TossPlayer
 TossEditor/TossPlayer/x64
+TossEditor/TossPlayer/TossPlayer.exe
+TossEditor/TossPlayer/TossPlayer.pdb

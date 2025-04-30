@@ -204,3 +204,17 @@ bool ISelectable::BoolCheckboxField(const string& name, bool& value)
     }
     return false;
 }
+
+template <typename Enum>
+bool ISelectable::EnumDropdownField(const std::string& label, Enum& currentValue)
+{
+    static std::vector<const char*> names = get_enum_names<Enum>();
+
+    int currentIndex = static_cast<int>(currentValue);
+    if (ImGui::Combo(label.c_str(), &currentIndex, names.data(), static_cast<int>(names.size())))
+    {
+        currentValue = static_cast<Enum>(currentIndex);
+        return true;
+    }
+    return false;
+}

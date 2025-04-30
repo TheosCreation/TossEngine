@@ -234,7 +234,3 @@ private:
 
     bool isPaused = false; //!< Is the physics simulation paused.
 };
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif

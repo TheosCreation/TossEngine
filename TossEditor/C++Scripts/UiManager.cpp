@@ -32,6 +32,7 @@ void UiManager::OnInspectorGUI()
     Component::OnInspectorGUI();
 
     GameObjectAssignableField(m_levelTimeTextObject, "Level Time Text");
+    GameObjectAssignableField(m_crosshairImageObject, "Crosshair Image Object");
 }
 
 void UiManager::UpdateLevelTimer(float secondsLeft) const
@@ -44,4 +45,9 @@ void UiManager::UpdateLevelTimer(float secondsLeft) const
     {
         Debug::Log("Level Text is null");
     }
+}
+
+void UiManager::SetCrosshair(bool active)
+{
+    m_crosshairImageObject->isActive = active;
 }
