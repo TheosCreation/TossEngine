@@ -66,14 +66,14 @@ Rect Button::getScreenRect() const
     Vector2 viewportSize = scene->getSize();         // ImGui::GetContentRegionAvail()
 
     // Draw viewport outline (green)
-    ImGui::GetForegroundDrawList()->AddRect(
-        ImVec2(viewportPosition.x, viewportPosition.y),
-        ImVec2(viewportPosition.x + viewportSize.x, viewportPosition.y + viewportSize.y),
-        IM_COL32(0, 255, 0, 255),
-        0.0f,
-        0,
-        2.0f
-    );
+    //ImGui::GetForegroundDrawList()->AddRect(
+    //    ImVec2(viewportPosition.x, viewportPosition.y),
+    //    ImVec2(viewportPosition.x + viewportSize.x, viewportPosition.y + viewportSize.y),
+    //    IM_COL32(0, 255, 0, 255),
+    //    0.0f,
+    //    0,
+    //    2.0f
+    //);
 
     Rect worldRect = m_graphic->getWorldRect();
 
@@ -85,14 +85,14 @@ Rect Button::getScreenRect() const
     screenRect.height = worldRect.height;
 
     
-    ImGui::GetForegroundDrawList()->AddRect(
-        ImVec2(screenRect.left, screenRect.top),
-        ImVec2(screenRect.left + screenRect.width, screenRect.top + screenRect.height),
-        IM_COL32(255, 0, 0, 255),
-        0.0f,
-        0,
-        2.0f
-    );
+    //ImGui::GetForegroundDrawList()->AddRect(
+    //    ImVec2(screenRect.left, screenRect.top),
+    //    ImVec2(screenRect.left + screenRect.width, screenRect.top + screenRect.height),
+    //    IM_COL32(255, 0, 0, 255),
+    //    0.0f,
+    //    0,
+    //    2.0f
+    //);
 
     return screenRect;
 }
