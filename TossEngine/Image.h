@@ -46,6 +46,8 @@ private:
 	Texture2DPtr m_texture;
     bool m_isUi = true;
 
+    Vector2 currentScreenSize;
+
     SERIALIZABLE_MEMBERS(m_size, m_material, m_texture, m_isUi, m_pivotPoint, m_anchorPoint)
 };
 

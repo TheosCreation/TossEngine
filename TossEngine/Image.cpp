@@ -11,6 +11,7 @@ void Image::onCreate()
 }
 Rect Image::getWorldRect()
 {
+    Vector2 anchorOffset = GetAnchorOffset(currentScreenSize, m_size, m_anchorPoint);
     // Define the four corners of the rectangle in local space
     Vector3 localCorners[4] = {
         Vector3(-m_size.x / 2, -m_size.y / 2, 0.0f), // Bottom-left
@@ -21,7 +22,8 @@ Rect Image::getWorldRect()
 
     // Transform the local corners to world space
     Vector3 worldCorners[4];
-    Mat4 worldMatrix = m_owner->m_transform.GetMatrix();
+    
+    Mat4 worldMatrix = Mat4::Translate(Vector3(anchorOffset.x, -anchorOffset.y, 0.0f)) * m_owner->m_transform.GetMatrix();
     for (int i = 0; i < 4; ++i)
     {
         worldCorners[i] = worldMatrix.TransformPoint(localCorners[i]);
@@ -136,7 +138,8 @@ void Image::Render(UniformData data, RenderingPath renderPath)
     if (m_owner)
     {
         Mat4 modelMatrix;
-
+        
+        currentScreenSize = data.uiScreenSize;
         if (m_isUi)
         {
             Vector2 screenSize = data.uiScreenSize;

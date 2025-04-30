@@ -75,6 +75,12 @@ void TossEditor::run()
 
         while (!tossEngine.GetWindow()->shouldClose())
         {
+            tossEngine.onUpdateInternal();
+
+            // We create a imgui frame hear so imgui can be used in update methods of the scene for possible debugging
+            GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
+            graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
+            graphicsEngine.createImGuiFrame();
             if (canUpdateInternal)
             {
                 onUpdateInternal();
@@ -85,7 +91,6 @@ void TossEditor::run()
                 onLateUpdateInternal();
             }
             tossEngine.PollEvents();
-            tossEngine.onUpdateInternal();
         }
 
         onQuit();
@@ -129,6 +134,9 @@ void TossEditor::onCreate()
 
     m_player = std::make_unique<EditorPlayer>(this);
     m_player->onCreate();
+
+    ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
+    ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
 }
 
 void TossEditor::onCreateLate()
@@ -227,11 +235,7 @@ void TossEditor::onRenderInternal()
     InputManager& inputManager = InputManager::GetInstance();
     GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
     ResourceManager& resourceManager = ResourceManager::GetInstance();
-    graphicsEngine.clear(glm::vec4(0, 0, 0, 1)); //clear the existing stuff first is a must
-    graphicsEngine.createImGuiFrame();
 
-    ImGui::SetCurrentContext(graphicsEngine.getImGuiContext());
-    ImGuizmo::SetImGuiContext(graphicsEngine.getImGuiContext());
 
     float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
     ImGuiViewport* viewport = ImGui::GetMainViewport();

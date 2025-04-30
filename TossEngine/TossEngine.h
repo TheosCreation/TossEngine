@@ -165,6 +165,13 @@ public:
     void SetDebugMode(bool enabled);
 
 private:
+    /**
+     * @brief Opens and sets a new active scene internally.
+     * @param _scene Pointer to the new scene.
+     * @param callStartMethods If true, onStart and related lifecycle methods are called.
+     */
+    void OpenSceneInternal(std::shared_ptr<Scene> _scene, bool callStartMethods = true);
+
     bool isDebugMode = false;
     std::unique_ptr<Window> m_window = nullptr;
     ScriptLoader* m_scriptLoader = nullptr;
@@ -177,7 +184,7 @@ private:
     std::condition_variable coroutineCondition;
 
     ScenePtr m_currentScene = nullptr;
-    ScenePtr sceneToOpen = nullptr;
+    std::unordered_map<ScenePtr, bool> m_scenesToOpen;
 
     /**
      * @brief Internal coroutine thread runner.

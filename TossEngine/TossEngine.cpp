@@ -70,6 +70,28 @@ void TossEngine::SetDebugMode(bool enabled)
     isDebugMode = enabled;
 }
 
+void TossEngine::OpenSceneInternal(std::shared_ptr<Scene> _scene, bool callStartMethods)
+{
+    // if there is a current scene, call onDestroy
+    if (m_currentScene != nullptr)
+    {
+        m_currentScene->onQuit();
+        m_currentScene = nullptr;
+    }
+
+
+    // set the current scene to the new scene
+    m_currentScene = std::move(_scene);
+    m_currentScene->onCreate();
+    m_currentScene->onCreateLate();
+
+    if (callStartMethods)
+    {
+        m_currentScene->onStart();
+        m_currentScene->onLateStart();
+    }
+}
+
 void TossEngine::CoroutineRunner()
 {
     while (running)
@@ -147,33 +169,16 @@ void TossEngine::ReloadScripts() const
 
 void TossEngine::onUpdateInternal()
 {
-    if (sceneToOpen)
+    for(auto& pair : m_scenesToOpen)
     {
-        OpenScene(sceneToOpen);
-        sceneToOpen = nullptr;
+        OpenSceneInternal(pair.first, pair.second);
     }
+    m_scenesToOpen.clear();
 }
 
 void TossEngine::OpenScene(shared_ptr<Scene> _scene, bool callStartMethods)
 {
-    // if there is a current scene, call onDestroy
-    if (m_currentScene != nullptr)
-    {
-        m_currentScene->onQuit();
-        m_currentScene = nullptr;
-    }
-
-
-    // set the current scene to the new scene
-    m_currentScene = std::move(_scene);
-    m_currentScene->onCreate();
-    m_currentScene->onCreateLate();
-
-    if (callStartMethods)
-    {
-        m_currentScene->onStart();
-        m_currentScene->onLateStart();
-    }
+    m_scenesToOpen.emplace(_scene, callStartMethods);
 }
 
 void TossEngine::OpenScene(const string& sceneName)
@@ -201,7 +206,7 @@ void TossEngine::OpenScene(const string& sceneName)
     }
 
     auto scene = std::make_shared<Scene>(foundPath);
-    sceneToOpen = scene;
+    m_scenesToOpen.emplace(scene, true);
 }
 
 void TossEngine::SetPlayerSettings(TossPlayerSettings* playerSettings)
