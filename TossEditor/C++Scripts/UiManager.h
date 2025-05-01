@@ -16,6 +16,7 @@ public:
     void SetCrosshair(bool active) const;
     void SetPauseMenu(bool active) const;
     void SetGameWin(bool active) const;
+    void SetGameLoss(bool active) const;
 
 
 private:
@@ -24,9 +25,13 @@ private:
     GameObjectPtr m_pauseMenuObject = nullptr;
     GameObjectPtr m_quitButtonObject = nullptr;
     GameObjectPtr m_playButtonObject = nullptr;
-    GameObjectPtr m_gameOverMenuObject = nullptr;
+    GameObjectPtr m_gameWinMenuObject = nullptr;
     GameObjectPtr m_gameOverquitButtonObject = nullptr;
     GameObjectPtr m_gameOverplayButtonObject = nullptr;
+
+    GameObjectPtr m_gameLossMenuObject = nullptr;
+    GameObjectPtr m_gameLossQuitButtonObject = nullptr;
+    GameObjectPtr m_gameLossPlayButtonObject = nullptr;
 
     Text* m_levelTimeText = nullptr;
     Button* m_playButton = nullptr;
@@ -34,9 +39,14 @@ private:
     Button* m_gameOverplayButton = nullptr;
     Button* m_gameOverquitButton = nullptr;
 
+    Button* m_gameLossPlayButton = nullptr;
+    Button* m_gameLossQuitButton = nullptr;
+
     static UiManager* Instance;
 
-    SERIALIZABLE_MEMBERS(m_levelTimeTextObject, m_crosshairImageObject, m_pauseMenuObject, m_playButtonObject, m_quitButtonObject, m_gameOverMenuObject, m_gameOverquitButtonObject, m_gameOverplayButtonObject)
+    SERIALIZABLE_MEMBERS(m_levelTimeTextObject, m_crosshairImageObject, m_pauseMenuObject, m_playButtonObject, m_quitButtonObject, 
+        m_gameWinMenuObject, m_gameOverquitButtonObject, m_gameOverplayButtonObject,
+        m_gameLossMenuObject, m_gameLossQuitButtonObject, m_gameLossPlayButtonObject)
 };
 
 REGISTER_COMPONENT(UiManager);

@@ -343,8 +343,6 @@ void GameObject::onLateStart()
 
 void GameObject::onFixedUpdate()
 {
-    if (!isActive) return;
-
     for (auto& pair : m_components) {
         pair.second->onFixedUpdate();
     }
@@ -352,8 +350,6 @@ void GameObject::onFixedUpdate()
 
 void GameObject::onUpdate()
 {
-    if (!isActive) return;
-
     m_transform.UpdateWorldTransform();
 
     for (auto& pair : m_components) {

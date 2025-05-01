@@ -24,10 +24,13 @@ void PauseManager::onDestroy()
     }
 }
 
-void PauseManager::SetPaused(bool paused)
+void PauseManager::SetPaused(bool paused, bool openPauseMenu)
 {
     m_isPaused = paused;
-    UiManager::Get()->SetPauseMenu(m_isPaused);
+    if (openPauseMenu)
+    {
+        UiManager::Get()->SetPauseMenu(m_isPaused);
+    }
     if (m_isPaused)
     {
         Time::TimeScale = 0.0f;

@@ -68,7 +68,7 @@ void PlayerController::onUpdate()
     if (m_currentLevelTime <= 0 && !m_win)
     {
         m_win = true;
-        PauseManager::Get()->SetPaused(true);
+        PauseManager::Get()->SetPaused(true, false);
         UiManager::Get()->SetGameWin(true);
     }
     
@@ -177,5 +177,17 @@ void PlayerController::onFixedUpdate()
             Vector3 force = desiredMaxVelocity * m_airAcceleration * Time::FixedDeltaTime;
             m_rigidBody->AddForce(force);
         }
+    }
+}
+
+
+void PlayerController::TakeDamage(int damage)
+{
+    m_health -= damage;
+    if (m_health <= 0)
+    {
+        Debug::Log("Player is dead");
+        PauseManager::Get()->SetPaused(true, false);
+        UiManager::Get()->SetGameLoss(true);
     }
 }

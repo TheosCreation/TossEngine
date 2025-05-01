@@ -8,7 +8,7 @@ public:
 
     void onCreate() override;
     void onDestroy() override;
-    void SetPaused(bool paused);
+    void SetPaused(bool paused, bool openPauseMenu = true);
     void TogglePaused();
 
 private:

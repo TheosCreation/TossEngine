@@ -13,12 +13,9 @@ void Enemy::OnInspectorGUI()
     IntSliderField("Health", m_health);
     FloatSliderField("Speed", m_speed);
     FloatSliderField("Wall Detection Distance", m_wallDetectDistance);
-    
-    vector<std::string> layers = m_layerNames;
-    if (LayerDropdownField("Raycast hit layers", layers))
-    {
-        m_layerNames = layers;
-    }
+    FloatSliderField("Attack Distance", m_attackDistance);
+    IntSliderField("Attack Damage", m_attackDamage);
+    FloatSliderField("Attack Cooldown", m_attackCoolDown);
 }
 void Enemy::onFixedUpdate()
 {
@@ -32,67 +29,52 @@ void Enemy::onFixedUpdate()
     delta.y = 0.0f;
 
     float dist = delta.Length();
-    if (dist < 0.1f)
-    {
-        // close enough: zero horizontal velocity
-        glm::vec3 v = m_rigidbody->GetLinearVelocity();
-        v.x = v.z = 0.0f;
-        m_rigidbody->SetLinearVelocity(v);
-        return;
-    }
+    Vector3 dir = delta.Normalized();
 
-    Vector3 dir = delta / dist; // unit vector toward player
-
-    Vector3 forward = dir; // Forward = direction to player
-    forward.Normalize();
-
-    Quaternion yaw45 = Quaternion::FromEuler(Vector3(0, glm::radians(45.0f), 0));
-    Quaternion yawM45 = Quaternion::FromEuler(Vector3(0, glm::radians(-45.0f), 0));
-    Vector3 left45 = yaw45 * forward;
-    Vector3 right45 = yawM45 * forward;
-
-    Vector3 origin = myPos + Vector3(0, 0.5f, 0) + forward * 0.25f; // origin now forward & elevated
-
-    unsigned short maskBits = 0;
-    for (auto& name : m_layerNames)
-    {
-        maskBits |= static_cast<unsigned short>(LayerManager::GetInstance().GetLayer(name));
-    }
-
-    auto& phys = Physics::GetInstance();
-    RaycastHit hitC = phys.Raycast(origin, forward, m_wallDetectDistance, maskBits);
-    RaycastHit hitL = phys.Raycast(origin, left45, m_wallDetectDistance, maskBits);
-    RaycastHit hitR = phys.Raycast(origin, right45, m_wallDetectDistance, maskBits);
-
-    Vector3 moveDir = dir;
-    if (hitC.hasHit)
-    {
-        if (!hitL.hasHit)      moveDir = left45;
-        else if (!hitR.hasHit) moveDir = right45;
-        else                   moveDir = -forward; // blocked all sides
-    }
-    else if (hitL.hasHit && !hitR.hasHit) moveDir = right45;
-    else if (hitR.hasHit && !hitL.hasHit) moveDir = left45;
-
-    float avoidWeight = 1.5f;
-    float t = avoidWeight / (1.0f + avoidWeight);
-    Vector3 blended = Vector3::Lerp(dir, moveDir, t);
-    blended.Normalize();
-
-    // Set velocity
+    // Stop movement if within attack distance
     glm::vec3 vel = m_rigidbody->GetLinearVelocity();
-    vel.x = blended.x * m_speed;
-    vel.z = blended.z * m_speed;
+    if (dist <= m_attackDistance)
+    {
+        vel.x = 0.0f;
+        vel.z = 0.0f;
+    }
+    else
+    {
+        vel.x = dir.x * m_speed;
+        vel.z = dir.z * m_speed;
+    }
     m_rigidbody->SetLinearVelocity(vel);
 
     // Smooth rotation toward movement direction
-    if (blended.Length() > 0.01f)
+    if (dir.Length() > 0.01f)
     {
-        float targetYaw = std::atan2(blended.x, blended.z); // radians
-        Quaternion targetRot = Quaternion::FromEuler(Vector3(0.0f, targetYaw, 0.0f)); // radians
+        float targetYaw = std::atan2(dir.x, dir.z);
+        Quaternion targetRot = Quaternion::FromEuler(Vector3(0.0f, targetYaw, 0.0f));
 
         float rotationSpeed = 10.0f;
         transform.localRotation = Quaternion::Slerp(transform.localRotation, targetRot, Time::FixedDeltaTime * rotationSpeed);
+    }
+
+    // Attack logic
+    m_attackCooldownTimer -= Time::FixedDeltaTime;
+    if (m_attackCooldownTimer <= 0.0f && dist <= m_attackDistance)
+    {
+
+        Vector3 rayOrigin = myPos + Vector3(0, 0.5f, 0);
+        Vector3 rayTarget = playerPos + Vector3(0, 0.5f, 0);
+        Vector3 rayDir = (rayTarget - rayOrigin).Normalized();
+
+        RaycastHit playerHit = Physics::GetInstance().Raycast(rayOrigin, rayDir, m_attackDistance + 0.1f, ~0);
+
+        if (playerHit.hasHit)
+        {
+            if (auto player = playerHit.collider->getOwner()->getComponent<PlayerController>())
+            {
+                player->TakeDamage(m_attackDamage);
+            }
+        }
+
+        m_attackCooldownTimer = m_attackCoolDown;
     }
 }
 

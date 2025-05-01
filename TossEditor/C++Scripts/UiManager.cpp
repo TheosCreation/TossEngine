@@ -26,16 +26,35 @@ void UiManager::onStart()
 
     m_quitButton = m_quitButtonObject->getComponent<Button>();
     m_quitButton->onClick = [this]() {
+        PauseManager::Get()->SetPaused(false);
+        InputManager::GetInstance().enablePlayMode(false, false);
         TossEngine::GetInstance().OpenScene("MainMenu");
         };
 
     m_gameOverplayButton = m_gameOverplayButtonObject->getComponent<Button>();
     m_gameOverplayButton->onClick = [this]() {
+        PauseManager::Get()->SetPaused(false);
         TossEngine::GetInstance().OpenScene("Scene1");
         };
 
-    m_gameOverquitButton = m_gameOverplayButtonObject->getComponent<Button>();
+    m_gameOverquitButton = m_gameOverquitButtonObject->getComponent<Button>();
     m_gameOverquitButton->onClick = [this]() {
+        PauseManager::Get()->SetPaused(false);
+        InputManager::GetInstance().enablePlayMode(false, false);
+        TossEngine::GetInstance().OpenScene("MainMenu");
+        };
+
+
+    m_gameLossPlayButton = m_gameLossPlayButtonObject->getComponent<Button>();
+    m_gameLossPlayButton->onClick = [this]() {
+        PauseManager::Get()->SetPaused(false);
+        TossEngine::GetInstance().OpenScene("Scene1");
+        };
+
+    m_gameLossQuitButton = m_gameLossQuitButtonObject->getComponent<Button>();
+    m_gameLossQuitButton->onClick = [this]() {
+        PauseManager::Get()->SetPaused(false);
+        InputManager::GetInstance().enablePlayMode(false, false);
         TossEngine::GetInstance().OpenScene("MainMenu");
         };
 }
@@ -54,12 +73,18 @@ void UiManager::OnInspectorGUI()
 
     GameObjectAssignableField(m_levelTimeTextObject, "Level Time Text");
     GameObjectAssignableField(m_crosshairImageObject, "Crosshair Image Object");
+    //pause menu
     GameObjectAssignableField(m_pauseMenuObject, "Pause Menu Object");
     GameObjectAssignableField(m_playButtonObject, "Play Button Object");
     GameObjectAssignableField(m_quitButtonObject, "Quit Button Object");
-    GameObjectAssignableField(m_gameOverMenuObject, "GameOverScreen Object");
-    GameObjectAssignableField(m_gameOverquitButtonObject, "Play Again GameOverScreen Button Object");
-    GameObjectAssignableField(m_gameOverplayButtonObject, "Quit Button GameOverScreen Object");
+    //game over screen
+    GameObjectAssignableField(m_gameWinMenuObject, "GameOverScreen Object");
+    GameObjectAssignableField(m_gameOverplayButtonObject, "Play Again GameOverScreen Button Object");
+    GameObjectAssignableField(m_gameOverquitButtonObject, "Quit Button GameOverScreen Object");
+    //game loss screen
+    GameObjectAssignableField(m_gameLossMenuObject, "Game Loss Screen Object");
+    GameObjectAssignableField(m_gameLossPlayButtonObject, "Play Again Game Loss Button Object");
+    GameObjectAssignableField(m_gameLossQuitButtonObject, "Quit Button Game Loss Object");
 }
 
 void UiManager::UpdateLevelTimer(float secondsLeft) const
@@ -86,5 +111,10 @@ void UiManager::SetPauseMenu(bool active) const
 
 void UiManager::SetGameWin(bool active) const
 {
-    m_gameOverMenuObject->isActive = active;
+    m_gameWinMenuObject->isActive = active;
+}
+
+void UiManager::SetGameLoss(bool active) const
+{
+    m_gameLossMenuObject->isActive = active;
 }

@@ -13,6 +13,7 @@ public:
     void onLateStart() override;
     void onUpdate() override;
     void onFixedUpdate() override;
+    void TakeDamage(int damage);
 
 private:
     int m_health = 100;

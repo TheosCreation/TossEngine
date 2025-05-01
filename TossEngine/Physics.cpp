@@ -40,7 +40,7 @@ void Physics::UpdateInternal()
             m_commonSettings.destroyCapsuleShape(dynamic_cast<rp3d::CapsuleShape*>(shape));
             break;
         case reactphysics3d::CollisionShapeType::CONCAVE_SHAPE:
-            //later development
+            // TODO: Add mesh collider
             break;
         }
 

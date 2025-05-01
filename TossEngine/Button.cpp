@@ -65,7 +65,7 @@ Rect Button::getScreenRect() const
     Vector2 viewportPosition = scene->getPosition(); // ImGui::GetCursorScreenPos()
     Vector2 viewportSize = scene->getSize();         // ImGui::GetContentRegionAvail()
 
-    // Draw viewport outline (green)
+     //Draw viewport outline (green)
     //ImGui::GetForegroundDrawList()->AddRect(
     //    ImVec2(viewportPosition.x, viewportPosition.y),
     //    ImVec2(viewportPosition.x + viewportSize.x, viewportPosition.y + viewportSize.y),
