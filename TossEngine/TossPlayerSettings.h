@@ -46,6 +46,15 @@ struct TOSSENGINE_API TossPlayerSettings
             windowSize.y = j["WindowSize"][1].get<float>();
         }
 
+        if (j.contains("Gravity") && j["Gravity"].is_array() && j["Gravity"].size() == 3)
+        {
+            gravity = Vector3(
+                j["Gravity"][0].get<float>(),
+                j["Gravity"][1].get<float>(),
+                j["Gravity"][2].get<float>()
+            );
+        }
+
         return true;
     }
 
@@ -72,6 +81,7 @@ struct TOSSENGINE_API TossPlayerSettings
         j["AllSceneFilePaths"] = selectedSceneFilePaths; // Save the scenes list
         j["RenderingPath"] = ToString(renderingPath);
         j["WindowSize"] = { windowSize.x, windowSize.y };
+        j["Gravity"] = { gravity.x, gravity.y, gravity.z };
 
         std::ofstream file(filename);
         if (!file)

@@ -28,7 +28,6 @@ TossPlayer::TossPlayer()
     Random::Init();
 
     AudioEngine::GetInstance().Init();
-
     Physics::GetInstance().SetGravity(m_playerSettings->gravity);
     Physics::GetInstance().LoadPrefabWorld();
 
@@ -102,15 +101,18 @@ void TossPlayer::onUpdateInternal()
 
 
     // Accumulate time
-    m_accumulatedTime += deltaTimeInternal;
     Physics::GetInstance().UpdateInternal();
     inputManager.onUpdate();
 
-    while (m_accumulatedTime >= Time::FixedDeltaTime)
+    if (Time::TimeScale > 0)
     {
-        Physics::GetInstance().Update();
-        scene->onFixedUpdate();
-        m_accumulatedTime -= Time::FixedDeltaTime;
+        m_accumulatedTime += Time::DeltaTime;
+        while (m_accumulatedTime >= Time::FixedDeltaTime)
+        {
+            Physics::GetInstance().Update();
+            scene->onFixedUpdate();
+            m_accumulatedTime -= Time::FixedDeltaTime;
+        }
     }
 
 

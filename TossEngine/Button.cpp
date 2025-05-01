@@ -62,8 +62,8 @@ void Button::onUpdate()
 Rect Button::getScreenRect() const
 {
     Scene* scene = m_owner->getGameObjectManager()->getScene();
-    Vector2 viewportPosition = scene->getPosition(); // ImGui::GetCursorScreenPos()
-    Vector2 viewportSize = scene->getSize();         // ImGui::GetContentRegionAvail()
+    Vector2 viewportPosition = scene->getPosition(); 
+    Vector2 viewportSize = scene->getSize();         
 
      //Draw viewport outline (green)
     //ImGui::GetForegroundDrawList()->AddRect(

@@ -29,3 +29,16 @@ TossEditor/TossPlayer/TossPlayer
 TossEditor/TossPlayer/x64
 TossEditor/TossPlayer/TossPlayer.exe
 TossEditor/TossPlayer/TossPlayer.pdb
+TossEditor/TossPlayer/Internal
+TossEditor/TossPlayer/Resources
+TossEditor/TossPlayer/Scenes
+TossEditor/TossPlayer/TossEngine.dll
+TossEditor/TossPlayer/TossEngine.exp
+TossEditor/TossPlayer/TossEngine.lib
+TossEditor/TossPlayer/TossEngine.pdb
+TossEditor/TossPlayer/PlayerSettings.json
+TossEditor/TossPlayer/LayerManager.json
+TossEditor/TossPlayer/C++Scripts.dll
+TossEngine/TossEngine.dll
+TossEngine/TossEngine.exp
+TossEngine/TossEngine.lib

@@ -37,6 +37,7 @@ TossEditor::TossEditor()
 
     m_playerSettings = std::make_unique<TossPlayerSettings>();
     m_playerSettings->LoadFromFile("PlayerSettings.json");
+    m_playerSettings->gravity = m_projectSettings->gravity;
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.Init(m_projectSettings);
@@ -206,7 +207,7 @@ void TossEditor::onUpdateInternal()
     {
         if (m_gameRunning && Time::TimeScale > 0)
         {
-            m_accumulatedTime += deltaTimeInternal;
+            m_accumulatedTime += Time::DeltaTime;
             while (m_accumulatedTime >= Time::FixedDeltaTime)
             {
                 Physics::GetInstance().Update();
@@ -604,21 +605,28 @@ void TossEditor::onRenderInternal()
         ImGui::Text("First Scene To Open:");
         if (!m_playerSettings->selectedSceneFilePaths.empty())
         {
-            // Static index to track the selected scene. Defaults to 0 (first option).
+            // Find the index of the currently selected first scene
             static int selectedFirstSceneIndex = 0;
+            const auto& paths = m_playerSettings->selectedSceneFilePaths;
 
-            // Build an array of C-string pointers from the vector of scene file paths.
-            std::vector<const char*> sceneNames;
-            for (const auto& scenePath : m_playerSettings->selectedSceneFilePaths)
+            auto it = std::find(paths.begin(), paths.end(), m_playerSettings->firstSceneToOpen);
+            if (it != paths.end())
             {
-                sceneNames.push_back(scenePath.c_str());
+                selectedFirstSceneIndex = static_cast<int>(std::distance(paths.begin(), it));
+            }
+            else
+            {
+                selectedFirstSceneIndex = 0; // fallback to first
+                m_playerSettings->firstSceneToOpen = paths[0];
             }
 
-            int count = static_cast<int>(sceneNames.size());
-            // Display the combo box. If the user selects a different option, update the first scene.
-            if (ImGui::Combo("##FirstSceneCombo", &selectedFirstSceneIndex, sceneNames.data(), count))
+            std::vector<const char*> sceneNames;
+            for (const auto& path : paths)
+                sceneNames.push_back(path.c_str());
+
+            if (ImGui::Combo("##FirstSceneCombo", &selectedFirstSceneIndex, sceneNames.data(), static_cast<int>(sceneNames.size())))
             {
-                m_playerSettings->firstSceneToOpen = m_playerSettings->selectedSceneFilePaths[selectedFirstSceneIndex];
+                m_playerSettings->firstSceneToOpen = paths[selectedFirstSceneIndex];
             }
         }
         else
@@ -1135,6 +1143,7 @@ void TossEditor::PerformSafeBuild()
 {
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     auto scene = TossEngine::GetInstance().getCurrentScene();
+    m_playerSettings->SaveToFile("PlayerSettings.json");
     resourceManager.saveResourcesToFile("Resources/Resources.json"); // save resources just in case of crash and to save prefabs
     selectedSelectable = nullptr;
     canUpdateInternal = false;

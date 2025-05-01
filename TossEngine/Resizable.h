@@ -13,6 +13,6 @@ public:
 
 protected:
 	Vector2 m_size = Vector2(100, 100);
-	Vector2 m_position = Vector2(100, 100);
+	Vector2 m_position = Vector2(0, 0);
     bool m_maximized = false;
 };

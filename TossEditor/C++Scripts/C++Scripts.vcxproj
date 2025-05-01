@@ -159,7 +159,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y "..\..\TossEditor\C++Scripts.dll" "..\..\TossPlayer"</Command>
+      <Command>copy /y "..\..\TossEditor\C++Scripts.dll" "..\TossPlayer"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
