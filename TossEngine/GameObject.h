@@ -162,6 +162,7 @@ public:
     void setGameObjectManager(GameObjectManager* gameObjectManager);
 
     bool Delete(bool deleteSelf = true) override;
+    bool GetActive() const;
 
     // --- Physics ---
 

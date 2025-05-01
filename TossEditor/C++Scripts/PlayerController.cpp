@@ -1,6 +1,7 @@
 #include "PlayerController.h"
 #include "AudioEngine.h"
 #include "GroundCheck.h"
+#include "PauseManager.h"
 #include "UiManager.h"
 
 void PlayerController::OnInspectorGUI()
@@ -64,6 +65,12 @@ void PlayerController::onUpdate()
 
     m_currentLevelTime -= Time::DeltaTime;
     UiManager::Get()->UpdateLevelTimer(m_currentLevelTime);
+    if (m_currentLevelTime <= 0 && !m_win)
+    {
+        m_win = true;
+        PauseManager::Get()->SetPaused(true);
+        UiManager::Get()->SetGameWin(true);
+    }
     
     // Create quaternions for yaw (around the y-axis) and pitch (around the x-axis)
     glm::quat yawRotation = glm::angleAxis(glm::radians(m_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -87,17 +94,22 @@ void PlayerController::onUpdate()
             Debug::Log(hit.collider->getOwner()->name);
         }
     }
-    if (inputManager.isKeyPressed(Key::Key0))
+    //if (inputManager.isKeyPressed(Key::Key0))
+    //{
+    //    m_wireframeMode = !m_wireframeMode;
+    //    if (m_wireframeMode)
+    //    {
+    //        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //    }
+    //    else
+    //    {
+    //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //    }
+    //}
+
+    if (inputManager.isKeyPressed(Key::KeyEscape))
     {
-        m_wireframeMode = !m_wireframeMode;
-        if (m_wireframeMode)
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        }
-        else
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        }
+        PauseManager::Get()->TogglePaused();
     }
 
     if (inputManager.isKeyPressed(Key::KeySpace) && jumpTimer <= 0 && m_groundCheck->isGrounded)

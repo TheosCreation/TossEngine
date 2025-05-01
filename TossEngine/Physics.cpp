@@ -52,7 +52,7 @@ void Physics::Update()
 {
     if (isPaused) return;
 
-    if (m_world && Time::FixedDeltaTime > 0.0f)
+    if (Time::FixedDeltaTime > 0.0f && m_world)
     {
         m_world->update(Time::FixedDeltaTime);
     }
@@ -382,6 +382,7 @@ void Physics::LoadWorld()
 
 
     m_world->setIsDebugRenderingEnabled(isDebug);
+
 
     // Get a reference to the debug renderer
     reactphysics3d::DebugRenderer& debugRenderer = m_world->getDebugRenderer();

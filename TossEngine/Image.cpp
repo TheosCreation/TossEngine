@@ -177,6 +177,8 @@ void Image::Render(UniformData data, RenderingPath renderPath)
     {
         shader->setTexture2D(m_texture, 0, "Texture0");
     }
+
+    shader->setVec3("color", m_color);
     
     // Prepare the graphics engine for rendering
     graphicsEngine.setFaceCulling(CullType::None); // Disable face culling

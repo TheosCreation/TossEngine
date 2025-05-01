@@ -94,6 +94,9 @@
     <ClCompile Include="MainMenuManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PauseManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DestroyObjectWithTime.h">
@@ -178,6 +181,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MainMenuManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -106,7 +106,6 @@ void Rigidbody::onCreate()
     // Create rigid body
     m_Body = world->createRigidBody(bodyTransform);
     m_Body->setUserData(this);
-    m_Body->setIsSleeping(true);
 
     // Apply the default body type
     SetBodyType(m_BodyType);

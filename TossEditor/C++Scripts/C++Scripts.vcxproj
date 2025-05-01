@@ -182,6 +182,7 @@
     <ClCompile Include="Gun.cpp" />
     <ClCompile Include="GunHolder.cpp" />
     <ClCompile Include="MainMenuManager.cpp" />
+    <ClCompile Include="PauseManager.cpp" />
     <ClCompile Include="PlayerController.cpp">
       <SubType>
       </SubType>
@@ -216,6 +217,7 @@
     <ClInclude Include="Gun.h" />
     <ClInclude Include="GunHolder.h" />
     <ClInclude Include="MainMenuManager.h" />
+    <ClInclude Include="PauseManager.h" />
     <ClInclude Include="PlayerController.h">
       <SubType>
       </SubType>

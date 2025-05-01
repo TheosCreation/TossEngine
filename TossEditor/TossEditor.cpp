@@ -75,7 +75,6 @@ void TossEditor::run()
 
         while (!tossEngine.GetWindow()->shouldClose())
         {
-            tossEngine.onUpdateInternal();
 
             // We create a imgui frame hear so imgui can be used in update methods of the scene for possible debugging
             GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
@@ -91,6 +90,7 @@ void TossEditor::run()
                 onLateUpdateInternal();
             }
             tossEngine.PollEvents();
+            tossEngine.onUpdateInternal();
         }
 
         onQuit();
@@ -198,15 +198,15 @@ void TossEditor::onUpdateInternal()
 
 
     // Accumulate time
-    m_accumulatedTime += deltaTimeInternal;
     resourceManager.onUpdateInternal();
     Physics::GetInstance().UpdateInternal();
     inputManager.onUpdate();
 
     if (auto scene = TossEngine::GetInstance().getCurrentScene())
     {
-        if (m_gameRunning)
+        if (m_gameRunning && Time::TimeScale > 0)
         {
+            m_accumulatedTime += deltaTimeInternal;
             while (m_accumulatedTime >= Time::FixedDeltaTime)
             {
                 Physics::GetInstance().Update();

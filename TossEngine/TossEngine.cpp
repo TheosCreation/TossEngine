@@ -89,6 +89,8 @@ void TossEngine::OpenSceneInternal(std::shared_ptr<Scene> _scene, bool callStart
     {
         m_currentScene->onStart();
         m_currentScene->onLateStart();
+
+
     }
 }
 

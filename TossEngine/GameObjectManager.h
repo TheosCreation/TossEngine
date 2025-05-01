@@ -33,7 +33,6 @@ class TOSSENGINE_API GameObjectManager
 public:
     GameObjectManager() = default;
     explicit GameObjectManager(Scene* scene);
-    GameObjectManager(const GameObjectManager& other);
     ~GameObjectManager() = default;
 
     /**

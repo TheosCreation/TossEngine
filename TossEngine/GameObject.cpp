@@ -574,6 +574,25 @@ bool GameObject::Delete(bool deleteSelf)
     }
 }
 
+bool GameObject::GetActive() const
+{
+    const GameObject* current = this;
+
+    while (current)
+    {
+        if (!current->isActive)
+            return false;
+
+        // Check if there's a parent transform and its GameObject
+        if (current->m_transform.parent && current->m_transform.parent->gameObject)
+            current = current->m_transform.parent->gameObject;
+        else
+            current = nullptr;
+    }
+
+    return true;
+}
+
 GameObjectManager* GameObject::getGameObjectManager() const
 {
     return m_gameObjectManager;

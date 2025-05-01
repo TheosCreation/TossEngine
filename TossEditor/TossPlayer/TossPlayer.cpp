@@ -82,6 +82,8 @@ void TossPlayer::onCreate()
 {
     auto scene = std::make_shared<Scene>(m_playerSettings->firstSceneToOpen);
     TossEngine::GetInstance().OpenScene(scene);
+
+
 }
 
 void TossPlayer::onUpdateInternal()

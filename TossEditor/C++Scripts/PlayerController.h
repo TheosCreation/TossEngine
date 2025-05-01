@@ -24,6 +24,7 @@ private:
     float m_currentLevelTime = 60.0f;
 
     float jumpTimer = 0.0f;
+    bool m_win = false;
 
     float m_yaw = 0.0f; // Yaw angle for rotation of the camera
     float m_pitch = 0.0f; // Pitch angle for rotation of the camera

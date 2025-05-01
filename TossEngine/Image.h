@@ -24,7 +24,11 @@ public:
 
         ResourceAssignableField(m_texture, "Texture");
 
+
+
         ImGui::Checkbox("Is Ui", &m_isUi);
+
+        ImGui::ColorEdit3("Color", m_color.Data());
     }
 
 	void SetSize(Vector2 size);
@@ -45,10 +49,11 @@ private:
 	Vector2 m_size = { 1, 1 };
 	Texture2DPtr m_texture;
     bool m_isUi = true;
+    Vector3 m_color = Color::White;
 
     Vector2 currentScreenSize;
 
-    SERIALIZABLE_MEMBERS(m_size, m_material, m_texture, m_isUi, m_pivotPoint, m_anchorPoint)
+    SERIALIZABLE_MEMBERS(m_size, m_material, m_texture, m_isUi, m_pivotPoint, m_anchorPoint, m_color)
 };
 
 REGISTER_COMPONENT(Image);
