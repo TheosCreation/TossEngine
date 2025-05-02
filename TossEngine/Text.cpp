@@ -53,20 +53,16 @@ void Text::Render(UniformData data, RenderingPath renderPath)
         if (m_isUi)
         {
             Vector2 screenSize = data.uiScreenSize;
-            Vector2 textSize = GetTextSize();
-            Vector2 anchorOffset = GetAnchorOffset(screenSize, textSize, m_anchorPoint);
-            Vector2 pivotOffset = GetPivotOffsetFromCenter(textSize);
+            Vector2 anchorOffset = GetAnchorOffset(screenSize, m_size, m_anchorPoint);
 
             modelMatrix = Mat4::Translate(Vector3(anchorOffset.x, -anchorOffset.y, 0.0f)) * modelMatrix;
-            modelMatrix = Mat4::Translate(Vector3(-pivotOffset.x, -pivotOffset.y, 0.0f)) * modelMatrix;
+            modelMatrix = Mat4::Translate(Vector3(-m_pivotOffset.x, -m_pivotOffset.y, 0.0f)) * modelMatrix;
 
             shader->setMat4("VPMatrix", data.uiProjectionMatrix);
         }
         else
         {
-            Vector2 textSize = GetTextSize();
-            Vector2 pivotOffset = GetPivotOffsetFromCenter(textSize);
-            modelMatrix = modelMatrix * Mat4::Translate(Vector3(-pivotOffset.x, -pivotOffset.y, 0.0f));
+            modelMatrix = modelMatrix * Mat4::Translate(Vector3(-m_pivotOffset.x, -m_pivotOffset.y, 0.0f));
             shader->setMat4("VPMatrix", data.projectionMatrix * data.viewMatrix);
         }
 
@@ -101,9 +97,10 @@ bool Text::GetIsUi() const
 {
     return m_isUi;
 }
-Vector2 Text::GetTextSize() const
+
+void Text::UpdateSize()
 {
-    if (!m_font) return Vector2(0, 0);
+    if (!m_font) return;
 
     float totalWidth = 0.0f;
     float maxHeight = 0.0f;
@@ -121,7 +118,8 @@ Vector2 Text::GetTextSize() const
             maxHeight = totalGlyphHeight;
     }
 
-    return Vector2(totalWidth, maxHeight);
+    float scale = m_fontSize / m_font->getPixelHeight();
+    m_size = Vector2(totalWidth * scale, maxHeight * scale);
 }
 
 void Text::RebuildMesh()
@@ -161,21 +159,7 @@ void Text::RebuildMesh()
             (uint)data.idxs.size()
         }
     );
-}
-Vector2 Text::GetPivotOffsetFromCenter(Vector2 textSize) const
-{
-    Vector2 offset;
-    switch (m_pivotPoint)
-    {
-    case TopLeft:      offset = Vector2(0.0f, textSize.y); break;
-    case TopCenter:    offset = Vector2(0.5f * textSize.x, textSize.y); break;
-    case TopRight:     offset = Vector2(textSize.x, textSize.y); break;
-    case MiddleLeft:   offset = Vector2(0.0f, 0.5f * textSize.y); break;
-    case Center:       offset = Vector2(0.5f * textSize.x, 0.5f * textSize.y); break;
-    case MiddleRight:  offset = Vector2(textSize.x, 0.5f * textSize.y); break;
-    case BottomLeft:   offset = Vector2(0.0f, 0.0f); break;
-    case BottomCenter: offset = Vector2(0.5f * textSize.x, 0.0f); break;
-    case BottomRight:  offset = Vector2(textSize.x, 0.0f); break;
-    }
-    return offset;
+
+    UpdateSize();
+    UpdatePivotOffset();
 }

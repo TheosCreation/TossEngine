@@ -12,11 +12,10 @@ public:
     void SetText(const string text);
     string GetText() const;
     bool GetIsUi() const;
-    Vector2 GetTextSize() const;
+    void UpdateSize() override;
 
 private:
     void RebuildMesh();
-    Vector2 GetPivotOffsetFromCenter(Vector2 textSize) const;
     VertexArrayObjectPtr m_vao;
 
     string m_text = "";
@@ -24,6 +23,7 @@ private:
     FontPtr m_font = nullptr;
     Vector3 m_color = Color::Black;
     bool m_isUi = true;
+
 
     SERIALIZABLE_MEMBERS(m_text, m_material, m_font, m_color, m_fontSize, m_isUi, m_pivotPoint, m_anchorPoint)
 };

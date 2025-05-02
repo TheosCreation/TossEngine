@@ -1,6 +1,6 @@
 #include "UiElement.h"
 
-Vector2 UiElement::GetAnchorOffset(const Vector2& screenSize, const Vector2& size, AnchorPoint anchor)
+Vector2 UiElement::GetAnchorOffset(const Vector2& screenSize, const Vector2& size, AnchorPoint anchor) const
 {
     Vector2 offset;
 
@@ -34,4 +34,21 @@ Vector2 UiElement::GetAnchorOffset(const Vector2& screenSize, const Vector2& siz
     }
 
     return offset;
+}
+
+
+void UiElement::UpdatePivotOffset()
+{
+    switch (m_pivotPoint)
+    {
+    case TopLeft:      m_pivotOffset = Vector2(0.0f, m_size.y); break;
+    case TopCenter:    m_pivotOffset = Vector2(0.5f * m_size.x, m_size.y); break;
+    case TopRight:     m_pivotOffset = Vector2(m_size.x, m_size.y); break;
+    case MiddleLeft:   m_pivotOffset = Vector2(0.0f, 0.5f * m_size.y); break;
+    case Center:       m_pivotOffset = Vector2(0.5f * m_size.x, 0.5f * m_size.y); break;
+    case MiddleRight:  m_pivotOffset = Vector2(m_size.x, 0.5f * m_size.y); break;
+    case BottomLeft:   m_pivotOffset = Vector2(0.0f, 0.0f); break;
+    case BottomCenter: m_pivotOffset = Vector2(0.5f * m_size.x, 0.0f); break;
+    case BottomRight:  m_pivotOffset = Vector2(m_size.x, 0.0f); break;
+    }
 }
