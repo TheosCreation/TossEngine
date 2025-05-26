@@ -28,16 +28,27 @@ public:
     {
         Renderer::OnInspectorGUI();
 
-        EnumDropdownField("Pivot Point", m_pivotPoint);
+        if (EnumDropdownField("Pivot Point", m_pivotPoint))
+        {
+            UpdatePivotOffset();
+        }
         EnumDropdownField("Anchor Point", m_anchorPoint);
     }
+
+    virtual void UpdateSize() {} //will be defined differently for each type inherited from this
     
 
 protected:
     AnchorPoint m_pivotPoint = AnchorPoint::TopLeft;
     AnchorPoint m_anchorPoint = AnchorPoint::TopLeft;
 
-    Vector2 GetAnchorOffset(const Vector2& screenSize, const Vector2& size, AnchorPoint anchor);
+
+    Vector2 m_pivotOffset;
+    Vector2 m_size;
+
+    Vector2 GetAnchorOffset(const Vector2& screenSize, const Vector2& size, AnchorPoint anchor) const;
+
+    void UpdatePivotOffset();
 
 };
 
