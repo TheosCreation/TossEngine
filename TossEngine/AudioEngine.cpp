@@ -21,7 +21,7 @@ void AudioEngine::Init()
     m_initilized = true;
 }
 
-void AudioEngine::deactivate() {
+void AudioEngine::CleanUp() {
     lowLevelSystem->close();
     studioSystem->release();
 }
@@ -128,10 +128,10 @@ void AudioEngine::updateSoundLoopVolume(SoundPtr& soundInfo, float newVolume, un
 
 
 void AudioEngine::update3DSoundPosition(SoundPtr soundInfo) {
-    //if (soundIsPlaying(soundInfo))
-    //    //set3dChannelPosition(soundInfo, loopsPlaying[soundInfo->getUniqueID()]);
-    //else
-    //    std::cout << "Audio Engine: Can't update sound position!\n";
+    if (soundIsPlaying(soundInfo))
+        set3dChannelPosition(soundInfo, loopsPlaying[soundInfo->getUniqueID()]);
+    else
+        std::cout << "Audio Engine: Can't update sound position!\n";
     // TODO: fix this function and the set 3d position function
 }
 
@@ -232,8 +232,8 @@ bool AudioEngine::soundLoaded(SoundPtr soundInfo) {
     return sounds.count(soundInfo->getUniqueID()) > 0;
 }
 
-void AudioEngine::set3dChannelPosition(Sound& sound, FMOD::Channel* channel) {
-    FMOD_VECTOR position = { sound.getX() * DISTANCEFACTOR, sound.getY() * DISTANCEFACTOR, sound.getZ() * DISTANCEFACTOR };
+void AudioEngine::set3dChannelPosition(SoundPtr sound, FMOD::Channel* channel) {
+    FMOD_VECTOR position = { sound->getX() * DISTANCEFACTOR, sound->getY() * DISTANCEFACTOR, sound->getZ() * DISTANCEFACTOR };
     FMOD_VECTOR velocity = { 0.0f, 0.0f, 0.0f }; // TODO Add dopplar (velocity) support
     ERRCHECK(channel->set3DAttributes(&position, &velocity));
 }

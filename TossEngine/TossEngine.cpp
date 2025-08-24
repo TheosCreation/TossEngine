@@ -145,6 +145,8 @@ void TossEngine::CleanUp()
 {
     Physics::GetInstance().CleanUp();
     ComponentRegistry::GetInstance().CleanUp();
+    AudioEngine::GetInstance().CleanUp();
+
     running = false;
     coroutineCondition.notify_all();
     if (coroutineThread.joinable())

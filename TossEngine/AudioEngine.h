@@ -52,9 +52,9 @@ public:
     void Init();
 
     /**
-     * Method that is called to deactivate the audio engine after use.
+     * Method that is called to CleanUp the audio engine after use.
      */
-    void deactivate();
+    void CleanUp();
 
     /**
     * Method which should be called every frame of the game loop
@@ -202,7 +202,7 @@ private:
     /**
      * Sets the 3D position of a sound
      */
-    void set3dChannelPosition(Sound& soundInfo, FMOD::Channel* channel);
+    void set3dChannelPosition(SoundPtr soundInfo, FMOD::Channel* channel);
 
     /**
      * Initializes the reverb effect
