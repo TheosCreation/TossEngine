@@ -15,6 +15,12 @@ Mail : theo.morris@mds.ac.nz
 
 #include "ImGuiLogger.h"
 
+
+static ImGuiLogger& s_imGuiLogger() {
+    static ImGuiLogger* inst = new ImGuiLogger(); // never destroyed
+    return *inst;
+}
+
 /**
  * @class Debug
  * @brief Provides utility methods for logging debug messages, warnings, and errors
@@ -76,7 +82,7 @@ public:
      * @param p_open Optional pointer to control window open/close status.
      */
     static void DrawConsole(bool* p_open = nullptr) {
-        s_imguiLogger.Draw("Console Log", p_open);
+        s_imGuiLogger().Draw("Console Log", p_open);
     }
 
 private:
@@ -89,14 +95,8 @@ private:
         std::string fullMessage = "[" + type + "] " + message;
         // Output to the standard console
         printf("%s\n", fullMessage.c_str());
-        // Add the message to the ImGui logger
-        s_imguiLogger.AddLog("%s", fullMessage.c_str());
-    }
 
-private:
-    /**
-     * @brief Static instance of the ImGui logger used for displaying messages
-     *        inside the editor's console window.
-     */
-    static ImGuiLogger s_imguiLogger;
+        // Add the message to the ImGui logger
+        s_imGuiLogger().AddLog(fullMessage);
+    }
 };

@@ -27,12 +27,13 @@ Mail : theo.morris@mds.ac.nz
  */
 class TOSSENGINE_API ImGuiLogger {
 public:
+    ImGuiLogger();
     /**
      * @brief Appends a log message with printf-style formatting.
      * @param fmt The format string.
      * @param ... Additional arguments for formatting.
      */
-    void AddLog(const char* fmt, ...);
+    void AddLog(std::string log);
 
     /**
      * @brief Draws the log window in an ImGui context.

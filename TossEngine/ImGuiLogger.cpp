@@ -1,16 +1,13 @@
 #include "ImGuiLogger.h"
 
-void ImGuiLogger::AddLog(const char* fmt, ...)
+ImGuiLogger::ImGuiLogger()
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    char buf[1024];
-    va_list args;
-    va_start(args, fmt);
-    vsnprintf(buf, sizeof(buf), fmt, args);
-    va_end(args);
-    m_Items.push_back(std::string(buf));
+    m_Items = std::vector<std::string>();
+}
 
-    // Automatically scroll to bottom on new log
+void ImGuiLogger::AddLog(std::string log)
+{
+    m_Items.emplace_back(log);
     m_ScrollToBottom = true;
     m_NeedsCollapseRecompute = true;
 }

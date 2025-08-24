@@ -26,8 +26,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Scene.h"
 #include "Physics.h"
 #include "Framebuffer.h"
-#include "GameObject.h"
-#include "GameObjectManager.h"
 #include "LayerManager.h"
 #include "Renderer.h"
 #include "DebugDraw.h"
@@ -64,3 +62,4 @@ Mail : theo.morris@mds.ac.nz
 #include "DirectionalLight.h"
 #include "Text.h"
 #include "Button.h"
+#include "AudioSource.h"

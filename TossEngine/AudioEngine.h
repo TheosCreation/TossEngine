@@ -20,13 +20,6 @@
 #include "Sound.h"
 
 /**
- * Error Handling Function for FMOD Errors
- * @param result - the FMOD_RESULT generated during every FMOD 
- */
-void ERRCHECK_fn(FMOD_RESULT result, const char* file, int line);
-#define ERRCHECK(_result) ERRCHECK_fn(_result, __FILE__, __LINE__)
-
-/**
  * Class that handles the process of loading and playing sounds by wrapping FMOD's functionality.
  * Deals with all FMOD calls so that FMOD-specific code does not need to be used outside this class.
  * Only one AudioEngine should be constructed for an application.

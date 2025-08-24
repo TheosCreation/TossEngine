@@ -193,9 +193,6 @@
     <ClCompile Include="FileWatcher.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Debug.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="ImGuiLogger.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -299,7 +296,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AudioSource.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -586,7 +583,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AudioSource.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
