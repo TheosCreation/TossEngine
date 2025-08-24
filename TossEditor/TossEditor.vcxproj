@@ -195,11 +195,6 @@
     <ClCompile Include="TossEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TossEngine\TossEngine.vcxproj">
-      <Project>{0fbf6fbe-001b-470b-a304-4e11123675c0}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\Dependencies\IMGUIZMO\GraphEditor.h" />
     <ClInclude Include="..\Dependencies\IMGUIZMO\ImCurveEdit.h" />
     <ClInclude Include="..\Dependencies\IMGUIZMO\ImGradient.h" />

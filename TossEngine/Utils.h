@@ -267,10 +267,6 @@ struct TextureCubeMapDesc
 struct SoundDesc
 {
     std::string filepath = "";
-    bool is3D = false;
-    bool isLoop = false;
-    float volume = 1.0f;
-    float reverbAmount = 0.0f;
 };
 
 struct UniformBinding {

@@ -298,6 +298,9 @@
     <ClCompile Include="UiElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AudioSource.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rect.h">
@@ -581,6 +584,9 @@
     </ClInclude>
     <ClInclude Include="UiElement.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSource.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

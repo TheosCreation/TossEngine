@@ -40,31 +40,15 @@ public:
     void OnInspectorGUI() override;
     void onCreateLate() override;
 
-    // Getters
-    bool is3D() const { return m_is3D; }
-    bool isLoop() const { return m_isLoop; }
-    float getVolume() const { return m_volume; }
-    float getReverbAmount() const { return m_desc.reverbAmount; }
+    const std::string& getPath() const { return m_path; }
     bool isLoaded() const { return m_loaded; }
-    float getX() const { return m_position.x; }
-    float getY() const { return m_position.y; }
-    float getZ() const { return m_position.z; }
-
-    // Setters
-    void setVolume(float newVolume) { m_desc.volume = newVolume; }
-    void setReverbAmount(float newReverbAmount) { m_desc.reverbAmount = newReverbAmount; }
-    void setLoaded(bool isLoaded) { m_loaded = isLoaded; }
+    void setLoaded(bool v) { m_loaded = v; }
 
 private:
     SoundDesc m_desc = {};       //!< Sound descriptor.
-    bool m_is3D = false;          //!< Whether the sound is spatialized (3D).
-    bool m_isLoop = false;        //!< Whether the sound loops.
-    float m_volume = 1.0f;        //!< Volume of the sound [0.0 - 1.0].
-    bool m_loaded = false;        //!< Whether the sound is loaded into memory.
+    bool m_loaded = false;
 
-    Vector3 m_position = Vector3(); //!< 3D position of the sound.
-
-    SERIALIZABLE_MEMBERS(m_path, m_is3D, m_isLoop, m_volume, m_desc.reverbAmount)
+    SERIALIZABLE_MEMBERS(m_path)
 };
 
 REGISTER_RESOURCE(Sound)

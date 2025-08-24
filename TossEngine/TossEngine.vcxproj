@@ -227,6 +227,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/Toss
     <ClCompile Include="..\Dependencies\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="..\Dependencies\tinyfiledialogs\tinyfiledialogs.c" />
     <ClCompile Include="AudioEngine.cpp" />
+    <ClCompile Include="AudioSource.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
@@ -313,6 +314,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/Toss
     <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h" />
     <ClInclude Include="All.h" />
     <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="AudioSource.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />

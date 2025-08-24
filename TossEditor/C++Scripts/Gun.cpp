@@ -25,7 +25,7 @@ void Gun::onUpdate()
         Transform& camTransform = playerCamera->getTransform();
         if (m_projectile)
         {
-            AudioEngine::GetInstance().playSound(fireSound);
+            //AudioEngine::GetInstance().playSound(fireSound);
             GameObjectPtr spawnedProjectile = m_owner->getGameObjectManager()->Instantiate(m_projectile, m_muzzlePosition->m_transform.position, camTransform.rotation);
             
         }
