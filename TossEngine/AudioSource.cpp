@@ -7,12 +7,23 @@ void AudioSource::onStart()
 
 void AudioSource::onUpdate()
 {
-    if (m_channel && m_spatial) update3DFromTransform();
+    if (m_channel && m_is3D) update3DFromTransform();
 }
 
 void AudioSource::onDestroy()
 {
     Stop();
+}
+
+void AudioSource::OnInspectorGUI()
+{
+    Component::OnInspectorGUI();
+
+    ImGui::Checkbox("Play On Start", &m_playOnStart);
+    ImGui::Checkbox("Is Looping", &m_loop);
+    ImGui::Checkbox("Is 3D", &m_is3D);
+    ImGui::DragFloat("Volume", &m_volume, 0.01f, 0, 1);
+    ResourceAssignableField(m_clip, "Audio Clip");
 }
 
 void AudioSource::Play()
@@ -32,7 +43,7 @@ void AudioSource::Play()
     if (r != FMOD_OK || !m_channel) return;
 
     m_channel->setVolume(m_volume);
-    if (m_spatial) {
+    if (m_is3D) {
         // 3D mode for channel
         m_channel->setMode((m_loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_3D);
         update3DFromTransform();
@@ -76,6 +87,11 @@ bool AudioSource::IsPaused() const
     return paused;
 }
 
+void AudioSource::SetClip(SoundPtr _clip)
+{
+    m_clip = _clip;
+}
+
 // AudioSource.cpp
 void AudioSource::update3DFromTransform()
 {
@@ -101,9 +117,9 @@ void AudioSource::update3DFromTransform()
     if (r != FMOD_OK) return;
 
     // Optional: give the source directionality
-    FMOD_VECTOR ffwd{ fwd.x, fwd.y, fwd.z };
-    r = m_channel->set3DConeOrientation(&ffwd);
-    if (r != FMOD_OK) return;
+    //FMOD_VECTOR ffwd{ fwd.x, fwd.y, fwd.z };
+    //r = m_channel->set3DConeOrientation(&ffwd);
+    //if (r != FMOD_OK) return;
     // Tune as needed (inner angle, outer angle, outer volume)
     // ERRCHECK(m_channel->set3DConeSettings(60.0f, 180.0f, 0.2f));
 }

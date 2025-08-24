@@ -140,6 +140,7 @@ void Scene::onUpdate()
 {
     if (!m_initilized) return;
 
+    if (lastCameraToRender) AudioEngine::GetInstance().set3DListener(lastCameraToRender->getTransform());
     if (m_gameObjectManager) m_gameObjectManager->onUpdate();
 }
 
@@ -195,11 +196,17 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
     }
     else
     {
+        vector<Camera*> cameras = m_gameObjectManager->getCameras();
+        if (cameras.size() > 0)
+        {
+            lastCameraToRender = cameras[0];
+        }
         // get the camera data from a camera in scene
-        for (auto& camera : m_gameObjectManager->getCameras())
+        for (auto& camera : cameras)
         {
             if (camera->getCameraType() == CameraType::Perspective)
             {
+
                 camera->getViewMatrix(uniformData.viewMatrix);
                 camera->getProjectionMatrix(uniformData.projectionMatrix);
                 uniformData.cameraPosition = camera->getPosition();

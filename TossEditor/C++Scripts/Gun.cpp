@@ -14,6 +14,7 @@ void Gun::OnInspectorGUI()
 void Gun::onStart()
 {
     playerCamera = m_owner->getComponentInParent<Camera>();
+    ad = m_owner->getComponent<AudioSource>();
 }
 
 void Gun::onUpdate()
@@ -25,6 +26,12 @@ void Gun::onUpdate()
         Transform& camTransform = playerCamera->getTransform();
         if (m_projectile)
         {
+            if (ad)
+            {
+                ad->SetClip(fireSound);
+                ad->Play();
+            }
+
             //AudioEngine::GetInstance().playSound(fireSound);
             GameObjectPtr spawnedProjectile = m_owner->getGameObjectManager()->Instantiate(m_projectile, m_muzzlePosition->m_transform.position, camTransform.rotation);
             

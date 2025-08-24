@@ -10,6 +10,8 @@ public:
     void onUpdate() override;
     void onDestroy() override;
 
+    void OnInspectorGUI() override;
+
     void Play();
     void Pause();
     void Stop();
@@ -17,6 +19,7 @@ public:
     bool IsPlaying() const;
     bool IsPaused() const;
 
+    void SetClip(SoundPtr _clip);
 private:
     void update3DFromTransform();
 
@@ -26,11 +29,11 @@ private:
     bool    m_haveLastPos = false;
 
     bool  m_loop = false;
-    bool  m_spatial = true;
+    bool  m_is3D = true;
     float m_volume = 1.0f;
     bool  m_playOnStart = false;
 
-    SERIALIZABLE_MEMBERS(m_clip, m_loop, m_spatial, m_volume, m_playOnStart)
+    SERIALIZABLE_MEMBERS(m_clip, m_loop, m_is3D, m_volume, m_playOnStart)
 };
 
 REGISTER_COMPONENT(AudioSource);

@@ -132,4 +132,5 @@ protected:
     unique_ptr<Image> m_SSRQ;
 
     unique_ptr<LightManager> m_lightManager = nullptr;
+    Camera* lastCameraToRender = nullptr;
 };

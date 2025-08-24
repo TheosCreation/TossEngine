@@ -21,6 +21,7 @@ private:
 
 
     Camera* playerCamera = nullptr;
+    AudioSource* ad = nullptr;
     float shootTimer = 0.0f;
     bool m_isFiring = false;
     bool m_isAiming = false;
