@@ -198,12 +198,12 @@ void Material::OnInspectorGUI()
                 }
                 else if constexpr (std::is_same_v<T, Texture2DBinding>)
                 {
-                    ResourceDropdownField(arg.texture, "Texture2D");
+                    ResourceDropdownField(arg.texture, uniformName + "Texture2D");
                     value = arg;
                 }
                 else if constexpr (std::is_same_v<T, TextureCubeMapBinding>)
                 {
-                    ResourceDropdownField(arg.texture, "CubeMap");
+                    ResourceDropdownField(arg.texture, uniformName + "CubeMap");
                     value = arg;
                 }
                 // Mat4 could be editable with a matrix editor if you want to go advanced
@@ -303,6 +303,26 @@ TextureCubeMapPtr Material::GetBinding(const string& bindingName)
     }
 
     return cubemapTexture;
+}
+
+Texture2DPtr Material::GetTexture2DBinding(const std::string& bindingName)
+{
+    // Check if the bindingName exists in the m_uniformValues container
+    Texture2DPtr texture2D;
+    for (const auto& [uniformName, value] : m_uniformValues)
+    {
+        std::visit([&](auto&& arg)
+            {
+                using T = std::decay_t<decltype(arg)>; //making T be type of the argument
+                if constexpr (std::is_same_v<T, Texture2DBinding>)
+                    if (arg.texture != nullptr)
+                    {
+                        texture2D = arg.texture;
+                    }
+            }, value);
+    }
+
+    return texture2D;
 }
 
 void Material::UpdateBindings()

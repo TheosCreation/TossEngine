@@ -40,6 +40,8 @@ public:
      */
     static float FixedDeltaTime;
 
+    static float CurrentTime;
+
     /**
      * @brief Updates the current DeltaTime (used once per frame).
      * @param deltaTime Raw time difference in seconds (usually from the OS/high-res timer).

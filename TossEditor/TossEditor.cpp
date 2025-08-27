@@ -192,6 +192,7 @@ void TossEditor::onUpdateInternal()
     FindSceneFiles();
 
     // delta time
+    Time::CurrentTime = TossEngine::GetTime();
     m_currentTime = TossEngine::GetTime();
     float deltaTimeInternal = m_currentTime - m_previousTime;
     Time::UpdateDeltaTime(deltaTimeInternal);
@@ -340,7 +341,7 @@ void TossEditor::onRenderInternal()
     }
 
     Debug::DrawConsole();
-
+    
     ImGui::Begin("Game", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     {
         auto scene = TossEngine::GetInstance().getCurrentScene();
@@ -464,6 +465,9 @@ void TossEditor::onRenderInternal()
             m_projectSettings->renderingPath = selectedPath;
             m_playerSettings->renderingPath = selectedPath;
         }
+
+
+        //scene->SetPostProcessMaterial()
 
         ImGui::Separator();
         ImGui::Text("Physics Settings");

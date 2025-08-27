@@ -84,7 +84,7 @@ void Scene::onCreate()
 
     auto& resourceManager = ResourceManager::GetInstance();
 
-    //hard coded for now as i need to internalize some shaders and materials so they dont go corrupt by user
+    // TODO: hard coded for now as i need to internalize some shaders and materials so they dont go corrupt by user
     m_deferredSSRQMaterial = resourceManager.get<Material>("DeferredSSRQMaterial");
     m_postProcessSSRQMaterial = resourceManager.get<Material>("PostProcessSSRQMaterial");
 
@@ -314,8 +314,14 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         writeToFrameBuffer->Bind();
     }
 
-    // Post processing 
-    m_postProcessingFramebuffer->PopulateShader(m_postProcessSSRQMaterial->GetShader());
+    // Post processing
+    ShaderPtr postProcessShader = m_postProcessSSRQMaterial->GetShader();
+    m_postProcessingFramebuffer->PopulateShader(postProcessShader);
+
+    postProcessShader->setFloat("Time", TossEngine::GetTime());
+    postProcessShader->setVec2("Resolution", window->getInnerSize());
+
+
     m_SSRQ->SetMaterial(m_postProcessSSRQMaterial);
     m_SSRQ->Render(uniformData, RenderingPath::Forward);
 
@@ -357,6 +363,11 @@ GameObjectManager* Scene::getObjectManager()
 Window* Scene::getWindow()
 {
     return TossEngine::GetInstance().GetWindow();
+}
+
+void Scene::SetPostProcessMaterial(MaterialPtr material)
+{
+    m_postProcessSSRQMaterial = material;
 }
 
 void Scene::onQuit()

@@ -110,6 +110,8 @@ public:
     GameObjectManager* getObjectManager();
     Window* getWindow();
 
+    void SetPostProcessMaterial(MaterialPtr material);
+
     /**
      * @brief Called when the game is quitting.
      * Use this method to clean up resources or perform necessary finalization tasks.

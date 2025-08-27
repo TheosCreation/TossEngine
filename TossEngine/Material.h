@@ -123,6 +123,7 @@ public:
      * @return Shared pointer to the cube map texture, or nullptr if not found.
      */
     TextureCubeMapPtr GetBinding(const std::string& bindingName);
+    Texture2DPtr GetTexture2DBinding(const std::string& bindingName);
 
 private:
     /**

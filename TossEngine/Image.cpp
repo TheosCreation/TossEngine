@@ -4,6 +4,7 @@
 #include "Material.h"
 #include "Shader.h"
 #include "GameObject.h"
+#include "TossEngine.h"
 
 void Image::onCreate()
 {
@@ -178,7 +179,14 @@ void Image::Render(UniformData data, RenderingPath renderPath)
         shader->setTexture2D(m_texture, 0, "Texture0");
     }
 
+	Texture2DPtr texture1 = m_material->GetTexture2DBinding("Texture1");
+	if (texture1)
+	{
+        shader->setTexture2D(texture1, 1, "Texture1");
+	}
+
     shader->setVec3("color", m_color);
+    shader->setFloat("Time", TossEngine::GetTime());
     
     // Prepare the graphics engine for rendering
     graphicsEngine.setFaceCulling(CullType::None); // Disable face culling
