@@ -682,6 +682,10 @@ inline std::string toLower(const std::string& str)
     return lowerStr;
 }
 
+static std::uint64_t ToTicks(std::filesystem::file_time_type t) {
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch()).count();
+}
+
 template<typename E>
 std::vector<const char*> get_enum_names()
 {

@@ -18,6 +18,9 @@ Mail : theo.morris@mds.ac.nz
 #include "AudioEngine.h"
 #include <filesystem>
 #include <fstream>
+using std::filesystem::path;
+using std::filesystem::directory_options;
+using std::filesystem::recursive_directory_iterator;
 
 #ifdef _WIN32
 #include <windows.h>
@@ -187,6 +190,106 @@ void ResourceManager::LoadPrefabs()
     m_prefabBackupData.clear();
 }
 
+void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
+{
+    path root = path(assetsRoot);
+    if (!exists(root)) return;
+
+    for (recursive_directory_iterator it(root, directory_options::skip_permission_denied), end; it != end; ++it) {
+        if (!it->is_regular_file()) continue;
+
+        path p = it->path();
+        if (p.extension() == ".meta") continue; // handled implicitly
+
+        const std::string ext = toLower(p.extension().string()); // ".png"
+        const std::string type = GuessTypeFromExt(ext);
+        if (type.empty()) continue;
+
+        // UID = path relative to Assets with slash separators
+        std::string rel = p.lexically_relative(root).generic_string(); // e.g. "Textures/ui/button.png"
+
+        AssetImportRec rec{};
+        if (!ShouldImport(p.string(), type, rec)) continue;
+
+        ImportOne(p.string(), rel, type);
+
+        // update cache
+        rec.uid = rel;
+        rec.type = type;
+        rec.timestamp = ToTicks(last_write_time(p));
+        m_importCache[p.string()] = rec;
+    }
+}
+
+void ResourceManager::SaveImportCache(const std::string& pathJson)
+{
+    std::filesystem::create_directories(std::filesystem::path(pathJson).parent_path());
+    json j;
+    for (auto const& [abs, rec] : m_importCache) {
+        j[abs] = { {"uid", rec.uid}, {"type", rec.type}, {"ts", rec.timestamp} };
+    }
+    std::ofstream f(pathJson);
+    if (!f.is_open()) return;
+    f << j.dump(2);
+}
+
+void ResourceManager::LoadImportCache(const std::string& pathJson)
+{
+    m_importCache.clear();
+    std::ifstream f(pathJson);
+    if (!f.is_open()) return;
+    json j; f >> j; f.close();
+    for (auto& [k, v] : j.items()) {
+        AssetImportRec r;
+        r.uid = v.value("uid", "");
+        r.type = v.value("type", "");
+        r.timestamp = v.value("ts", 0ull);
+        m_importCache[k] = r;
+    }
+}
+
+bool ResourceManager::ShouldImport(const std::string& absPath, const std::string& type, AssetImportRec& out)
+{
+    auto it = m_importCache.find(absPath);
+    const auto nowTicks = ToTicks(std::filesystem::last_write_time(absPath));
+    if (it == m_importCache.end()) return true;                    // never seen
+    if (it->second.type != type) return true;                      // type changed
+    if (it->second.timestamp != nowTicks) return true;             // modified
+    out = it->second;
+    return false;
+}
+
+void ResourceManager::ImportOne(const std::string& absPath, const std::string& relUID, const std::string& type)
+{
+    // prefer existing resource instance, else create
+    ResourcePtr res = GetResourceByUniqueID(relUID);
+    if (!res) {
+        res = createResource(type, relUID);
+        if (!res) { Debug::LogError("Import failed for " + relUID, false); return; }
+    }
+
+    // Build a small JSON payload the resource understands
+    json payload;
+    payload["m_path"] = absPath;
+    Debug::Log(absPath);
+
+    res->deserialize(payload);
+    // If new, onCreate/OnCreateLate already called inside createResource(...).
+    // If existing, allow runtime refresh:
+    if (auto fn = m_resourceDataMap.find(relUID); fn != m_resourceDataMap.end())
+        fn->second = payload;
+}
+
+std::string ResourceManager::GuessTypeFromExt(const std::string& ext) const
+{
+    if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".tga" || ext == ".bmp") return "Texture2D";
+    if (ext == ".obj" || ext == ".fbx" || ext == ".gltf" || ext == ".glb")                 return "Mesh";
+    if (ext == ".mat" || ext == ".material")                                           return "Material";
+    if (ext == ".prefab")                                                            return "Prefab";
+    if (ext == ".wav" || ext == ".mp3" || ext == ".ogg")                                  return "AudioClip";
+    return {};
+}
+
 void ResourceManager::SetSelectedResource(const ResourcePtr& selectedResource)
 {
     m_selectedResource = selectedResource;
@@ -195,6 +298,7 @@ void ResourceManager::SetSelectedResource(const ResourcePtr& selectedResource)
 void ResourceManager::loadResourcesFromFile(const std::string& filepath)
 {
     if (hasLoadedResources) return;
+
     m_currentFilePath = filepath;
     std::ifstream file(filepath);
     if (!file.is_open())
@@ -209,12 +313,29 @@ void ResourceManager::loadResourcesFromFile(const std::string& filepath)
 
     for (const auto& resourceData : data["resources"])
     {
-        if (resourceData.contains("type"))
+        if (!resourceData.contains("type"))
+            continue;
+
+        // if the JSON has a file path, make sure it still exists
+        if (resourceData.contains("m_path") && resourceData["m_path"].is_string())
         {
-            std::string typeName = resourceData["type"];
-            createResourceFromDataToMap(typeName, resourceData);
+            std::string path = resourceData["m_path"].get<std::string>();
+            if (!std::filesystem::exists(path))
+            {
+                Debug::Log("Skipped resource, missing file: " + path);
+                continue; // skip this resource
+            }
         }
+
+        std::string typeName = resourceData["type"];
+        createResourceFromDataToMap(typeName, resourceData);
     }
+
+    //Above is old stuff
+    const std::string assetsRoot = "Assets";                // adjust as needed
+    LoadImportCache("Library/importCache.json");            // optional cache location
+    LoadAssetsFromFolder(assetsRoot);
+    SaveImportCache("Library/importCache.json");
 
     for (auto& [uid, resource] : m_mapResources)
     {

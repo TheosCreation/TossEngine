@@ -19,6 +19,12 @@ Mail : theo.morris@mds.ac.nz
 #include "Utils.h"
 #include "CoroutineTask.h"
 
+struct AssetImportRec {
+    std::string uid;
+    std::string type;
+    std::uint64_t timestamp = 0; // filesystem clock in ns
+};
+
 /**
  * @class ResourceManager
  * @brief Central manager for all loaded resources in the TossEngine (textures, meshes, materials, prefabs, etc).
@@ -101,7 +107,19 @@ public:
     void DeletePrefabs();
     void LoadPrefabs();
 
+    //neew
+    void LoadAssetsFromFolder(const std::string& assetsRoot);
+    void SaveImportCache(const std::string& path);
+    void LoadImportCache(const std::string& path);
+
 protected:
+    bool ShouldImport(const std::string& absPath, const std::string& type, AssetImportRec& out);
+    void ImportOne(const std::string& absPath, const std::string& relUID, const std::string& type);
+    std::string GuessTypeFromExt(const std::string& ext) const;
+
+    std::unordered_map<std::string, AssetImportRec> m_importCache;
+    //new ends
+
     bool hasLoadedResources = false;    //!< True if resources were loaded from disk.
     bool hasCreatedResources = false;   //!< True if any resources have been created at runtime.
 
