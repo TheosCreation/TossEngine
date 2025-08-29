@@ -131,11 +131,6 @@ ScenePtr TossEngine::getCurrentScene() const
     return m_currentScene;
 }
 
-GameObjectManager* TossEngine::getGameObjectManager() const
-{
-    return m_currentScene->getObjectManager();
-}
-
 void TossEngine::PollEvents()
 {
     glfwPollEvents();

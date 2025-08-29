@@ -13,14 +13,17 @@ Mail : theo.morris@mds.ac.nz
 #pragma once
 #include "Utils.h"
 #include "Resizable.h"
+#include "Math.h"
+#include "GameObject.h"
+#include "LightManager.h"
+#include <map>
+#include <set>
 #include <imgui.h>
 
-class ComponentRegistry;
-class GameObjectManager;
 class Image;
+class ComponentRegistry;
 class Camera;
 class Player;
-class LightManager;
 class Physics;
 class Window;
 
@@ -43,10 +46,49 @@ public:
     /**
      * @brief Destructor for the Scene class.
      */
-    ~Scene();
+    ~Scene() override;
 
     void clean();
     void reload();
+
+    /**
+     * @brief Creates a new GameObject of type T.
+     * @tparam T The GameObject-derived type.
+     * @param name Optional name to assign.
+     * @param data Optional JSON data to deserialize.
+     * @return Shared pointer to the created GameObject.
+     */
+    template <typename T>
+    std::shared_ptr<T> createGameObject(std::string name = "", json data = nullptr)
+    {
+        static_assert(std::is_base_of<GameObject, T>::value, "T must derive from GameObject");
+        auto go = std::make_shared<T>();
+        if (createGameObjectInternal(go, name, data))
+            return go;
+        return nullptr;
+    }
+
+    /**
+     * @brief Instantiates a Prefab into the scene.
+     */
+    GameObjectPtr Instantiate(const PrefabPtr& prefab, Transform* parent = nullptr,
+        Vector3 positionalOffset = Vector3(0.0f), Quaternion rotationOffset = Quaternion(), bool hasStarted = true);
+    GameObjectPtr Instantiate(const PrefabPtr& prefab, Vector3 position, Quaternion rotation, bool hasStarted = true);
+
+    /**
+     * @brief Removes a GameObject from the system.
+     * @param gameObject Pointer to the GameObject to remove.
+     */
+    void removeGameObject(const GameObject* gameObject);
+
+    // --- Serialization ---
+
+    void loadGameObjects(const json& data);
+    json saveGameObjects() const;
+
+    void loadGameObjectsFromFile(const std::string& filePath);
+    void saveGameObjectsToFile(const std::string& filePath) const;
+
 
     /**
      * @brief Called when the scene is created.
@@ -75,6 +117,10 @@ public:
      * Default rendering mode is deferred rendering.
      */
     virtual void onGraphicsUpdate(Camera* cameraToRenderOverride = nullptr, FramebufferPtr writeToFrameBuffer = nullptr);
+    void onShadowPass(int index) const;
+    void onTransparencyPass(UniformData _data) const;
+    void onSkyboxPass(UniformData _data) const;
+    void onScreenSpacePass(UniformData _data) const;
 
     /**
      * @brief Called every frame to update the game logic.
@@ -107,7 +153,6 @@ public:
     void onResize(Vector2 size) override;
 
     LightManager* getLightManager();
-    GameObjectManager* getObjectManager();
     Window* getWindow();
 
     void SetPostProcessMaterial(MaterialPtr material);
@@ -118,8 +163,93 @@ public:
      */
     virtual void onQuit();
 
+    GameObjectPtr getGameObject(size_t id);
+    std::vector<Camera*> getCameras() const;
+
+    /**
+     * @brief Finds the first object or component of the specified type.
+     * @tparam T The type to search for.
+     * @return Pointer to the first object or component found.
+     */
+    template <typename T>
+    T* findObjectOfType()
+    {
+        for (auto& [id, gameObject] : m_gameObjects)
+        {
+            if (!gameObject) continue;
+
+            if (auto go = std::dynamic_pointer_cast<T>(gameObject))
+                return go.get();
+
+            for (auto& comp : gameObject->getAllComponents())
+            {
+                if (auto c = dynamic_cast<T*>(comp.second))
+                    return c;
+            }
+        }
+        return nullptr;
+    }
+
+    /**
+     * @brief Finds all objects or components of the specified type.
+     * @tparam T The type to search for.
+     * @return Vector of matching pointers.
+     */
+    template <typename T>
+    std::vector<T*> findObjectsOfType()
+    {
+        std::vector<T*> results;
+
+        for (auto& [id, gameObject] : m_gameObjects)
+        {
+            if (!gameObject) continue;
+
+            if (T* castedGO = std::dynamic_pointer_cast<T>(gameObject))
+                results.push_back(castedGO);
+
+            for (auto& pair : gameObject->getAllComponents())
+            {
+                if (T* castedComp = dynamic_cast<T*>(pair.second))
+                    results.push_back(castedComp);
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * @brief Gets the current skybox texture (if any).
+     * @return Pointer to the texture cubemap.
+     */
+    TextureCubeMapPtr getSkyBoxTexture() const;
+
+    /**
+     * @brief Removes all GameObjects from the scene.
+     */
+    void clearGameObjects();
+
+    /**
+     * @brief Public map of all GameObjects by ID.
+     */
+    std::unordered_map<size_t, GameObjectPtr> m_gameObjects;
+
     void Save();
     string GetFilePath();
+
+private:
+    /**
+     * @brief Internal helper to finalize GameObject creation.
+     * @param gameObject The object to register.
+     * @param name Desired name.
+     * @param data Optional JSON for deserialization.
+     * @return True if added successfully.
+     */
+    bool createGameObjectInternal(GameObjectPtr gameObject, const std::string& name = "", const json& data = nullptr);
+
+    /**
+     * @brief Ensures a name is unique, appends a suffix if necessary.
+     */
+    std::string getGameObjectNameAvaliable(std::string currentName);
 
 protected:
     bool m_initilized = false;
@@ -129,10 +259,16 @@ protected:
     MaterialPtr m_deferredSSRQMaterial = nullptr;
     MaterialPtr m_postProcessSSRQMaterial = nullptr;
 
-    unique_ptr<GameObjectManager> m_gameObjectManager; /**< @brief Pointer to the GameObject system managing game objects. */
-    FramebufferPtr m_postProcessingFramebuffer; /**< @brief Pointer to the framebuffer for post-processing effects. */
-    unique_ptr<Image> m_SSRQ;
+    //unique_ptr<Scene> m_scene; /**< @brief Pointer to the GameObject system managing game objects. */
+    FramebufferPtr m_postProcessingFramebuffer = nullptr; /**< @brief Pointer to the framebuffer for post-processing effects. */
+    unique_ptr<Image> m_SSRQ = nullptr;
 
     unique_ptr<LightManager> m_lightManager = nullptr;
     Camera* lastCameraToRender = nullptr;
+
+    size_t m_nextAvailableId = 1; //!< Tracks the next ID to assign.
+    std::unordered_set<size_t> m_gameObjectsToDestroy; //!< Objects pending destruction.
+
+    GameObject* selectedGameObject = nullptr;
+    Scene* m_scene = nullptr;
 };

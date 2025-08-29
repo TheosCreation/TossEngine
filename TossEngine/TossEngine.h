@@ -67,12 +67,6 @@ public:
     ScenePtr getCurrentScene() const;
 
     /**
-     * @brief Gets the active GameObject manager for the current scene.
-     * @return Pointer to the GameObjectManager.
-     */
-    GameObjectManager* getGameObjectManager() const;
-
-    /**
      * @brief Polls platform events (e.g., input, window close).
      */
     void PollEvents();
@@ -217,9 +211,9 @@ inline void from_json(json const& j, GameObjectPtr& gameObject)
     if (j.contains("id") && !j["id"].is_null())
     {
         size_t id = j["id"].get<size_t>();
-        GameObjectManager* mgr = TossEngine::GetInstance().getGameObjectManager();
-        if (mgr && mgr->m_gameObjects.count(id)) {
-            gameObject = mgr->m_gameObjects.at(id);
+        ScenePtr scene = TossEngine::GetInstance().getCurrentScene();
+        if (scene && scene->m_gameObjects.count(id)) {
+            gameObject = scene->m_gameObjects.at(id);
         }
     }
 }

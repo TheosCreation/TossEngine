@@ -33,7 +33,7 @@ void Gun::onUpdate()
             }
 
             //AudioEngine::GetInstance().playSound(fireSound);
-            GameObjectPtr spawnedProjectile = m_owner->getGameObjectManager()->Instantiate(m_projectile, m_muzzlePosition->m_transform.position, camTransform.rotation);
+            GameObjectPtr spawnedProjectile = m_owner->getScene()->Instantiate(m_projectile, m_muzzlePosition->m_transform.position, camTransform.rotation);
             
         }
     }

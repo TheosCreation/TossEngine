@@ -1,6 +1,6 @@
 ﻿#include "Transform.h"
 #include "GameObject.h"
-#include "GameObjectManager.h"
+#include "Scene.h"
 #include "Prefab.h"
 #include "ResourceManager.h"
 
@@ -158,7 +158,7 @@ void Transform::deserialize(const nlohmann::json& data)
 Transform* Transform::LookupParentTransform(size_t parentID) const
 {
     // First, try to find in the game object manager.
-    if (GameObjectManager* gameObjectManager = gameObject->getGameObjectManager())
+    if (Scene* gameObjectManager = gameObject->getScene())
     {
         auto& gameObjects = gameObjectManager->m_gameObjects;
         auto it = gameObjects.find(parentID);

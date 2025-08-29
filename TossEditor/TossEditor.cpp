@@ -177,7 +177,7 @@ void TossEditor::DuplicateSelected()
         {
             json gameObjectJsonData = gameObject->serialize();
             string name = gameObject->name;
-            selectedSelectable = TossEngine::GetInstance().getGameObjectManager()->createGameObject<GameObject>(name, gameObjectJsonData);
+            selectedSelectable = TossEngine::GetInstance().getCurrentScene()->createGameObject<GameObject>(name, gameObjectJsonData);
         }
     }
 }
@@ -672,12 +672,12 @@ void TossEditor::onRenderInternal()
     if (ImGui::Begin("Hierarchy")) {
         auto scene = TossEngine::GetInstance().getCurrentScene();
         if (ImGui::Button("Add Empty GameObject") && scene) {
-            selectedSelectable = scene->getObjectManager()->createGameObject<GameObject>();
+            selectedSelectable = scene->createGameObject<GameObject>();
         }
 
         // Display root game objects.
         if (scene) {
-            for (const auto& pair : scene->getObjectManager()->m_gameObjects) {
+            for (const auto& pair : scene->m_gameObjects) {
                 if (!pair.second) continue;
 
                 // Only show root game objects.
@@ -701,7 +701,7 @@ void TossEditor::onRenderInternal()
                         // Try to dynamically cast it to a Prefab
                         if (PrefabPtr prefab = std::dynamic_pointer_cast<Prefab>(resourcePtr)) {
                             // Create a new GameObject from the prefab data.
-                            scene->getObjectManager()->Instantiate(prefab, nullptr, Vector3(0.0f), Quaternion(), false);
+                            scene->Instantiate(prefab, nullptr, Vector3(0.0f), Quaternion(), false);
                             Debug::Log("Created GameObject from prefab: " + prefab->getUniqueID());
                         }
                         else {
@@ -1069,7 +1069,7 @@ void TossEditor::ShowGameObjectNode(GameObject* gameObject)
             // Deselect the previous selection if any.
             if (selectedSelectable != nullptr)
                 selectedSelectable->OnDeSelect();
-            selectedSelectable = TossEngine::GetInstance().getGameObjectManager()->getGameObject(gameObject->getId());
+            selectedSelectable = TossEngine::GetInstance().getCurrentScene()->getGameObject(gameObject->getId());
             selectedSelectable->OnSelect();
         }
     }

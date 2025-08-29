@@ -17,7 +17,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Math.h"
 #include "Serializable.h"
 #include "Component.h"
-#include "GameObjectManager.h"
 #include "ISelectable.h"
 #include "LayerManager.h"
 
@@ -28,6 +27,8 @@ namespace reactphysics3d
 
 class MissingComponent;
 class Collider;
+class Scene;
+class LightManager;
 
 /**
  * @class GameObject
@@ -157,9 +158,9 @@ public:
 
     LayerBit getLayer() const;
 
-    GameObjectManager* getGameObjectManager() const;
+    Scene* getScene() const;
     LightManager* getLightManager() const;
-    void setGameObjectManager(GameObjectManager* gameObjectManager);
+    void setScene(Scene* _scene);
 
     bool Delete(bool deleteSelf = true) override;
     bool GetActive() const;
@@ -181,7 +182,7 @@ protected:
     bool hasStarted = false;
     bool m_finishedCreation = false;
 
-    GameObjectManager* m_gameObjectManager = nullptr;
+    Scene* m_scene = nullptr;
 
     Component* selectedComponent = nullptr;
 

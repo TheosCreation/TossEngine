@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Image.h"
 #include "InputManager.h"
+#include "Scene.h"
 
 void Button::onCreateLate()
 {
@@ -26,7 +27,7 @@ void Button::onUpdate()
     auto& inputManager = InputManager::GetInstance();
     Vector2 mousePos = inputManager.getMousePosition();
 
-    Scene* scene = m_owner->getGameObjectManager()->getScene();
+    Scene* scene = m_owner->getScene();
     Vector2 viewportPosition = scene->getPosition();
     //Debug::Log(mousePos);
 
@@ -61,7 +62,7 @@ void Button::onUpdate()
 
 Rect Button::getScreenRect() const
 {
-    Scene* scene = m_owner->getGameObjectManager()->getScene();
+    Scene* scene = m_owner->getScene();
     Vector2 viewportPosition = scene->getPosition(); 
     Vector2 viewportSize = scene->getSize();         
 

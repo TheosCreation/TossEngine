@@ -5,7 +5,7 @@
 
 bool ISelectable::GameObjectAssignableField(GameObjectPtr& _gameObject, const string& fieldName)
 {
-    GameObjectManager* gameObjectManager = TossEngine::GetInstance().getGameObjectManager();
+    ScenePtr scene = TossEngine::GetInstance().getCurrentScene();
     bool changed = false;
 
     string label = (_gameObject)
@@ -37,7 +37,7 @@ bool ISelectable::GameObjectAssignableField(GameObjectPtr& _gameObject, const st
                 }
             }
 
-            for (const auto& [id, gameObject] : gameObjectManager->m_gameObjects)
+            for (const auto& [id, gameObject] : scene->m_gameObjects)
             {
                 if (!gameObject) continue;
 

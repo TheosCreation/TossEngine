@@ -3,7 +3,7 @@
 
 void Enemy::onStart()
 {
-    m_target = m_owner->getGameObjectManager()->findObjectOfType<PlayerController>();
+    m_target = m_owner->getScene()->findObjectOfType<PlayerController>();
     m_rigidbody = m_owner->getComponent<Rigidbody>();
 }
 

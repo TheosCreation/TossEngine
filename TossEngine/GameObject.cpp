@@ -11,7 +11,8 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "GameObject.h"
-#include "GameObjectManager.h"
+#include "Scene.h"
+#include "LightManager.h"
 #include "ComponentRegistry.h"
 #include "Component.h"
 #include "MissingComponent.h"
@@ -25,7 +26,7 @@ GameObject::GameObject(const GameObject& other) : m_transform(this)
 {
     m_transform = other.m_transform;
     m_id = other.m_id;
-    m_gameObjectManager = other.m_gameObjectManager;
+    m_scene = other.m_scene;
 
     // Deep copy all components
     for (const auto& pair : other.m_components)
@@ -532,10 +533,10 @@ reactphysics3d::PhysicsWorld* GameObject::getWorld()
     return Physics::GetInstance().GetWorld();
 }
 
-void GameObject::setGameObjectManager(GameObjectManager* gameObjectManager)
+void GameObject::setScene(Scene* _scene)
 {
-    // Set the GameObjectManager managing this GameObject
-    m_gameObjectManager = gameObjectManager;
+    // Set the Scene managing this GameObject
+    m_scene = _scene;
 }
 
 bool GameObject::Delete(bool deleteSelf)
@@ -565,7 +566,7 @@ bool GameObject::Delete(bool deleteSelf)
             }
         }
         // Remove this game object from the game object manager.
-        m_gameObjectManager->removeGameObject(this);
+        m_scene->removeGameObject(this);
         return true;
     }
 }
@@ -589,12 +590,12 @@ bool GameObject::GetActive() const
     return true;
 }
 
-GameObjectManager* GameObject::getGameObjectManager() const
+Scene* GameObject::getScene() const
 {
-    return m_gameObjectManager;
+    return m_scene;
 }
 
 LightManager* GameObject::getLightManager() const
 {
-    return m_gameObjectManager->getScene()->getLightManager();
+    return m_scene->getLightManager();
 }

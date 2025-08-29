@@ -24,6 +24,6 @@ void EnemySpawner::onUpdate()
 
         if (!spawnPoint) return;
 
-        m_owner->getGameObjectManager()->Instantiate(m_enemyPrefab, spawnPoint->m_transform.position, spawnPoint->m_transform.rotation);
+        m_owner->getScene()->Instantiate(m_enemyPrefab, spawnPoint->m_transform.position, spawnPoint->m_transform.rotation);
     }
 }

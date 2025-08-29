@@ -11,17 +11,13 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "Scene.h"
-#include "GameObjectManager.h"
 #include "GraphicsEngine.h"
 #include "GeometryBuffer.h"
 #include "AudioEngine.h"
-#include "ComponentRegistry.h"
 #include "MeshRenderer.h"
 #include "Rigidbody.h"
 #include "Image.h"
 #include "Material.h"
-#include "Ship.h"
-#include "PointLight.h"
 #include "TossEngine.h"
 #include "Skybox.h"
 #include "Camera.h"
@@ -29,7 +25,9 @@ Mail : theo.morris@mds.ac.nz
 #include "Physics.h"
 #include "LightManager.h"
 #include "DirectionalLight.h"
-#include "ImGuizmo.h"
+#include "Renderer.h"
+#include "Text.h"
+#include "Prefab.h"
 
 Scene::Scene(const string& filePath)
 {
@@ -39,7 +37,6 @@ Scene::Scene(const string& filePath)
 
     m_lightManager = std::make_unique<LightManager>();
     m_postProcessingFramebuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
-    m_gameObjectManager = std::make_unique<GameObjectManager>(this);
 
     m_SSRQ = std::make_unique<Image>();
     m_SSRQ->SetSize({ -2.0f, 2.0f });
@@ -53,10 +50,9 @@ Scene::Scene(const Scene& other)
     m_lightManager = std::make_unique<LightManager>();
     m_postProcessingFramebuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
 
-    // Copy GameObjectManager (requires a proper copy constructor or Clone() function)
+    // Copy Scene (requires a proper copy constructor or Clone() function)
 
-    m_gameObjectManager = std::make_unique<GameObjectManager>(this);
-    //m_gameObjectManager = std::make_unique<GameObjectManager>(*other.m_gameObjectManager);
+    //m_scene = std::make_unique<Scene>(*other.m_scene);
     m_SSRQ = std::make_unique<Image>();
     m_SSRQ->SetSize({ -2.0f, 2.0f });
 }
@@ -67,7 +63,7 @@ Scene::~Scene()
 
 void Scene::clean()
 {
-    m_gameObjectManager->clearGameObjects();
+    clearGameObjects();
     m_lightManager->clearLights();
 }
 
@@ -75,6 +71,186 @@ void Scene::reload()
 {
     onCreate();
     onCreateLate();
+}
+
+GameObjectPtr Scene::Instantiate(const PrefabPtr& prefab, Transform* parent, Vector3 positionalOffset,
+    Quaternion rotationOffset, bool hasStarted)
+{
+    GameObjectPtr newObject = prefab->Instantiate();
+    if (!newObject)
+    {
+        Debug::LogError("Failed to instantiate prefab.", false);
+        return nullptr;
+    }
+
+    // Set parent if provided (update local transform accordingly)
+    if (parent != nullptr)
+    {
+        newObject->m_transform.SetParent(parent, false);
+        newObject->m_transform.localPosition = positionalOffset;
+        newObject->m_transform.localRotation = rotationOffset;
+    }
+    else
+    {
+
+        newObject->m_transform.localPosition = positionalOffset;
+        newObject->m_transform.rotation = rotationOffset;
+    }
+
+    if (createGameObjectInternal(newObject, prefab->name))
+    {
+        if (hasStarted)
+        {
+            newObject->onStart();
+            newObject->onLateStart();
+        }
+        return newObject;
+    }
+
+    return nullptr;
+}
+
+GameObjectPtr Scene::Instantiate(const PrefabPtr& prefab, Vector3 position, Quaternion rotation, bool hasStarted)
+{
+    return Instantiate(prefab, nullptr, position, rotation, hasStarted);
+}
+
+void Scene::removeGameObject(const GameObject* gameObject)
+{
+    if (gameObject && !gameObject->isDestroyed && !m_gameObjectsToDestroy.contains(gameObject->getId()))
+    {
+        m_gameObjectsToDestroy.insert(gameObject->getId());
+    }
+}
+
+void Scene::loadGameObjects(const json& data)
+{
+    if (!data.contains("gameobjects") || !data["gameobjects"].is_array())
+    {
+        Debug::LogError("Error: JSON does not contain a valid 'gameobjects' array!", false);
+        return;
+    }
+
+    for (const auto& gameObjectData : data["gameobjects"])
+    {
+        auto gameObject = std::make_shared<GameObject>();
+        // Initialize the GameObject
+        gameObject->setScene(this);
+        gameObject->deserialize(gameObjectData);  // Loads data into the object
+        gameObject->onCreate();
+        gameObject->onCreateLate();
+
+        size_t id = gameObject->getId();
+        if (id == 0) id = m_nextAvailableId++;
+
+        gameObject->setId(id);
+        m_gameObjects[id] = std::move(gameObject);
+    }
+}
+
+json Scene::saveGameObjects() const
+{
+    json data;
+    data["gameobjects"] = json::array();
+
+    for (const auto& pair : m_gameObjects)
+    {
+        data["gameobjects"].push_back(pair.second->serialize());
+    }
+
+    return data;
+}
+
+void Scene::loadGameObjectsFromFile(const std::string& filePath)
+{
+    std::ifstream file(filePath);
+    if (!file.is_open())
+    {
+        Debug::LogError("Failed to open scene file at: " + filePath + ". Please open a new scene file", false);
+        return;
+    }
+
+    json sceneData;
+    try
+    {
+        file >> sceneData;
+    }
+    catch (const std::exception& e)
+    {
+        Debug::LogError("Failed to parse JSON file: " + (string)e.what(), false);
+        return;
+    }
+
+    if (!sceneData.contains("gameobjects") || !sceneData["gameobjects"].is_array())
+    {
+        Debug::LogError("Error: JSON does not contain a valid 'gameobjects' array!", false);
+        return;
+    }
+
+    std::set<size_t> usedIds;
+    std::vector<size_t>  idOrder;
+    idOrder.reserve(sceneData["gameobjects"].size());
+
+    for (auto& gameObjectData : sceneData["gameobjects"])
+    {
+        // read saved ID (or 0 if missing)
+        size_t savedId = 0;
+        if (gameObjectData.contains("id"))
+            savedId = gameObjectData["id"].get<size_t>();
+
+        // if that ID is already taken, bump to nextAvailable
+        if (savedId == 0 || usedIds.count(savedId))
+            savedId = m_nextAvailableId++;
+
+        // reserve that ID
+        usedIds.insert(savedId);
+
+        idOrder.push_back(savedId);
+
+        // instantiate
+        auto gameObject = std::make_shared<GameObject>();
+        gameObject->setScene(this);
+        gameObject->setId(savedId);
+
+        // put in map
+        m_gameObjects[savedId] = gameObject;
+    }
+
+    // second pass for deserilization and create functions
+    m_nextAvailableId = std::max(m_nextAvailableId,
+        *std::max_element(usedIds.begin(), usedIds.end()) + 1
+    );
+    for (size_t i = 0; i < idOrder.size(); ++i)
+    {
+        size_t finalId = idOrder[i];
+        auto& go = m_gameObjects[finalId];
+        auto& data = sceneData["gameobjects"][i];
+
+        go->deserialize(data);
+        go->onCreate();
+        go->onCreateLate(); // maybe split this up to a 3 pass
+    }
+}
+
+void Scene::saveGameObjectsToFile(const std::string& filePath) const
+{
+    json sceneData;
+    sceneData["gameobjects"] = json::array();
+
+    for (const auto& pair : m_gameObjects)
+    {
+        sceneData["gameobjects"].push_back(pair.second->serialize());
+    }
+
+    std::ofstream file(filePath);
+    if (!file.is_open())
+    {
+        std::cerr << "Failed to open file for writing: " << filePath << std::endl;
+        return;
+    }
+
+    file << sceneData.dump(4); // Pretty-print JSON with indentation
+    file.close();
 }
 
 void Scene::onCreate()
@@ -91,18 +267,18 @@ void Scene::onCreate()
     json sceneJson = JsonUtility::OpenJsonFile(m_filePath, true);
     if (!sceneJson.empty())
     {
-        m_gameObjectManager->loadGameObjectsFromFile(m_filePath);
+        loadGameObjectsFromFile(m_filePath);
     }
     else
     {
         Debug::Log("Created new scene at filepath: " + m_filePath);
 
         //Creates default objects that are usually required for a scene
-        GameObjectPtr skyboxObject = m_gameObjectManager->createGameObject<GameObject>("Skybox");
+        GameObjectPtr skyboxObject = createGameObject<GameObject>("Skybox");
         Skybox* skybox = skyboxObject->addComponent<Skybox>();
         skybox->setMesh(resourceManager.get<Mesh>("Resources/Meshes/cube.obj"));
 
-        GameObjectPtr directionalLightObject = m_gameObjectManager->createGameObject<GameObject>("Directional Light");
+        GameObjectPtr directionalLightObject = createGameObject<GameObject>("Directional Light");
         directionalLightObject->m_transform.rotation = Quaternion::FromEuler(Vector3(30,40,50));
         DirectionalLight* dirLight = directionalLightObject->addComponent<DirectionalLight>();
 
@@ -114,20 +290,30 @@ void Scene::onStart()
 {
     if (!m_initilized) return;
 
-    m_gameObjectManager->onStart();
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue; //|| !pair.second->GetActive() and then call on start later
+
+        pair.second->onStart();
+    }
 }
 
 void Scene::onLateStart()
 {
     if (!m_initilized) return;
 
-    m_gameObjectManager->onLateStart();
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second || !pair.second->GetActive()) continue;
+
+        pair.second->onLateStart();
+    }
 }
 
 void Scene::onCreateLate()
 {
     auto& tossEngine = TossEngine::GetInstance();
-    for (auto& camera : m_gameObjectManager->getCameras())
+    for (auto& camera : getCameras())
     {
         // Set the screen area for all cameras
         camera->setScreenArea(tossEngine.GetWindow()->getInnerSize());
@@ -141,28 +327,62 @@ void Scene::onUpdate()
     if (!m_initilized) return;
 
     if (lastCameraToRender) AudioEngine::GetInstance().set3DListener(lastCameraToRender->getTransform());
-    if (m_gameObjectManager) m_gameObjectManager->onUpdate();
+
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second || !pair.second->GetActive()) continue;
+
+        pair.second->onUpdate();
+    }
+
+    //onUpdateInternal(); //should not need this or else we are updating twice
 }
 
 void Scene::onUpdateInternal()
 {
     if (!m_initilized) return;
 
-    if (m_gameObjectManager) m_gameObjectManager->onUpdateInternal();
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue;
+
+        pair.second->onUpdateInternal();
+    }
+
+    for (size_t gameObjectId : m_gameObjectsToDestroy)
+    {
+        if (auto gameObject = m_gameObjects[gameObjectId])
+        {
+            gameObject->onDestroy();
+            gameObject->isDestroyed = true;
+            m_gameObjects.erase(gameObjectId);  // Directly erase by ID
+        }
+    }
+    m_gameObjectsToDestroy.clear();
 }
 
 void Scene::onFixedUpdate()
 {
     if (!m_initilized) return;
 
-    if (m_gameObjectManager) m_gameObjectManager->onFixedUpdate();
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second || !pair.second->GetActive()) continue;
+
+        pair.second->onFixedUpdate();
+    }
 }
 
 void Scene::onLateUpdate()
 {
     if (!m_initilized) return;
 
-    if (m_gameObjectManager)  m_gameObjectManager->onLateUpdate();
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second || !pair.second->GetActive()) continue;
+
+        pair.second->onLateUpdate();
+    }
 }
 
 void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writeToFrameBuffer)
@@ -196,7 +416,7 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
     }
     else
     {
-        vector<Camera*> cameras = m_gameObjectManager->getCameras();
+        vector<Camera*> cameras = getCameras();
         if (cameras.size() > 0)
         {
             lastCameraToRender = cameras[0];
@@ -232,7 +452,20 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         //Geometry Pass
         auto& geometryBuffer = GeometryBuffer::GetInstance();
         geometryBuffer.Bind();
-        m_gameObjectManager->Render(uniformData);
+
+        auto& graphicsEngine = GraphicsEngine::GetInstance();
+        for (const auto& pair : m_gameObjects)
+        {
+            if (!pair.second || !pair.second->GetActive()) continue;
+
+            if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
+            {
+                if (meshRenderer->GetAlpha() != 1.0f) continue;
+
+                meshRenderer->Render(uniformData, graphicsEngine.getRenderingPath());
+            }
+        }
+
         geometryBuffer.UnBind();
 
 
@@ -240,7 +473,7 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         for (uint i = 0; i < m_lightManager->getDirectionalLightCount(); i++)
         {
             m_lightManager->BindShadowMap(i);
-            m_gameObjectManager->onShadowPass(i); // Render shadow maps
+            onShadowPass(i); // Render shadow maps
             m_lightManager->UnBindShadowMap(i);
         }
         graphicsEngine.setViewport(tossEngine.GetWindow()->getInnerSize());
@@ -266,8 +499,8 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         geometryBuffer.WriteDepth(m_postProcessingFramebuffer->getId());
 
         // Render the transparent objects after
-        m_gameObjectManager->onTransparencyPass(uniformData);
-        m_gameObjectManager->onSkyboxPass(uniformData);
+        onTransparencyPass(uniformData);
+        onSkyboxPass(uniformData);
 
 
         if (cameraToRenderOverride)
@@ -285,18 +518,29 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         {
             //Shadow Pass
             m_lightManager->BindShadowMap(i);
-            m_gameObjectManager->onShadowPass(i);
+            onShadowPass(i);
             m_lightManager->UnBindShadowMap(i);
         }
         graphicsEngine.setViewport(tossEngine.GetWindow()->getInnerSize());
 
         m_postProcessingFramebuffer->Bind();
 
-        m_gameObjectManager->Render(uniformData);
+        auto& graphicsEngine = GraphicsEngine::GetInstance();
+        for (const auto& pair : m_gameObjects)
+        {
+            if (!pair.second || !pair.second->GetActive()) continue;
+
+            if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
+            {
+                if (meshRenderer->GetAlpha() != 1.0f) continue;
+
+                meshRenderer->Render(uniformData, graphicsEngine.getRenderingPath());
+            }
+        }
 
         // Render the transparent objects after
-        m_gameObjectManager->onTransparencyPass(uniformData);
-        m_gameObjectManager->onSkyboxPass(uniformData);
+        onTransparencyPass(uniformData);
+        onSkyboxPass(uniformData);
 
         if (cameraToRenderOverride)
         {
@@ -327,7 +571,7 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
 
     if (drawUi)
     {
-        m_gameObjectManager->onScreenSpacePass(uniformData);
+        onScreenSpacePass(uniformData);
     }
 
     if (writeToFrameBuffer != nullptr)
@@ -337,12 +581,92 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
 
 }
 
+void Scene::onShadowPass(int index) const
+{
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue;
+
+        MeshRenderer* renderer = pair.second->getComponent<MeshRenderer>();
+        if (renderer)
+        {
+            if (renderer->GetAlpha() < 1.0f) continue; // if the renderer is transparent we skip it
+
+            renderer->onShadowPass(index);
+        }
+    }
+}
+
+void Scene::onTransparencyPass(UniformData _data) const
+{
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second || !pair.second->GetActive()) continue;
+
+        if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
+        {
+            if (meshRenderer->GetAlpha() == 1.0f) continue;
+
+            meshRenderer->Render(_data, RenderingPath::Forward); // we render the transparent renderers last with forward rendering
+        }
+
+        if (auto text = pair.second->getComponent<Text>())
+        {
+            if (text->GetIsUi()) continue;
+
+            text->Render(_data, RenderingPath::Forward);
+        }
+
+        if (auto image = pair.second->getComponent<Image>())
+        {
+            if (image->GetIsUi()) continue;
+
+            image->Render(_data, RenderingPath::Forward);
+        }
+    }
+}
+
+void Scene::onSkyboxPass(UniformData _data) const
+{
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second || !pair.second->GetActive()) continue;
+
+        if (auto skybox = pair.second->getComponent<Skybox>())
+        {
+            skybox->Render(_data, RenderingPath::Forward);
+        }
+    }
+}
+
+void Scene::onScreenSpacePass(UniformData _data) const
+{
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second || !pair.second->GetActive()) continue;
+
+        if (auto image = pair.second->getComponent<Image>())
+        {
+            if (!image->GetIsUi()) continue;
+
+            image->Render(_data, RenderingPath::Forward);
+        }
+
+        if (auto text = pair.second->getComponent<Text>())
+        {
+            if (!text->GetIsUi()) continue;
+
+            text->Render(_data, RenderingPath::Forward);
+        }
+    }
+}
+
 void Scene::onResize(Vector2 size)
 {
     Resizable::onResize(size);
     GeometryBuffer::GetInstance().Resize(size);
 
-    for (auto camera : m_gameObjectManager->getCameras())
+    for (auto camera : getCameras())
     {
         camera->setScreenArea(size);
     }
@@ -353,11 +677,6 @@ void Scene::onResize(Vector2 size)
 LightManager* Scene::getLightManager()
 {
     return m_lightManager.get();
-}
-
-GameObjectManager* Scene::getObjectManager()
-{
-    return m_gameObjectManager.get();
 }
 
 Window* Scene::getWindow()
@@ -372,9 +691,15 @@ void Scene::SetPostProcessMaterial(MaterialPtr material)
 
 void Scene::onQuit()
 {
-    m_gameObjectManager->onDestroy();
-    m_gameObjectManager->clearGameObjects();
-    m_gameObjectManager.reset();
+
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue;
+
+        pair.second->onDestroy();
+    }
+    clearGameObjects();
+
     m_deferredSSRQMaterial.reset();
     m_postProcessSSRQMaterial.reset();
     m_SSRQ.reset();
@@ -382,9 +707,53 @@ void Scene::onQuit()
     m_initilized = false;
 }
 
+GameObjectPtr Scene::getGameObject(size_t id)
+{
+    return m_gameObjects[id];
+}
+
+std::vector<Camera*> Scene::getCameras() const
+{
+    std::vector<Camera*> cameras;
+
+    // Iterate over all game objects and check if they have a Camera component
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue;
+
+        if (Camera* camera = pair.second->getComponent<Camera>()) {
+            cameras.push_back(camera);
+        }
+    }
+
+    return cameras;
+}
+
+TextureCubeMapPtr Scene::getSkyBoxTexture() const
+{
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue;
+
+        if (Skybox* skybox = pair.second->getComponent<Skybox>())
+        {
+            return skybox->GetMaterial()->GetBinding("Texture_Skybox");
+        }
+    }
+    return nullptr;
+}
+
+void Scene::clearGameObjects()
+{
+    // Clear the entities in the map
+    m_gameObjects.clear();
+
+    m_gameObjectsToDestroy.clear();
+}
+
 void Scene::Save()
 {
-    json sceneJson = m_gameObjectManager->saveGameObjects();
+    json sceneJson = saveGameObjects();
     if (JsonUtility::SaveJsonFile(m_filePath, sceneJson, true))
     {
         Debug::Log("Scene saved to file path: " + m_filePath);
@@ -398,4 +767,68 @@ void Scene::Save()
 string Scene::GetFilePath()
 {
     return m_filePath;
+}
+
+bool Scene::createGameObjectInternal(GameObjectPtr gameObject, const std::string& name, const json& data)
+{
+    if (!gameObject)
+        return false;
+
+
+    size_t newId = m_nextAvailableId++;
+    gameObject->setId(newId);
+    //gameObject->setScene(this);
+    if (data != nullptr)
+    {
+        gameObject->deserialize(data);
+        string uniqueName = getGameObjectNameAvaliable(gameObject->name);
+        gameObject->name = uniqueName;
+
+    }
+    else
+    {
+        string uniqueName = getGameObjectNameAvaliable(name);
+        gameObject->name = uniqueName;
+    }
+    gameObject->onCreate();
+    gameObject->onCreateLate();
+
+    m_gameObjects[newId] = gameObject;
+
+    return true;
+}
+
+std::string Scene::getGameObjectNameAvaliable(std::string currentName)
+{
+    // Step 1: Default to "NewGameObject" if name is empty
+    if (currentName.empty()) {
+        currentName = "NewGameObject";
+    }
+
+    // Step 2: Collect all names of root GameObjects
+    std::unordered_set<std::string> existingNames;
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue;
+
+        GameObjectPtr gameObject = pair.second;
+        if (gameObject->m_transform.parent == nullptr)
+        {
+            existingNames.insert(gameObject->name);
+        }
+    }
+
+    // Step 3: Check if currentName is available
+    if (existingNames.find(currentName) == existingNames.end()) {
+        return currentName;
+    }
+
+    // Step 4: Append (1), (2), ... until we find an available name
+    int index = 1;
+    std::string candidateName;
+    do {
+        candidateName = currentName + " (" + std::to_string(index++) + ")";
+    } while (existingNames.find(candidateName) != existingNames.end());
+
+    return candidateName;
 }
