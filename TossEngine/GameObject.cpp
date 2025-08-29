@@ -306,10 +306,7 @@ void GameObject::setId(size_t id)
 
 void GameObject::onCreate()
 {
-    //for (auto& pair : m_components)
-    //{
-    //    pair.second->onCreate();
-    //}
+    //Create method on components is called when component is added
 }
 
 void GameObject::onCreateLate()

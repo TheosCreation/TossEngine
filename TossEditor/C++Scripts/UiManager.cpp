@@ -26,7 +26,7 @@ void UiManager::onStart()
 
     m_quitButton = m_quitButtonObject->getComponent<Button>();
     m_quitButton->onClick = [this]() {
-        PauseManager::Get()->SetPaused(false);
+        PauseManager::Get()->SetPaused(false, false);
         InputManager::GetInstance().enablePlayMode(false, false);
         TossEngine::GetInstance().OpenScene("MainMenu");
         };
@@ -39,7 +39,7 @@ void UiManager::onStart()
 
     m_gameOverquitButton = m_gameOverquitButtonObject->getComponent<Button>();
     m_gameOverquitButton->onClick = [this]() {
-        PauseManager::Get()->SetPaused(false);
+        PauseManager::Get()->SetPaused(false, false);
         InputManager::GetInstance().enablePlayMode(false, false);
         TossEngine::GetInstance().OpenScene("MainMenu");
         };
@@ -53,7 +53,7 @@ void UiManager::onStart()
 
     m_gameLossQuitButton = m_gameLossQuitButtonObject->getComponent<Button>();
     m_gameLossQuitButton->onClick = [this]() {
-        PauseManager::Get()->SetPaused(false);
+        PauseManager::Get()->SetPaused(false, false);
         InputManager::GetInstance().enablePlayMode(false, false);
         TossEngine::GetInstance().OpenScene("MainMenu");
         };

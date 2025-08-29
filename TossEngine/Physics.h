@@ -63,7 +63,7 @@ struct TOSSENGINE_API RaycastHit
  * @struct RaycastCallback
  * @brief Custom callback for handling raycast hits.
  */
-struct TOSSENGINE_API RaycastCallback : public reactphysics3d::RaycastCallback
+struct RaycastCallback : public reactphysics3d::RaycastCallback
 {
     bool hit = false;
     Vector3 point;
@@ -89,13 +89,17 @@ struct TOSSENGINE_API RaycastDebugEntry {
  * @brief Singleton class that manages the physics world, updates simulations,
  *        handles collisions, triggers, raycasts, and provides debug drawing utilities.
  */
-class TOSSENGINE_API Physics : public rp3d::EventListener
+class TOSSENGINE_API Physics
 {
 public:
     /**
      * @brief Gets the singleton instance of the Physics system.
      */
     static Physics& GetInstance();
+
+    // Deleted copy constructor and assignment to enforce singleton pattern
+    Physics(const Physics&) = delete;
+    void operator=(const Physics&) = delete;
 
     /**
      * @brief Updates the internal physics simulation (fixed timestep).
@@ -181,10 +185,6 @@ public:
      */
     void DrawDebug(UniformData data) const;
 
-    // ReactPhysics3D callbacks
-    void onContact(const rp3d::CollisionCallback::CallbackData& data) override;
-    void onTrigger(const rp3d::OverlapCallback::CallbackData& data) override;
-
     /**
      * @brief Loads and initializes the main physics world.
      */
@@ -213,7 +213,21 @@ public:
 
 private:
     Physics() = default;
-    ~Physics() override = default;
+    ~Physics() = default;
+
+    void HandleContact(const rp3d::CollisionCallback::CallbackData& data);
+    void HandleTrigger(const rp3d::OverlapCallback::CallbackData& data);
+
+    struct Listener final : rp3d::EventListener {
+        Physics* owner = nullptr;
+        explicit Listener(Physics* o) : owner(o) {}
+        void onContact(const rp3d::CollisionCallback::CallbackData& data) override {
+            if (owner) owner->HandleContact(data);
+        }
+        void onTrigger(const rp3d::OverlapCallback::CallbackData& data) override {
+            if (owner) owner->HandleTrigger(data);
+        }
+    };
 
 private:
     PhysicsCommon m_commonSettings; //!< Settings and factory methods for physics objects.
@@ -233,4 +247,6 @@ private:
     std::vector<rp3d::CollisionShape*> m_shapesToDestroy; //!< Shapes scheduled for destruction.
 
     bool isPaused = false; //!< Is the physics simulation paused.
+
+    Listener m_listener{ this };
 };

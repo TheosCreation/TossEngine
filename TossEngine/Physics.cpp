@@ -285,87 +285,6 @@ RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, flo
     return hitResult;
 }
 
-void Physics::onContact(const rp3d::CollisionCallback::CallbackData& data) {
-
-    int nbContactPairs = data.getNbContactPairs();
-    if (nbContactPairs == 0) {
-        return;
-    }
-
-    // Process each contact pair.
-    for (int i = 0; i < nbContactPairs; i++) {
-        const rp3d::CollisionCallback::ContactPair& contactPair = data.getContactPair(i);
-        int nbContactPoints = contactPair.getNbContactPoints();
-
-        // If no contact points, skip processing this pair.
-        if (nbContactPoints == 0) {
-            continue;
-        }
-
-        auto eventType = contactPair.getEventType();
-
-        // Retrieve the colliders.
-        rp3d::Collider* collider1 = contactPair.getCollider1();
-        rp3d::Collider* collider2 = contactPair.getCollider2();
-
-        if (collider1 && collider2) {
-
-            Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
-            Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
-
-            //for now all we are passing through is the other collider, we need to pass through the contact pair but reconstruct it
-            if (eventType == ContactPair::EventType::ContactStart) {
-                customCollider1->OnCollisionEnter(customCollider2);
-                customCollider2->OnCollisionEnter(customCollider1);
-            }
-            else if (eventType == ContactPair::EventType::ContactExit) {
-
-                customCollider1->OnCollisionExit(customCollider2);
-                customCollider2->OnCollisionExit(customCollider1);
-            }
-        }
-    }
-
-}
-
-void Physics::onTrigger(const rp3d::OverlapCallback::CallbackData& data) {
-    int nbOverlapPairs = data.getNbOverlappingPairs();
-    for (int i = 0; i < nbOverlapPairs; i++) {
-        const rp3d::OverlapCallback::OverlapPair& overlapPair = data.getOverlappingPair(i);
-        auto eventType = overlapPair.getEventType();
-        rp3d::Collider* collider1 = overlapPair.getCollider1();
-        rp3d::Collider* collider2 = overlapPair.getCollider2();
-
-        if (!collider1 || !collider2) continue;
-
-        Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
-        Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
-
-        if (!customCollider1 || !customCollider2) continue;
-
-        if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapStart) {
-            if (customCollider1->GetTrigger()) {
-
-                customCollider1->OnTriggerEnter(customCollider2);
-            }
-            if (customCollider2->GetTrigger()) {
-
-                customCollider2->OnTriggerEnter(customCollider1);
-            }
-        }
-        else if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapExit) {
-            if (customCollider1->GetTrigger()) {
-
-                customCollider1->OnTriggerExit(customCollider2);
-            }
-            if (customCollider2->GetTrigger()) {
-
-                customCollider2->OnTriggerExit(customCollider1);
-            }
-        }
-    }
-}
-
 void Physics::LoadWorld()
 {
     PhysicsMaterialDesc physicsMaterialDesc; //full defaults set in the code atm
@@ -378,7 +297,7 @@ void Physics::LoadWorld()
     settings.defaultVelocitySolverNbIterations = 6;  // Default is usually 4
     settings.isSleepingEnabled = true;
     m_world = m_commonSettings.createPhysicsWorld(settings);
-    m_world->setEventListener(this);
+    m_world->setEventListener(&m_listener);
 
 
     m_world->setIsDebugRenderingEnabled(isDebug);
@@ -438,4 +357,85 @@ void Physics::UnLoadPrefabWorld()
 void Physics::DestroyShape(rp3d::CollisionShape* shape)
 {
     m_shapesToDestroy.push_back(shape);
+}
+
+void Physics::HandleContact(const rp3d::CollisionCallback::CallbackData& data)
+{
+    int nbContactPairs = data.getNbContactPairs();
+    if (nbContactPairs == 0) {
+        return;
+    }
+
+    // Process each contact pair.
+    for (int i = 0; i < nbContactPairs; i++) {
+        const rp3d::CollisionCallback::ContactPair& contactPair = data.getContactPair(i);
+        int nbContactPoints = contactPair.getNbContactPoints();
+
+        // If no contact points, skip processing this pair.
+        if (nbContactPoints == 0) {
+            continue;
+        }
+
+        auto eventType = contactPair.getEventType();
+
+        // Retrieve the colliders.
+        rp3d::Collider* collider1 = contactPair.getCollider1();
+        rp3d::Collider* collider2 = contactPair.getCollider2();
+
+        if (collider1 && collider2) {
+
+            Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
+            Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
+
+            //for now all we are passing through is the other collider, we need to pass through the contact pair but reconstruct it
+            if (eventType == rp3d::EventListener::ContactPair::EventType::ContactStart) {
+                customCollider1->OnCollisionEnter(customCollider2);
+                customCollider2->OnCollisionEnter(customCollider1);
+            }
+            else if (eventType == rp3d::EventListener::ContactPair::EventType::ContactExit) {
+
+                customCollider1->OnCollisionExit(customCollider2);
+                customCollider2->OnCollisionExit(customCollider1);
+            }
+        }
+    }
+}
+
+void Physics::HandleTrigger(const rp3d::OverlapCallback::CallbackData& data)
+{
+    int nbOverlapPairs = data.getNbOverlappingPairs();
+    for (int i = 0; i < nbOverlapPairs; i++) {
+        const rp3d::OverlapCallback::OverlapPair& overlapPair = data.getOverlappingPair(i);
+        auto eventType = overlapPair.getEventType();
+        rp3d::Collider* collider1 = overlapPair.getCollider1();
+        rp3d::Collider* collider2 = overlapPair.getCollider2();
+
+        if (!collider1 || !collider2) continue;
+
+        Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
+        Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
+
+        if (!customCollider1 || !customCollider2) continue;
+
+        if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapStart) {
+            if (customCollider1->GetTrigger()) {
+
+                customCollider1->OnTriggerEnter(customCollider2);
+            }
+            if (customCollider2->GetTrigger()) {
+
+                customCollider2->OnTriggerEnter(customCollider1);
+            }
+        }
+        else if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapExit) {
+            if (customCollider1->GetTrigger()) {
+
+                customCollider1->OnTriggerExit(customCollider2);
+            }
+            if (customCollider2->GetTrigger()) {
+
+                customCollider2->OnTriggerExit(customCollider1);
+            }
+        }
+    }
 }
