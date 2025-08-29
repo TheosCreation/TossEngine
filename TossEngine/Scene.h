@@ -19,6 +19,7 @@ Mail : theo.morris@mds.ac.nz
 #include <map>
 #include <set>
 #include <imgui.h>
+#include <ranges>
 
 class Image;
 class ComponentRegistry;
@@ -174,7 +175,7 @@ public:
     template <typename T>
     T* findObjectOfType()
     {
-        for (auto& [id, gameObject] : m_gameObjects)
+        for (auto& gameObject : m_gameObjects | std::views::values)
         {
             if (!gameObject) continue;
 

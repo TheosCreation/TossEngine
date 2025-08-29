@@ -777,7 +777,7 @@ bool Scene::createGameObjectInternal(GameObjectPtr gameObject, const std::string
 
     size_t newId = m_nextAvailableId++;
     gameObject->setId(newId);
-    //gameObject->setScene(this);
+    gameObject->setScene(this);
     if (data != nullptr)
     {
         gameObject->deserialize(data);
