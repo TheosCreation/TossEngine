@@ -47,11 +47,11 @@ void GunHolder::onUpdate()
     if (m_currentHeldGun->GetAiming())
     {
         Transform& gunTransform = m_currentHeldGun->getTransform();
-        gunTransform.localPosition = Vector3::Lerp(gunTransform.localPosition, m_aimingPosition->m_transform.localPosition, Time::DeltaTime * m_aimingSpeed);
+        gunTransform.position = Vector3::Lerp(gunTransform.position, m_aimingPosition->m_transform.position, Time::DeltaTime * m_aimingSpeed);
     }
     else
     {
         Transform& gunTransform = m_currentHeldGun->getTransform();
-        gunTransform.localPosition = Vector3::Lerp(gunTransform.localPosition, m_idlePosition->m_transform.localPosition, Time::DeltaTime * m_aimingSpeed);
+        gunTransform.position = Vector3::Lerp(gunTransform.position, m_idlePosition->m_transform.position, Time::DeltaTime * m_aimingSpeed);
     }
 }

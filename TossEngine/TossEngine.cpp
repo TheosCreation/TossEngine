@@ -83,14 +83,10 @@ void TossEngine::OpenSceneInternal(std::shared_ptr<Scene> _scene, bool callStart
     // set the current scene to the new scene
     m_currentScene = std::move(_scene);
     m_currentScene->onCreate();
-    m_currentScene->onCreateLate();
 
     if (callStartMethods)
     {
         m_currentScene->onStart();
-        m_currentScene->onLateStart();
-
-
     }
 }
 

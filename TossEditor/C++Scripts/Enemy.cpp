@@ -52,7 +52,7 @@ void Enemy::onFixedUpdate()
         Quaternion targetRot = Quaternion::FromEuler(Vector3(0.0f, targetYaw, 0.0f));
 
         float rotationSpeed = 10.0f;
-        transform.localRotation = Quaternion::Slerp(transform.localRotation, targetRot, Time::FixedDeltaTime * rotationSpeed);
+        transform.rotation = Quaternion::Slerp(transform.rotation, targetRot, Time::FixedDeltaTime * rotationSpeed);
     }
 
     // Attack logic

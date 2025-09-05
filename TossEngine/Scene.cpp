@@ -70,7 +70,6 @@ void Scene::clean()
 void Scene::reload()
 {
     onCreate();
-    onCreateLate();
 }
 
 GameObjectPtr Scene::Instantiate(const PrefabPtr& prefab, Transform* parent, Vector3 positionalOffset,
@@ -93,7 +92,7 @@ GameObjectPtr Scene::Instantiate(const PrefabPtr& prefab, Transform* parent, Vec
     else
     {
 
-        newObject->m_transform.localPosition = positionalOffset;
+        newObject->m_transform.position = positionalOffset;
         newObject->m_transform.rotation = rotationOffset;
     }
 
@@ -115,11 +114,11 @@ GameObjectPtr Scene::Instantiate(const PrefabPtr& prefab, Vector3 position, Quat
     return Instantiate(prefab, nullptr, position, rotation, hasStarted);
 }
 
-void Scene::removeGameObject(const GameObject* gameObject)
+void Scene::deleteGameObject(const GameObject* gameObject, float _delay)
 {
-    if (gameObject && !gameObject->isDestroyed && !m_gameObjectsToDestroy.contains(gameObject->getId()))
+    if (gameObject && !gameObject->isDestroyed && !m_objectsToDestroy.contains(gameObject->getId()))
     {
-        m_gameObjectsToDestroy.insert(gameObject->getId());
+        m_objectsToDestroy[gameObject->getId()] = _delay;
     }
 }
 
@@ -137,8 +136,11 @@ void Scene::loadGameObjects(const json& data)
         // Initialize the GameObject
         gameObject->setScene(this);
         gameObject->deserialize(gameObjectData);  // Loads data into the object
-        gameObject->onCreate();
-        gameObject->onCreateLate();
+        if (m_initilized)
+        {
+            gameObject->onCreate();
+            gameObject->onCreateLate();
+        }
 
         size_t id = gameObject->getId();
         if (id == 0) id = m_nextAvailableId++;
@@ -223,12 +225,15 @@ void Scene::loadGameObjectsFromFile(const std::string& filePath)
     for (size_t i = 0; i < idOrder.size(); ++i)
     {
         size_t finalId = idOrder[i];
-        auto& go = m_gameObjects[finalId];
+        auto& gameObject = m_gameObjects[finalId];
         auto& data = sceneData["gameobjects"][i];
 
-        go->deserialize(data);
-        go->onCreate();
-        go->onCreateLate(); // maybe split this up to a 3 pass
+        gameObject->deserialize(data);
+        if (m_initilized)
+        {
+            gameObject->onCreate();
+            gameObject->onCreateLate();
+        }
     }
 }
 
@@ -281,9 +286,30 @@ void Scene::onCreate()
         GameObjectPtr directionalLightObject = createGameObject<GameObject>("Directional Light");
         directionalLightObject->m_transform.rotation = Quaternion::FromEuler(Vector3(30,40,50));
         DirectionalLight* dirLight = directionalLightObject->addComponent<DirectionalLight>();
-
-
     }
+
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue;
+
+        pair.second->onCreate();
+    }
+
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue;
+
+        pair.second->onCreateLate();
+    }
+
+    auto& tossEngine = TossEngine::GetInstance();
+    for (auto& camera : getCameras())
+    {
+        // Set the screen area for all cameras
+        camera->setScreenArea(tossEngine.GetWindow()->getInnerSize());
+    }
+
+    m_initilized = true;
 }
 
 void Scene::onStart()
@@ -296,11 +322,6 @@ void Scene::onStart()
 
         pair.second->onStart();
     }
-}
-
-void Scene::onLateStart()
-{
-    if (!m_initilized) return;
 
     for (const auto& pair : m_gameObjects)
     {
@@ -308,18 +329,6 @@ void Scene::onLateStart()
 
         pair.second->onLateStart();
     }
-}
-
-void Scene::onCreateLate()
-{
-    auto& tossEngine = TossEngine::GetInstance();
-    for (auto& camera : getCameras())
-    {
-        // Set the screen area for all cameras
-        camera->setScreenArea(tossEngine.GetWindow()->getInnerSize());
-    }
-
-    m_initilized = true;
 }
 
 void Scene::onUpdate()
@@ -348,17 +357,27 @@ void Scene::onUpdateInternal()
 
         pair.second->onUpdateInternal();
     }
+    std::unordered_map<size_t, float> frame;
+    frame.swap(m_objectsToDestroy); // m_objectsToDestroy is now empty
 
-    for (size_t gameObjectId : m_gameObjectsToDestroy)
+    std::unordered_map<size_t, float>::iterator it = frame.begin();
+
+    while (it != frame.end())
     {
-        if (auto gameObject = m_gameObjects[gameObjectId])
+        size_t deadId = it->first;
+        float remaining = it->second - Time::DeltaTime;
+
+        if (remaining > 0.0f)
         {
-            gameObject->onDestroy();
-            gameObject->isDestroyed = true;
-            m_gameObjects.erase(gameObjectId);  // Directly erase by ID
+            m_objectsToDestroy[deadId] = remaining;
+            ++it;
+            continue;
         }
+
+        DestroyImmediate(deadId);
+
+        ++it;
     }
-    m_gameObjectsToDestroy.clear();
 }
 
 void Scene::onFixedUpdate()
@@ -747,8 +766,7 @@ void Scene::clearGameObjects()
 {
     // Clear the entities in the map
     m_gameObjects.clear();
-
-    m_gameObjectsToDestroy.clear();
+    m_objectsToDestroy.clear();
 }
 
 void Scene::Save()
@@ -831,4 +849,54 @@ std::string Scene::getGameObjectNameAvaliable(std::string currentName)
     } while (existingNames.find(candidateName) != existingNames.end());
 
     return candidateName;
+}
+
+void Scene::DestroyImmediate(size_t _gameobjectId)
+{
+    auto it = m_gameObjects.find(_gameobjectId);
+    if (it == m_gameObjects.end())
+        return; // not owned
+
+    GameObject* go = it->second.get();
+    if (!go)
+        return;
+
+    // prevent double free
+    if (go->isDestroyed)
+        return;
+
+    go->isDestroyed = true;
+
+    // --- collect children first ---
+    std::vector<GameObject*> childObjects;
+    auto& kids = go->m_transform.children;
+    childObjects.reserve(kids.size());
+
+    for (Transform* ct : kids)
+    {
+        if (ct && ct->gameObject)
+        {
+            childObjects.push_back(ct->gameObject);
+            ct->parent = nullptr;
+        }
+    }
+    kids.clear();
+
+    // recursively destroy children
+    for (GameObject* child : childObjects)
+    {
+        if (child)
+            DestroyImmediate(child->getId());
+    }
+
+    // if scheduled to destroy later, remove from pending
+    auto pend = m_objectsToDestroy.find(_gameobjectId);
+    if (pend != m_objectsToDestroy.end())
+        m_objectsToDestroy.erase(pend);
+
+    // call destructor logic
+    go->onDestroy();
+
+    // erase from ownership map (deletes unique_ptr)
+    m_gameObjects.erase(it);
 }

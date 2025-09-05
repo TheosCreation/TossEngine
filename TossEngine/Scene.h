@@ -80,7 +80,7 @@ public:
      * @brief Removes a GameObject from the system.
      * @param gameObject Pointer to the GameObject to remove.
      */
-    void removeGameObject(const GameObject* gameObject);
+    void deleteGameObject(const GameObject* gameObject, float _delay = 0.0f);
 
     // --- Serialization ---
 
@@ -100,18 +100,7 @@ public:
     /**
      * @brief Called when the game is started right before the first update frame.
      */
-    virtual void onStart(); 
-    
-    /**
-     * @brief Called right after start.
-     */
-    virtual void onLateStart();
-
-    /**
-     * @brief Called after onCreate when the game is created.
-     * Use this method for additional initialization tasks.
-     */
-    virtual void onCreateLate();
+    virtual void onStart();
 
     /**
      * @brief Updates the graphics rendering mode.
@@ -252,8 +241,10 @@ private:
      */
     std::string getGameObjectNameAvaliable(std::string currentName);
 
+    void DestroyImmediate(size_t _gameobjectId);
+
 protected:
-    bool m_initilized = false;
+    bool m_initilized = false; //has called create or not
     string m_filePath = "";
     UniformData uniformData = {};
 
@@ -268,7 +259,7 @@ protected:
     Camera* lastCameraToRender = nullptr;
 
     size_t m_nextAvailableId = 1; //!< Tracks the next ID to assign.
-    std::unordered_set<size_t> m_gameObjectsToDestroy; //!< Objects pending destruction.
+    std::unordered_map<size_t, float> m_objectsToDestroy;
 
     GameObject* selectedGameObject = nullptr;
     Scene* m_scene = nullptr;

@@ -97,7 +97,7 @@ void EditorPlayer::Update(float deltaTime)
     glm::quat pitchRotation = glm::angleAxis(glm::radians(m_pitch), glm::vec3(1.0f, 0.0f, 0.0f));
 
     // Combine yaw and pitch rotations and apply to player transform
-    m_transform.localRotation = yawRotation * pitchRotation;
+    m_transform.rotation = yawRotation * pitchRotation;
 
     Vector2 mouseScroll = inputManager.getMouseScroll();
     if (inputManager.isKeyDown(Key::KeyLeftControl, false))
@@ -132,19 +132,19 @@ void EditorPlayer::Update(float deltaTime)
 
     //since the editor players tranform doesnt get updated to use local space we can manipulate position directly
     if (inputManager.isKeyDown(Key::KeyW, false))
-        m_transform.localPosition += forward * adjustedMoveSpeed * deltaTime;
+        m_transform.position += forward * adjustedMoveSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyS, false))
-        m_transform.localPosition -= forward * adjustedMoveSpeed * deltaTime;
+        m_transform.position -= forward * adjustedMoveSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyA, false))
-        m_transform.localPosition -= right * adjustedMoveSpeed * deltaTime;
+        m_transform.position -= right * adjustedMoveSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyD, false))
-        m_transform.localPosition += right * adjustedMoveSpeed * deltaTime;
+        m_transform.position += right * adjustedMoveSpeed * deltaTime;
 
     // Handle input for player rotation
     if (inputManager.isKeyDown(Key::KeyQ, false))
-        m_transform.localPosition -= up * m_movementSpeed * deltaTime;
+        m_transform.position -= up * m_movementSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyE, false))
-        m_transform.localPosition += up * m_movementSpeed * deltaTime;
+        m_transform.position += up * m_movementSpeed * deltaTime;
 
 
     m_transform.UpdateWorldTransform();

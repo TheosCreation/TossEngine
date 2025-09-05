@@ -91,6 +91,11 @@ float Quaternion::Magnitude() const
     return glm::length(static_cast<glm::quat>(*this));
 }
 
+bool Quaternion::Equals(const Quaternion& other, float epsilon) const
+{
+    return glm::all(glm::epsilonEqual(glm::quat(*this), glm::quat(other), epsilon));
+}
+
 
 Vector3 Quaternion::operator*(const Vector3& v) const
 {

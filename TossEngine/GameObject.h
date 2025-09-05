@@ -61,8 +61,6 @@ public:
     virtual void onLateUpdate();
     virtual void onDestroy();
 
-    virtual void onLocalScaleChanged(Vector3 previousScale);
-
     void onUpdateInternal();
 
     // --- Inspector ---
@@ -161,6 +159,9 @@ public:
     Scene* getScene() const;
     LightManager* getLightManager() const;
     void setScene(Scene* _scene);
+    void OnTransformPositionChanged();
+    void OnTransformRotationChanged();
+    void OnTransformScaleChanged();
 
     bool Delete(bool deleteSelf = true) override;
     bool GetActive() const;
@@ -189,5 +190,5 @@ protected:
 private:
     size_t m_id = 0;          //!< Unique identifier
     char tagBuffer[128];      //!< Internal buffer for tag editing
-    Vector3 eulerAngles;      //!< Editor-facing rotation data
+    Vector3 editorEuler;      //!< Editor-facing rotation data
 };

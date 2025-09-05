@@ -76,6 +76,7 @@ struct TOSSENGINE_API Transform
      */
     void SetMatrix(const Mat4& matrix);
 
+    static void DecomposeMatrix(const glm::mat4& m, Vector3& pos, Quaternion& rot, Vector3& scl);
     /**
      * @brief Updates the world-space transform based on local and parent data.
      */
@@ -104,17 +105,13 @@ struct TOSSENGINE_API Transform
 
     Vector3 ToEulerAngles() const { return rotation.ToEulerAngles(); }
 
-    void SetPosition(const Vector3& newPosition) { position = newPosition; }
-
-    void SetRotation(const Quaternion& newRotation) { rotation = newRotation; }
-
-    void SetScale(const Vector3& newScale) { scale = newScale; }
-
-    void SetLocalScale(const Vector3& newScale);
-
-    Vector3 GetLocalScale() const { return localScale; }
-
-    Vector3 GetWorldScale() const { return scale; /* NOTE: recursive scale not yet implemented */ }
+    //Callbacks
+    std::function<void()> OnScaleChanged;
+    std::function<void()> OnLocalScaleChanged;
+    std::function<void()> OnRotationChanged;
+    std::function<void()> OnLocalRotationChanged;
+    std::function<void()> OnPositionChanged;
+    std::function<void()> OnLocalPositionChanged;
 
     // --- Transformation Operations ---
 
@@ -172,6 +169,8 @@ struct TOSSENGINE_API Transform
 
             parent->children.push_back(this);
         }
+
+        parentChangedThisFrame = true;
     }
 
 private:
@@ -182,6 +181,14 @@ private:
     {
         std::erase(children, child);
     }
+
+    Vector3 lastPosition = Vector3(0.0f);
+    Vector3 lastLocalPosition = Vector3(0.0f);
+    Vector3 lastScale = Vector3(1.0f);
+    Vector3 lastLocalScale = Vector3(1.0f);
+    Quaternion lastRotation = Quaternion::Identity();
+    Quaternion lastLocalRotation = Quaternion::Identity();
+    bool parentChangedThisFrame = false;
 };
 
 // --- JSON Serialization for Transform ---

@@ -312,7 +312,6 @@ void TossEditor::onRenderInternal()
                     Time::TimeScale = 1.0f;
                     m_gameRunning = true;
                     scene->onStart();
-                    scene->onLateStart();
                 }
             }
         }
@@ -442,7 +441,6 @@ void TossEditor::onRenderInternal()
                     if (ImGuizmo::IsUsing())
                     {
                         gameObject->m_transform.SetMatrix(transformMat);
-                        gameObject->m_transform.UpdateWorldTransform();
                     }
                     ImGui::PopClipRect();
                 }

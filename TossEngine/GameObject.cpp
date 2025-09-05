@@ -170,23 +170,19 @@ void GameObject::OnInspectorGUI()
 
     ImGui::Separator();
     ImGui::Text("Transform:");
-    ImGui::DragFloat3("Position", m_transform.localPosition.Data(), 0.1f);
-    
-    if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
-    {
-        // Convert the edited angles back to radians and update the quaternion
-        m_transform.localRotation = Quaternion(eulerAngles.ToRadians());
-    }
-    else
-    {
-        eulerAngles = m_transform.localRotation.Normalized().ToEulerAngles().ToDegrees();
+    Vector3& positionToAdjust = m_transform.position;
+    if (m_transform.parent) positionToAdjust = m_transform.localPosition;
+    ImGui::DragFloat3("Position", positionToAdjust.Data(), 0.1f);
 
-    }
-    Vector3 localScale = m_transform.GetLocalScale();
-    if(ImGui::DragFloat3("Scale", localScale.Data(), 0.1f))
+    
+    if (ImGui::DragFloat3("Rotation", editorEuler.Data(), 0.1f))
     {
-        m_transform.SetLocalScale(localScale);
+        m_transform.rotation = Quaternion(editorEuler.ToRadians());
     }
+
+    Vector3& scaleToAdjust = m_transform.scale;
+    if (m_transform.parent) scaleToAdjust = m_transform.localScale;
+    ImGui::DragFloat3("Scale", scaleToAdjust.Data(), 0.1f);
 
     for (auto& [type, comp] : m_components)
     {
@@ -306,7 +302,9 @@ void GameObject::setId(size_t id)
 
 void GameObject::onCreate()
 {
-    //Create method on components is called when component is added
+    m_transform.OnPositionChanged = [this]() { this->OnTransformPositionChanged(); };
+    m_transform.OnRotationChanged = [this]() { this->OnTransformRotationChanged(); };
+    m_transform.OnScaleChanged = [this]() { this->OnTransformScaleChanged(); };
 }
 
 void GameObject::onCreateLate()
@@ -348,25 +346,13 @@ void GameObject::onFixedUpdate()
 
 void GameObject::onUpdate()
 {
-    m_transform.UpdateWorldTransform();
-
     for (auto& pair : m_components) {
         pair.second->onUpdate();
-    }
-
-}
-
-void GameObject::onLocalScaleChanged(Vector3 previousScale)
-{
-    for (auto& pair : m_components) {
-        pair.second->onRescale(previousScale);
     }
 }
 
 void GameObject::onUpdateInternal()
 {
-    if (Time::TimeScale != 0.0f) return;
-
     for (auto& pair : m_components) {
         if (pair.second)
         {
@@ -395,7 +381,7 @@ void GameObject::onUpdateInternal()
         auto it = m_components.find(key);
         if (it != m_components.end() && it->second == component)
         {
-            Debug::Log("Destroyed");
+            //Debug::Log("Destroyed");
             component->onDestroy();
 
             // Remove the component from the container.
@@ -405,6 +391,8 @@ void GameObject::onUpdateInternal()
         }
     }
     componentsToDestroy.clear();
+
+    m_transform.UpdateWorldTransform();
 }
 
 void GameObject::onLateUpdate()
@@ -536,6 +524,38 @@ void GameObject::setScene(Scene* _scene)
     m_scene = _scene;
 }
 
+void GameObject::OnTransformPositionChanged()
+{
+    for (auto& pair : m_components) {
+        if (pair.second)
+        {
+            pair.second->OnTransformPositionChanged();
+        }
+    }
+}
+
+void GameObject::OnTransformRotationChanged()
+{
+    editorEuler = m_transform.rotation.Normalized().ToEulerAngles().ToDegrees();
+
+    for (auto& pair : m_components) {
+        if (pair.second)
+        {
+            pair.second->OnTransformRotationChanged();
+        }
+    }
+}
+
+void GameObject::OnTransformScaleChanged()
+{
+    for (auto& pair : m_components) {
+        if (pair.second)
+        {
+            pair.second->OnTransformScaleChanged();
+        }
+    }
+}
+
 bool GameObject::Delete(bool deleteSelf)
 {
     // If there's a selected component and we're not deleting the game object itself,
@@ -553,17 +573,8 @@ bool GameObject::Delete(bool deleteSelf)
         if (m_transform.parent)
             m_transform.SetParent(nullptr);
 
-        std::vector<Transform*> childrenCopy = m_transform.children;
-        for (Transform* childTransform : childrenCopy)
-        {
-            if (childTransform && childTransform->gameObject)
-            {
-                // Recursively delete the child game object.
-                childTransform->gameObject->Delete(true);
-            }
-        }
-        // Remove this game object from the game object manager.
-        m_scene->removeGameObject(this);
+        // Remove this game object from the scene.
+        m_scene->deleteGameObject(this);
         return true;
     }
 }

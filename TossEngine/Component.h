@@ -50,6 +50,10 @@ public:
 
     virtual void onDestroy() { }
 
+    virtual void OnTransformPositionChanged() {}
+    virtual void OnTransformRotationChanged() {}
+    virtual void OnTransformScaleChanged() {}
+
     virtual void OnInspectorGUI() override
     {
         string inspectorName = getClassName(typeid(*this)) + " Inspector - ID: %p";
@@ -58,7 +62,6 @@ public:
     }
     virtual void OnGameObjectSelected(){}
     virtual void OnGameObjectDeSelected() {}
-    virtual void onRescale(const Vector3& previousScale) {}
 
     virtual void onCollisionEnter(Collider* other) {}
     virtual void onCollisionExit(Collider* other) {}

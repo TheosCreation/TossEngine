@@ -57,7 +57,7 @@ void PointLight::onCreate()
 {
     // Configure point light properties
     PointLightData pointLight;
-    pointLight.Position = m_owner->m_transform.localPosition;
+    pointLight.Position = m_owner->m_transform.position;
     pointLight.Color = m_color;
     pointLight.SpecularStrength = 1.0f;
     pointLight.AttenuationConstant = 1.0f;
@@ -74,14 +74,14 @@ void PointLight::onUpdate()
     // Ensure the light updates its position if the owner moves
     if (m_owner)
     {
-        m_owner->getLightManager()->updatePointLightPosition(m_lightId, m_owner->m_transform.localPosition);
+        m_owner->getLightManager()->updatePointLightPosition(m_lightId, m_owner->m_transform.position);
     }
 }
 
 void PointLight::onUpdateInternal()
 {
 
-    m_owner->getLightManager()->updatePointLightPosition(m_lightId, m_owner->m_transform.localPosition);
+    m_owner->getLightManager()->updatePointLightPosition(m_lightId, m_owner->m_transform.position);
 }
 
 void PointLight::SetIntencity(float intencity)

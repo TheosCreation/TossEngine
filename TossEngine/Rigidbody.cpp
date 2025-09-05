@@ -247,12 +247,12 @@ void Rigidbody::UpdateBodyTransform() const
     if (m_Body)
     {
         Vector3 worldTranslation = m_owner->m_transform.position;
-        if (!m_owner->m_transform.parent)
+        if (m_owner->m_transform.parent)
         {
             worldTranslation = m_owner->m_transform.localPosition;
         }
         Quaternion worldRotation = m_owner->m_transform.rotation;
-        if (!m_owner->m_transform.parent)
+        if (m_owner->m_transform.parent)
         {
             worldRotation = m_owner->m_transform.localRotation;
         }

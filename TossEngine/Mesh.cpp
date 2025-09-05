@@ -354,10 +354,8 @@ void Mesh::OnInspectorGUI()
 
                     }
 
-                    Vector3 localScale = transform.GetLocalScale();
-                    if (ImGui::DragFloat3("Scale", localScale.Data(), 0.1f))
+                    if (ImGui::DragFloat3("Scale", transform.localScale.Data(), 0.1f))
                     {
-                        transform.SetLocalScale(localScale);
                         m_instanceBufferDirty = true;
                     }
 
@@ -390,7 +388,7 @@ void Mesh::addInstance(Vector3 position, Vector3 scale, Vector3 rotation)
 {
     Transform transform;
     transform.localPosition = position;
-    transform.SetLocalScale(scale);
+    transform.localScale = scale;
     transform.localRotation = Quaternion(rotation);
     m_instanceTransforms.push_back(transform);
 }

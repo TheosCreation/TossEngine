@@ -139,6 +139,8 @@ public:
         return Quaternion(q);
     }
 
+    bool Equals(const Quaternion& other, float epsilon) const;
+
     // --- Operators ---
 
     /**

@@ -77,8 +77,8 @@ void PlayerController::onUpdate()
     glm::quat pitchRotation = glm::angleAxis(glm::radians(m_pitch), glm::vec3(1.0f, 0.0f, 0.0f));
 
     // Combine yaw and pitch rotations and apply to player transform
-    m_owner->m_transform.localRotation = yawRotation;
-    m_cam->getOwner()->m_transform.localRotation = pitchRotation;
+    m_owner->m_transform.rotation = yawRotation;
+    m_cam->getOwner()->m_transform.rotation = pitchRotation;
 
     // Toggle wireframe mode on/off
     if (inputManager.isKeyPressed(Key::KeyR))

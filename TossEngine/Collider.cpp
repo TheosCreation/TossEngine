@@ -250,16 +250,6 @@ void Collider::onDestroy()
     }
 }
 
-void Collider::onRescale(const Vector3& previousScale)
-{
-    //update the physics shape based on the scale
-    Vector3 localScale = m_owner->m_transform.GetLocalScale();
-    if (localScale.x > 0.01f && localScale.y > 0.01f && localScale.z > 0.01f)
-    {
-        SetColliderType(static_cast<int>(m_shape->getType()));
-    }
-}
-
 void Collider::SetColliderType(int type)
 {
     switch (type) {
@@ -283,12 +273,15 @@ void Collider::SetColliderType(int type)
 void Collider::SetBoxCollider(const Vector3& size) {
     m_boxColliderSize = size;
     
-    Vector3 scale = m_owner->m_transform.GetLocalScale();
-    if (scale.x <= 0.01f || scale.y <= 0.01f || scale.z <= 0.01f) return;
+    Vector3 scale = m_owner->m_transform.scale;
     float sx = std::fabs(scale.x), sy = std::fabs(scale.y), sz = std::fabs(scale.z);
     Vector3 scaledSize{ m_boxColliderSize.x * sx,
                                m_boxColliderSize.y * sy,
                                m_boxColliderSize.z * sz };
+
+
+    if (scaledSize.x <= 0.01f || scaledSize.y <= 0.01f || scaledSize.z <= 0.01f) return;
+
     // 3) Create the box with those half‑extents
     m_shape = Physics::GetInstance()
         .GetPhysicsCommon()
@@ -299,7 +292,7 @@ void Collider::SetBoxCollider(const Vector3& size) {
 void Collider::SetSphereCollider(float radius) {
     m_radius = radius;
     // Pick the largest axis so the shape stays a true sphere
-    Vector3 scale = m_owner->m_transform.GetLocalScale();
+    Vector3 scale = m_owner->m_transform.scale;
     if (scale.x <= 0.01f || scale.y <= 0.01f || scale.z <= 0.01f) return;
     float maxScale = std::max({ std::fabs(scale.x),
                                 std::fabs(scale.y),
@@ -314,7 +307,7 @@ void Collider::SetSphereCollider(float radius) {
 void Collider::SetCapsuleCollider(float radius, float height) {
     m_radius = radius;
     m_height = height;
-    Vector3 scale = m_owner->m_transform.GetLocalScale();
+    Vector3 scale = m_owner->m_transform.scale;
     if (scale.x <= 0.01f || scale.y <= 0.01f || scale.z <= 0.01f) return;
     // Radius in the XZ‑plane, height along Y
     float radiusScale = std::max(std::fabs(scale.x), std::fabs(scale.z));
@@ -329,6 +322,7 @@ void Collider::SetCapsuleCollider(float radius, float height) {
 void Collider::UpdateRP3Collider()
 {
     rp3d::RigidBody* rb = m_rigidbody->GetBody();
+
     if (m_collider != nullptr) {
         if (rb)
         {
@@ -393,6 +387,11 @@ void Collider::OnCollisionEnter(Collider* otherCollider) const
 void Collider::OnCollisionExit(Collider* otherCollider) const
 {
     m_owner->CallOnCollisionEnterCallbacks(otherCollider);
+}
+
+void Collider::OnTransformScaleChanged()
+{
+    SetColliderType(static_cast<int>(m_shape->getType()));
 }
 
 rp3d::CollisionShapeType Collider::GetColliderType() const
