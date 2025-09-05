@@ -15,6 +15,8 @@ public:
     void onCreate() override;
     void onCreateLate() override;
     void onDestroy() override;
+    void OnTransformScaleChanged() override;
+
     void SetColliderType(int type);
     void SetBoxCollider(const Vector3& size);
     void SetSphereCollider(float radius);
@@ -24,11 +26,13 @@ public:
     void SetTrigger(bool trigger);
     bool GetTrigger() const;
     void SetLayers(vector<std::string> layerNames);
-    void OnTriggerEnter(Collider* otherCollider) const;
-    void OnTriggerExit(Collider* otherCollider) const;
-    void OnCollisionEnter(Collider* otherCollider) const;
-    void OnCollisionExit(Collider* otherCollider) const;
-    void OnTransformScaleChanged() override;
+
+    void CallOnTriggerEnterCallbacks(Collider* otherCollider) const;
+    void CallOnTriggerExitCallbacks(Collider* otherCollider) const;
+    void CallOnCollisionEnterCallbacks(Collider* otherCollider) const;
+    void CallOnCollisionExitCallbacks(Collider* otherCollider) const;
+
+    Vector3 GetExtent() const;
 
     rp3d::CollisionShape* GetColliderShape() const { return m_shape; }
     rp3d::CollisionShapeType GetColliderType() const;

@@ -66,7 +66,6 @@ void Skybox::Render(UniformData data, RenderingPath renderPath)
     // Configure graphics engine settings for rendering the skybox
     graphicsEngine.setFaceCulling(CullType::FrontFace); // Enable front face culling
     graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
-    graphicsEngine.setDepthFunc(DepthType::LessEqual); // Set the depth function
 
     // Bind the skybox texture if available
     //if (m_texture != nullptr)

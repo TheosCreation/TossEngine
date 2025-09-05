@@ -396,29 +396,57 @@ void Collider::SetLayers(vector<std::string> layerNames)
     m_layerNames = layerNames;
 }
 
-void Collider::OnTriggerEnter(Collider* otherCollider) const
+void Collider::CallOnTriggerEnterCallbacks(Collider* otherCollider) const
 {
     m_owner->CallOnTriggerEnterCallbacks(otherCollider);
 }
 
-void Collider::OnTriggerExit(Collider* otherCollider) const
+void Collider::CallOnTriggerExitCallbacks(Collider* otherCollider) const
 {
     m_owner->CallOnTriggerExitCallbacks(otherCollider);
 }
 
-void Collider::OnCollisionEnter(Collider* otherCollider) const
+void Collider::CallOnCollisionEnterCallbacks(Collider* otherCollider) const
 {
     m_owner->CallOnCollisionEnterCallbacks(otherCollider);
 }
 
-void Collider::OnCollisionExit(Collider* otherCollider) const
+void Collider::CallOnCollisionExitCallbacks(Collider* otherCollider) const
 {
-    m_owner->CallOnCollisionEnterCallbacks(otherCollider);
+    m_owner->CallOnCollisionExitCallbacks(otherCollider);
 }
 
 void Collider::OnTransformScaleChanged()
 {
     SetColliderType(static_cast<int>(m_shape->getType()));
+}
+
+Vector3 Collider::GetExtent() const
+{
+    if (!m_shape) return Vector3(1.0f);
+
+    switch (m_shape->getType()) {
+    case rp3d::CollisionShapeType::SPHERE:
+        // box that encloses the sphere
+        return {m_radius, m_radius, m_radius};
+
+    case rp3d::CollisionShapeType::CAPSULE: {
+        // radius in XZ, half-height along Y is r + h/2
+        const float halfY = m_radius + 0.5f * m_height;
+        return {m_radius, halfY, m_radius};
+    }
+
+    case rp3d::CollisionShapeType::CONVEX_POLYHEDRON:
+        // your box uses half-extents already
+        return m_boxColliderSize;
+
+    case rp3d::CollisionShapeType::CONCAVE_SHAPE:
+        // TODO: Implement Mesh shape for collder
+        return {1.0f};
+
+    default:
+        return {1.0f};
+    }
 }
 
 rp3d::CollisionShapeType Collider::GetColliderType() const

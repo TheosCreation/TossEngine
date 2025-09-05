@@ -60,6 +60,8 @@ public:
 
     void setFaceCulling(const CullType& type);
     void setDepthFunc(const DepthType& type);
+    void setDepthMask(bool writeEnabled);
+    void setDepthTest(bool testingEnabled);
     void setWindingOrder(const WindingOrder& type);
     void setBlendFunc(const BlendType& srcType, const BlendType& dstType);
     void setStencil(const StencilOperationType& type);
@@ -101,6 +103,11 @@ private:
     ~GraphicsEngine() = default;
 
     bool isInitilized = false;
+
+    GLenum m_depthType = GL_LESS; // Default value
+    bool m_depthTestingEnabled = true; // Default value
+    bool m_depthMaskEnabled = true; // Default value
+
     ShaderPtr currentShader = nullptr;
     RenderingPath m_renderingPath;
 };

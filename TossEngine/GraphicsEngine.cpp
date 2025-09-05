@@ -128,28 +128,49 @@ void GraphicsEngine::setFaceCulling(const CullType& type)
 
 void GraphicsEngine::setDepthFunc(const DepthType& type)
 {
-    GLenum depthType = GL_LESS; // Default value
-
     switch (type)
     {
-        case DepthType::Never:        depthType = GL_NEVER; break;
-        case DepthType::Less:         depthType = GL_LESS; break;
-        case DepthType::Equal:        depthType = GL_EQUAL; break;
-        case DepthType::LessEqual:    depthType = GL_LEQUAL; break;
-        case DepthType::Greater:      depthType = GL_GREATER; break;
-        case DepthType::NotEqual:     depthType = GL_NOTEQUAL; break;
-        case DepthType::GreaterEqual: depthType = GL_GEQUAL; break;
-        case DepthType::Always:       depthType = GL_ALWAYS; break;
+        case DepthType::Never:        m_depthType = GL_NEVER; break;
+        case DepthType::Less:         m_depthType = GL_LESS; break;
+        case DepthType::Equal:        m_depthType = GL_EQUAL; break;
+        case DepthType::LessEqual:    m_depthType = GL_LEQUAL; break;
+        case DepthType::Greater:      m_depthType = GL_GREATER; break;
+        case DepthType::NotEqual:     m_depthType = GL_NOTEQUAL; break;
+        case DepthType::GreaterEqual: m_depthType = GL_GEQUAL; break;
+        case DepthType::Always:       m_depthType = GL_ALWAYS; break;
     }
 
     if (type == DepthType::Never)
     {
+        m_depthTestingEnabled = false;
         glDisable(GL_DEPTH_TEST);
     }
     else
     {
+        m_depthTestingEnabled = true;
         glEnable(GL_DEPTH_TEST);
-        glDepthFunc(depthType);
+        glDepthFunc(m_depthType);
+    }
+}
+
+void GraphicsEngine::setDepthMask(bool writeEnabled)
+{
+    m_depthMaskEnabled = writeEnabled;
+    glDepthMask(writeEnabled ? GL_TRUE : GL_FALSE);
+}
+
+void GraphicsEngine::setDepthTest(bool testingEnabled)
+{
+    m_depthTestingEnabled = testingEnabled;
+
+    if (m_depthTestingEnabled)
+    {
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(m_depthType);
+    }
+    else
+    {
+        glDisable(GL_DEPTH_TEST);
     }
 }
 

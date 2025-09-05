@@ -102,16 +102,50 @@ public:
     virtual void removeComponent(Component* component);
     virtual void removeMissingComponent(MissingComponent* component);
 
-    template <typename Component>
-    Component* getComponent()
-    {
-        std::type_index typeIndex(typeid(Component));
-        auto it = m_components.find(typeIndex);
-        if (it != m_components.end())
-            return static_cast<Component*>(it->second);
+    template<typename C>
+    C* getComponentExact() {
+        auto it = m_components.find(std::type_index(typeid(C)));
+        return (it != m_components.end()) ? static_cast<C*>(it->second) : nullptr;
+    }
+    template<typename C>
+    const C* getComponentExact() const {
+        auto it = m_components.find(std::type_index(typeid(C)));
+        return (it != m_components.end()) ? static_cast<const C*>(it->second) : nullptr;
+    }
+
+    template<typename T>
+    T* getComponent() {
+        if (auto* p = getComponentExact<T>()) return p;
+        for (auto& [_, comp] : m_components)
+            if (auto* casted = dynamic_cast<T*>(comp)) return casted;
+        return nullptr;
+    }
+    template<typename T>
+    const T* getComponent() const {
+        if (auto* p = getComponentExact<T>()) return p;
+        for (auto& [_, comp] : m_components)
+            if (auto* casted = dynamic_cast<const T*>(comp)) return casted;
         return nullptr;
     }
 
+    // Variadic helpers must be const
+    template <typename... Cs>
+    bool hasComponent() const {
+        static_assert(sizeof...(Cs) > 0, "hasComponent needs at least one type");
+        return ((getComponent<Cs>() != nullptr) && ...);
+    }
+
+    template <typename... Cs>
+    bool hasAnyComponent() const {
+        static_assert(sizeof...(Cs) > 0, "hasAnyComponent needs at least one type");
+        return ((getComponent<Cs>() != nullptr) || ...);
+    }
+
+    // Optional const bulk getter
+    template <typename... Cs>
+    std::tuple<const Cs*...> getComponents() const {
+        return std::make_tuple(getComponent<Cs>()...);
+    }
     template <typename Component>
     Component* getComponentInChildren()
     {

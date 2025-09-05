@@ -98,6 +98,8 @@ public:
     void CreateProxiesFromScene();
     void CleanUpProxies();
     void DeleteProxy(size_t id);
+    void MarkProxyForRemoval(size_t id) { m_pendingProxyDeletes.push_back(id); }
+    bool IsPickable(const std::shared_ptr<GameObject>& go);
 
 protected:
     /**
@@ -169,6 +171,7 @@ private:
     std::vector<std::string> allSceneFilePaths;  //!< All discovered scene file paths.
 
     std::unordered_map<size_t, std::shared_ptr<EditorPickProxy>> m_editorProxies;
+    std::vector<size_t> m_pendingProxyDeletes;
 
     // --- Script watching ---
     std::thread scriptWatcherThread;             //!< Thread for watching source file changes.

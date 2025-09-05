@@ -67,10 +67,15 @@ void EditorPlayer::Update(float deltaTime)
     {
         Editor->DeleteSelected();
     }
+    Vector2 mouse = InputManager::getMousePosition();
+    Vector4 r = m_cam->getScreenArea();
+    const bool insideSceneView =
+        mouse.x >= r.x && mouse.y >= r.y &&
+        mouse.x < r.x + r.z &&
+        mouse.y < r.y + r.w;
 
-    if (inputManager.isMousePressed(MouseButtonLeft, false) && !ImGuizmo::IsOver() && !inputManager.isPlayModeEnabled()) {
-        Vector2 mouse = inputManager.getMousePosition();
-
+    if (inputManager.isMousePressed(MouseButtonLeft, false) && insideSceneView && !ImGuizmo::IsOver() && !inputManager.isPlayModeEnabled()) {
+        
         // build ray from mouse
         Vector3 nearW = m_cam->screenToWorldPoint(Vector3(mouse.x, mouse.y, m_cam->getNearPlane()));
         Vector3 farW = m_cam->screenToWorldPoint(Vector3(mouse.x, mouse.y, m_cam->getFarPlane()));
@@ -87,18 +92,24 @@ void EditorPlayer::Update(float deltaTime)
                 }
             }
         }
+        else
+        {
+            Editor->SetSelectedSelectable(nullptr);
+        }
     }
     if (inputManager.isGameModeEnabled())
         return;
 
 
-    if (!inputManager.isMouseDown(MouseButtonRight, false))
+    if (inputManager.isMouseDown(MouseButtonRight, false) && insideSceneView)
+    {
+        inputManager.enablePlayMode(true, false);
+    }
+    else
     {
         inputManager.enablePlayMode(false, false);
         return;
     }
-    
-    inputManager.enablePlayMode(true, false);
 
     float sensitivity = 0.1f;  // Sensitivity factor for mouse movement
     m_yaw -= inputManager.getMouseXAxis(false) * sensitivity;

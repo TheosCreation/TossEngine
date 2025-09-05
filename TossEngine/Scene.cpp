@@ -458,18 +458,7 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         auto& geometryBuffer = GeometryBuffer::GetInstance();
         geometryBuffer.Bind();
 
-        auto& graphicsEngine = GraphicsEngine::GetInstance();
-        for (const auto& pair : m_gameObjects)
-        {
-            if (!pair.second || !pair.second->GetActive()) continue;
-
-            if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
-            {
-                if (meshRenderer->GetAlpha() != 1.0f) continue;
-
-                meshRenderer->Render(uniformData, graphicsEngine.getRenderingPath());
-            }
-        }
+        onGeometryPass(uniformData);
 
         geometryBuffer.UnBind();
 
@@ -504,8 +493,8 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         geometryBuffer.WriteDepth(m_postProcessingFramebuffer->getId());
 
         // Render the transparent objects after
-        onTransparencyPass(uniformData);
         onSkyboxPass(uniformData);
+        onTransparencyPass(uniformData);
 
 
         if (cameraToRenderOverride)
@@ -530,22 +519,9 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
 
         m_postProcessingFramebuffer->Bind();
 
-        auto& graphicsEngine = GraphicsEngine::GetInstance();
-        for (const auto& pair : m_gameObjects)
-        {
-            if (!pair.second || !pair.second->GetActive()) continue;
-
-            if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
-            {
-                if (meshRenderer->GetAlpha() != 1.0f) continue;
-
-                meshRenderer->Render(uniformData, graphicsEngine.getRenderingPath());
-            }
-        }
-
-        // Render the transparent objects after
-        onTransparencyPass(uniformData);
+        onGeometryPass(uniformData);
         onSkyboxPass(uniformData);
+        onTransparencyPass(uniformData);
 
         if (cameraToRenderOverride)
         {
@@ -588,6 +564,13 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
 
 void Scene::onShadowPass(int index) const
 {
+    GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
+
+    //turn blend off for shadow pass
+    graphicsEngine.setDepthMask(true);
+    graphicsEngine.setDepthTest(true);
+    graphicsEngine.setDepthFunc(DepthType::LessEqual);
+    graphicsEngine.setBlendFunc(BlendType::Zero, BlendType::Zero);
     for (const auto& pair : m_gameObjects)
     {
         if (!pair.second) continue;
@@ -600,10 +583,39 @@ void Scene::onShadowPass(int index) const
             renderer->onShadowPass(index);
         }
     }
+    graphicsEngine.setDepthFunc(DepthType::Less);
+}
+
+
+void Scene::onGeometryPass(UniformData _data) const
+{
+    GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
+
+    //turn blend off for geometry
+    graphicsEngine.setDepthMask(true);
+    graphicsEngine.setDepthTest(true);
+    graphicsEngine.setDepthFunc(DepthType::Less);
+    graphicsEngine.setBlendFunc(BlendType::Zero, BlendType::Zero);
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second || !pair.second->GetActive()) continue;
+
+        if (auto meshRenderer = pair.second->getComponent<MeshRenderer>())
+        {
+            if (meshRenderer->GetAlpha() != 1.0f) continue;
+
+            meshRenderer->Render(uniformData, graphicsEngine.getRenderingPath());
+        }
+    }
 }
 
 void Scene::onTransparencyPass(UniformData _data) const
 {
+    GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
+    graphicsEngine.setDepthTest(true);
+    graphicsEngine.setDepthMask(false);
+    graphicsEngine.setDepthFunc(DepthType::Less);
+    graphicsEngine.setBlendFunc(BlendType::SrcAlpha, BlendType::OneMinusSrcAlpha);
     for (const auto& pair : m_gameObjects)
     {
         if (!pair.second || !pair.second->GetActive()) continue;
@@ -629,10 +641,16 @@ void Scene::onTransparencyPass(UniformData _data) const
             image->Render(_data, RenderingPath::Forward);
         }
     }
+    graphicsEngine.setDepthMask(true);
+    graphicsEngine.setBlendFunc(BlendType::Zero, BlendType::Zero);
 }
 
 void Scene::onSkyboxPass(UniformData _data) const
 {
+    GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
+    graphicsEngine.setDepthMask(false);
+    graphicsEngine.setDepthTest(true);
+    graphicsEngine.setDepthFunc(DepthType::LessEqual);
     for (const auto& pair : m_gameObjects)
     {
         if (!pair.second || !pair.second->GetActive()) continue;
@@ -642,10 +660,16 @@ void Scene::onSkyboxPass(UniformData _data) const
             skybox->Render(_data, RenderingPath::Forward);
         }
     }
+    graphicsEngine.setDepthMask(true);
+    graphicsEngine.setBlendFunc(BlendType::Zero, BlendType::Zero);
 }
 
 void Scene::onScreenSpacePass(UniformData _data) const
 {
+    GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
+    graphicsEngine.setDepthMask(false);
+    graphicsEngine.setDepthTest(false);
+    graphicsEngine.setBlendFunc(BlendType::SrcAlpha, BlendType::OneMinusSrcAlpha);
     for (const auto& pair : m_gameObjects)
     {
         if (!pair.second || !pair.second->GetActive()) continue;
@@ -664,6 +688,8 @@ void Scene::onScreenSpacePass(UniformData _data) const
             text->Render(_data, RenderingPath::Forward);
         }
     }
+    graphicsEngine.setDepthMask(true);
+    graphicsEngine.setBlendFunc(BlendType::Zero, BlendType::Zero);
 }
 
 void Scene::onResize(Vector2 size)

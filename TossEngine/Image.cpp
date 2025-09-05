@@ -6,6 +6,10 @@
 #include "GameObject.h"
 #include "TossEngine.h"
 
+Image::~Image()
+{
+}
+
 void Image::onCreate()
 {
     updateVertices();
@@ -196,13 +200,19 @@ void Image::Render(UniformData data, RenderingPath renderPath)
 }
 
 
+Vector3 Image::GetExtent()
+{
+    // half-width, half-height, thin Z
+    float hx = std::max(0.01f, m_size.x * 0.25f);
+    float hy = std::max(0.01f, m_size.y * 0.25f);
+    float hz = 0.01f; // UI quad thickness
+    return { hx, hy, hz };
+}
+
 void Image::SetSize(Vector2 size)
 {
-    if (m_size != size)
-    {
-        m_size = size;
-        updateVertices(); // Update the vertices with the new size
-    }
+    m_size = size;
+    updateVertices(); // Update the vertices with the new size
 }
 
 void Image::SetTexture(const Texture2DPtr& texture)

@@ -13,14 +13,6 @@
 
 #include "imgui_internal.h"
 
-static bool IsPickable(const std::shared_ptr<GameObject>& go) {
-    if (!go || go->isDestroyed) return false;
-    // skip proxies themselves
-    if (dynamic_cast<EditorPickProxy*>(go.get())) return false;
-    // choose your criteria; here: anything with a Collider or MeshRenderer
-    return go->getComponent<Collider>() || go->getComponent<MeshRenderer>();
-}
-
 TossEditor::TossEditor()
 {
     editorPreferences.LoadFromFile("EditorPreferences.json");
@@ -34,10 +26,12 @@ TossEditor::TossEditor()
     m_projectSettings = std::make_unique<ProjectSettings>();
     m_projectSettings->LoadFromFile("ProjectSettings.json");
 
-    Physics::GetInstance().SetGravity(m_projectSettings->gravity);
-    Physics::GetInstance().SetDebug(true);
-    Physics::GetInstance().LoadPrefabWorld();
-    Physics::GetInstance().LoadEditorWorld();
+    Physics& physics = Physics::GetInstance();
+    physics.SetGravity(m_projectSettings->gravity);
+    physics.SetDebug(true);
+    physics.SetFullDebug(editorPreferences.debugEditor);
+    physics.LoadPrefabWorld();
+    physics.LoadEditorWorld();
     AudioEngine::GetInstance().Init();
     Random::Init();
 
@@ -195,7 +189,7 @@ void TossEditor::SetSelectedSelectable(std::shared_ptr<ISelectable> selectable)
 {
     if (selectedSelectable) selectedSelectable->OnDeSelect();
     selectedSelectable = selectable;
-    selectedSelectable->OnSelect();
+    if (selectedSelectable) selectedSelectable->OnSelect();
 }
 
 void TossEditor::onUpdateInternal()
@@ -204,6 +198,7 @@ void TossEditor::onUpdateInternal()
     InputManager& inputManager = InputManager::GetInstance();
     GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
     ResourceManager& resourceManager = ResourceManager::GetInstance();
+    Physics& physics = Physics::GetInstance();
 
     FindSceneFiles();
 
@@ -217,23 +212,17 @@ void TossEditor::onUpdateInternal()
 
     // Accumulate time
     resourceManager.onUpdateInternal();
-    Physics::GetInstance().UpdateInternal();
+    physics.UpdateInternal();
     inputManager.onUpdate();
 
     if (auto scene = TossEngine::GetInstance().getCurrentScene())
     {
-        // editor update stuff
-        CreateProxiesFromScene();
-        for (auto& [id, proxy] : m_editorProxies) {
-            if (proxy && !proxy->isDestroyed) proxy->onUpdateInternal();
-        }
-
         if (m_gameRunning && Time::TimeScale > 0)
         {
             Time::AccumulatedTime += Time::DeltaTime;
             while (Time::AccumulatedTime >= Time::FixedDeltaTime)
             {
-                Physics::GetInstance().Update();
+                physics.Update();
                 Physics::GetInstance().UpdateEditorWorld();
                 scene->onFixedUpdate();
                 Time::AccumulatedTime -= Time::FixedDeltaTime;
@@ -242,7 +231,6 @@ void TossEditor::onUpdateInternal()
         }
 
         m_player->Update(deltaTimeInternal);
-        CleanUpProxies();
 
         if (m_gameRunning)
         {
@@ -251,6 +239,21 @@ void TossEditor::onUpdateInternal()
         }
 
         scene->onUpdateInternal();
+
+        // editor update stuff
+        CreateProxiesFromScene();
+        // safe iteration: do not mutate the container inside the loop
+        for (auto& [id, sp] : m_editorProxies) {
+            if (sp && !sp->isDestroyed) sp->onUpdateInternal();
+        }
+
+        // process queued removals
+        if (!m_pendingProxyDeletes.empty()) {
+            for (size_t id : m_pendingProxyDeletes) DeleteProxy(id);
+            m_pendingProxyDeletes.clear();
+        }
+
+        CleanUpProxies();
     }
 }
 
@@ -260,6 +263,7 @@ void TossEditor::onRenderInternal()
     InputManager& inputManager = InputManager::GetInstance();
     GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
     ResourceManager& resourceManager = ResourceManager::GetInstance();
+    Physics& physics = Physics::GetInstance();
 
 
     float menuBarHeight = ImGui::GetFrameHeightWithSpacing();  // More accurate with spacing
@@ -350,7 +354,7 @@ void TossEditor::onRenderInternal()
                 Time::TimeScale = 0.0f;
 
                 //Reset inputmanager states
-                InputManager::GetInstance().enablePlayMode(false, true);
+                inputManager.enablePlayMode(false, true);
 
                 string filePath = editorPreferences.lastKnownOpenScenePath;
 
@@ -492,6 +496,13 @@ void TossEditor::onRenderInternal()
 
 
         //scene->SetPostProcessMaterial()
+
+        ImGui::Separator();
+        ImGui::Text("Debug Settings");
+        if (ImGui::Checkbox("Debug Editor", &editorPreferences.debugEditor))
+        {
+            physics.SetFullDebug(editorPreferences.debugEditor);
+        }
 
         ImGui::Separator();
         ImGui::Text("Physics Settings");
@@ -1245,13 +1256,20 @@ void TossEditor::DeleteProxy(size_t id)
     auto it = m_editorProxies.find(id);
     if (it == m_editorProxies.end()) return;
 
-    auto& proxy = it->second;
-    if (proxy) {
-        proxy->isDestroyed = true;
-        if (proxy->m_transform.parent) proxy->m_transform.SetParent(nullptr);
-        proxy->onDestroy();                 // lets components release editor-world bodies, etc.
+    if (auto& sp = it->second) {
+        sp->onDestroy();
+        sp.reset();
     }
     m_editorProxies.erase(it);
+}
+
+bool TossEditor::IsPickable(const std::shared_ptr<GameObject>& go) {
+    if (!go || go->isDestroyed) return false;
+    // skip proxies themselves
+    if (dynamic_cast<EditorPickProxy*>(go.get())) return false;
+    if (go == selectedSelectable) return false;
+    // choose your criteria; here: anything with a Collider or MeshRenderer
+    return (go->hasComponent<Renderer>() || go->hasComponent<Collider>()) && !go->hasComponent<Skybox>();
 }
 
 void TossEditor::onResize(Vector2 size)

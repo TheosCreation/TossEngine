@@ -5,7 +5,7 @@ class TOSSENGINE_API Image : public UiElement
 {
 public:
 	Image() = default;
-	~Image() = default;
+	~Image() override;
 
 	virtual void onCreate() override;
 
@@ -31,6 +31,8 @@ public:
         ImGui::ColorEdit3("Color", m_color.Data());
     }
 
+    Vector3 GetExtent() override;
+
 	void SetSize(Vector2 size);
 
 	void SetTexture(const Texture2DPtr& texture);
@@ -46,7 +48,6 @@ private:
 	void updateVertices();
 
 	VertexArrayObjectPtr m_vao;
-	Vector2 m_size = { 1, 1 };
 	Texture2DPtr m_texture;
     bool m_isUi = true;
     Vector3 m_color = Color::White;

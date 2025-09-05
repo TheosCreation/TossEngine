@@ -146,7 +146,6 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.setFaceCulling(CullType::BackFace);
     graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
-    graphicsEngine.setDepthFunc(DepthType::LessEqual);
 
     if (renderPath == RenderingPath::Deferred)
     {

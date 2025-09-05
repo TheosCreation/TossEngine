@@ -81,6 +81,7 @@ public:
      */
     void setScreenArea(const Vector2& screen);
     void setScreenArea(const Vector4& area);
+    Vector4 getScreenArea();
 
     /**
      * @brief Sets the target position that the camera is looking at.

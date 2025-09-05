@@ -108,6 +108,7 @@ public:
      */
     virtual void onGraphicsUpdate(Camera* cameraToRenderOverride = nullptr, FramebufferPtr writeToFrameBuffer = nullptr);
     void onShadowPass(int index) const;
+    void onGeometryPass(UniformData _data) const;
     void onTransparencyPass(UniformData _data) const;
     void onSkyboxPass(UniformData _data) const;
     void onScreenSpacePass(UniformData _data) const;

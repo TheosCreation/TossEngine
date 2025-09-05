@@ -50,17 +50,6 @@ void Physics::UpdateInternal()
 
 void Physics::Update()
 {
-    if (m_prefabWorld)
-    {
-        m_prefabWorld->update(Time::FixedDeltaTime);
-    }
-    if (isPaused) return;
-
-    if (Time::FixedDeltaTime > 0.0f && m_world)
-    {
-        m_world->update(Time::FixedDeltaTime);
-    }
-
     if (isDebug)
     {
         // Update raycast debug entries lifetime
@@ -72,6 +61,17 @@ void Physics::Update()
             else
                 ++it;
         }
+    }
+
+    //if (m_prefabWorld)
+    //{
+    //    m_prefabWorld->update(Time::FixedDeltaTime);
+    //}
+    if (isPaused) return;
+
+    if (Time::FixedDeltaTime > 0.0f && m_world)
+    {
+        m_world->update(Time::FixedDeltaTime);
     }
 }
 
@@ -131,6 +131,11 @@ void Physics::SetDebug(bool debug)
     glBindVertexArray(0);
 }
 
+void Physics::SetFullDebug(bool debug)
+{
+    isFullDebug = debug;
+}
+
 void Physics::SetPaused(bool paused)
 {
     isPaused = paused;
@@ -139,6 +144,11 @@ void Physics::SetPaused(bool paused)
 bool Physics::GetDebug() const
 {
     return isDebug;
+}
+
+bool Physics::GetFullDebug() const
+{
+    return isFullDebug;
 }
 
 void Physics::SetGravity(const Vector3& gravity)
@@ -151,12 +161,24 @@ void Physics::SetGravity(const Vector3& gravity)
     }
 }
 
-void Physics::DrawDebug(UniformData data) const
+void Physics::DrawDebug(UniformData data)
 {
+    DrawWorld(data, m_world);
+    DrawWorld(data, m_prefabWorld);
+    if (isFullDebug)
+    {
+        DrawWorld(data, m_editorWorld);
+    }
+}
+
+void Physics::DrawWorld(UniformData data, PhysicsWorld* worldToDraw)
+{
+    GraphicsEngine& graphicsEngine = GraphicsEngine::GetInstance();
+    graphicsEngine.setBlendFunc(BlendType::SrcAlpha, BlendType::OneMinusSrcAlpha);
     // Retrieve debug data from ReactPhysics3D
-    reactphysics3d::DebugRenderer& debugRenderer = m_world->getDebugRenderer();
+    reactphysics3d::DebugRenderer& debugRenderer = worldToDraw->getDebugRenderer();
     debugRenderer.reset();
-    debugRenderer.computeDebugRenderingPrimitives(*m_world);
+    debugRenderer.computeDebugRenderingPrimitives(*worldToDraw);
     const auto& lines = debugRenderer.getLines();
     const auto& triangles = debugRenderer.getTriangles();
 
@@ -249,6 +271,7 @@ void Physics::DrawDebug(UniformData data) const
     glBindVertexArray(0);
     glUseProgram(0);
 
+    graphicsEngine.setBlendFunc(BlendType::Zero, BlendType::Zero);
 }
 
 RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, float maxDistance, LayerBit hitLayers)
@@ -339,12 +362,11 @@ RaycastHit Physics::EditorRaycast(const Vector3& origin, const Vector3& directio
         hitResult.distance = maxDistance;
     }
 
-    // TODO: Remove this was for debugging editor stuff Debug visualization.
-    if (isDebug)
-    {
-        Vector3 endPoint = hitResult.hasHit ? hitResult.point : (origin + direction * maxDistance);
-        m_raycastDebugEntries.push_back({ origin, endPoint });
-    }
+    //if (isDebug)
+    //{
+    //    Vector3 endPoint = hitResult.hasHit ? hitResult.point : (origin + direction * maxDistance);
+    //    m_raycastDebugEntries.push_back({ origin, endPoint });
+    //}
 
     return hitResult;
 }
@@ -483,13 +505,13 @@ void Physics::HandleContact(const rp3d::CollisionCallback::CallbackData& data)
 
             //for now all we are passing through is the other collider, we need to pass through the contact pair but reconstruct it
             if (eventType == rp3d::EventListener::ContactPair::EventType::ContactStart) {
-                customCollider1->OnCollisionEnter(customCollider2);
-                customCollider2->OnCollisionEnter(customCollider1);
+                customCollider1->CallOnCollisionEnterCallbacks(customCollider2);
+                customCollider2->CallOnCollisionEnterCallbacks(customCollider1);
             }
             else if (eventType == rp3d::EventListener::ContactPair::EventType::ContactExit) {
 
-                customCollider1->OnCollisionExit(customCollider2);
-                customCollider2->OnCollisionExit(customCollider1);
+                customCollider1->CallOnCollisionExitCallbacks(customCollider2);
+                customCollider2->CallOnCollisionExitCallbacks(customCollider1);
             }
         }
     }
@@ -514,21 +536,21 @@ void Physics::HandleTrigger(const rp3d::OverlapCallback::CallbackData& data)
         if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapStart) {
             if (customCollider1->GetTrigger()) {
 
-                customCollider1->OnTriggerEnter(customCollider2);
+                customCollider1->CallOnTriggerEnterCallbacks(customCollider2);
             }
             if (customCollider2->GetTrigger()) {
 
-                customCollider2->OnTriggerEnter(customCollider1);
+                customCollider2->CallOnTriggerEnterCallbacks(customCollider1);
             }
         }
         else if (eventType == rp3d::OverlapCallback::OverlapPair::EventType::OverlapExit) {
             if (customCollider1->GetTrigger()) {
 
-                customCollider1->OnTriggerExit(customCollider2);
+                customCollider1->CallOnTriggerExitCallbacks(customCollider2);
             }
             if (customCollider2->GetTrigger()) {
 
-                customCollider2->OnTriggerExit(customCollider1);
+                customCollider2->CallOnTriggerExitCallbacks(customCollider1);
             }
         }
     }

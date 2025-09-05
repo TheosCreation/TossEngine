@@ -149,6 +149,7 @@ public:
      * @param debug True to enable debug visuals.
      */
     void SetDebug(bool debug);
+    void SetFullDebug(bool debug);
 
     /**
      * @brief Pauses or unpauses the physics simulation.
@@ -160,6 +161,7 @@ public:
      * @brief Returns whether debug drawing is enabled.
      */
     bool GetDebug() const;
+    bool GetFullDebug() const;
 
     /**
      * @brief Sets the gravity vector for the physics world.
@@ -187,7 +189,7 @@ public:
      * @brief Draws debug visuals for the physics world.
      * @param data Uniform data for rendering (e.g., camera matrices).
      */
-    void DrawDebug(UniformData data) const;
+    void DrawDebug(UniformData data);
 
     /**
      * @brief Loads and initializes the main physics world.
@@ -243,9 +245,12 @@ private:
         }
     };
 
+    void DrawWorld(UniformData data, PhysicsWorld* worldToDraw);
+
 private:
     PhysicsCommon m_commonSettings; //!< Settings and factory methods for physics objects.
     bool isDebug = false; //!< Debug drawing toggle.
+    bool isFullDebug = false; //!< Debug drawing toggle.
     PhysicsWorld* m_world = nullptr; //!< Active physics simulation world.
     PhysicsWorld* m_prefabWorld = nullptr; //!< World used for prefab simulation.
     PhysicsWorld* m_editorWorld = nullptr; //!< World used for editor simulation.

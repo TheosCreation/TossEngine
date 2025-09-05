@@ -44,7 +44,7 @@ protected:
 
 
     Vector2 m_pivotOffset;
-    Vector2 m_size;
+    Vector2 m_size = { 1, 1 };
 
     Vector2 GetAnchorOffset(const Vector2& screenSize, const Vector2& size, AnchorPoint anchor) const;
 

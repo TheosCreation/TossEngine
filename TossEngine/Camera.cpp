@@ -139,6 +139,11 @@ void Camera::setScreenArea(const Vector4& area)
     computeProjectionMatrix();
 }
 
+Vector4 Camera::getScreenArea()
+{
+    return m_screenArea;
+}
+
 void Camera::setTargetPosition(Vector3 newTargetPosition)
 {
 	m_targetPosition = newTargetPosition;

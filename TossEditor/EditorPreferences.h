@@ -6,6 +6,7 @@ struct EditorPreferences
     string lastKnownOpenScenePath = "";
     Vector2 windowSize = Vector2(800, 800);
     bool maximized = false;
+    bool debugEditor = false;
 
     void LoadFromFile(const std::string& filename)
     {
@@ -31,6 +32,9 @@ struct EditorPreferences
         if (j.contains("LastKnownOpenScenePath") && j["LastKnownOpenScenePath"].is_string()) {
             lastKnownOpenScenePath = j["LastKnownOpenScenePath"];
         }
+        if (j.contains("DebugEditor")) {
+            debugEditor = j["DebugEditor"].get<bool>();
+        }
     }
 
     // Save settings to a JSON file
@@ -40,6 +44,7 @@ struct EditorPreferences
         j["Maximized"] = maximized;
         j["WindowSize"] = { windowSize.x, windowSize.y };
         j["LastKnownOpenScenePath"] = lastKnownOpenScenePath;
+        j["DebugEditor"] = debugEditor;
 
         std::ofstream file(filename);
         if (!file) {

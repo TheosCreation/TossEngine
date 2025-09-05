@@ -9,6 +9,8 @@ public:
 	void SetMaterial(const MaterialPtr& material);
     MaterialPtr GetMaterial() const;
 
+    virtual Vector3 GetExtent() { return { 1.0f }; }
+
 	virtual void OnInspectorGUI() override 
 	{
         ResourceAssignableField(m_material, "Material");
