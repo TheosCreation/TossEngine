@@ -1,5 +1,6 @@
 ﻿#include "Collider.h"
 #include "GameObject.h"
+#include "MeshRenderer.h"
 #include "Rigidbody.h"
 #include "PhysicsMaterial.h"
 
@@ -257,16 +258,19 @@ void Collider::SetColliderType(int type)
             // re‑use stored radius
             SetSphereCollider(m_radius);
             break;
-            case static_cast<int>(rp3d::CollisionShapeType::CAPSULE) :
-                // re‑use stored radius & height
-                SetCapsuleCollider(m_radius, m_height);
-                break;
-                case static_cast<int>(rp3d::CollisionShapeType::CONVEX_POLYHEDRON) :
-                    // re‑use stored size
-                    SetBoxCollider(m_boxColliderSize);
-                    break;
-                default:
-                    Debug::LogError("Collider::SetColliderType(): invalid type ", type);
+        case static_cast<int>(rp3d::CollisionShapeType::CAPSULE) :
+            // re‑use stored radius & height
+            SetCapsuleCollider(m_radius, m_height);
+            break;
+        case static_cast<int>(rp3d::CollisionShapeType::CONVEX_POLYHEDRON) :
+            // re‑use stored size
+            SetBoxCollider(m_boxColliderSize);
+            break;
+        case static_cast<int>(rp3d::CollisionShapeType::CONCAVE_SHAPE) :
+            SetConvexMeshCollider();
+            break;
+        default:
+            Debug::LogError("Collider::SetColliderType(): invalid type ", type);
     }
 }
 
@@ -317,6 +321,24 @@ void Collider::SetCapsuleCollider(float radius, float height) {
         .GetPhysicsCommon()
         .createCapsuleShape(scaledRadius, scaledHeight);
     if (m_rigidbody) UpdateRP3Collider();
+}
+
+void Collider::SetConvexMeshCollider()
+{
+    //TODO: Unfinished bruh this is gay
+    //if (MeshRenderer* meshRenderer = m_owner->getComponent<MeshRenderer>())
+    //{
+    //    if (MeshPtr mesh = meshRenderer->GetMesh())
+    //    {
+    //        VertexArrayObjectPtr VAO = mesh->getVertexArrayObject();
+    //
+    //        vector<reactphysics3d::Message> reactMessages;
+    //        m_shape = Physics::GetInstance()
+    //            .GetPhysicsCommon()
+    //            .createConcaveMeshShape(static_cast<reactphysics3d::TriangleMesh>(*VAO));
+    //    }
+    //}
+    //if (m_rigidbody) UpdateRP3Collider();
 }
 
 void Collider::UpdateRP3Collider()

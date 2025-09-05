@@ -43,28 +43,22 @@ Mat4 Transform::GetMatrix() const
     {
         return parent->GetMatrix() * GetLocalMatrix();
     }
-    Mat4 translationMatrix = position.ToTranslation();
-    Mat4 rotationMatrix = rotation.ToMat4();
-    Mat4 scaleMatrix = scale.ToScale();
-    return translationMatrix * rotationMatrix * scaleMatrix;
+    return Mat4::Translate(position) * rotation.ToMat4() * Mat4::Scale(scale);
 }
 
 void Transform::SetMatrix(const Mat4& matrix)
 {
     DecomposeMatrix(matrix.value, position, rotation, scale);
 
-    if (parent != nullptr)
-    {
-        // Convert world matrix back into local space
-        glm::mat4 parentWorldInv = glm::inverse(parent->GetMatrix().value);
-        glm::mat4 local = parentWorldInv * matrix.value;
+    if (parent) {
+        glm::mat4 local = glm::inverse(parent->GetMatrix().value) * matrix.value;
         DecomposeMatrix(local, localPosition, localRotation, localScale);
     }
-    else
-    {
-        localPosition = Vector3(0.0f);
-        localRotation = Quaternion::Identity();
-        localScale = Vector3(1.0f);
+    else {
+        // local mirrors world when no parent
+        localPosition = position;
+        localRotation = rotation;
+        localScale = scale;
     }
 }
 
@@ -84,20 +78,43 @@ void Transform::DecomposeMatrix(const glm::mat4& m, Vector3& pos, Quaternion& ro
 
 void Transform::UpdateWorldTransform()
 {
-    bool positionChanged = !lastPosition.Equals(position, FLT_EPSILON);
-    bool localPositionChanged = !lastLocalPosition.Equals(localPosition, FLT_EPSILON);
-    bool scaleChanged = !lastScale.Equals(scale, FLT_EPSILON);
-    bool localScaleChanged = !lastLocalScale.Equals(localScale, FLT_EPSILON);
-    bool rotationChanged = !lastRotation.Equals(rotation, FLT_EPSILON);
-    bool localRotationChanged = !lastLocalRotation.Equals(localRotation, FLT_EPSILON);
+    constexpr float eps = FLT_EPSILON;
 
-    if (scaleChanged && OnScaleChanged) OnScaleChanged();
-    if (localScaleChanged && OnLocalScaleChanged) OnLocalScaleChanged();
-    if (rotationChanged && OnRotationChanged) OnRotationChanged();
-    if (localRotationChanged && OnLocalRotationChanged) OnLocalRotationChanged();
-    if (positionChanged && OnPositionChanged) OnPositionChanged();
-    if (localPositionChanged && OnLocalPositionChanged) OnLocalPositionChanged();
+    const bool posChanged = !lastPosition.Equals(position, eps);
+    const bool lposChanged = !lastLocalPosition.Equals(localPosition, eps);
+    const bool sclChanged = !lastScale.Equals(scale, eps);
+    const bool lsclChanged = !lastLocalScale.Equals(localScale, eps);
+    const bool rotChanged = !lastRotation.Equals(rotation, eps);
+    const bool lrotChanged = !lastLocalRotation.Equals(localRotation, eps);
 
+    if (sclChanged && OnScaleChanged)       OnScaleChanged();
+    if (lsclChanged && OnLocalScaleChanged)  OnLocalScaleChanged();
+    if (rotChanged && OnRotationChanged)    OnRotationChanged();
+    if (lrotChanged && OnLocalRotationChanged) OnLocalRotationChanged();
+    if (posChanged && OnPositionChanged)    OnPositionChanged();
+    if (lposChanged && OnLocalPositionChanged) OnLocalPositionChanged();
+
+    const bool selfDirty =
+        posChanged || lposChanged || sclChanged || lsclChanged || rotChanged || lrotChanged;
+
+    // NEW: detect parent movement
+    uint32_t parentVer = 0;
+    bool parentDirty = false;
+    if (parent) {
+        parentVer = parent->worldVersion;
+        parentDirty = (parentVer != lastAppliedParentVersion);
+    }
+
+    if (!selfDirty && !parentDirty) return;
+
+    // Build world from correct source
+    const Mat4 worldM = parent
+        ? parent->GetMatrix() * GetLocalMatrix()
+        : Mat4::Translate(position) * rotation.ToMat4() * Mat4::Scale(scale);
+
+    SetMatrix(worldM);   // updates world; recomputes locals if parent exists
+
+    // Snapshot AFTER mutation
     lastPosition = position;
     lastLocalPosition = localPosition;
     lastScale = scale;
@@ -105,31 +122,11 @@ void Transform::UpdateWorldTransform()
     lastRotation = rotation;
     lastLocalRotation = localRotation;
 
-    bool dirty = positionChanged || localPositionChanged || scaleChanged || localScaleChanged || rotationChanged || localRotationChanged;
-    if (!dirty && !parentChangedThisFrame)
-        return; // nothing changed, keep last matrix
-
-    parentChangedThisFrame = false;
-    if (parent)
-    {
-        Mat4 worldMatrix = parent->GetMatrix() * GetLocalMatrix(); 
-        SetMatrix(worldMatrix);
-    }
-    else
-    {
-        Mat4 worldTranslation = Mat4::Translate(position);
-        Mat4 worldRotationM = rotation.ToMat4();
-        Mat4 worldScaleM = Mat4::Scale(scale);
-        Mat4 localTranslation = Mat4::Translate(localPosition);
-        Mat4 localRotationM = localRotation.ToMat4();
-        Mat4 localScaleM = Mat4::Scale(localScale);
-
-        Mat4 worldMatrix = worldTranslation * worldRotationM * worldScaleM *
-            localTranslation * localRotationM * localScaleM;
-
-        SetMatrix(worldMatrix);
-    }
+    // Bump version and remember parent version used
+    worldVersion++;
+    lastAppliedParentVersion = parent ? parentVer : 0;
 }
+
 
 nlohmann::json Transform::serialize() const
 {

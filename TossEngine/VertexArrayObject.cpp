@@ -13,6 +13,8 @@ Mail : theo.morris@mds.ac.nz
 
 #include "VertexArrayObject.h" // Include the header file for VertexArrayObject class
 #include <glew.h> // Include GLEW for OpenGL function loading
+#include <reactphysics3d/collision/TriangleMesh.h>
+#include <reactphysics3d/memory/MemoryAllocator.h>
 
 // Constructor for VertexArrayObject, initializes a vertex array object using a vertex buffer descriptor
 VertexArrayObject::VertexArrayObject(const VertexBufferDesc& _data)

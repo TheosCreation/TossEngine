@@ -240,6 +240,11 @@ void MeshRenderer::SetMesh(MeshPtr mesh)
     m_mesh = mesh;
 }
 
+MeshPtr MeshRenderer::GetMesh() const
+{
+    return m_mesh;
+}
+
 void MeshRenderer::SetShadowShader(ShaderPtr shader)
 {
     m_shadowShader = shader;

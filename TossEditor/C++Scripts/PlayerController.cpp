@@ -78,7 +78,7 @@ void PlayerController::onUpdate()
 
     // Combine yaw and pitch rotations and apply to player transform
     m_owner->m_transform.rotation = yawRotation;
-    m_cam->getOwner()->m_transform.rotation = pitchRotation;
+    m_cam->getOwner()->m_transform.localRotation = pitchRotation;
 
     // Toggle wireframe mode on/off
     if (inputManager.isKeyPressed(Key::KeyR))

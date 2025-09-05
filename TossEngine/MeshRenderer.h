@@ -36,6 +36,7 @@ public:
 	void Render(UniformData data, RenderingPath renderPath) override;
 
 	void SetMesh(MeshPtr mesh);
+	MeshPtr GetMesh() const;
 
 	void SetShadowShader(ShaderPtr shader);
 

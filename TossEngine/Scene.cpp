@@ -82,21 +82,7 @@ GameObjectPtr Scene::Instantiate(const PrefabPtr& prefab, Transform* parent, Vec
         return nullptr;
     }
 
-    // Set parent if provided (update local transform accordingly)
-    if (parent != nullptr)
-    {
-        newObject->m_transform.SetParent(parent, false);
-        newObject->m_transform.localPosition = positionalOffset;
-        newObject->m_transform.localRotation = rotationOffset;
-    }
-    else
-    {
-
-        newObject->m_transform.position = positionalOffset;
-        newObject->m_transform.rotation = rotationOffset;
-    }
-
-    if (createGameObjectInternal(newObject, prefab->name))
+    if (createGameObjectInternal(newObject, prefab->name, nullptr, parent, positionalOffset, rotationOffset))
     {
         if (hasStarted)
         {
@@ -787,7 +773,8 @@ string Scene::GetFilePath()
     return m_filePath;
 }
 
-bool Scene::createGameObjectInternal(GameObjectPtr gameObject, const std::string& name, const json& data)
+bool Scene::createGameObjectInternal(GameObjectPtr gameObject, const std::string& name, const json& data,
+    Transform* parent, Vector3 position, Quaternion rotation)
 {
     if (!gameObject)
         return false;
@@ -796,6 +783,8 @@ bool Scene::createGameObjectInternal(GameObjectPtr gameObject, const std::string
     size_t newId = m_nextAvailableId++;
     gameObject->setId(newId);
     gameObject->setScene(this);
+
+    // TODO: idk if this is good what if we want to pass in json data and it overrides the passed in position and rotational data?
     if (data != nullptr)
     {
         gameObject->deserialize(data);
@@ -807,6 +796,18 @@ bool Scene::createGameObjectInternal(GameObjectPtr gameObject, const std::string
     {
         string uniqueName = getGameObjectNameAvaliable(name);
         gameObject->name = uniqueName;
+    }
+    if (parent != nullptr)
+    {
+        gameObject->m_transform.SetParent(parent, false);
+        gameObject->m_transform.localPosition = position;
+        gameObject->m_transform.localRotation = rotation;
+    }
+    else
+    {
+
+        gameObject->m_transform.position = position;
+        gameObject->m_transform.rotation = rotation;
     }
     gameObject->onCreate();
     gameObject->onCreateLate();

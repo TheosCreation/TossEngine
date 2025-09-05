@@ -169,20 +169,18 @@ void GameObject::OnInspectorGUI()
     }
 
     ImGui::Separator();
+    const bool editLocal = (m_transform.parent != nullptr);
+
+    Vector3* pos = editLocal ? &m_transform.localPosition : &m_transform.position;
+    Quaternion* rot = editLocal ? &m_transform.localRotation : &m_transform.rotation;
+    Vector3* scl = editLocal ? &m_transform.localScale : &m_transform.scale;
+
     ImGui::Text("Transform:");
-    Vector3& positionToAdjust = m_transform.position;
-    if (m_transform.parent) positionToAdjust = m_transform.localPosition;
-    ImGui::DragFloat3("Position", positionToAdjust.Data(), 0.1f);
-
-    
-    if (ImGui::DragFloat3("Rotation", editorEuler.Data(), 0.1f))
-    {
-        m_transform.rotation = Quaternion(editorEuler.ToRadians());
+    ImGui::DragFloat3("Position", pos->Data(), 0.1f);
+    if (ImGui::DragFloat3("Rotation", editorEuler.Data(), 0.1f)) {
+        *rot = Quaternion(editorEuler.ToRadians());
     }
-
-    Vector3& scaleToAdjust = m_transform.scale;
-    if (m_transform.parent) scaleToAdjust = m_transform.localScale;
-    ImGui::DragFloat3("Scale", scaleToAdjust.Data(), 0.1f);
+    ImGui::DragFloat3("Scale", scl->Data(), 0.1f);
 
     for (auto& [type, comp] : m_components)
     {
@@ -536,7 +534,14 @@ void GameObject::OnTransformPositionChanged()
 
 void GameObject::OnTransformRotationChanged()
 {
-    editorEuler = m_transform.rotation.Normalized().ToEulerAngles().ToDegrees();
+    if (m_transform.parent != nullptr)
+    {
+        editorEuler = m_transform.localRotation.Normalized().ToEulerAngles().ToDegrees();
+    }
+    else
+    {
+        editorEuler = m_transform.rotation.Normalized().ToEulerAngles().ToDegrees();
+    }
 
     for (auto& pair : m_components) {
         if (pair.second)

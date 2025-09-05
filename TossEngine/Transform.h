@@ -173,6 +173,10 @@ struct TOSSENGINE_API Transform
         parentChangedThisFrame = true;
     }
 
+protected:
+    uint32_t worldVersion = 0;                 // this node’s world state version
+    uint32_t lastAppliedParentVersion = 0;     // last parent version we baked in
+
 private:
     /**
      * @brief Removes a child transform from this transform.

@@ -39,7 +39,7 @@ void PauseManager::SetPaused(bool paused, bool openPauseMenu)
     {
         Time::TimeScale = 1.0f;
     }
-    InputManager::GetInstance().enablePlayMode(!m_isPaused, false);
+    InputManager::GetInstance().enablePlayMode(!m_isPaused, true);
 
     Debug::Log("Pause status: " + ToString(m_isPaused) + ", Time Scale: " + ToString(Time::TimeScale));
 }

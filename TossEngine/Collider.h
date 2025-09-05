@@ -19,6 +19,7 @@ public:
     void SetBoxCollider(const Vector3& size);
     void SetSphereCollider(float radius);
     void SetCapsuleCollider(float radius, float height);
+    void SetConvexMeshCollider();
     void UpdateRP3Collider();
     void SetTrigger(bool trigger);
     bool GetTrigger() const;

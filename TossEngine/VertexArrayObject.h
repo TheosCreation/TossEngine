@@ -62,6 +62,7 @@ public:
      * @return The number of indices.
      */
     uint getNumIndices();
+    
 
 private:
     uint m_vertexBufferID = 0;              // The ID of the vertex buffer.

@@ -234,7 +234,7 @@ private:
      * @param data Optional JSON for deserialization.
      * @return True if added successfully.
      */
-    bool createGameObjectInternal(GameObjectPtr gameObject, const std::string& name = "", const json& data = nullptr);
+    bool createGameObjectInternal(GameObjectPtr gameObject, const std::string& name = "", const json& data = nullptr, Transform* parent = nullptr, Vector3 position = Vector3::Zero, Quaternion rotation = Quaternion::Identity());
 
     /**
      * @brief Ensures a name is unique, appends a suffix if necessary.

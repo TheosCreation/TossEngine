@@ -78,17 +78,9 @@ void Camera::OnInspectorGUI()
 
 void Camera::getViewMatrix(Mat4& view)
 {
-	if (m_type == CameraType::Perspective)
-	{
-		m_view = LookAt(m_owner->m_transform.position, m_owner->m_transform.position + m_owner->m_transform.GetForward(), m_owner->m_transform.GetUp());
-	}
-	else if (m_type == CameraType::Orthogonal)
-	{
-		Vector3 cameraPosition = Vector3(m_screenArea.z, -m_screenArea.w, 1.0f);
-		Vector3 targetPosition = Vector3(m_screenArea.z, -m_screenArea.w, 0.0f);
-		m_view = LookAt(cameraPosition, targetPosition, m_owner->m_transform.GetUp());
-	}
-	view = m_view;
+    Mat4 world = m_owner->m_transform.GetMatrix();
+    m_view = world.Inverse();
+    view = m_view;
 }
 
 void Camera::getProjectionMatrix(Mat4& proj) const

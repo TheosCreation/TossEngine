@@ -326,6 +326,9 @@ void TossEditor::onRenderInternal()
 
                 Time::TimeScale = 0.0f;
 
+                //Reset inputmanager states
+                InputManager::GetInstance().enablePlayMode(false, true);
+
                 string filePath = editorPreferences.lastKnownOpenScenePath;
 
                 if (!filePath.empty()) // If a file was selected
