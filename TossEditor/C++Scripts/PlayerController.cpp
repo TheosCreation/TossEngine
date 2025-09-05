@@ -54,7 +54,7 @@ void PlayerController::onUpdate()
     }
 
     float sensitivity = 0.1f;  // Sensitivity factor for mouse movement
-    m_yaw -= inputManager.getMouseXAxis() * sensitivity;
+    m_yaw += inputManager.getMouseXAxis() * sensitivity;
     m_pitch -= inputManager.getMouseYAxis() * sensitivity;
     //
     // Clamp the pitch value to prevent flipping the camera

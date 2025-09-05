@@ -106,6 +106,8 @@ public:
      */
     Vector3 ToEulerAngles() const;
 
+    Quaternion Inverse();
+
     /**
      * @brief Converts this quaternion to a readable string.
      */

@@ -144,93 +144,82 @@ void Rigidbody::onStart()
     }
 }
 
-
 void Rigidbody::onUpdate()
 {
-    if (m_Body)
+    if (!m_Body || !m_owner) return;
+
+    Mat4 worldMatrix = m_owner->m_transform.GetMatrix();
+
+    // Extract position and rotation from the world matrix
+    Vector3 physPos = Vector3::ExtractTranslation(worldMatrix);
+    Quaternion physRot = Quaternion::ExtractRotation(worldMatrix);
+
+    // Ensure quaternion is normalized
+    if (physRot.Magnitude() > 0.00001f)
+        physRot.Normalize();
+    else
+        physRot = Quaternion::Identity();
+
+    // --- 2) Apply physics to transform (dynamic bodies) ---
+    if (m_BodyType != BodyType::KINEMATIC)
     {
-
+        // Get physics transform
         rp3d::Transform bodyTransform = m_Body->getTransform();
-        rp3d::Vector3 position = bodyTransform.getPosition();
-        rp3d::Quaternion rotation = bodyTransform.getOrientation();
-        if (rotation.length() <= rp3d::MACHINE_EPSILON) {
-            rotation = rp3d::Quaternion::identity();
-        }
-        else {
-            rotation.normalize();
+        Vector3 bodyPos(bodyTransform.getPosition().x,
+            bodyTransform.getPosition().y,
+            bodyTransform.getPosition().z);
+        Quaternion bodyRot(bodyTransform.getOrientation().x,
+            bodyTransform.getOrientation().y,
+            bodyTransform.getOrientation().z,
+            bodyTransform.getOrientation().w);
+
+        if (bodyRot.Magnitude() > rp3d::MACHINE_EPSILON)
+            bodyRot.Normalize();
+        else
+            bodyRot = Quaternion::Identity();
+
+        // --- 2a) Apply position constraints ---
+        Vector3 newPos = bodyPos;
+        if (positionAxisLocks[0]) newPos.x = physPos.x;
+        if (positionAxisLocks[1]) newPos.y = physPos.y;
+        if (positionAxisLocks[2]) newPos.z = physPos.z;
+
+        // --- 2b) Apply rotation constraints ---
+        Quaternion newRot = bodyRot;
+        if (rotationAxisLocks[0] || rotationAxisLocks[1] || rotationAxisLocks[2])
+        {
+            Vector3 bodyEuler = bodyRot.ToEulerAngles();
+            Vector3 physEuler = physRot.ToEulerAngles();
+
+            if (rotationAxisLocks[0]) bodyEuler.x = physEuler.x;
+            if (rotationAxisLocks[1]) bodyEuler.y = physEuler.y;
+            if (rotationAxisLocks[2]) bodyEuler.z = physEuler.z;
+
+            newRot = Quaternion(bodyEuler);
         }
 
-        // Apply position constraints
-        Vector3 pos = m_owner->m_transform.localPosition;
+        // --- 2c) Write back to Transform ---
         if (m_owner->m_transform.parent)
         {
-            pos = m_owner->m_transform.position;
-        }
-        if (!positionAxisLocks[0])
-        {
-            pos.x = position.x;
-        }
-        else
-        {
-            position.x = pos.x;
-        }
-        if (!positionAxisLocks[1])
-        {
-            pos.y = position.y;
+            Mat4 parentInv = m_owner->m_transform.parent->GetMatrix().Inverse();
+            m_owner->m_transform.localPosition = parentInv * newPos;
+            Quaternion parentRotInv = m_owner->m_transform.parent->rotation.Inverse();
+            m_owner->m_transform.localRotation = parentRotInv * newRot;
         }
         else
         {
-            position.y = pos.y;
+            m_owner->m_transform.position = newPos;
+            m_owner->m_transform.rotation = newRot;
         }
-        if (!positionAxisLocks[2])
-        {
-            pos.z = position.z;
-        }
-        else
-        {
-            position.z = pos.z;
-        }
-        if (m_owner->m_transform.parent)
-        {
-            m_owner->m_transform.position = pos;
-        }
-        else
-        {
-
-            m_owner->m_transform.localPosition = pos;
-        }
-
-        // Apply rotation constraints
-        Quaternion currentRot = m_owner->m_transform.localRotation;
-        if (m_owner->m_transform.parent)
-        {
-            currentRot = m_owner->m_transform.rotation;
-        }
-        Quaternion newRot(rotation.w, rotation.x, rotation.y, rotation.z);
-
-        // Simple approach: convert both to Euler angles
-        Vector3 currentEuler = currentRot.ToEulerAngles();
-        Vector3 newEuler = newRot.ToEulerAngles();
-
-        if (!rotationAxisLocks[0]) currentEuler.x = newEuler.x;
-        if (!rotationAxisLocks[1]) currentEuler.y = newEuler.y;
-        if (!rotationAxisLocks[2]) currentEuler.z = newEuler.z;
-
-        currentRot = Quaternion(currentEuler);
-        if (m_owner->m_transform.parent)
-        {
-            m_owner->m_transform.rotation = currentRot;
-        }
-        else
-        {
-
-            m_owner->m_transform.localRotation = currentRot;
-        }
-        rp3d::Transform newBodyTransform(
-            position,
-            rotation
+    }
+    else // Kinematic bodies
+    {
+        // For kinematic, overwrite the physics transform with the visual transform
+        rp3d::Transform updatedBody(
+            rp3d::Vector3(physPos.x, physPos.y, physPos.z),
+            rp3d::Quaternion(physRot.x, physRot.y, physRot.z, physRot.w)
         );
-        m_Body->setTransform(newBodyTransform);
+        m_Body->setTransform(updatedBody);
     }
 }
 
@@ -242,7 +231,7 @@ void Rigidbody::onUpdateInternal()
     }
 }
 
-void Rigidbody::UpdateBodyTransform() const
+void Rigidbody::UpdateBodyTransform()
 {
     if (m_Body)
     {
@@ -272,12 +261,6 @@ void Rigidbody::onDestroy()
     {
         Debug::LogError("Tried to destroy null Rigidbody");
         return;
-    }
-
-    called++;
-    if (called >= 2)
-    {
-        Debug::LogError("Destroyed Rigidbody twice");
     }
 
     m_Body->setIsActive(false);

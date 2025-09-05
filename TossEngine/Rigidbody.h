@@ -21,7 +21,7 @@ public:
     void onStart() override;
     void onUpdate() override;
     void onUpdateInternal() override;
-    void UpdateBodyTransform() const;
+    void UpdateBodyTransform();
     void onDestroy() override;
 
     void SetBodyType(BodyType type);
@@ -68,7 +68,6 @@ private:
 
     std::array<bool, 3> positionAxisLocks = { false, false, false };
     std::array<bool, 3> rotationAxisLocks = { false, false, false };
-    int called = 0;
 };
 
 REGISTER_COMPONENT(Rigidbody);

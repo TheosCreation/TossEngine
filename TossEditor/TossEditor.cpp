@@ -208,12 +208,12 @@ void TossEditor::onUpdateInternal()
     {
         if (m_gameRunning && Time::TimeScale > 0)
         {
-            m_accumulatedTime += Time::DeltaTime;
-            while (m_accumulatedTime >= Time::FixedDeltaTime)
+            Time::AccumulatedTime += Time::DeltaTime;
+            while (Time::AccumulatedTime >= Time::FixedDeltaTime)
             {
                 Physics::GetInstance().Update();
                 scene->onFixedUpdate();
-                m_accumulatedTime -= Time::FixedDeltaTime;
+                Time::AccumulatedTime -= Time::FixedDeltaTime;
             }
 
         }

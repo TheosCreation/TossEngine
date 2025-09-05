@@ -86,6 +86,12 @@ Vector3 Quaternion::ToEulerAngles() const {
     // Returns Euler angles (in radians) from this quaternion
     return Vector3(glm::eulerAngles(static_cast<glm::quat>(*this)));
 }
+
+Quaternion Quaternion::Inverse()
+{
+    return glm::inverse(static_cast<glm::quat>(*this));
+}
+
 float Quaternion::Magnitude() const
 {
     return glm::length(static_cast<glm::quat>(*this));
