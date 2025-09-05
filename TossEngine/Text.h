@@ -14,6 +14,8 @@ public:
     bool GetIsUi() const;
     void UpdateSize() override;
 
+    Vector3 GetExtent() override;
+
 private:
     void RebuildMesh();
     VertexArrayObjectPtr m_vao;

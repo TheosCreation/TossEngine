@@ -103,12 +103,17 @@ public:
      */
     void clearInstances();
 
+    Vector3 GetExtent();
+
 private:
     VertexArrayObjectPtr m_vao; //!< The Vertex Array Object associated with this mesh.
     std::vector<Transform> m_instanceTransforms; //!< Transformations for each mesh instance.
     Vector3 eulerAngles; //!< Euler rotation angles used internally.
+    Vector3 extent = Vector3(0.0f); //!< Extent of mesh calculated on import
+    float m_scale = 1.0f;
+    float m_scaleTemp = 1.0f;   // UI edit buffer
 
-    SERIALIZABLE_MEMBERS(m_path, m_instanceTransforms)
+    SERIALIZABLE_MEMBERS(m_path, m_scale, m_instanceTransforms)
 };
 
 REGISTER_RESOURCE(Mesh)

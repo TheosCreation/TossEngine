@@ -134,3 +134,8 @@ uint VertexArrayObject::getNumIndices()
 {
 	return m_indexBufferDesc.listSize; // Return the number of indices
 }
+
+VertexBufferDesc& VertexArrayObject::getVBDesc()
+{
+    return m_vertexBufferData;
+}

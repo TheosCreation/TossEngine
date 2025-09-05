@@ -55,6 +55,8 @@ public:
 
 	void SetColor(Vector3 color);
 
+    Vector3 GetExtent() override;
+
 private:
 	MeshPtr m_mesh;
 

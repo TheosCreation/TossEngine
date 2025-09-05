@@ -22,7 +22,7 @@ void EditorPickProxy::onCreate()
             Vector3 extent = collider->GetExtent();
             m_collider->SetBoxCollider(extent);
         }
-        else if (Renderer* renderer = tgt->getComponent<Image>())
+        else if (auto* renderer = tgt->getComponent<Renderer>())
         {
             m_collider->SetBoxCollider(renderer->GetExtent());
         }

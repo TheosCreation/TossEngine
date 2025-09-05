@@ -223,7 +223,7 @@ void TossEditor::onUpdateInternal()
             while (Time::AccumulatedTime >= Time::FixedDeltaTime)
             {
                 physics.Update();
-                Physics::GetInstance().UpdateEditorWorld();
+                physics.UpdateEditorWorld();
                 scene->onFixedUpdate();
                 Time::AccumulatedTime -= Time::FixedDeltaTime;
             }

@@ -1,4 +1,6 @@
 #include "MeshRenderer.h"
+
+#include <algorithm>
 #include "ResourceManager.h"
 #include "GraphicsEngine.h"
 #include "LightManager.h"
@@ -287,4 +289,10 @@ float MeshRenderer::GetAlpha()
 void MeshRenderer::SetColor(Vector3 color)
 {
     m_color = color;
+}
+
+Vector3 MeshRenderer::GetExtent()
+{
+    if (!m_mesh)                 return Vector3(0.5f);
+    return m_mesh->GetExtent();
 }

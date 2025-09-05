@@ -122,6 +122,16 @@ void Text::UpdateSize()
     m_size = Vector2(totalWidth * scale, maxHeight * scale);
 }
 
+Vector3 Text::GetExtent()
+{
+    if (!m_font || m_text.empty()) return Vector3(0.5f);
+
+    const float hx = std::max(0.01f, m_size.x * 0.5f);
+    const float hy = std::max(0.01f, m_size.y * 0.5f);
+    const float hz = 0.01f; // thin slab
+    return { hx, hy, hz };
+}
+
 void Text::RebuildMesh()
 {
     if (!m_font || m_text.empty()) return;

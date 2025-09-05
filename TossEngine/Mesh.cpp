@@ -178,6 +178,10 @@ void Mesh::LoadMeshFromFilePath()
     std::vector<VertexMesh> list_vertices;
     std::vector<uint> list_indices;
 
+    //Bounds
+    float minX = FLT_MAX, minY = FLT_MAX, minZ = FLT_MAX;
+    float maxX = -FLT_MAX, maxY = -FLT_MAX, maxZ = -FLT_MAX;
+
     size_t vertex_buffer_size = 0;
 
     for (size_t s = 0; s < shapes.size(); s++)
@@ -209,6 +213,9 @@ void Mesh::LoadMeshFromFilePath()
                 tinyobj::real_t vy = attribs.vertices[(int)(index.vertex_index * 3 + 1)];
                 tinyobj::real_t vz = attribs.vertices[(int)(index.vertex_index * 3 + 2)];
 
+                Vector3 pos(vx, vy, vz);
+                pos *= m_scale;
+
                 //adding texcoords
                 tinyobj::real_t tx = 0;
                 tinyobj::real_t ty = 0;
@@ -227,8 +234,13 @@ void Mesh::LoadMeshFromFilePath()
                     normal.z = attribs.normals[(int)(index.normal_index * 3 + 2)];
                 }
 
-                VertexMesh vertex(Vector3(vx, vy, vz), Vector2(tx, ty), normal);
+                VertexMesh vertex(pos, Vector2(tx, ty), normal);
                 list_vertices.push_back(vertex);
+
+                // update bounds
+                minX = std::min(minX, pos.x); maxX = std::max(maxX, pos.x);
+                minY = std::min(minY, pos.y); maxY = std::max(maxY, pos.y);
+                minZ = std::min(minZ, pos.z); maxZ = std::max(maxZ, pos.z);
 
                 list_indices.push_back((unsigned int)index_global_offset + v);
             }
@@ -260,7 +272,18 @@ void Mesh::LoadMeshFromFilePath()
         }
     );
 
+    if (!list_vertices.empty()) {
+        extent = Vector3{ (maxX - minX) * 0.5f,
+                          (maxY - minY) * 0.5f,
+                          (maxZ - minZ) * 0.5f };
+        //Debug::Log("Imported a good extent");
+    }
+    else {
+        extent = Vector3(0.5f); // sane default
+    }
+
     initInstanceBuffer();
+    m_scaleTemp = m_scale;   // UI mirrors applied value
     isLoaded = true;
 }
 
@@ -299,6 +322,23 @@ void Mesh::OnInspectorGUI()
 
         ImGui::EndTable();
     }
+
+    if (ImGui::SliderFloat("Import Scale", &m_scaleTemp, 0.01f, 10.0f, "%.3f")) {
+        // just tracking edits; no apply yet
+    }
+    const bool sliderActive = ImGui::IsItemActive();       // is user still dragging?
+    const bool hasChange = (m_scaleTemp != m_scale);    // dirty?
+
+    if (hasChange) {
+        ImGui::SameLine();
+        if (sliderActive) ImGui::BeginDisabled();          // "not able to be pressed" while dragging
+        if (ImGui::Button("Apply")) {
+            m_scale = m_scaleTemp;                         // commit
+            if (!m_path.empty()) LoadMeshFromFilePath();   // rebuild with new scale
+        }
+        if (sliderActive) ImGui::EndDisabled();
+    }
+
 
     if (ImGui::CollapsingHeader("Mesh Instances", ImGuiTreeNodeFlags_DefaultOpen))
     {
@@ -420,4 +460,9 @@ std::vector<Transform> Mesh::getInstanceTransforms() const {
 void Mesh::clearInstances()
 {
     m_instanceTransforms.clear();
+}
+
+Vector3 Mesh::GetExtent()
+{
+    return extent;
 }
