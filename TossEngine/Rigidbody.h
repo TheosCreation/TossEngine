@@ -27,7 +27,7 @@ public:
     void SetBodyType(BodyType type);
     void SetMass(float mass) const;
     void SetUseGravity(bool useGravity);
-
+    void SetIsDebugEnabled(bool enabled) const;
     rp3d::RigidBody* GetBody() const;
     Collider* GetCollider() const;
 

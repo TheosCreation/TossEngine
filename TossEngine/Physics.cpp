@@ -50,6 +50,10 @@ void Physics::UpdateInternal()
 
 void Physics::Update()
 {
+    if (m_prefabWorld)
+    {
+        m_prefabWorld->update(Time::FixedDeltaTime);
+    }
     if (isPaused) return;
 
     if (Time::FixedDeltaTime > 0.0f && m_world)
@@ -68,6 +72,14 @@ void Physics::Update()
             else
                 ++it;
         }
+    }
+}
+
+void Physics::UpdateEditorWorld()
+{
+    if (m_editorWorld)
+    {
+        m_editorWorld->update(Time::FixedDeltaTime);
     }
 }
 
@@ -285,6 +297,58 @@ RaycastHit Physics::Raycast(const Vector3& origin, const Vector3& direction, flo
     return hitResult;
 }
 
+RaycastHit Physics::EditorRaycast(const Vector3& origin, const Vector3& direction, float maxDistance,
+    LayerBit hitLayers)
+{
+    Vector3 dir = direction;
+    dir = dir.Normalized();
+    const Vector3 end = origin + dir * maxDistance;
+
+    rp3d::Ray ray(static_cast<rp3d::Vector3>(origin),
+        static_cast<rp3d::Vector3>(end));
+
+    RaycastHit hitResult;
+    RaycastCallback callback;
+
+    m_editorWorld->raycast(ray, &callback, hitLayers);
+
+    // If a hit occurred, compute the distance.
+    if (callback.hit)
+    {
+        float distance = Vector3::Distance(origin, Vector3(callback.point));
+        // If the hit is farther than maxDistance, treat it as a miss.
+        if (distance > maxDistance)
+        {
+            callback.hit = false;
+        }
+    }
+
+    // Populate the hit result.
+    hitResult.hasHit = callback.hit;
+    if (callback.hit)
+    {
+        hitResult.point = Vector3(callback.point);
+        hitResult.normal = Vector3(callback.normal);
+        hitResult.distance = Vector3::Distance(origin, hitResult.point);
+        hitResult.collider = static_cast<Collider*>(callback.collider);
+        hitResult.rigidbody = static_cast<Rigidbody*>(callback.rigidbody);
+    }
+    else
+    {
+        // No valid hit within maxDistance.
+        hitResult.distance = maxDistance;
+    }
+
+    // TODO: Remove this was for debugging editor stuff Debug visualization.
+    if (isDebug)
+    {
+        Vector3 endPoint = hitResult.hasHit ? hitResult.point : (origin + direction * maxDistance);
+        m_raycastDebugEntries.push_back({ origin, endPoint });
+    }
+
+    return hitResult;
+}
+
 void Physics::LoadWorld()
 {
     PhysicsMaterialDesc physicsMaterialDesc; //full defaults set in the code atm
@@ -351,6 +415,36 @@ void Physics::UnLoadPrefabWorld()
     {
         m_commonSettings.destroyPhysicsWorld(m_prefabWorld);
         m_prefabWorld = nullptr;
+    }
+}
+
+void Physics::LoadEditorWorld()
+{
+    rp3d::PhysicsWorld::WorldSettings settings;
+    settings.worldName = "EditorPhysicsWorld";
+    settings.gravity = static_cast<rp3d::Vector3>(m_gravity);
+    settings.defaultPositionSolverNbIterations = 6;
+    settings.defaultVelocitySolverNbIterations = 4;
+    m_editorWorld = m_commonSettings.createPhysicsWorld(settings);
+
+    m_editorWorld->setIsDebugRenderingEnabled(isDebug);
+
+    // Get a reference to the debug renderer
+    reactphysics3d::DebugRenderer& debugRenderer = m_editorWorld->getDebugRenderer();
+
+    // Select the contact points and contact normals to be displayed
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_POINT, isDebug);
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_NORMAL, isDebug);
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLISION_SHAPE, isDebug);
+    debugRenderer.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLIDER_AABB, isDebug);
+}
+
+void Physics::UnLoadEditorWorld()
+{
+    if (m_editorWorld)
+    {
+        m_commonSettings.destroyPhysicsWorld(m_editorWorld);
+        m_editorWorld = nullptr;
     }
 }
 

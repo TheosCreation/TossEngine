@@ -16,6 +16,7 @@ public:
     virtual ~Component() = default;
 
     GameObject* getOwner() const;
+    GameObjectPtr getSharedOwner() const;
     string getName();
     void setOwner(GameObject* gameObject);
 

@@ -152,7 +152,7 @@ void InputManager::togglePlayMode(bool alsoChangeGameplayMode)
 
 bool InputManager::isPlayModeEnabled() const
 {
-    return m_playEnable && m_gameMode;
+    return m_playEnable || m_gameMode;
 }
 
 bool InputManager::isGameModeEnabled() const

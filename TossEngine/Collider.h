@@ -23,6 +23,7 @@ public:
     void UpdateRP3Collider();
     void SetTrigger(bool trigger);
     bool GetTrigger() const;
+    void SetLayers(vector<std::string> layerNames);
     void OnTriggerEnter(Collider* otherCollider) const;
     void OnTriggerExit(Collider* otherCollider) const;
     void OnCollisionEnter(Collider* otherCollider) const;

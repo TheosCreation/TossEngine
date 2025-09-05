@@ -82,18 +82,12 @@ void Rigidbody::OnInspectorGUI()
 
 void Rigidbody::OnGameObjectSelected()
 {
-    if (m_Body && Physics::GetInstance().GetDebug())
-    {
-        m_Body->setIsDebugEnabled(true);
-    }
+    SetIsDebugEnabled(true);
 }
 
 void Rigidbody::OnGameObjectDeSelected()
 {
-    if (m_Body && Physics::GetInstance().GetDebug())
-    {
-        m_Body->setIsDebugEnabled(false);
-    }
+    SetIsDebugEnabled(false);
 }
 
 void Rigidbody::onCreate()
@@ -298,6 +292,14 @@ void Rigidbody::SetUseGravity(bool useGravity)
     m_UseGravity = useGravity;
     if (m_Body) {
         m_Body->enableGravity(useGravity);
+    }
+}
+
+void Rigidbody::SetIsDebugEnabled(bool enabled) const
+{
+    if (m_Body && Physics::GetInstance().GetDebug())
+    {
+        m_Body->setIsDebugEnabled(enabled);
     }
 }
 

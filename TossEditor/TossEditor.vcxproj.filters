@@ -70,6 +70,9 @@
     <ClCompile Include="..\Dependencies\IMGUI\imgui_stdlib.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="EditorPickProxy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TossEditor.h">
@@ -130,6 +133,9 @@
       <Filter>ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\TossEngine\stb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorPickProxy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

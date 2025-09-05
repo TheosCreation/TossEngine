@@ -110,6 +110,7 @@ public:
      * @brief Updates the physics system if not paused.
      */
     void Update();
+    void UpdateEditorWorld();
 
     /**
      * @brief Cleans up the physics system and destroys worlds.
@@ -125,6 +126,8 @@ public:
      * @brief Returns the physics world used for prefabs (not actively simulated).
      */
     PhysicsWorld* GetPrefabWorld() const { return m_prefabWorld; }
+
+    PhysicsWorld* GetEditorWorld() const { return m_editorWorld; }
 
     /**
      * @brief Accessor for the PhysicsCommon settings object.
@@ -178,6 +181,7 @@ public:
      * @return Result of the raycast.
      */
     RaycastHit Raycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f, LayerBit hitLayers = 65535);
+    RaycastHit EditorRaycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f, LayerBit hitLayers = 65535);
 
     /**
      * @brief Draws debug visuals for the physics world.
@@ -204,6 +208,16 @@ public:
      * @brief Unloads and destroys the prefab simulation world.
      */
     void UnLoadPrefabWorld();
+
+    /**
+     * @brief Loads the editor simulation world.
+     */
+    void LoadEditorWorld();
+
+    /**
+     * @brief Unloads and destroys the editor simulation world.
+     */
+    void UnLoadEditorWorld();
 
     /**
      * @brief Safely destroys a collision shape and schedules it for cleanup.
@@ -234,6 +248,7 @@ private:
     bool isDebug = false; //!< Debug drawing toggle.
     PhysicsWorld* m_world = nullptr; //!< Active physics simulation world.
     PhysicsWorld* m_prefabWorld = nullptr; //!< World used for prefab simulation.
+    PhysicsWorld* m_editorWorld = nullptr; //!< World used for editor simulation.
     PhysicsMaterialPtr m_defaultPhysicsMaterial = nullptr; //!< Default material used if none is assigned.
     Vector3 m_gravity = Vector3(0.0f, -9.81f, 0.0f); //!< Current gravity applied to the world.
 

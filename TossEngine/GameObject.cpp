@@ -393,6 +393,16 @@ void GameObject::onUpdateInternal()
     m_transform.UpdateWorldTransform();
 }
 
+GameObjectPtr GameObject::getSharedOwner() const
+{
+    if (!m_scene)
+    {
+        Debug::LogWarning("Tried to get shared gameobject owner with no scene cannot get it then gameobject name is: " + name);
+        return nullptr;
+    }
+    return m_scene->getGameObject(m_id);
+}
+
 void GameObject::onLateUpdate()
 {
 }

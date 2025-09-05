@@ -1,9 +1,18 @@
 #include "Vector4.h"
 #include "Vector3.h"
+#include "Vector2.h"
 
 // Constructor that promotes a Vector3 and a W value
 constexpr Vector4::Vector4(const Vector3& v, float w)
     : x(v.x), y(v.y), z(v.z), w(w) {
+}
+
+Vector4::Vector4(const Vector2& v1, const Vector2& v2)
+{
+    x = v1.x;
+    y = v1.y;
+    z = v2.x;
+    w = v2.y;
 }
 
 // Computes the magnitude (length) of the vector

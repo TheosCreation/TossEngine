@@ -391,6 +391,11 @@ bool Collider::GetTrigger() const
     return m_isTrigger;
 }
 
+void Collider::SetLayers(vector<std::string> layerNames)
+{
+    m_layerNames = layerNames;
+}
+
 void Collider::OnTriggerEnter(Collider* otherCollider) const
 {
     m_owner->CallOnTriggerEnterCallbacks(otherCollider);

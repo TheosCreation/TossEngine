@@ -14,6 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include "TossEngineAPI.h"
 #include "Math.h"
 
+class Vector2;
 class Vector3;
 
 /**
@@ -29,6 +30,7 @@ public:
     Vector4(float val) : x(val), y(val), z(val), w(val) {}
     Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
     Vector4(const glm::vec4& v) : x(v.x), y(v.y), z(v.z), w(v.w) {}
+    Vector4(const Vector2& v1, const Vector2& v2);
     constexpr Vector4(const Vector3& v, float w);
 
     // --- Accessors ---

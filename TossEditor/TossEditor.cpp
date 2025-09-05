@@ -7,11 +7,19 @@
 #include "ISelectable.h"
 #include "FileWatcher.h"
 #include "Camera.h"
+#include "EditorPickProxy.h"
 #include <imgui.h>
 #include <glfw3.h>
 
 #include "imgui_internal.h"
 
+static bool IsPickable(const std::shared_ptr<GameObject>& go) {
+    if (!go || go->isDestroyed) return false;
+    // skip proxies themselves
+    if (dynamic_cast<EditorPickProxy*>(go.get())) return false;
+    // choose your criteria; here: anything with a Collider or MeshRenderer
+    return go->getComponent<Collider>() || go->getComponent<MeshRenderer>();
+}
 
 TossEditor::TossEditor()
 {
@@ -29,6 +37,7 @@ TossEditor::TossEditor()
     Physics::GetInstance().SetGravity(m_projectSettings->gravity);
     Physics::GetInstance().SetDebug(true);
     Physics::GetInstance().LoadPrefabWorld();
+    Physics::GetInstance().LoadEditorWorld();
     AudioEngine::GetInstance().Init();
     Random::Init();
 
@@ -182,6 +191,13 @@ void TossEditor::DuplicateSelected()
     }
 }
 
+void TossEditor::SetSelectedSelectable(std::shared_ptr<ISelectable> selectable)
+{
+    if (selectedSelectable) selectedSelectable->OnDeSelect();
+    selectedSelectable = selectable;
+    selectedSelectable->OnSelect();
+}
+
 void TossEditor::onUpdateInternal()
 {
     TossEngine& tossEngine = TossEngine::GetInstance();
@@ -206,20 +222,27 @@ void TossEditor::onUpdateInternal()
 
     if (auto scene = TossEngine::GetInstance().getCurrentScene())
     {
+        // editor update stuff
+        CreateProxiesFromScene();
+        for (auto& [id, proxy] : m_editorProxies) {
+            if (proxy && !proxy->isDestroyed) proxy->onUpdateInternal();
+        }
+
         if (m_gameRunning && Time::TimeScale > 0)
         {
             Time::AccumulatedTime += Time::DeltaTime;
             while (Time::AccumulatedTime >= Time::FixedDeltaTime)
             {
                 Physics::GetInstance().Update();
+                Physics::GetInstance().UpdateEditorWorld();
                 scene->onFixedUpdate();
                 Time::AccumulatedTime -= Time::FixedDeltaTime;
             }
 
         }
-        // player update
-        m_player->Update(deltaTimeInternal);
 
+        m_player->Update(deltaTimeInternal);
+        CleanUpProxies();
 
         if (m_gameRunning)
         {
@@ -379,7 +402,7 @@ void TossEditor::onRenderInternal()
             Vector2 newPostion(windowPos.x, windowPos.y);
             Camera* camera = m_player->getCamera();
             // Resize the scene's framebuffer to match the current window size.
-            camera->setScreenArea(newSize);
+            camera->setScreenArea(Vector4(newPostion, newSize));
             scene->onReposition(newPostion);
             scene->onResize(newSize);
             m_sceneFrameBuffer->onResize(newSize);
@@ -1217,6 +1240,20 @@ void TossEditor::PerformSafeDllReload()
     canUpdateInternal = true;
 }
 
+void TossEditor::DeleteProxy(size_t id)
+{
+    auto it = m_editorProxies.find(id);
+    if (it == m_editorProxies.end()) return;
+
+    auto& proxy = it->second;
+    if (proxy) {
+        proxy->isDestroyed = true;
+        if (proxy->m_transform.parent) proxy->m_transform.SetParent(nullptr);
+        proxy->onDestroy();                 // lets components release editor-world bodies, etc.
+    }
+    m_editorProxies.erase(it);
+}
+
 void TossEditor::onResize(Vector2 size)
 {
     Resizable::onResize(size);
@@ -1251,6 +1288,40 @@ void TossEditor::CreateScene()
 
     m_pendingFolderPath = "Scenes/";
     m_openSceneNamePopup = true;
+}
+
+void TossEditor::CreateProxiesFromScene()
+{
+    auto scene = TossEngine::GetInstance().getCurrentScene();
+    if (!scene) return;
+
+    for (auto& [id, go] : scene->m_gameObjects) {
+        if (!IsPickable(go)) {
+            // if a proxy exists for a now-unpickable GO, remove it
+            if (m_editorProxies.count(id)) DeleteProxy(id);
+            continue;
+        }
+        if (!m_editorProxies.count(id)) {
+            auto proxy = std::make_shared<EditorPickProxy>(this, go);
+            proxy->onCreate();
+            proxy->onCreateLate();
+            proxy->onStart();
+            proxy->onLateStart();
+            m_editorProxies.emplace(id, std::move(proxy));
+        }
+    }
+}
+
+void TossEditor::CleanUpProxies()
+{
+    auto scene = TossEngine::GetInstance().getCurrentScene();
+    if (!scene) { m_editorProxies.clear(); return; }
+
+    std::vector<size_t> dead;
+    for (auto& [id, proxy] : m_editorProxies) {
+        if (!scene->getGameObject(id) || !proxy || proxy->isDestroyed) dead.push_back(id);
+    }
+    for (auto id : dead) DeleteProxy(id);
 }
 
 void TossEditor::OpenSceneViaFileSystem()

@@ -8,6 +8,8 @@
 
 #include <algorithm>
 
+#include "EditorPickProxy.h"
+
 EditorPlayer::EditorPlayer(TossEditor* editor)
 {
     Editor = editor;
@@ -28,6 +30,7 @@ void EditorPlayer::onCreate()
 void EditorPlayer::Update(float deltaTime)
 {
     auto& inputManager = InputManager::GetInstance(); 
+    auto& physics = Physics::GetInstance();
 
     if (inputManager.isKeyDown(KeyLeftControl, false) && inputManager.isKeyPressed(KeyO, false))
     {
@@ -65,13 +68,26 @@ void EditorPlayer::Update(float deltaTime)
         Editor->DeleteSelected();
     }
 
-    if (inputManager.isMousePressed(MouseButtonLeft, false))
-    {
-        //Vector2 mousePosition = inputManager.getMousePosition();
+    if (inputManager.isMousePressed(MouseButtonLeft, false) && !ImGuizmo::IsOver() && !inputManager.isPlayModeEnabled()) {
+        Vector2 mouse = inputManager.getMousePosition();
 
-        //Debug::Log(m_cam->screenToWorldPoint(mousePosition));
+        // build ray from mouse
+        Vector3 nearW = m_cam->screenToWorldPoint(Vector3(mouse.x, mouse.y, m_cam->getNearPlane()));
+        Vector3 farW = m_cam->screenToWorldPoint(Vector3(mouse.x, mouse.y, m_cam->getFarPlane()));
+        Vector3 ro = nearW;
+        Vector3 rd = (farW - nearW).Normalized();
+
+        RaycastHit hit = physics.EditorRaycast(ro, rd, 10000.0f);
+
+        if (hit.hasHit && hit.collider) {
+            if (auto* proxy = dynamic_cast<EditorPickProxy*>(hit.collider->getOwner())) {
+                if (auto target = proxy->Target().lock()) {
+                    if (auto shared = target->getSharedOwner())
+                        Editor->SetSelectedSelectable(shared);
+                }
+            }
+        }
     }
-
     if (inputManager.isGameModeEnabled())
         return;
 
@@ -145,7 +161,6 @@ void EditorPlayer::Update(float deltaTime)
         m_transform.position -= up * m_movementSpeed * deltaTime;
     if (inputManager.isKeyDown(Key::KeyE, false))
         m_transform.position += up * m_movementSpeed * deltaTime;
-
 
     m_transform.UpdateWorldTransform();
 }

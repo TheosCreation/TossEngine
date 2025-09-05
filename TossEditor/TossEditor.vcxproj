@@ -190,6 +190,7 @@
     <ClCompile Include="..\Dependencies\IMGUI\imgui_stdlib.cpp" />
     <ClCompile Include="..\Dependencies\IMGUI\imgui_tables.cpp" />
     <ClCompile Include="..\Dependencies\IMGUI\imgui_widgets.cpp" />
+    <ClCompile Include="EditorPickProxy.cpp" />
     <ClCompile Include="EditorPlayer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TossEditor.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="..\Dependencies\IMGUI\imstb_textedit.h" />
     <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h" />
     <ClInclude Include="..\TossEngine\stb_truetype.h" />
+    <ClInclude Include="EditorPickProxy.h" />
     <ClInclude Include="EditorPlayer.h" />
     <ClInclude Include="EditorPreferences.h" />
     <ClInclude Include="TossEditor.h" />

@@ -61,7 +61,9 @@ public:
     virtual void onLateUpdate();
     virtual void onDestroy();
 
-    void onUpdateInternal();
+    virtual void onUpdateInternal();
+
+    GameObjectPtr getSharedOwner() const;
 
     // --- Inspector ---
     virtual void OnInspectorGUI() override;
@@ -185,10 +187,10 @@ protected:
 
     Scene* m_scene = nullptr;
 
-    Component* selectedComponent = nullptr;
-
-private:
     size_t m_id = 0;          //!< Unique identifier
     char tagBuffer[128];      //!< Internal buffer for tag editing
+
+    //Editor stuff probably move idk was kinda required
     Vector3 editorEuler;      //!< Editor-facing rotation data
+    Component* selectedComponent = nullptr;
 };

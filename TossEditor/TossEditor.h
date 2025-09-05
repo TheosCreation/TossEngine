@@ -18,7 +18,7 @@ Mail : theo.morris@mds.ac.nz
 #include <ImGuizmo.h>
 #include "TossEngine.h"
 
-// Forward declarations for internal engine types
+// Forward declarations
 class Window;
 class Scene;
 class EditorPlayer;
@@ -26,6 +26,7 @@ class GameObject;
 class Component;
 class ISelectable;
 class FileWatcher;
+class EditorPickProxy;
 
 /**
  * @class TossEditor
@@ -77,6 +78,7 @@ public:
      * @brief Duplicates the currently selected GameObject.
      */
     void DuplicateSelected();
+    void SetSelectedSelectable(std::shared_ptr<ISelectable> selectable);
 
     /**
      * @brief Deletes the currently selected GameObject or component.
@@ -92,6 +94,10 @@ public:
      * @brief Creates a new blank scene.
      */
     void CreateScene();
+
+    void CreateProxiesFromScene();
+    void CleanUpProxies();
+    void DeleteProxy(size_t id);
 
 protected:
     /**
@@ -161,6 +167,8 @@ private:
 
     // --- Scene discovery ---
     std::vector<std::string> allSceneFilePaths;  //!< All discovered scene file paths.
+
+    std::unordered_map<size_t, std::shared_ptr<EditorPickProxy>> m_editorProxies;
 
     // --- Script watching ---
     std::thread scriptWatcherThread;             //!< Thread for watching source file changes.

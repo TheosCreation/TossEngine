@@ -80,6 +80,7 @@ public:
      * @param screen The screen area rectangle.
      */
     void setScreenArea(const Vector2& screen);
+    void setScreenArea(const Vector4& area);
 
     /**
      * @brief Sets the target position that the camera is looking at.
@@ -89,13 +90,15 @@ public:
  
     Vector3 getPosition() const;
     Vector3 getFacingDirection() const;
+    float getNearPlane() const;
+    float getFarPlane() const;
 
     /**
      * @brief Gets a position in world space from a screen position from this camera.
      * @param position A 2D screen space point in pixels, plus a z coordinate for the distance from the camera in world units. The lower left pixel of the screen is (0,0). The upper right pixel of the screen is (screen width in pixels - 1, screen height in pixels - 1)..
      */
-    Vector3 screenToWorldPoint(Vector3 position);
-    Vector3 screenToWorldPoint(Vector2 position);
+    Vector3 screenToWorldPoint(Vector3 pixelZ);
+    Vector3 screenToWorldPoint(Vector2 pixel);
 
 private:
     /**
