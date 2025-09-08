@@ -16,7 +16,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Resizable.h"
 #include "EditorPreferences.h"
 #include <ImGuizmo.h>
-#include "TossEngine.h"
 
 // Forward declarations
 class Window;
@@ -27,6 +26,7 @@ class Component;
 class ISelectable;
 class FileWatcher;
 class EditorPickProxy;
+class AssetsBrowser;
 
 /**
  * @class TossEditor
@@ -198,6 +198,7 @@ private:
 
     // --- In-editor player simulation ---
     std::unique_ptr<EditorPlayer> m_player = nullptr;   //!< Simulated player for runtime preview.
+    std::unique_ptr<AssetsBrowser> m_assetBrowser = nullptr;   //!< Simulated player for runtime preview.
 
     // --- Render targets ---
     FramebufferPtr m_sceneFrameBuffer = nullptr;        //!< Framebuffer for scene view.

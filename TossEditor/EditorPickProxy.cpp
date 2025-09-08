@@ -1,6 +1,7 @@
 #include "EditorPickProxy.h"
 
 #include "Collider.h"
+#include "Renderer.h"
 #include "Rigidbody.h"
 #include "TossEditor.h"
 

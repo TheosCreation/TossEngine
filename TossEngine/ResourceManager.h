@@ -82,6 +82,9 @@ public:
     void loadResourcesFromFile(const std::string& filepath);
     void saveResourcesToFile(const std::string& filepath);
 
+    const json& GetSerializedData(const std::string& uid) const { return m_resourceDataMap.at(uid); }
+    bool HasSerializedData(const std::string& uid) const { return m_resourceDataMap.find(uid) != m_resourceDataMap.end(); }
+
     ResourcePtr createResource(const std::string& typeName, const std::string& uid, const json& data = nullptr);
 
     vector<string> GetCreatableResourceTypes() const;

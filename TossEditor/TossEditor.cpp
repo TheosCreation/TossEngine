@@ -8,8 +8,11 @@
 #include "FileWatcher.h"
 #include "Camera.h"
 #include "EditorPickProxy.h"
+#include "AssetBrowser.h"
 #include <imgui.h>
 #include <glfw3.h>
+
+#include "TossEngine.h"
 
 #include "imgui_internal.h"
 
@@ -60,6 +63,7 @@ TossEditor::TossEditor()
 
     m_sceneFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
     m_gameViewFrameBuffer = std::make_shared<Framebuffer>(tossEngine.GetWindow()->getInnerSize());
+    m_assetBrowser = std::make_unique<AssetsBrowser>(this);
 
     Time::TimeScale = 0.0f;
 }
@@ -145,6 +149,7 @@ void TossEditor::onCreate()
 
 void TossEditor::onCreateLate()
 {
+    m_assetBrowser->Rebuild();
 }
 
 void TossEditor::DeleteSelected()
@@ -783,146 +788,147 @@ void TossEditor::onRenderInternal()
         ImGui::EndPopup();
     }
 
-    if (ImGui::Begin("Assets")) {
-        if (ImGui::Button("Create Resource")) {
-            ImGui::OpenPopup("CreateResourcePopup");
-        }
-
-        // Resource creation popup
-        if (ImGui::BeginPopup("CreateResourcePopup")) {
-            auto types = resourceManager.GetCreatableResourceTypes();
-            for (auto& typeName : types)
-            {
-                if (ImGui::MenuItem(typeName.c_str()))
-                {
-                    createResource = true;
-                    selectedTypeName = typeName;
-                    ImGui::OpenPopup("Enter Resource ID");
-                    ImGui::CloseCurrentPopup();
-                }
-            }
-            ImGui::EndPopup();
-        }
-
-        std::map<std::string, ResourcePtr>& resources = resourceManager.GetAllResources();
-        std::vector<std::pair<std::string, ResourcePtr>> sortedResources(resources.begin(), resources.end());
-
-        std::sort(sortedResources.begin(), sortedResources.end(),
-            [](const auto& a, const auto& b) {
-                return a.first < b.first;
-            });
-
-        for (auto& [uniqueID, resource] : sortedResources) {
-            if (uniqueID.empty()) continue;
-
-            bool isSelected = (resource == resourceManager.GetSelectedResource());
-
-            std::string resourceLabel = uniqueID + " [" + getClassName(typeid(*resource)) + "]";
-
-            if (ImGui::Selectable(resourceLabel.c_str(), isSelected)) {
-                if (selectedSelectable != nullptr)
-                    selectedSelectable->OnDeSelect();
-                selectedSelectable = resource;
-                selectedSelectable->OnSelect();
-                resourceManager.SetSelectedResource(resource);
-            }
-
-            if (ImGui::BeginDragDropSource()) {
-                Resource* resourceRaw = resource.get();
-                ImGui::SetDragDropPayload("DND_RESOURCE", &resourceRaw, sizeof(resourceRaw));
-                ImGui::Text("Drag '%s'", uniqueID.c_str());
-                ImGui::EndDragDropSource();
-            }
-
-            std::string popupID = "item_context_" + uniqueID;
-            if (ImGui::BeginPopupContextItem(popupID.c_str())) {
-                if (ImGui::MenuItem("Rename")) {
-                    resourceBeingRenamed = resource;
-                    strncpy_s(renameBuffer, sizeof(renameBuffer), uniqueID.c_str(), _TRUNCATE);
-                }
-                if (ImGui::MenuItem("Delete")) {
-                    resourceManager.DeleteResource(uniqueID);
-                    if (isSelected) {
-                        resourceManager.SetSelectedResource(nullptr);
-                        selectedSelectable = nullptr;
-                    }
-                    ImGui::CloseCurrentPopup();
-                    ImGui::EndPopup();
-                    break;
-                }
-                ImGui::EndPopup();
-            }
-        }
-
-        if (createResource)
-        {
-            ImGui::OpenPopup("Enter Resource ID");
-        }
-        if (ImGui::BeginPopupModal("Enter Resource ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-        {
-            createResource = false;
-            string label = selectedTypeName + " ID";
-            ImGui::InputText(label.c_str(), iDBuffer, sizeof(iDBuffer));
-
-            if (ImGui::Button("Create")) {
-                if (strlen(iDBuffer) > 0) {
-                    resourceManager.createResource(selectedTypeName, iDBuffer);
-
-                    Debug::Log("Created " + selectedTypeName + ": " + iDBuffer);
-
-                    // Reset state
-                    iDBuffer[0] = '\0';
-                    selectedTypeName.clear();
-
-                    ImGui::CloseCurrentPopup();
-                }
-            }
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("Cancel")) {
-                selectedTypeName.clear();
-                iDBuffer[0] = '\0';
-
-                ImGui::CloseCurrentPopup();
-            }
-
-            ImGui::EndPopup();
-        }
-
-
-        // TODO: Create a function for drag and drop
-
-        ImVec2 windowPos = ImGui::GetWindowPos();
-        ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
-        ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
-        float scrollY = ImGui::GetScrollY();
-        ImVec2 dropMin = ImVec2(windowPos.x + contentMin.x,
-            windowPos.y + contentMin.y + scrollY);
-        ImVec2 dropMax = ImVec2(windowPos.x + contentMax.x,
-            windowPos.y + contentMax.y + scrollY);
-        ImRect dropRect(dropMin, dropMax);
-        if (ImGui::BeginDragDropTargetCustom(dropRect, ImGui::GetID("AssetsDropArea")))
-        {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
-            {
-                // Retrieve the dropped GameObject.
-                GameObject* droppedObject = *static_cast<GameObject**>(payload->Data);
-
-                // Serialize the GameObject to JSON.
-                json jsonData;
-                Prefab::recurseSerialize(droppedObject, jsonData);
-                jsonData["uniqueId"] = droppedObject->name;
-
-                // Create a prefab using the GameObject's name and JSON data.
-                resourceManager.createResource("Prefab", droppedObject->name, jsonData);
-
-                Debug::Log("Created prefab '%s' from dragged GameObject", droppedObject->name.c_str());
-            }
-            ImGui::EndDragDropTarget();
-        }
-    }
-    ImGui::End();
+    //if (ImGui::Begin("Assets")) {
+    //    if (ImGui::Button("Create Resource")) {
+    //        ImGui::OpenPopup("CreateResourcePopup");
+    //    }
+    //
+    //    // Resource creation popup
+    //    if (ImGui::BeginPopup("CreateResourcePopup")) {
+    //        auto types = resourceManager.GetCreatableResourceTypes();
+    //        for (auto& typeName : types)
+    //        {
+    //            if (ImGui::MenuItem(typeName.c_str()))
+    //            {
+    //                createResource = true;
+    //                selectedTypeName = typeName;
+    //                ImGui::OpenPopup("Enter Resource ID");
+    //                ImGui::CloseCurrentPopup();
+    //            }
+    //        }
+    //        ImGui::EndPopup();
+    //    }
+    //
+    //    std::map<std::string, ResourcePtr>& resources = resourceManager.GetAllResources();
+    //    std::vector<std::pair<std::string, ResourcePtr>> sortedResources(resources.begin(), resources.end());
+    //
+    //    std::sort(sortedResources.begin(), sortedResources.end(),
+    //        [](const auto& a, const auto& b) {
+    //            return a.first < b.first;
+    //        });
+    //
+    //    for (auto& [uniqueID, resource] : sortedResources) {
+    //        if (uniqueID.empty()) continue;
+    //
+    //        bool isSelected = (resource == resourceManager.GetSelectedResource());
+    //
+    //        std::string resourceLabel = uniqueID + " [" + getClassName(typeid(*resource)) + "]";
+    //
+    //        if (ImGui::Selectable(resourceLabel.c_str(), isSelected)) {
+    //            if (selectedSelectable != nullptr)
+    //                selectedSelectable->OnDeSelect();
+    //            selectedSelectable = resource;
+    //            selectedSelectable->OnSelect();
+    //            resourceManager.SetSelectedResource(resource);
+    //        }
+    //
+    //        if (ImGui::BeginDragDropSource()) {
+    //            Resource* resourceRaw = resource.get();
+    //            ImGui::SetDragDropPayload("DND_RESOURCE", &resourceRaw, sizeof(resourceRaw));
+    //            ImGui::Text("Drag '%s'", uniqueID.c_str());
+    //            ImGui::EndDragDropSource();
+    //        }
+    //
+    //        std::string popupID = "item_context_" + uniqueID;
+    //        if (ImGui::BeginPopupContextItem(popupID.c_str())) {
+    //            if (ImGui::MenuItem("Rename")) {
+    //                resourceBeingRenamed = resource;
+    //                strncpy_s(renameBuffer, sizeof(renameBuffer), uniqueID.c_str(), _TRUNCATE);
+    //            }
+    //            if (ImGui::MenuItem("Delete")) {
+    //                resourceManager.DeleteResource(uniqueID);
+    //                if (isSelected) {
+    //                    resourceManager.SetSelectedResource(nullptr);
+    //                    selectedSelectable = nullptr;
+    //                }
+    //                ImGui::CloseCurrentPopup();
+    //                ImGui::EndPopup();
+    //                break;
+    //            }
+    //            ImGui::EndPopup();
+    //        }
+    //    }
+    //
+    //    if (createResource)
+    //    {
+    //        ImGui::OpenPopup("Enter Resource ID");
+    //    }
+    //    if (ImGui::BeginPopupModal("Enter Resource ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    //    {
+    //        createResource = false;
+    //        string label = selectedTypeName + " ID";
+    //        ImGui::InputText(label.c_str(), iDBuffer, sizeof(iDBuffer));
+    //
+    //        if (ImGui::Button("Create")) {
+    //            if (strlen(iDBuffer) > 0) {
+    //                resourceManager.createResource(selectedTypeName, iDBuffer);
+    //
+    //                Debug::Log("Created " + selectedTypeName + ": " + iDBuffer);
+    //
+    //                // Reset state
+    //                iDBuffer[0] = '\0';
+    //                selectedTypeName.clear();
+    //
+    //                ImGui::CloseCurrentPopup();
+    //            }
+    //        }
+    //
+    //        ImGui::SameLine();
+    //
+    //        if (ImGui::Button("Cancel")) {
+    //            selectedTypeName.clear();
+    //            iDBuffer[0] = '\0';
+    //
+    //            ImGui::CloseCurrentPopup();
+    //        }
+    //
+    //        ImGui::EndPopup();
+    //    }
+    //
+    //
+    //    // TODO: Create a function for drag and drop
+    //
+    //    ImVec2 windowPos = ImGui::GetWindowPos();
+    //    ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+    //    ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
+    //    float scrollY = ImGui::GetScrollY();
+    //    ImVec2 dropMin = ImVec2(windowPos.x + contentMin.x,
+    //        windowPos.y + contentMin.y + scrollY);
+    //    ImVec2 dropMax = ImVec2(windowPos.x + contentMax.x,
+    //        windowPos.y + contentMax.y + scrollY);
+    //    ImRect dropRect(dropMin, dropMax);
+    //    if (ImGui::BeginDragDropTargetCustom(dropRect, ImGui::GetID("AssetsDropArea")))
+    //    {
+    //        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
+    //        {
+    //            // Retrieve the dropped GameObject.
+    //            GameObject* droppedObject = *static_cast<GameObject**>(payload->Data);
+    //
+    //            // Serialize the GameObject to JSON.
+    //            json jsonData;
+    //            Prefab::recurseSerialize(droppedObject, jsonData);
+    //            jsonData["uniqueId"] = droppedObject->name;
+    //
+    //            // Create a prefab using the GameObject's name and JSON data.
+    //            resourceManager.createResource("Prefab", droppedObject->name, jsonData);
+    //
+    //            Debug::Log("Created prefab '%s' from dragged GameObject", droppedObject->name.c_str());
+    //        }
+    //        ImGui::EndDragDropTarget();
+    //    }
+    //}
+    //ImGui::End();
+    m_assetBrowser->Draw();
 
     if (resourceBeingRenamed != nullptr)
     {

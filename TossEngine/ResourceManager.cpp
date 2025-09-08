@@ -362,7 +362,7 @@ ResourcePtr ResourceManager::createResourceFromDataToMap(const std::string& type
 
     if (data.contains("uniqueId"))
     {
-        std::string uid = data["uniqueId"];
+        std::string uid = data["uniqueId"].get<std::string>();
         auto res = it->second(uid, this);
         if (res) {
             m_mapResources.emplace(uid, res);
