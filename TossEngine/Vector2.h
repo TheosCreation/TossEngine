@@ -43,13 +43,10 @@ public:
      */
     Vector2(float x, float y) : x(x), y(y) {}
 
-#ifdef __PROSPERO__
+#if defined(_WIN32)
+    Vector2(const glm::vec2 & v) : x(v.x), y(v.y) {}
+#elif defined(__PROSPERO__)
     Vector2(const SceVector2 v) : x(v.getX()), y(v.getY()) {}
-#else
-    /**
-     * @brief Constructs from a glm::vec2.
-     */
-    Vector2(const glm::vec2& v) : x(v.x), y(v.y) {}
 #endif
 
     // --- Utility Functions ---
@@ -67,15 +64,12 @@ public:
     /**
      * @brief Computes the length (magnitude) of the vector.
      */
-    float Length() const { return glm::length(static_cast<glm::vec2>(*this)); }
+    float Length() const;
 
     /**
      * @brief Returns a normalized (unit length) copy of this vector.
      */
-    Vector2 Normalized() const {
-        glm::vec2 v = glm::normalize(static_cast<glm::vec2>(*this));
-        return Vector2(v);
-    }
+    Vector2 Normalized() const;
 
     /**
      * @brief Returns a string representation of the vector.
@@ -87,11 +81,11 @@ public:
     }
 
     // --- Type Conversions ---
-
-    /**
-     * @brief Implicit conversion to glm::vec2.
-     */
+#if defined(_WIN32)
     operator glm::vec2() const { return glm::vec2(x, y); }
+#elif defined(__PROSPERO__)
+    operator SceVector2() const { return SceVector2(x, y); }
+#endif
 
     /**
      * @brief Implicit conversion to std::string for debugging.

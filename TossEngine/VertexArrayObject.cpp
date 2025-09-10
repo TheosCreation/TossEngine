@@ -12,9 +12,15 @@ Mail : theo.morris@mds.ac.nz
 
 
 #include "VertexArrayObject.h" // Include the header file for VertexArrayObject class
-#include <glew.h> // Include GLEW for OpenGL function loading
+
 #include <reactphysics3d/collision/TriangleMesh.h>
 #include <reactphysics3d/memory/MemoryAllocator.h>
+
+#if defined(_WIN32)
+#include <glew.h>
+#elif defined(__PROSPERO__)
+
+#endif
 
 // Constructor for VertexArrayObject, initializes a vertex array object using a vertex buffer descriptor
 VertexArrayObject::VertexArrayObject(const VertexBufferDesc& _data)
@@ -24,14 +30,15 @@ VertexArrayObject::VertexArrayObject(const VertexBufferDesc& _data)
 	if (!_data.vertexSize) Debug::LogError("VertexArrayObject | vertexBuffer.vertexSize is NULL");
 	if (!_data.verticesList) Debug::LogError("VertexArrayObject | vertexBuffer.verticesList is NULL");
 
-	// Generate and bind a new vertex array object
-	glGenVertexArrays(1, &m_vertexArrayObjectID);
-	glBindVertexArray(m_vertexArrayObjectID);
+#if defined(_WIN32)
+    // Generate and bind a new vertex array object
+    glGenVertexArrays(1, &m_vertexArrayObjectID);
+    glBindVertexArray(m_vertexArrayObjectID);
 
-	// Initialize the vertex buffer
-	glGenBuffers(1, &m_vertexBufferID);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferID);
-	// Allocate memory and upload vertex data to the buffer
+    // Initialize the vertex buffer
+    glGenBuffers(1, &m_vertexBufferID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferID);
+    // Allocate memory and upload vertex data to the buffer
     GLenum usage = _data.isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
     glBufferData(
         GL_ARRAY_BUFFER,
@@ -40,26 +47,29 @@ VertexArrayObject::VertexArrayObject(const VertexBufferDesc& _data)
         usage
     );
 
-	// Set up vertex attributes based on the attributes list in the vertex buffer descriptor
-	size_t offset = 0; // Initialize offset for attribute pointers
-	for (uint i = 0; i < _data.attributesListSize; i++)
-	{
-		offset += ((i == 0) ? 0 : _data.attributesList[i - 1].numElements * sizeof(float));
+    // Set up vertex attributes based on the attributes list in the vertex buffer descriptor
+    size_t offset = 0; // Initialize offset for attribute pointers
+    for (uint i = 0; i < _data.attributesListSize; i++)
+    {
+        offset += ((i == 0) ? 0 : _data.attributesList[i - 1].numElements * sizeof(float));
 
-		// Specify the layout of the vertex data
-		glVertexAttribPointer(
-			i,
-			_data.attributesList[i].numElements,
-			GL_FLOAT,
-			GL_FALSE,
-			_data.vertexSize,
-			(void*)offset // Offset in the vertex data
-		);
-		glEnableVertexAttribArray(i); // Enable the vertex attribute array
-	}
+        // Specify the layout of the vertex data
+        glVertexAttribPointer(
+            i,
+            _data.attributesList[i].numElements,
+            GL_FLOAT,
+            GL_FALSE,
+            _data.vertexSize,
+            (void*)offset // Offset in the vertex data
+        );
+        glEnableVertexAttribArray(i); // Enable the vertex attribute array
+    }
 
-	glBindVertexArray(0); // Unbind the vertex array object
+    glBindVertexArray(0); // Unbind the vertex array object
 
+#elif defined(__PROSPERO__)
+    //TODO:Implement
+#endif
 	// Store vertex buffer data for later use
 	m_vertexBufferData = _data;
 }
@@ -71,15 +81,19 @@ VertexArrayObject::VertexArrayObject(const VertexBufferDesc& _vbDesc, const Inde
 	// Check for null or invalid index buffer attributes and log errors if found
 	if (!_ibDesc.listSize) Debug::LogError("VertexArrayObject | indexBuffer.listSize is NULL");
 	if (!_ibDesc.indicesList) Debug::LogError("VertexArrayObject | indexBuffer.indicesList is NULL");
+#if defined(_WIN32)
 
-	glBindVertexArray(m_vertexArrayObjectID); // Bind the vertex array object
+    glBindVertexArray(m_vertexArrayObjectID); // Bind the vertex array object
 
-	// Initialize the index buffer
-	glGenBuffers(1, &m_elementBufferId);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementBufferId);
-	// Allocate memory and upload index data to the buffer
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, _ibDesc.listSize * sizeof(uint), _ibDesc.indicesList, GL_STATIC_DRAW);
-	glBindVertexArray(0); // Unbind the vertex array object
+    // Initialize the index buffer
+    glGenBuffers(1, &m_elementBufferId);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementBufferId);
+    // Allocate memory and upload index data to the buffer
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _ibDesc.listSize * sizeof(uint), _ibDesc.indicesList, GL_STATIC_DRAW);
+    glBindVertexArray(0); // Unbind the vertex array object
+#elif defined(__PROSPERO__)
+    //TODO:Implement
+#endif
 
 	// Store index buffer descriptor for later use
 	m_indexBufferDesc = _ibDesc;
@@ -88,33 +102,41 @@ VertexArrayObject::VertexArrayObject(const VertexBufferDesc& _vbDesc, const Inde
 // Destructor for VertexArrayObject, cleans up OpenGL resources
 VertexArrayObject::~VertexArrayObject()
 {
-	glDeleteBuffers(1, &m_elementBufferId); // Delete the index buffer
-	glDeleteBuffers(1, &m_vertexBufferID); // Delete the vertex buffer
-	glDeleteVertexArrays(1, &m_vertexArrayObjectID); // Delete the vertex array object
+#if defined(_WIN32)
+    glDeleteBuffers(1, &m_elementBufferId); // Delete the index buffer
+    glDeleteBuffers(1, &m_vertexBufferID); // Delete the vertex buffer
+    glDeleteVertexArrays(1, &m_vertexArrayObjectID); // Delete the vertex array object
+#elif defined(__PROSPERO__)
+    //TODO:Implement
+#endif
 }
 
 // Initializes an instance buffer for instanced rendering
 void VertexArrayObject::initInstanceBuffer(Mat4* instanceData, size_t instanceCount)
 {
-	glBindVertexArray(m_vertexArrayObjectID); // Bind the vertex array object
+#if defined(_WIN32)
+    glBindVertexArray(m_vertexArrayObjectID); // Bind the vertex array object
 
-	// Initialize the instance buffer
+    // Initialize the instance buffer
     if (m_instanceBufferID == 0)
         glGenBuffers(1, &m_instanceBufferID);
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_instanceBufferID);
-	// Allocate memory and upload instance data to the buffer
+    glBindBuffer(GL_ARRAY_BUFFER, m_instanceBufferID);
+    // Allocate memory and upload instance data to the buffer
     const glm::mat4* rawData = reinterpret_cast<const glm::mat4*>(instanceData);
     glBufferData(GL_ARRAY_BUFFER, instanceCount * sizeof(glm::mat4), rawData, GL_DYNAMIC_DRAW);
 
-	// Set up attribute pointers for the instance data bound to attribute locations 3, 4, 5, and 6
-	for (int i = 0; i < 4; i++) {
-		glEnableVertexAttribArray(3 + i); // Enable instance attribute array
-		glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4) * i)); // Set the attribute pointer
-		glVertexAttribDivisor(3 + i, 1); // Set the divisor to 1 for instancing
-	}
+    // Set up attribute pointers for the instance data bound to attribute locations 3, 4, 5, and 6
+    for (int i = 0; i < 4; i++) {
+        glEnableVertexAttribArray(3 + i); // Enable instance attribute array
+        glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4) * i)); // Set the attribute pointer
+        glVertexAttribDivisor(3 + i, 1); // Set the divisor to 1 for instancing
+    }
 
-	glBindVertexArray(0); // Unbind the vertex array object
+    glBindVertexArray(0); // Unbind the vertex array object
+#elif defined(__PROSPERO__)
+    //TODO:Implement
+#endif
 }
 
 // Returns the ID of the vertex array object

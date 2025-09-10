@@ -1,5 +1,10 @@
 #include "HeightMap.h"
+
+#if defined(_WIN32)
 #include <glew.h>
+#elif defined(__PROSPERO__)
+
+#endif
 
 HeightMap::HeightMap(const HeightMapDesc& desc, const HeightMapInfo& buildInfo, const string& filePath, ResourceManager* manager) : Resource(filePath, filePath, manager)
 {

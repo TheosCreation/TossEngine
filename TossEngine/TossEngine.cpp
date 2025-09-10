@@ -1,22 +1,32 @@
 #include "TossEngine.h"
 #include "ResourceManager.h"
-#include <glew.h>
-#include <glfw3.h>
-#include <windows.h>
 #include "tinyfiledialogs.h"
 #include "ScriptLoader.h"
 #include "TossPlayerSettings.h"
+
+#if defined(_WIN32)
+#include <glew.h>
+#include <glfw3.h>
+#include <windows.h>
+
+#elif defined(__PROSPERO__)
+// TODO: includes
+#endif
 
 void TossEngine::Init()
 {
     if (running) return;
 
+#if defined(_WIN32)
     //init GLFW ver 4.6
     if (!glfwInit())
     {
         Debug::LogError("GLFW failed to initialize properly. Terminating program.", false);
         return;
     }
+#elif defined(__PROSPERO__)
+    // TODO: init libraries
+#endif
 
     running = true;
 
@@ -129,7 +139,11 @@ ScenePtr TossEngine::getCurrentScene() const
 
 void TossEngine::PollEvents()
 {
+#if defined(_WIN32)
     glfwPollEvents();
+#elif defined(__PROSPERO__)
+    // TODO: poll events
+#endif
 }
 
 void TossEngine::CleanUp()
@@ -144,7 +158,11 @@ void TossEngine::CleanUp()
         coroutineThread.join();
     m_scriptLoader->unloadDLL();
 
+#if defined(_WIN32)
     glfwTerminate();
+#elif defined(__PROSPERO__)
+    // TODO: terminate libraries
+#endif
 }
 
 void TossEngine::UnLoadScripts() const
@@ -211,7 +229,13 @@ void TossEngine::SetPlayerSettings(TossPlayerSettings* playerSettings)
 
 float TossEngine::GetTime()
 {
+#if defined(_WIN32)
     return static_cast<float>(glfwGetTime());
+#elif defined(__PROSPERO__)
+    // TODO: pull time from playstation
+    return 0.0f;
+#endif
+    return 0.0f;
 }
 
 std::shared_ptr<bool> TossEngine::StartCoroutine(CoroutineTask&& coroutine)

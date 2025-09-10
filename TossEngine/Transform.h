@@ -76,7 +76,7 @@ struct TOSSENGINE_API Transform
      */
     void SetMatrix(const Mat4& matrix);
 
-    static void DecomposeMatrix(const glm::mat4& m, Vector3& pos, Quaternion& rot, Vector3& scl);
+    static void DecomposeMatrix(const Mat4& m, Vector3& pos, Quaternion& rot, Vector3& scl);
     /**
      * @brief Updates the world-space transform based on local and parent data.
      */

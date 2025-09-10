@@ -1,28 +1,53 @@
-﻿  imgui.cpp
-  Button.cpp
-  Camera.cpp
+﻿  GraphEditor.cpp
+  imgui_draw.cpp
+  ImCurveEdit.cpp
+  ImGradient.cpp
+  ImSequencer.cpp
+  ImGuizmo.cpp
+  imgui.cpp
+  imgui_demo.cpp
+D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp(33,25): warning : unused function 'operator*' [-Wunused-function]
+     33 |    static inline ImVec2 operator*(const ImVec2& lhs, const float rhs) { return ImVec2(lhs.x * rhs, lhs.y * rhs); }
+        |                         ^~~~~~~~
+D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp(34,25): warning : unused function 'operator/' [-Wunused-function]
+     34 |    static inline ImVec2 operator/(const ImVec2& lhs, const float rhs) { return ImVec2(lhs.x / rhs, lhs.y / rhs); }
+        |                         ^~~~~~~~
+D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp(37,25): warning : unused function 'operator*' [-Wunused-function]
+     37 |    static inline ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x * rhs.x, lhs.y * rhs.y); }
+        |                         ^~~~~~~~
+D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp(38,25): warning : unused function 'operator/' [-Wunused-function]
+  imgui_impl_glfw.cpp
+     38 |    static inline ImVec2 operator/(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x / rhs.x, lhs.y / rhs.y); }
+        |                         ^~~~~~~~
+  4 warnings generated.
+  imgui_impl_opengl3.cpp
+  imgui_stdlib.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
   tinyfiledialogs.c
   AudioEngine.cpp
-  imgui_impl_opengl3.cpp
   AudioSource.cpp
-  imgui_impl_glfw.cpp
-D:\Users\MDS3000164\TossEngine\Dependencies\tinyfiledialogs\tinyfiledialogs.c(117,11): fatal error : 'dirent.h' file not found
-    117 |  #include <dirent.h> /* on old systems try <sys/dir.h> instead */
-        |           ^~~~~~~~~~
-  1 error generated.
-  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_impl_opengl3.cpp:172:
-D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_impl_opengl3_loader.h(672,10): fatal error : 'dlfcn.h' file not found
-    672 | #include <dlfcn.h>
-        |          ^~~~~~~~~
-  1 error generated.
-  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_impl_glfw.cpp:97:
-D:\Users\MDS3000164\TossEngine\Dependencies/GLFW/Include\glfw3.h(241,12): fatal error : 'GL/gl.h' file not found
-    241 |   #include <GL/gl.h>
+D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp(556,18): warning : unused variable 'InputsCount' [-Wunused-variable]
+    556 |     const size_t InputsCount = nodeTemplate.mInputCount;
+        |                  ^~~~~~~~~~~
+D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp(557,18): warning : unused variable 'OutputsCount' [-Wunused-variable]
+    557 |     const size_t OutputsCount = nodeTemplate.mOutputCount;
+        |                  ^~~~~~~~~~~~
+D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp(650,12): warning : unused variable 'imgPosMax' [-Wunused-variable]
+    650 |     ImVec2 imgPosMax = imgPos + ImVec2(imgSizeComp, imgSizeComp);
         |            ^~~~~~~~~
-  1 error generated.
+D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp(831,18): warning : unused variable 'scrollRegionLocalPos' [-Wunused-variable]
+  Button.cpp
+    831 |     const ImVec2 scrollRegionLocalPos(0, 0);
+        |                  ^~~~~~~~~~~~~~~~~~~~
+  4 warnings generated.
 D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp(20801,10): fatal error : 'sys/wait.h' file not found
    20801 | #include <sys/wait.h>
          |          ^~~~~~~~~~~~
+  1 error generated.
+D:\Users\MDS3000164\TossEngine\Dependencies\tinyfiledialogs\tinyfiledialogs.c(117,11): fatal error : 'dirent.h' file not found
+    117 |  #include <dirent.h> /* on old systems try <sys/dir.h> instead */
+        |           ^~~~~~~~~~
   1 error generated.
   In file included from D:\Users\MDS3000164\TossEngine\TossEngine\AudioEngine.cpp:5:
   In file included from D:\Users\MDS3000164\TossEngine\TossEngine\AudioEngine.h:20:
@@ -34,14 +59,6 @@ D:\Users\MDS3000164\TossEngine\TossEngine\Utils.h(35,10): fatal error : 'boost/d
   1 error generated.
   In file included from D:\Users\MDS3000164\TossEngine\TossEngine\AudioSource.cpp:1:
   In file included from D:\Users\MDS3000164\TossEngine\TossEngine\AudioSource.h:2:
-  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Component.h:2:
-  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Serializable.h:17:
-D:\Users\MDS3000164\TossEngine\TossEngine\SerializationMacros.h(3,10): fatal error : 'boost/preprocessor/variadic/to_seq.hpp' file not found
-      3 | #include <boost/preprocessor/variadic/to_seq.hpp>
-        |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  1 error generated.
-  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Camera.cpp:13:
-  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Camera.h:14:
   In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Component.h:2:
   In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Serializable.h:17:
 D:\Users\MDS3000164\TossEngine\TossEngine\SerializationMacros.h(3,10): fatal error : 'boost/preprocessor/variadic/to_seq.hpp' file not found

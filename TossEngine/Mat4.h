@@ -28,7 +28,12 @@ class Quaternion;
  */
 class TOSSENGINE_API Mat4 {
 public:
+
+#if defined(_WIN32)
     glm::mat4 value; //!< Underlying GLM matrix value.
+#elif defined(__PROSPERO__)
+    SceMatrix4 value; //!< Underlying SCE matrix value.
+#endif
 
     /**
      * @brief Constructs an identity matrix.

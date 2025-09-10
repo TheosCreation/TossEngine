@@ -11,8 +11,15 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "Texture2D.h"
-#include <glew.h>
 #include "TossEngine.h"
+
+#if defined(_WIN32)
+#include <glew.h>
+#include <glm.hpp>
+#elif defined(__PROSPERO__)
+
+#endif
+
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -20,6 +27,7 @@ Mail : theo.morris@mds.ac.nz
 // Constructor that initializes a 2D texture with the given description.
 Texture2D::Texture2D(const Texture2DDesc& desc, const string& filePath, const string& uniqueId, ResourceManager* manager) : Resource(filePath, uniqueId, manager)
 {
+#if defined(_WIN32)
     // Generate a texture ID and bind it as a 2D texture.
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
@@ -42,6 +50,10 @@ Texture2D::Texture2D(const Texture2DDesc& desc, const string& filePath, const st
 
     // Generate mipmaps for the texture.
     glGenerateMipmap(GL_TEXTURE_2D);
+#elif defined(__PROSPERO__)
+
+    //TODO:Implement
+#endif
 
     // Store the texture description.
     m_desc = desc;
@@ -74,6 +86,7 @@ void Texture2D::GenerateTexture()
     m_numChannels = nrChannels;
 
 
+#if defined(_WIN32)
     // Generate a texture ID and bind it as a 2D texture.
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
@@ -96,6 +109,10 @@ void Texture2D::GenerateTexture()
 
     // Generate mipmaps for the texture.
     glGenerateMipmap(GL_TEXTURE_2D);
+#elif defined(__PROSPERO__)
+
+    //TODO:Implement
+#endif
 
     // Free the image data.
     stbi_image_free(data);
@@ -192,22 +209,30 @@ unsigned char* Texture2D::getData() const
 void Texture2D::setMirrored()
 {
     // Set the wrapping mode for the S (horizontal) and T (vertical) coordinates to mirrored repeat.
+#if defined(_WIN32)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+#elif defined(__PROSPERO__)
+    //TODO:Implement
+#endif
 }
 
 // Sets the texture wrapping mode to clamp to edge.
 void Texture2D::setClampToEdge()
 {
     // Set the wrapping mode for the S (horizontal) and T (vertical) coordinates to clamp to edge.
+#if defined(_WIN32)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#elif defined(__PROSPERO__)
+    //TODO:Implement
+#endif
 }
 
 void Texture2D::resize(Rect newTextureSize)
 {
     m_desc.textureSize = newTextureSize;
-
+#if defined(_WIN32)
     // Determine number of color channels
     GLenum glChannels = (m_desc.numChannels == 4) ? GL_RGBA : GL_RGB;
 
@@ -232,10 +257,17 @@ void Texture2D::resize(Rect newTextureSize)
 
     // Unbind texture
     glBindTexture(GL_TEXTURE_2D, 0);
+#elif defined(__PROSPERO__)
+    //TODO:Implement
+#endif
 }
 
 // Destructor for the Texture2D class.
 Texture2D::~Texture2D()
 {
+#if defined(_WIN32)
     glDeleteTextures(1, &m_textureId);
+#elif defined(__PROSPERO__)
+    //TODO:Implement
+#endif
 }

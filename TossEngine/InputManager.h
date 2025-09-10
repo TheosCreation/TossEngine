@@ -173,9 +173,7 @@ private:
 
     bool isInitilized = false; //!< Tracks whether the input manager is initialized.
 
-#ifdef __PROSPERO__
-    // Prospero: no GLFW, no ImGui-GLFW glue
-#else
+#if defined(_WIN32)
     // GLFW input callbacks
     static void scroll_callback(class GLFWwindow* window, double xOffset, double yOffset);
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

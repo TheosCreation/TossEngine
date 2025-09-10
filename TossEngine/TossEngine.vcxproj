@@ -32,6 +32,7 @@
     <ProjectGuid>{0FBF6FBE-001B-470B-A304-4E11123675C0}</ProjectGuid>
     <RootNamespace>OpenGLWeek1</RootNamespace>
     <ProjectName>TossEngine</ProjectName>
+    <ProsperoSdkVersion>Default</ProsperoSdkVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -216,7 +217,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/Toss
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>TOSSENGINE_EXPORTS;IMGUI_IMPL_OPENGL_LOADER_GLAD;IMGUI_IMPL_GLFW;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TOSSENGINE_EXPORTS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>

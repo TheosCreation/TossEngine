@@ -15,13 +15,17 @@ Mail : theo.morris@mds.ac.nz
 
 #include "TossEngineAPI.h"
 #include "Math.h"
-#include "reactphysics3d/mathematics/Vector3.h"
 
 // Forward declarations
 class Mat4;
 class Quaternion;
 class Vector2;
 class Vector4;
+
+namespace reactphysics3d
+{
+    struct Vector3;
+}
 
 /**
  * @class Vector3
@@ -37,9 +41,14 @@ public:
     constexpr Vector3(float val) : x(val), y(val), z(val) {}
     constexpr Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
 
+    Vector3(const reactphysics3d::Vector3& vec);
+    Vector3(const Vector2& vec); // Z = 0
+
+#if defined(_WIN32)
     Vector3(const glm::vec3& vec) : x(vec.x), y(vec.y), z(vec.z) {}
-    Vector3(const reactphysics3d::Vector3& vec) : x(vec.x), y(vec.y), z(vec.z) {}
-    Vector3(const Vector2& vec); // Presumably z = 0
+#elif defined(__PROSPERO__)
+    Vector3(const SceVector3& vec) : x(vec.getX()), y(vec.getY()), z(vec.getZ() {}
+#endif
 
     // --- Accessors ---
 
@@ -72,7 +81,11 @@ public:
 
     // --- Type Conversion ---
 
+#if defined(_WIN32)
     operator glm::vec3() const { return glm::vec3(x, y, z); }
+#elif defined(__PROSPERO__)
+    operator SceVector3() const { return SceVector3(x, y, z); }
+#endif
     operator reactphysics3d::Vector3() const { return reactphysics3d::Vector3(x, y, z); }
     operator std::string() const { return ToString(); }
 

@@ -11,9 +11,13 @@ Mail : theo.morris@mds.ac.nz
 ***/
 
 #pragma once
+#include "Resource.h"
+#if defined(_WIN32)
 #include <glew.h>
 #include <glm.hpp>
-#include "Resource.h"
+#elif defined(__PROSPERO__)
+
+#endif
 
 /**
  * @class Shader
@@ -75,7 +79,11 @@ public:
      */
     void setMat4(const std::string& name, const Mat4& mat) const
     {
+#if defined(_WIN32)
         glUniformMatrix4fv(glGetUniformLocation(m_programId, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat.value));
+#elif defined(__PROSPERO__)
+
+#endif
     }
 
     /**
@@ -86,7 +94,11 @@ public:
      */
     void setMat4Array(const std::string& name, const Mat4 mat[], int count) const
     {
+#if defined(_WIN32)
         glUniformMatrix4fv(glGetUniformLocation(m_programId, name.c_str()), count, GL_FALSE, glm::value_ptr(mat[0].value));
+#elif defined(__PROSPERO__)
+
+#endif
     }
 
     /**
@@ -96,7 +108,11 @@ public:
      */
     void setFloat(const std::string& name, const float value) const
     {
+#if defined(_WIN32)
         glUniform1f(glGetUniformLocation(m_programId, name.c_str()), value);
+#elif defined(__PROSPERO__)
+
+#endif
     }
 
     /**
@@ -106,7 +122,11 @@ public:
      */
     void setVec3(const std::string& name, const Vector3& value) const
     {
+#if defined(_WIN32)
         glUniform3fv(glGetUniformLocation(m_programId, name.c_str()), 1, value.Data());
+#elif defined(__PROSPERO__)
+
+#endif
     }
     
     /**
@@ -116,7 +136,11 @@ public:
     */
     void setBool(const std::string& name, const bool& value) const
     {
+#if defined(_WIN32)
         glUniform1i(glGetUniformLocation(m_programId, name.c_str()), static_cast<int>(value));
+#elif defined(__PROSPERO__)
+
+#endif
     }
 
     /**
@@ -126,7 +150,11 @@ public:
      */
     void setVec4(const std::string& name, const Vector4& value) const
     {
+#if defined(_WIN32)
         glUniform4fv(glGetUniformLocation(m_programId, name.c_str()), 1, value.Data());
+#elif defined(__PROSPERO__)
+
+#endif
     }
 
     /**
@@ -136,7 +164,11 @@ public:
      */
     void setVec2(const std::string& name, const Vector2& value) const
     {
+#if defined(_WIN32)
         glUniform2fv(glGetUniformLocation(m_programId, name.c_str()), 1, value.Data());
+#elif defined(__PROSPERO__)
+
+#endif
     }
 
     /**
@@ -146,7 +178,11 @@ public:
      */
     void setInt(const std::string& name, const int value) const
     {
+#if defined(_WIN32)
         glUniform1i(glGetUniformLocation(m_programId, name.c_str()), value);
+#elif defined(__PROSPERO__)
+
+#endif
     }
 
     /**
@@ -156,7 +192,11 @@ public:
      */
     void setUint(const std::string& name, const uint value) const
     {
+#if defined(_WIN32)
         glUniform1ui(glGetUniformLocation(m_programId, name.c_str()), value);
+#elif defined(__PROSPERO__)
+
+#endif
     }
 
     vector<UniformBinding> getBindings() const;

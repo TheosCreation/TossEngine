@@ -48,10 +48,10 @@ Mat4 Transform::GetMatrix() const
 
 void Transform::SetMatrix(const Mat4& matrix)
 {
-    DecomposeMatrix(matrix.value, position, rotation, scale);
+    DecomposeMatrix(matrix, position, rotation, scale);
 
     if (parent) {
-        glm::mat4 local = glm::inverse(parent->GetMatrix().value) * matrix.value;
+        Mat4 local = parent->GetMatrix().Inverse() * matrix;
         DecomposeMatrix(local, localPosition, localRotation, localScale);
     }
     else {
@@ -62,17 +62,17 @@ void Transform::SetMatrix(const Mat4& matrix)
     }
 }
 
-void Transform::DecomposeMatrix(const glm::mat4& m, Vector3& pos, Quaternion& rot, Vector3& scl)
+void Transform::DecomposeMatrix(const Mat4& m, Vector3& pos, Quaternion& rot, Vector3& scl)
 {
-    pos = Vector3(m[3]);
-    scl.x = glm::length(glm::vec3(m[0]));
-    scl.y = glm::length(glm::vec3(m[1]));
-    scl.z = glm::length(glm::vec3(m[2]));
+    pos = Vector3(m.value.mCol0[3]);
+    scl.x = glm::length(glm::vec3(m.value[0]));
+    scl.y = glm::length(glm::vec3(m.value[1]));
+    scl.z = glm::length(glm::vec3(m.value[2]));
 
     glm::mat4 rotMat(1.0f);
-    rotMat[0] = glm::vec4(glm::normalize(glm::vec3(m[0])), 0.0f);
-    rotMat[1] = glm::vec4(glm::normalize(glm::vec3(m[1])), 0.0f);
-    rotMat[2] = glm::vec4(glm::normalize(glm::vec3(m[2])), 0.0f);
+    rotMat[0] = glm::vec4(glm::normalize(glm::vec3(m.value[0])), 0.0f);
+    rotMat[1] = glm::vec4(glm::normalize(glm::vec3(m.value[1])), 0.0f);
+    rotMat[2] = glm::vec4(glm::normalize(glm::vec3(m.value[2])), 0.0f);
     rot = Quaternion(glm::quat_cast(rotMat));
 }
 

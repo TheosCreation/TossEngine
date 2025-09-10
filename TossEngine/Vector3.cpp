@@ -1,4 +1,6 @@
 #include "Vector3.h"
+
+#include "reactphysics3d/mathematics/Vector3.h"
 #include "Vector2.h"
 #include "Mat4.h"
 #include "Quaternion.h"
@@ -13,27 +15,53 @@ const Vector3 Vector3::Down = Vector3(0.0f, -1.0f, 0.0f);
 const Vector3 Vector3::Right = Vector3(1.0f, 0.0f, 0.0f);
 const Vector3 Vector3::Left = Vector3(-1.0f, 0.0f, 0.0f);
 
+Vector3::Vector3(const reactphysics3d::Vector3& vec) : x(vec.x), y(vec.y), z(vec.z) {}
+
 // Vector2 -> Vector3 conversion (z = 0)
 Vector3::Vector3(const Vector2& vec) : x(vec.x), y(vec.y), z(0.0f) {}
 
-float Vector3::Length() const {
+float Vector3::Length() const
+{
+#if defined(_WIN32)
     return glm::length(glm::vec3(x, y, z));
+#elif defined(__PROSPERO__)
+    return 0.0f; //TODO: Implement
+#endif
+    return 0.0f;
 }
 
-Vector3 Vector3::Normalized() const {
+Vector3 Vector3::Normalized() const
+{
+#if defined(_WIN32)
     return Vector3(glm::normalize(glm::vec3(x, y, z)));
+#elif defined(__PROSPERO__)
+    return Vector3(); //TODO: Implement
+#endif
+    return Vector3();
 }
 
 void Vector3::Normalize() {
     *this = this->Normalized();
 }
 
-Vector3 Vector3::Cross(const Vector3& a, const Vector3& b) {
+Vector3 Vector3::Cross(const Vector3& a, const Vector3& b)
+{
+#if defined(_WIN32)
     return Vector3(glm::cross(glm::vec3(a), glm::vec3(b)));
+#elif defined(__PROSPERO__)
+    return Vector3(); //TODO: Implement
+#endif
+    return Vector3();
 }
 
-float Vector3::Distance(const Vector3& a, const Vector3& b) {
+float Vector3::Distance(const Vector3& a, const Vector3& b)
+{
+#if defined(_WIN32)
     return glm::distance(glm::vec3(a), glm::vec3(b));
+#elif defined(__PROSPERO__)
+    return 0.0f; //TODO: Implement
+#endif
+    return 0.0f;
 }
 
 Vector3 Vector3::ExtractTranslation(const Mat4& m) {
@@ -41,11 +69,16 @@ Vector3 Vector3::ExtractTranslation(const Mat4& m) {
 }
 
 Vector3 Vector3::ExtractScale(const Mat4& m) {
+#if defined(_WIN32)
     glm::vec3 scale;
     scale.x = glm::length(glm::vec3(m.value[0][0], m.value[0][1], m.value[0][2]));
     scale.y = glm::length(glm::vec3(m.value[1][0], m.value[1][1], m.value[1][2]));
     scale.z = glm::length(glm::vec3(m.value[2][0], m.value[2][1], m.value[2][2]));
     return Vector3(scale);
+#elif defined(__PROSPERO__)
+    return Vector3(); //TODO: Implement
+#endif
+    return Vector3();
 }
 
 Vector3 Vector3::Lerp(Vector3 start, Vector3 end, float t) {
@@ -67,12 +100,24 @@ bool Vector3::Equals(const Vector3& other, float epsilon) const {
     return glm::all(glm::epsilonEqual(glm::vec3(x, y, z), glm::vec3(other.x, other.y, other.z), epsilon));
 }
 
-Vector3 Vector3::ToDegrees() const {
+Vector3 Vector3::ToDegrees() const
+{
+#if defined(_WIN32)
     return Vector3(glm::degrees(glm::vec3(x, y, z)));
+#elif defined(__PROSPERO__)
+    return Vector3(); //TODO: Implement
+#endif
+    return Vector3();
 }
 
-Vector3 Vector3::ToRadians() const {
+Vector3 Vector3::ToRadians() const
+{
+#if defined(_WIN32)
     return Vector3(glm::radians(glm::vec3(x, y, z)));
+#elif defined(__PROSPERO__)
+    return Vector3(); //TODO: Implement
+#endif
+    return Vector3();
 }
 
 std::string Vector3::ToString() const {
@@ -149,7 +194,13 @@ bool Vector3::operator!=(const Vector3& other) const {
 }
 
 // Multiply Vector3 by a Quaternion (rotation)
-Vector3 Vector3::operator*(const Quaternion& q) const {
+Vector3 Vector3::operator*(const Quaternion& q) const
+{
+#if defined(_WIN32)
     glm::vec3 rotated = glm::rotate(glm::quat(q), glm::vec3(x, y, z));
     return Vector3(rotated);
+#elif defined(__PROSPERO__)
+    return Vector3(); //TODO: Implement
+#endif
+    return Vector3();
 }

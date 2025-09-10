@@ -1,11 +1,18 @@
 #include "TextureCubeMap.h"
-#include <glew.h>
-#include "TossEngine.h"
 
+#include "TossEngine.h"
 #include "stb_image.h"
+
+#if defined(_WIN32)
+#include <glew.h>
+#elif defined(__PROSPERO__)
+
+#endif
 
 TextureCubeMap::TextureCubeMap(const TextureCubeMapDesc& desc, const string& uniqueId, ResourceManager* manager) : Resource(uniqueId, uniqueId, manager)
 {
+#if defined(_WIN32)
+
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureId);
 
@@ -36,6 +43,9 @@ TextureCubeMap::TextureCubeMap(const TextureCubeMapDesc& desc, const string& uni
     // Generate mipmaps for the cubemap texture.
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
+#elif defined(__PROSPERO__)
+ //TODO: Implement
+#endif
     // Store the texture description.
     m_desc = desc;
 }
@@ -56,6 +66,7 @@ void TextureCubeMap::onCreateLate()
 
 void TextureCubeMap::GenerateTextureCubeMap()
 {
+#if defined(_WIN32)
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureId);
 
@@ -101,11 +112,18 @@ void TextureCubeMap::GenerateTextureCubeMap()
 
     // Generate mipmaps for the cubemap texture.
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+#elif defined(__PROSPERO__)
+    //TODO:Implement
+#endif
 }
 
 void TextureCubeMap::onDestroy()
 {
+#if defined(_WIN32)
     glDeleteTextures(1, &m_textureId); // Destroys the cubemap texture
+#elif defined(__PROSPERO__)
+    //TODO:Implement
+#endif
 }
 
 void TextureCubeMap::OnInspectorGUI()

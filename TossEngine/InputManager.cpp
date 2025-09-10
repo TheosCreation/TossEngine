@@ -11,16 +11,20 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "InputManager.h"
+
+
 #include "Window.h"
 #include "TossEngine.h"
 #include "ProjectSettings.h"
 #include <imgui.h>
-#ifdef __PROSPERO__
-// Prospero: no GLFW, no ImGui-GLFW glue
-#else
+
+#if defined(_WIN32)
 #include <imgui_impl_glfw.h>
 #include <glew.h>
 #include <glfw3.h>
+
+#elif defined(__PROSPERO__)
+// TODO: includes
 #endif
 
 double InputManager::scrollX = 0.0;
@@ -41,7 +45,7 @@ void InputManager::Init(ProjectSettingsPtr& projectSettings)
 
 #ifdef __PROSPERO__
     // TODO: Hook into Prospero input system later
-#else
+#elif defined(_WIN32)
     WindowPtr = TossEngine::GetInstance().GetWindow()->getNativeHandle();
     glfwSetScrollCallback(static_cast<GLFWwindow*>(WindowPtr), scroll_callback);
     glfwSetKeyCallback(static_cast<GLFWwindow*>(WindowPtr), key_callback);
@@ -58,7 +62,7 @@ void InputManager::Init(TossPlayerSettingsPtr& playerSettings)
 
 #ifdef __PROSPERO__
     // TODO: Hook into Prospero input system later
-#else
+#elif defined(_WIN32)
     WindowPtr = TossEngine::GetInstance().GetWindow()->getNativeHandle();
     glfwSetScrollCallback(static_cast<GLFWwindow*>(WindowPtr), scroll_callback);
     glfwSetKeyCallback(static_cast<GLFWwindow*>(WindowPtr), key_callback);
@@ -74,7 +78,7 @@ void InputManager::onUpdate()
 #ifdef __PROSPERO__
     // TODO: Poll controller/mouse later
     m_deltaMouse = { 0.0f, 0.0f };
-#else
+#elif defined(_WIN32)
     double newMouseX, newMouseY;
     glfwGetCursorPos(static_cast<GLFWwindow*>(WindowPtr), &newMouseX, &newMouseY);
     currentMouseX = static_cast<float>(newMouseX);
@@ -98,7 +102,7 @@ void InputManager::onLateUpdate()
 {
 #ifdef __PROSPERO__
     // No cursor reset needed on PS5
-#else
+#elif defined(_WIN32)
     previousKeyStates = currentKeyStates;
     previousMouseStates = currentMouseStates;
     resetMouseScroll();
@@ -197,7 +201,7 @@ void InputManager::enablePlayMode(bool enable, bool alsoChangeGameplayMode)
 
 #ifdef __PROSPERO__
     // TODO: Hook into Prospero input system later
-#else
+#elif defined(_WIN32)
     if (enable) {
         glfwSetInputMode(static_cast<GLFWwindow*>(WindowPtr), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetCursorPos(static_cast<GLFWwindow*>(WindowPtr), m_screenArea.x / 2.0f, m_screenArea.y / 2.0f);
@@ -228,7 +232,7 @@ void InputManager::setScreenArea(const Vector2& area)
 	m_screenArea = area;
 }
 
-#ifndef __PROSPERO__
+#if defined(_WIN32)
 // GLFW + ImGui callbacks only compiled for PC
 void InputManager::scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
 {
