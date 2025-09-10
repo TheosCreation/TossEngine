@@ -2,6 +2,7 @@
 
 #include "reactphysics3d/mathematics/Vector3.h"
 #include "Vector2.h"
+#include "Vector4.h"
 #include "Mat4.h"
 #include "Quaternion.h"
 
@@ -19,6 +20,8 @@ Vector3::Vector3(const reactphysics3d::Vector3& vec) : x(vec.x), y(vec.y), z(vec
 
 // Vector2 -> Vector3 conversion (z = 0)
 Vector3::Vector3(const Vector2& vec) : x(vec.x), y(vec.y), z(0.0f) {}
+
+Vector3::Vector3(const Vector4& vec) : x(vec.x), y(vec.y), z(vec.z) {}
 
 float Vector3::Length() const
 {
@@ -65,16 +68,16 @@ float Vector3::Distance(const Vector3& a, const Vector3& b)
 }
 
 Vector3 Vector3::ExtractTranslation(const Mat4& m) {
-    return Vector3(m.value[3][0], m.value[3][1], m.value[3][2]);
+    return Vector3(m[3]);
 }
 
 Vector3 Vector3::ExtractScale(const Mat4& m) {
 #if defined(_WIN32)
-    glm::vec3 scale;
-    scale.x = glm::length(glm::vec3(m.value[0][0], m.value[0][1], m.value[0][2]));
-    scale.y = glm::length(glm::vec3(m.value[1][0], m.value[1][1], m.value[1][2]));
-    scale.z = glm::length(glm::vec3(m.value[2][0], m.value[2][1], m.value[2][2]));
-    return Vector3(scale);
+    Vector3 scale;
+    scale.x = Vector3(m[0].x, m[0].y, m[0].z).Length();
+    scale.y = Vector3(m[1].x, m[1].y, m[1].z).Length();
+    scale.z = Vector3(m[2].x, m[2].y, m[2].z).Length();
+    return scale;
 #elif defined(__PROSPERO__)
     return Vector3(); //TODO: Implement
 #endif
@@ -124,6 +127,11 @@ std::string Vector3::ToString() const {
     std::ostringstream oss;
     oss << "(" << x << ", " << y << ", " << z << ")";
     return oss.str();
+}
+
+Vector3::operator reactphysics3d::Vector3() const
+{
+    return reactphysics3d::Vector3(x, y, z);
 }
 
 Vector3 Vector3::operator-() const {

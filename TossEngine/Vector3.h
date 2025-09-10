@@ -43,6 +43,7 @@ public:
 
     Vector3(const reactphysics3d::Vector3& vec);
     Vector3(const Vector2& vec); // Z = 0
+    Vector3(const Vector4& vec); // cuts w
 
 #if defined(_WIN32)
     Vector3(const glm::vec3& vec) : x(vec.x), y(vec.y), z(vec.z) {}
@@ -86,7 +87,7 @@ public:
 #elif defined(__PROSPERO__)
     operator SceVector3() const { return SceVector3(x, y, z); }
 #endif
-    operator reactphysics3d::Vector3() const { return reactphysics3d::Vector3(x, y, z); }
+    operator reactphysics3d::Vector3() const;
     operator std::string() const { return ToString(); }
 
     // --- Operators ---

@@ -2,6 +2,7 @@
 #include "Mat4.h"
 #include "Mat3.h"
 #include "Vector3.h"
+#include "Vector4.h"
 
 Quaternion::Quaternion(const Vector3& eulerAngles)
 {
@@ -19,19 +20,18 @@ Quaternion::Quaternion(const Mat3& mat)
 
 Quaternion Quaternion::ExtractRotation(const Mat4& mat)
 {
-    glm::mat m = mat.value;
-    Vector3 scale = Vector3::ExtractScale(m);
-    float r00 = m[0][0] / scale.x;
-    float r01 = m[0][1] / scale.y;
-    float r02 = m[0][2] / scale.z;
+    Vector3 scale = Vector3::ExtractScale(mat);
+    float r00 = mat[0].x / scale.x;
+    float r01 = mat[0].y / scale.y;
+    float r02 = mat[0].z / scale.z;
 
-    float r10 = m[1][0] / scale.x;
-    float r11 = m[1][1] / scale.y;
-    float r12 = m[1][2] / scale.z;
+    float r10 = mat[1].x / scale.x;
+    float r11 = mat[1].y / scale.y;
+    float r12 = mat[1].z / scale.z;
 
-    float r20 = m[2][0] / scale.x;
-    float r21 = m[2][1] / scale.y;
-    float r22 = m[2][2] / scale.z;
+    float r20 = mat[2].x / scale.x;
+    float r21 = mat[2].y / scale.y;
+    float r22 = mat[2].z / scale.z;
 
     float trace = r00 + r11 + r22;
     float qw, qx, qy, qz;

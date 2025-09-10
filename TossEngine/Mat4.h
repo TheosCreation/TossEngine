@@ -18,6 +18,7 @@ Mail : theo.morris@mds.ac.nz
 
 // Forward declarations to avoid circular dependency
 class Vector3;
+class Vector4;
 class Mat3;
 class Quaternion;
 
@@ -28,13 +29,6 @@ class Quaternion;
  */
 class TOSSENGINE_API Mat4 {
 public:
-
-#if defined(_WIN32)
-    glm::mat4 value; //!< Underlying GLM matrix value.
-#elif defined(__PROSPERO__)
-    SceMatrix4 value; //!< Underlying SCE matrix value.
-#endif
-
     /**
      * @brief Constructs an identity matrix.
      */
@@ -46,11 +40,15 @@ public:
      */
     Mat4(float diagonal) : value(diagonal) {}
 
+#if defined(_WIN32)
     /**
      * @brief Constructs a Mat4 from an existing glm::mat4.
      * @param m Source glm matrix.
      */
-    Mat4(const glm::mat4& m) : value(m) {}
+    Mat4(const glm::mat4& m);
+#elif defined(__PROSPERO__)
+    //TODO: implement
+#endif
 
     /**
      * @brief Constructs a 4x4 matrix from a 3x3 matrix, embedding into the upper-left.
@@ -99,6 +97,20 @@ public:
     }
 
     /**
+     * @brief Returns a raw pointer to the underlying float array (column-major).
+     *        Safe to pass directly into OpenGL (e.g., glUniformMatrix4fv).
+     */
+    const float* Data() const;
+
+    /**
+     * @brief Returns a mutable raw pointer (use with caution).
+     */
+    float* Data();
+
+    Vector4 operator[](int row);
+    Vector4 operator[](int row) const;
+
+    /**
      * @brief Implicit conversion to glm::mat4 for interoperability.
      */
     operator glm::mat4() const { return value; }
@@ -108,19 +120,16 @@ public:
      * @param other The right-hand side matrix.
      * @return A new Mat4 representing the product.
      */
-    Mat4 operator*(const Mat4& other) const {
-        return Mat4(value * other.value);
-    }
+    Mat4 operator*(const Mat4& other) const;
+
+    Vector4 operator*(const Vector4& v4) const;
 
     /**
      * @brief In-place matrix multiplication.
      * @param other The matrix to multiply by.
      * @return Reference to the updated matrix.
      */
-    Mat4& operator*=(const Mat4& other) {
-        value *= other.value;
-        return *this;
-    }
+    Mat4& operator*=(const Mat4& other);
 
     /**
      * @brief Multiplies this matrix with a Vector3 (assumes w = 1).
@@ -150,4 +159,12 @@ public:
      * @return A Mat4 representing the rotation.
      */
     static Mat4 Rotate(float angleRadians, const Vector3& axis);
+
+protected:
+
+#if defined(_WIN32)
+    glm::mat4 value; //!< Underlying GLM matrix value.
+#elif defined(__PROSPERO__)
+    SceMatrix4 value; //!< Underlying SCE matrix value.
+#endif
 };

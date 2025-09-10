@@ -11,6 +11,7 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "GraphicsEngine.h"
+
 #include <ImGuizmo.h>
 #include <imgui.h>
 #include "VertexArrayObject.h"
@@ -21,12 +22,13 @@ Mail : theo.morris@mds.ac.nz
 #include "ProjectSettings.h"
 #include "TossPlayerSettings.h"
 
-#ifdef __PROSPERO__
-#else
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#if defined(_WIN32)
 #include <glew.h>
 #include <glfw3.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#elif defined(__PROSPERO__)
+// TODO:Implement
 #endif
 
 void GraphicsEngine::Init(ProjectSettingsPtr& projectSettings)
@@ -57,6 +59,7 @@ VertexArrayObjectPtr GraphicsEngine::createVertexArrayObject(const VertexBufferD
 
 void GraphicsEngine::updateVertexArrayObject(const VertexArrayObjectPtr& vao, const void* vertexData, uint dataSize)
 {
+#if defined(_WIN32)
     // Bind the VAO (assumes your VAO encapsulates its VBO(s))
     glBindVertexArray(vao->getId());
 
@@ -70,10 +73,14 @@ void GraphicsEngine::updateVertexArrayObject(const VertexArrayObjectPtr& vao, co
     // Unbind the buffer and VAO for cleanliness.
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::clear(const glm::vec4& color, bool clearDepth, bool clearStencil)
 {
+#if defined(_WIN32)
     glClearColor(color.x, color.y, color.z, color.w);
 
     // Start with clearing the color buffer
@@ -91,6 +98,9 @@ void GraphicsEngine::clear(const glm::vec4& color, bool clearDepth, bool clearSt
 
     // Clear the specified buffers
     glClear(clearFlags);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::createImGuiFrame()
@@ -121,7 +131,9 @@ void GraphicsEngine::renderImGuiFrame()
 
 void GraphicsEngine::setFaceCulling(const CullType& type)
 {
-    auto cullType = GL_BACK;
+    m_cullType = type;
+#if defined(_WIN32)
+    uint cullType = GL_BACK;
     if (type == CullType::None)
     {
         glDisable(GL_CULL_FACE);
@@ -134,23 +146,30 @@ void GraphicsEngine::setFaceCulling(const CullType& type)
         glEnable(GL_CULL_FACE);
         glCullFace(cullType);
     }
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setDepthFunc(const DepthType& type)
 {
-    switch (type)
+    m_depthType = type;
+
+#if defined(_WIN32)
+    uint depth = GL_LESS;
+    switch (m_depthType)
     {
-        case DepthType::Never:        m_depthType = GL_NEVER; break;
-        case DepthType::Less:         m_depthType = GL_LESS; break;
-        case DepthType::Equal:        m_depthType = GL_EQUAL; break;
-        case DepthType::LessEqual:    m_depthType = GL_LEQUAL; break;
-        case DepthType::Greater:      m_depthType = GL_GREATER; break;
-        case DepthType::NotEqual:     m_depthType = GL_NOTEQUAL; break;
-        case DepthType::GreaterEqual: m_depthType = GL_GEQUAL; break;
-        case DepthType::Always:       m_depthType = GL_ALWAYS; break;
+    case DepthType::Never:        depth = GL_NEVER; break;
+    case DepthType::Less:         depth = GL_LESS; break;
+    case DepthType::Equal:        depth = GL_EQUAL; break;
+    case DepthType::LessEqual:    depth = GL_LEQUAL; break;
+    case DepthType::Greater:      depth = GL_GREATER; break;
+    case DepthType::NotEqual:     depth = GL_NOTEQUAL; break;
+    case DepthType::GreaterEqual: depth = GL_GEQUAL; break;
+    case DepthType::Always:       depth = GL_ALWAYS; break;
     }
 
-    if (type == DepthType::Never)
+    if (m_depthType == DepthType::Never)
     {
         m_depthTestingEnabled = false;
         glDisable(GL_DEPTH_TEST);
@@ -159,38 +178,67 @@ void GraphicsEngine::setDepthFunc(const DepthType& type)
     {
         m_depthTestingEnabled = true;
         glEnable(GL_DEPTH_TEST);
-        glDepthFunc(m_depthType);
+        glDepthFunc(depth);
     }
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setDepthMask(bool writeEnabled)
 {
     m_depthMaskEnabled = writeEnabled;
-    glDepthMask(writeEnabled ? GL_TRUE : GL_FALSE);
+
+#if defined(_WIN32)
+    glDepthMask(m_depthMaskEnabled ? GL_TRUE : GL_FALSE);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setDepthTest(bool testingEnabled)
 {
     m_depthTestingEnabled = testingEnabled;
 
+#if defined(_WIN32)
     if (m_depthTestingEnabled)
     {
         glEnable(GL_DEPTH_TEST);
-        glDepthFunc(m_depthType);
+        uint depth = GL_LESS; //TODO: fix this make it not need to copy everywhere
+        switch (m_depthType)
+        {
+        case DepthType::Never:        depth = GL_NEVER; break;
+        case DepthType::Less:         depth = GL_LESS; break;
+        case DepthType::Equal:        depth = GL_EQUAL; break;
+        case DepthType::LessEqual:    depth = GL_LEQUAL; break;
+        case DepthType::Greater:      depth = GL_GREATER; break;
+        case DepthType::NotEqual:     depth = GL_NOTEQUAL; break;
+        case DepthType::GreaterEqual: depth = GL_GEQUAL; break;
+        case DepthType::Always:       depth = GL_ALWAYS; break;
+        }
+        glDepthFunc(depth);
     }
     else
     {
         glDisable(GL_DEPTH_TEST);
     }
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setScissorSize(const Rect size)
 {
+#if defined(_WIN32)
     glScissor(size.left, size.top, size.width, size.height);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setScissor(bool enabled)
 {
+#if defined(_WIN32)
     if (enabled)
     {
         glEnable(GL_SCISSOR_TEST);
@@ -199,49 +247,53 @@ void GraphicsEngine::setScissor(bool enabled)
     {
         glDisable(GL_SCISSOR_TEST);
     }
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setBlendFunc(const BlendType& srcType, const BlendType& dstType)
 {
+#if defined(_WIN32)
     GLenum blendType1 = GL_SRC_ALPHA; // Default source blend factor
     GLenum blendType2 = GL_ONE_MINUS_SRC_ALPHA; // Default destination blend factor
 
     // Determine the source blend factor
     switch (srcType)
     {
-        case BlendType::Zero:                    blendType1 = GL_ZERO; break;
-        case BlendType::One:                     blendType1 = GL_ONE; break;
-        case BlendType::SrcColor:                blendType1 = GL_SRC_COLOR; break;
-        case BlendType::OneMinusSrcColor:        blendType1 = GL_ONE_MINUS_SRC_COLOR; break;
-        case BlendType::DstColor:                blendType1 = GL_DST_COLOR; break;
-        case BlendType::OneMinusDstColor:        blendType1 = GL_ONE_MINUS_DST_COLOR; break;
-        case BlendType::SrcAlpha:                blendType1 = GL_SRC_ALPHA; break;
-        case BlendType::OneMinusSrcAlpha:        blendType1 = GL_ONE_MINUS_SRC_ALPHA; break;
-        case BlendType::DstAlpha:                blendType1 = GL_DST_ALPHA; break;
-        case BlendType::OneMinusDstAlpha:        blendType1 = GL_ONE_MINUS_DST_ALPHA; break;
-        case BlendType::ConstantColor:           blendType1 = GL_CONSTANT_COLOR; break;
-        case BlendType::OneMinusConstantColor:   blendType1 = GL_ONE_MINUS_CONSTANT_COLOR; break;
-        case BlendType::ConstantAlpha:           blendType1 = GL_CONSTANT_ALPHA; break;
-        case BlendType::OneMinusConstantAlpha:   blendType1 = GL_ONE_MINUS_CONSTANT_ALPHA; break;
+    case BlendType::Zero:                    blendType1 = GL_ZERO; break;
+    case BlendType::One:                     blendType1 = GL_ONE; break;
+    case BlendType::SrcColor:                blendType1 = GL_SRC_COLOR; break;
+    case BlendType::OneMinusSrcColor:        blendType1 = GL_ONE_MINUS_SRC_COLOR; break;
+    case BlendType::DstColor:                blendType1 = GL_DST_COLOR; break;
+    case BlendType::OneMinusDstColor:        blendType1 = GL_ONE_MINUS_DST_COLOR; break;
+    case BlendType::SrcAlpha:                blendType1 = GL_SRC_ALPHA; break;
+    case BlendType::OneMinusSrcAlpha:        blendType1 = GL_ONE_MINUS_SRC_ALPHA; break;
+    case BlendType::DstAlpha:                blendType1 = GL_DST_ALPHA; break;
+    case BlendType::OneMinusDstAlpha:        blendType1 = GL_ONE_MINUS_DST_ALPHA; break;
+    case BlendType::ConstantColor:           blendType1 = GL_CONSTANT_COLOR; break;
+    case BlendType::OneMinusConstantColor:   blendType1 = GL_ONE_MINUS_CONSTANT_COLOR; break;
+    case BlendType::ConstantAlpha:           blendType1 = GL_CONSTANT_ALPHA; break;
+    case BlendType::OneMinusConstantAlpha:   blendType1 = GL_ONE_MINUS_CONSTANT_ALPHA; break;
     }
 
     // Determine the destination blend factor
     switch (dstType)
     {
-        case BlendType::Zero:                    blendType2 = GL_ZERO; break;
-        case BlendType::One:                     blendType2 = GL_ONE; break;
-        case BlendType::SrcColor:                blendType2 = GL_SRC_COLOR; break;
-        case BlendType::OneMinusSrcColor:        blendType2 = GL_ONE_MINUS_SRC_COLOR; break;
-        case BlendType::DstColor:                blendType2 = GL_DST_COLOR; break;
-        case BlendType::OneMinusDstColor:        blendType2 = GL_ONE_MINUS_DST_COLOR; break;
-        case BlendType::SrcAlpha:                blendType2 = GL_SRC_ALPHA; break;
-        case BlendType::OneMinusSrcAlpha:        blendType2 = GL_ONE_MINUS_SRC_ALPHA; break;
-        case BlendType::DstAlpha:                blendType2 = GL_DST_ALPHA; break;
-        case BlendType::OneMinusDstAlpha:        blendType2 = GL_ONE_MINUS_DST_ALPHA; break;
-        case BlendType::ConstantColor:           blendType2 = GL_CONSTANT_COLOR; break;
-        case BlendType::OneMinusConstantColor:   blendType2 = GL_ONE_MINUS_CONSTANT_COLOR; break;
-        case BlendType::ConstantAlpha:           blendType2 = GL_CONSTANT_ALPHA; break;
-        case BlendType::OneMinusConstantAlpha:   blendType2 = GL_ONE_MINUS_CONSTANT_ALPHA; break;
+    case BlendType::Zero:                    blendType2 = GL_ZERO; break;
+    case BlendType::One:                     blendType2 = GL_ONE; break;
+    case BlendType::SrcColor:                blendType2 = GL_SRC_COLOR; break;
+    case BlendType::OneMinusSrcColor:        blendType2 = GL_ONE_MINUS_SRC_COLOR; break;
+    case BlendType::DstColor:                blendType2 = GL_DST_COLOR; break;
+    case BlendType::OneMinusDstColor:        blendType2 = GL_ONE_MINUS_DST_COLOR; break;
+    case BlendType::SrcAlpha:                blendType2 = GL_SRC_ALPHA; break;
+    case BlendType::OneMinusSrcAlpha:        blendType2 = GL_ONE_MINUS_SRC_ALPHA; break;
+    case BlendType::DstAlpha:                blendType2 = GL_DST_ALPHA; break;
+    case BlendType::OneMinusDstAlpha:        blendType2 = GL_ONE_MINUS_DST_ALPHA; break;
+    case BlendType::ConstantColor:           blendType2 = GL_CONSTANT_COLOR; break;
+    case BlendType::OneMinusConstantColor:   blendType2 = GL_ONE_MINUS_CONSTANT_COLOR; break;
+    case BlendType::ConstantAlpha:           blendType2 = GL_CONSTANT_ALPHA; break;
+    case BlendType::OneMinusConstantAlpha:   blendType2 = GL_ONE_MINUS_CONSTANT_ALPHA; break;
     }
 
     if (srcType == BlendType::Zero && dstType == BlendType::Zero)
@@ -253,20 +305,28 @@ void GraphicsEngine::setBlendFunc(const BlendType& srcType, const BlendType& dst
         glEnable(GL_BLEND);
         glBlendFunc(blendType1, blendType2);
     }
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setWindingOrder(const WindingOrder& type)
 {
+#if defined(_WIN32)
     auto orderType = GL_CW;
 
     if (type == WindingOrder::ClockWise) orderType = GL_CW;
     else if (type == WindingOrder::CounterClockWise) orderType = GL_CCW;
 
     glFrontFace(orderType);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setStencil(const StencilOperationType& type)
 {
+#if defined(_WIN32)
     switch (type)
     {
     case StencilOperationType::Set:
@@ -284,15 +344,23 @@ void GraphicsEngine::setStencil(const StencilOperationType& type)
         glStencilMask(0xFF);
         break;
     }
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setViewport(const Vector2& size)
 {
+#if defined(_WIN32)
     glViewport(0, 0, (int)size.x, (int)size.y);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setMultiSampling(bool enabled)
 {
+#if defined(_WIN32)
     if (enabled)
     {
         glEnable(GL_MULTISAMPLE);
@@ -301,27 +369,46 @@ void GraphicsEngine::setMultiSampling(bool enabled)
     {
         glDisable(GL_MULTISAMPLE);
     }
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setVertexArrayObject(const VertexArrayObjectPtr& vao)
 {
+#if defined(_WIN32)
     glBindVertexArray(vao->getId());
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setVertexArrayObject(const uint vaoId)
 {
+#if defined(_WIN32)
     glBindVertexArray(vaoId);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
-void GraphicsEngine::setShader(const ShaderPtr& program)
+void GraphicsEngine::setShader(const ShaderPtr& _shader)
 {
-    currentShader = program;
-    glUseProgram(program->getId());
+    m_currentActiveShader = _shader;
+#if defined(_WIN32)
+    glUseProgram(m_currentActiveShader->getId());
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::setTexture2D(const uint textureId, uint slot, std::string bindingName)
 {
-    currentShader->setTexture2D(textureId, slot, bindingName);
+#if defined(_WIN32)
+    m_currentActiveShader->setTexture2D(textureId, slot, bindingName);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 RenderingPath GraphicsEngine::getRenderingPath()
@@ -336,53 +423,66 @@ void GraphicsEngine::setRenderingPath(RenderingPath newRenderingPath)
 
 void GraphicsEngine::setTexture2D(const Texture2DPtr& texture, uint slot, std::string bindingName) const
 {
-    currentShader->setTexture2D(texture, slot, bindingName);
+    m_currentActiveShader->setTexture2D(texture, slot, bindingName);
 }
 
 void GraphicsEngine::setTextureCubeMap(const TextureCubeMapPtr& texture, uint slot, std::string bindingName) const
 {
-    currentShader->setTextureCubeMap(texture, slot, bindingName);
+    m_currentActiveShader->setTextureCubeMap(texture, slot, bindingName);
 }
 
 void GraphicsEngine::drawTriangles(const TriangleType& triangleType, uint vertexCount, uint offset)
 {
+#if defined(_WIN32)
     auto glTriType = GL_TRIANGLES;
 
     switch (triangleType)
     {
-        case TriangleType::TriangleList: { glTriType = GL_TRIANGLES; break; }
-        case TriangleType::TriangleStrip: { glTriType = GL_TRIANGLE_STRIP; break; }
-        case TriangleType::Points: { glTriType = GL_POINTS; break; }
+    case TriangleType::TriangleList: { glTriType = GL_TRIANGLES; break; }
+    case TriangleType::TriangleStrip: { glTriType = GL_TRIANGLE_STRIP; break; }
+    case TriangleType::Points: { glTriType = GL_POINTS; break; }
     }
     glDrawArrays(glTriType, offset, vertexCount);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::drawIndexedTriangles(const TriangleType& triangleType, uint indicesCount)
 {
+#if defined(_WIN32)
     auto glTriType = GL_TRIANGLES;
 
     switch (triangleType)
     {
-        case TriangleType::TriangleList: { glTriType = GL_TRIANGLES; break; }
-        case TriangleType::TriangleStrip: { glTriType = GL_TRIANGLE_STRIP; break; }
+    case TriangleType::TriangleList: { glTriType = GL_TRIANGLES; break; }
+    case TriangleType::TriangleStrip: { glTriType = GL_TRIANGLE_STRIP; break; }
     }
     glDrawElements(glTriType, indicesCount, GL_UNSIGNED_INT, nullptr);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::drawIndexedTrianglesInstanced(const TriangleType& triangleType, uint indicesCount, int instanceCount)
 {
+#if defined(_WIN32)
     auto glTriType = GL_TRIANGLES;
 
     switch (triangleType)
     {
-        case TriangleType::TriangleList: { glTriType = GL_TRIANGLES; break; }
-        case TriangleType::TriangleStrip: { glTriType = GL_TRIANGLE_STRIP; break; }
+    case TriangleType::TriangleList: { glTriType = GL_TRIANGLES; break; }
+    case TriangleType::TriangleStrip: { glTriType = GL_TRIANGLE_STRIP; break; }
     }
     glDrawElementsInstanced(glTriType, indicesCount, GL_UNSIGNED_INT, nullptr, instanceCount);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::drawLines(const LineType& lineType, uint vertexCount, uint offset)
 {
+#if defined(_WIN32)
     GLenum glLineType = GL_LINES; // Default to GL_LINES
     switch (lineType)
     {
@@ -396,10 +496,12 @@ void GraphicsEngine::drawLines(const LineType& lineType, uint vertexCount, uint 
         break;
     }
     glDrawArrays(glLineType, offset, vertexCount);
+#elif defined(__PROSPERO__)
+    // TODO:Implement
+#endif
 }
 
 void GraphicsEngine::CleanUp()
 {
-    currentShader.reset();
+    m_currentActiveShader.reset();
 }
-

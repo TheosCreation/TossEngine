@@ -184,11 +184,11 @@ Vector3 Camera::screenToWorldPoint(Vector3 pixelZ)
     Mat4 V, P;
     getViewMatrix(V);
     getProjectionMatrix(P);
-    glm::mat4 invVP = glm::inverse(P.value * V.value);
+    Mat4 invVP = (P * V).Inverse();
 
     // unproject near and far
-    glm::vec4 p0 = invVP * glm::vec4(ndcX, ndcY, -1.f, 1.f); p0 /= p0.w;
-    glm::vec4 p1 = invVP * glm::vec4(ndcX, ndcY, 1.f, 1.f); p1 /= p1.w;
+    Vector4 p0 = invVP * Vector4(ndcX, ndcY, -1.f, 1.f); p0 /= p0.w;
+    Vector4 p1 = invVP * Vector4(ndcX, ndcY, 1.f, 1.f); p1 /= p1.w;
 
     Vector3 origin(p0.x, p0.y, p0.z);
     Vector3 dir = (Vector3(p1.x, p1.y, p1.z) - origin).Normalized();

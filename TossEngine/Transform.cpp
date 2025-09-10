@@ -64,16 +64,16 @@ void Transform::SetMatrix(const Mat4& matrix)
 
 void Transform::DecomposeMatrix(const Mat4& m, Vector3& pos, Quaternion& rot, Vector3& scl)
 {
-    pos = Vector3(m.value.mCol0[3]);
-    scl.x = glm::length(glm::vec3(m.value[0]));
-    scl.y = glm::length(glm::vec3(m.value[1]));
-    scl.z = glm::length(glm::vec3(m.value[2]));
+    pos = Vector3(m[3]);
+    scl.x = Vector3(m[0]).Length();
+    scl.y = Vector3(m[1]).Length();
+    scl.z = Vector3(m[2]).Length();
 
-    glm::mat4 rotMat(1.0f);
-    rotMat[0] = glm::vec4(glm::normalize(glm::vec3(m.value[0])), 0.0f);
-    rotMat[1] = glm::vec4(glm::normalize(glm::vec3(m.value[1])), 0.0f);
-    rotMat[2] = glm::vec4(glm::normalize(glm::vec3(m.value[2])), 0.0f);
-    rot = Quaternion(glm::quat_cast(rotMat));
+    Mat4 rotMat(1.0f);
+    rotMat[0] = Vector4(Vector3(m[0]).Normalized(), 0.0f);
+    rotMat[1] = Vector4(Vector3(m[1]).Normalized(), 0.0f);
+    rotMat[2] = Vector4(Vector3(m[2]).Normalized(), 0.0f);
+    rot = Quaternion(rotMat);
 }
 
 void Transform::UpdateWorldTransform()

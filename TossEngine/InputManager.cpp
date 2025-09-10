@@ -19,9 +19,9 @@ Mail : theo.morris@mds.ac.nz
 #include <imgui.h>
 
 #if defined(_WIN32)
-#include <imgui_impl_glfw.h>
 #include <glew.h>
 #include <glfw3.h>
+#include <imgui_impl_glfw.h>
 
 #elif defined(__PROSPERO__)
 // TODO: includes
@@ -43,16 +43,16 @@ void InputManager::Init(ProjectSettingsPtr& projectSettings)
 {
     if (isInitilized) return;
 
-#ifdef __PROSPERO__
-    // TODO: Hook into Prospero input system later
-#elif defined(_WIN32)
+#if defined(_WIN32)
     WindowPtr = TossEngine::GetInstance().GetWindow()->getNativeHandle();
     glfwSetScrollCallback(static_cast<GLFWwindow*>(WindowPtr), scroll_callback);
     glfwSetKeyCallback(static_cast<GLFWwindow*>(WindowPtr), key_callback);
     glfwSetMouseButtonCallback(static_cast<GLFWwindow*>(WindowPtr), mouse_button_callback);
     glfwSetCharCallback(static_cast<GLFWwindow*>(WindowPtr), char_callback);
-#endif
 
+#elif defined(__PROSPERO__)
+    // TODO: includes
+#endif
     isInitilized = true;
 }
 
@@ -60,14 +60,15 @@ void InputManager::Init(TossPlayerSettingsPtr& playerSettings)
 {
     if (isInitilized) return;
 
-#ifdef __PROSPERO__
-    // TODO: Hook into Prospero input system later
-#elif defined(_WIN32)
+#if defined(_WIN32)
     WindowPtr = TossEngine::GetInstance().GetWindow()->getNativeHandle();
     glfwSetScrollCallback(static_cast<GLFWwindow*>(WindowPtr), scroll_callback);
     glfwSetKeyCallback(static_cast<GLFWwindow*>(WindowPtr), key_callback);
     glfwSetMouseButtonCallback(static_cast<GLFWwindow*>(WindowPtr), mouse_button_callback);
     glfwSetCharCallback(static_cast<GLFWwindow*>(WindowPtr), char_callback);
+
+#elif defined(__PROSPERO__)
+    // TODO: includes
 #endif
 
     isInitilized = true;

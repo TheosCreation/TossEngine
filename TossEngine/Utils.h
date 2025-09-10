@@ -46,6 +46,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Mat3.h"
 #include "Transform.h"
 #include "Time.h"
+#include "imgui.h"
 #include "imgui_stdlib.h"
 
 namespace fs = std::filesystem;
@@ -270,8 +271,8 @@ struct SoundDesc
 
 struct UniformBinding {
     std::string name;  // Name of the uniform
-    GLenum type;       // GL type (e.g. GL_FLOAT_VEC3, GL_INT, etc.)
-    GLint size;
+    uint type;       // GL type (e.g. GL_FLOAT_VEC3, GL_INT, etc.)
+    int size;
 };
 
 struct MaterialDesc

@@ -80,7 +80,7 @@ public:
     void setMat4(const std::string& name, const Mat4& mat) const
     {
 #if defined(_WIN32)
-        glUniformMatrix4fv(glGetUniformLocation(m_programId, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat.value));
+        glUniformMatrix4fv(glGetUniformLocation(m_programId, name.c_str()), 1, GL_FALSE, mat.Data());
 #elif defined(__PROSPERO__)
 
 #endif
@@ -95,7 +95,7 @@ public:
     void setMat4Array(const std::string& name, const Mat4 mat[], int count) const
     {
 #if defined(_WIN32)
-        glUniformMatrix4fv(glGetUniformLocation(m_programId, name.c_str()), count, GL_FALSE, glm::value_ptr(mat[0].value));
+        glUniformMatrix4fv(glGetUniformLocation(m_programId, name.c_str()), count, GL_FALSE, mat[0].Data());
 #elif defined(__PROSPERO__)
 
 #endif

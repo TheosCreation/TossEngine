@@ -4,7 +4,7 @@
 
 Mat3::Mat3(const Mat4& mat)
 {
-    value = glm::mat3(mat.value);
+    value = glm::mat3(mat);
 }
 
 Mat3::Mat3(const Vector3& v1, const Vector3& v2, const Vector3& v3)

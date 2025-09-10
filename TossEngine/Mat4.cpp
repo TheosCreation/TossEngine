@@ -18,6 +18,8 @@ Mat4::Mat4(const Quaternion& quat)
     value = glm::mat4_cast(glmQuat);
 }
 
+Mat4::Mat4(const glm::mat4& m) : value(m) {}
+
 Mat4 Mat4::Inverse()
 {
     return glm::inverse(value);
@@ -57,4 +59,52 @@ Vector3 Mat4::TransformPoint(const Vector3& point) const
 {
     glm::vec4 temp = value * glm::vec4(point.x, point.y, point.z, 1.0f);
     return Vector3(temp.x, temp.y, temp.z);
+}
+
+const float* Mat4::Data() const
+{
+#if defined(_WIN32)
+    return glm::value_ptr(value);
+#elif defined(__PROSPERO__)
+    return reinterpret_cast<const float*>(&value); // assuming SceMatrix4 is float[4][4]
+#endif
+}
+
+float* Mat4::Data()
+{
+#if defined(_WIN32)
+    return glm::value_ptr(value);
+#elif defined(__PROSPERO__)
+    return reinterpret_cast<float*>(&value);
+#endif
+}
+
+Vector4 Mat4::operator[](int row)
+{
+    return value[row];
+}
+
+Vector4 Mat4::operator[](int row) const
+{
+    return value[row];
+}
+
+Mat4 Mat4::operator*(const Mat4& other) const
+{
+    return Mat4(value * other.value);
+}
+
+Vector4 Mat4::operator*(const Vector4& v4) const
+{
+#if defined(_WIN32)
+    return Vector4(value * v4);
+#elif defined(__PROSPERO__)
+    // TODO: implement PlayStation version
+#endif
+}
+
+Mat4& Mat4::operator*=(const Mat4& other)
+{
+    value *= other.value;
+    return *this;
 }
