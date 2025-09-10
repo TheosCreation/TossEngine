@@ -10,17 +10,39 @@ Author : Theo Morris
 Mail : theo.morris@mds.ac.nz
 **/
 
-#include <windows.h>
 #include "TossEngine.h"
 
+#ifdef _WIN32
+#ifndef APIENTRY
+#define APIENTRY __stdcall
+#endif
+
+#ifndef BOOL
+typedef int BOOL;
+#endif
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
+
+typedef void* HMODULE;
+typedef unsigned long DWORD;
+typedef void* LPVOID;
+
+extern "C" __declspec(dllexport)
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
     switch (ul_reason_for_call)
     {
-    case DLL_PROCESS_ATTACH:
+    case 1: // DLL_PROCESS_ATTACH
         break;
-    case DLL_PROCESS_DETACH:
+    case 0: // DLL_PROCESS_DETACH
         break;
     }
     return TRUE;
 }
+#endif

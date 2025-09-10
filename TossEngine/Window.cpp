@@ -12,11 +12,15 @@ Mail : theo.morris@mds.ac.nz
 
 #include "Window.h"
 #include <imgui.h>
+#include <ImGuizmo.h>
+
+#ifdef __PROSPERO__
+#else
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <glew.h>
 #include <glfw3.h>
-#include <ImGuizmo.h>
+#endif
 
 Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool maximized)
 {
@@ -25,6 +29,8 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
     m_windowName = windowName;
     m_maximized = maximized;
 
+#ifdef __PROSPERO__
+#else
     // Set GLFW window hints
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -37,14 +43,14 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
     glfwWindowHint(GLFW_SAMPLES, 4);
 
     // Create a GLFW window
-    m_windowPtr = glfwCreateWindow(static_cast<int>(m_size.x), static_cast<int>(m_size.y), windowName.c_str(), nullptr, nullptr);
-    if (!m_windowPtr)
+    m_nativeHandle = glfwCreateWindow(static_cast<int>(m_size.x), static_cast<int>(m_size.y), windowName.c_str(), nullptr, nullptr);
+    if (!m_nativeHandle)
     {
         Debug::LogError("GLFW failed to initialize properly. Terminating program.");
         glfwTerminate();
         return;
     }
-    
+
     // Make the context current before initializing GLEW
     enableVsync(vsync);
     makeCurrentContext();
@@ -58,10 +64,10 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
     }
 
     // Set GLFW user pointer to 'this' for access in callback functions
-    glfwSetWindowUserPointer(m_windowPtr, this);
+    glfwSetWindowUserPointer(static_cast<GLFWwindow*>(m_nativeHandle), this);
 
     // Set the window resize callback
-    glfwSetWindowSizeCallback(m_windowPtr, [](GLFWwindow* window, int width, int height)
+    glfwSetWindowSizeCallback(static_cast<GLFWwindow*>(m_nativeHandle), [](GLFWwindow* window, int width, int height)
         {
             // Get the user pointer, which is the 'Window' instance
             if (Window* display = static_cast<Window*>(glfwGetWindowUserPointer(window)))
@@ -70,18 +76,19 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
             }
         });
 
-    glfwSetWindowMaximizeCallback(m_windowPtr, [](GLFWwindow* window, int maximized) {
+    glfwSetWindowMaximizeCallback(static_cast<GLFWwindow*>(m_nativeHandle), [](GLFWwindow* window, int maximized) {
         if (Window* display = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
             display->onMaximize(maximized);
         }
         });
 
     // Show the window
-    glfwShowWindow(m_windowPtr); 
+    glfwShowWindow(static_cast<GLFWwindow*>(m_nativeHandle));
     
     if (m_maximized) {
-        glfwMaximizeWindow(m_windowPtr);
+        glfwMaximizeWindow(static_cast<GLFWwindow*>(m_nativeHandle));
     }
+#endif
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -90,42 +97,59 @@ Window::Window(Resizable* owner, Vector2 size, const string& windowName, bool ma
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(m_windowPtr, true);
+
+#ifdef __PROSPERO__
+#else
+    ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(m_nativeHandle), true);
     ImGui_ImplOpenGL3_Init("#version 460");
+#endif
 }
 
 Window::~Window()
 {
     // Cleanup ImGui
+#ifdef __PROSPERO__
+#else
     ImGui_ImplOpenGL3_Shutdown();  // Cleanup OpenGL bindings
     ImGui_ImplGlfw_Shutdown();     // Cleanup GLFW bindings
+#endif
+
     ImGui::DestroyContext();       // Destroy ImGui context
 
+#ifdef __PROSPERO__
+#else
     glfwMakeContextCurrent(nullptr);
     // Destroy the GLFW window
-    glfwDestroyWindow(m_windowPtr);
+    glfwDestroyWindow(static_cast<GLFWwindow*>(m_nativeHandle));
     // Terminate GLFW
     //glfwTerminate();
+#endif
 }
 
 Vector2 Window::getInnerSize() const
 {
     int width, height;
-    glfwGetFramebufferSize(m_windowPtr, &width, &height);
+#ifdef __PROSPERO__
+#else
+    glfwGetFramebufferSize(static_cast<GLFWwindow*>(m_nativeHandle), &width, &height);
+#endif
     return {static_cast<float>(width), static_cast<float>(height)};
 }
 
-GLFWwindow* Window::getWindow() const
+void* Window::getNativeHandle() const
 {
-    return m_windowPtr;
+    return m_nativeHandle;
 }
 
 void Window::setWindowName(const string& windowName)
 {
     m_windowName = windowName;
 
-    if (m_windowPtr) {
-        glfwSetWindowTitle(m_windowPtr, windowName.c_str()); // Update GLFW window title
+    if (m_nativeHandle) {
+#ifdef __PROSPERO__
+#else
+        glfwSetWindowTitle(static_cast<GLFWwindow*>(m_nativeHandle), windowName.c_str()); // Update GLFW window title
+#endif
     }
 }
 
@@ -136,24 +160,36 @@ void Window::setOwner(Resizable* newOwner)
 
 void Window::makeCurrentContext() const
 {
-    glfwMakeContextCurrent(m_windowPtr);
+#ifdef __PROSPERO__
+#else
+    glfwMakeContextCurrent(static_cast<GLFWwindow*>(m_nativeHandle));
+#endif
 }
 
 void Window::enableVsync(bool _vsync)
 {
     vsync = _vsync;
+#ifdef __PROSPERO__
+#else
     glfwSwapInterval(_vsync ? 1 : 0);
+#endif
 }
 
 void Window::present() const
 {
-    glfwSwapBuffers(m_windowPtr);
+#ifdef __PROSPERO__
+#else
+    glfwSwapBuffers(static_cast<GLFWwindow*>(m_nativeHandle));
+#endif
 }
 
 void Window::close() const
 {
-    if(m_windowPtr) {
-        glfwSetWindowShouldClose(m_windowPtr, GLFW_TRUE);
+    if(m_nativeHandle) {
+#ifdef __PROSPERO__
+#else
+        glfwSetWindowShouldClose(static_cast<GLFWwindow*>(m_nativeHandle), GLFW_TRUE);
+#endif
     }
 }
 
@@ -174,6 +210,10 @@ void Window::onMaximize(int maximized)
 
 bool Window::shouldClose() const
 {
-    return glfwWindowShouldClose(m_windowPtr);
+#ifdef __PROSPERO__
+    return false;
+#else
+    return glfwWindowShouldClose(static_cast<GLFWwindow*>(m_nativeHandle));
+#endif
 }
 

@@ -1,0 +1,121 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+static const int k_bin_count = 128;
+static const float k_exposure_quantization = 128.0;
+static const float k_ISO_speed = 100.f;
+static const float K = 12.5f; // reflected light meter calibration constant (Canon and Nikon use 12.5)
+
+float ev100_to_nit(float ev)
+{
+   return exp2(ev) * K / k_ISO_speed;
+}
+
+float4 nit_to_ev100(float4 nit, float log_wp)
+{
+   return log2(nit * k_ISO_speed / K) + log_wp;
+}
+
+
+thread_group_memory float EV_dist[k_bin_count];
+thread_group_memory float nit_store[k_bin_count];
+
+struct ShaderParams
+{
+   DataBuffer<uint> buckets;
+   RW_DataBuffer<float> exposure;
+   float ev_min;
+   float ev_range;
+   float ev_target;
+   float up_speed;
+   float down_speed;
+   float low_threshold;
+   float high_threshold;
+};
+
+ShaderParams srt : S_SRT_DATA;
+[CxxSymbol("psfx::exposure_shader_gather")]
+[NUM_THREADS(64, 1, 1)]
+void main(uint thread_id : S_GROUP_THREAD_ID)
+{
+   const float ev_range = srt.ev_range;
+   float total_pixel_count = 0;
+   {  // Read buckets in LDS
+      const float b1 = srt.buckets[thread_id]      / k_exposure_quantization;
+      const float b2 = srt.buckets[thread_id + 64] / k_exposure_quantization;
+      EV_dist[thread_id]     = b1;
+      EV_dist[thread_id + 64] = b2;
+
+      total_pixel_count = CrossLaneAdd(b1);
+      total_pixel_count += CrossLaneAdd(b2);
+
+      const float ev_scale = ev_range / k_bin_count;
+      float b1_ev = mad(float(thread_id + 0.5), ev_scale, srt.ev_min);
+      float b2_ev = mad(float(thread_id + 64.5), ev_scale, srt.ev_min);
+      nit_store[thread_id] = ev100_to_nit(b1_ev);
+      nit_store[thread_id + 64] = ev100_to_nit(b2_ev);
+
+      ThreadGroupMemoryBarrierSync();
+   }
+
+   if (thread_id == 0)
+   {
+      const float low_th   = total_pixel_count * srt.low_threshold;
+      const float range_th = total_pixel_count * (srt.high_threshold - srt.low_threshold);
+      float pixel_count = 0;
+      int bucket = 0;
+      float last_bucket = 0;
+      // discard buckets untill we reach the low threshold
+      [loop]
+      while ((pixel_count < low_th) && (bucket < 128))
+      {
+         last_bucket = EV_dist[bucket];
+         pixel_count += last_bucket;
+         bucket++;
+      }
+      bucket = max(bucket - 1, 0);
+      const int min_bucket = bucket;
+      float extra_pixel = last_bucket - (pixel_count - low_th);
+
+      pixel_count = 0;
+      // compute average until we reach high threshold
+      float avg_nit = 0.0;
+      [loop]
+      while ((pixel_count < range_th) && (bucket < 128))
+      {
+         const float bucket_count = EV_dist[bucket] - extra_pixel; // take accout of pixel below low threshold
+         pixel_count += bucket_count;
+
+         extra_pixel = max(0, (pixel_count - range_th)); // pixel higher than range
+         avg_nit += nit_store[bucket] * (bucket_count - extra_pixel);
+         extra_pixel = 0.0;
+         bucket++;
+      }
+      avg_nit /= float(range_th);
+
+      // TODO: Maybe is a better idea to interpolate the EV value
+      // const float current_ev    = nit_to_ev100(avg_nit);
+      // const float delta_ev    = current_ev - srt.ev_target;
+      const float target_nit    = ev100_to_nit(srt.ev_target);
+      const float prev_exposure = srt.exposure[0];
+      const float new_exposure  = target_nit / max(1e-7, avg_nit);
+
+      float speed = srt.up_speed;
+      if (new_exposure > prev_exposure)
+      {
+         speed = srt.down_speed;
+      }
+
+      srt.exposure[0] = lerp(new_exposure, prev_exposure, speed);
+      srt.exposure[1] = avg_nit;
+      srt.exposure[2] = (float)srt.ev_min;
+      srt.exposure[3] = (float)srt.ev_range;
+      srt.exposure[4] = (float)min_bucket;
+      srt.exposure[5] = (float)bucket;
+   }
+}
+
+

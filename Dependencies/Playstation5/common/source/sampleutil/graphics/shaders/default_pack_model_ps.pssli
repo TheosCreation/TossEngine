@@ -1,0 +1,97 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2023 Sony Interactive Entertainment Inc.
+ * 
+ */
+#pragma once
+
+#include <sampleutil/graphics/material.h>
+#include <sampleutil/graphics/pack_model_common.h>
+#include "pack_vertex.pssli"
+#include "lighting.pssli"
+#include "helper_functions.pssli"
+
+#pragma argument(scalarizesharps)
+
+using namespace sce::SampleUtil::Graphics;
+
+struct ShadingUserData
+{
+	float4x4	m_viewProjectionMatrix;
+	float3		m_cameraPosition;
+	float3		m_lightPosition;
+	float		m_ambient;
+	float		m_shininess;
+	int			m_hdr;
+};
+
+struct PsUserData
+{
+	RegularBuffer<ShaderMaterial>			m_materialBuffer;
+	RegularBuffer<MeshInstanceUserData>		m_meshInstanceBuffer;
+	ShadingUserData							*m_pShadingUserData;
+} g_userData : S_SRT_DATA;
+
+template<typename T>
+float4 	phong(V2P<T>	input, bool	hasSpecular = true, bool	alphaTest = true)
+{
+	const uint				materialIndex	= g_userData.m_meshInstanceBuffer[input.m_instanceId].m_materialIndex;
+	const ShaderMaterial	&material		= g_userData.m_materialBuffer[materialIndex];
+
+	float3	diffuse	= material.m_diffuseWeights;
+	float3	N		= input.m_normalInWorld;
+	if constexpr(T::kUvCount > 0) {
+#if defined ( __PROSPERO__ )
+		sce::Agc::Core::Sampler	sampler;
+		sampler.init()
+			.setMipFilterMode(sce::Agc::Core::Sampler::MipFilterMode::kLinear)
+			.setXyFilterMode(sce::Agc::Core::Sampler::FilterMode::kBilinear, sce::Agc::Core::Sampler::FilterMode::kBilinear);
+#endif
+#if defined ( __ORBIS__ )
+		sce::Gnm::Sampler sampler;
+		sampler.init();
+		sampler.setMipFilterMode(sce::Gnm::kMipFilterModeLinear);
+		sampler.setXyFilterMode(sce::Gnm::kFilterModeBilinear, sce::Gnm::kFilterModeBilinear);
+#endif
+
+		float	mask	= material.m_maskMap.Sample(sampler, input.m_uv0);
+		if (alphaTest && mask < 0.05f)
+		{
+			discard;
+		}
+		diffuse			*= material.m_diffuseMap.Sample(sampler, input.m_uv0);
+		if constexpr(T::kHasTangent) {
+			float3	normal				= material.m_normalMap.Sample(sampler, input.m_uv0).xyz * 2.f - 1.f;
+			float3	bitangentInWorld	= cross(input.m_normalInWorld, input.m_tangentInWorld.xyz);
+			if (input.m_tangentInWorld.w < 0.f)
+			{
+				bitangentInWorld		= -bitangentInWorld;
+			}
+			N = normalize(mul(normal, float3x3(input.m_tangentInWorld.xyz, bitangentInWorld, input.m_normalInWorld)));
+		}
+	}
+	if constexpr(T::kHasColor) {
+		diffuse	*= input.m_color;
+	}
+	ShadingUserData	*pShadingUserData = g_userData.m_pShadingUserData;
+	float3	L = normalize(pShadingUserData->m_lightPosition - input.m_positionInWorld);
+	float3	outColor = diffuse * (max(0.f, dot(N,L)) + pShadingUserData->m_ambient);
+	if (hasSpecular) {
+		float3	V = normalize(pShadingUserData->m_cameraPosition - input.m_positionInWorld);
+		float3	H = normalize((L + V) * 0.5f);
+		if (dot(N,L) >= 0.f && dot(N, H) >= 0.f) {
+			outColor += pow(dot(N, H), pShadingUserData->m_shininess);
+		}
+	}
+	switch(pShadingUserData->m_hdr)
+	{
+	case 1: // kBT2020_PQ
+		return	PQ_OETF(float4(mul(BT709_TO_BT2020, outColor), 1.f));
+	case 2: // kBT2020_Linear
+		return	float4(kSdrWhiteLevel * mul(BT709_TO_BT2020, outColor), 1.f);
+	case 3: // kP3D65
+		return	BT1886_OETF(float4(mul(BT709_TO_DCIP3, outColor), 1.f));
+	default: // kBT709
+		return	float4(outColor, 1.f);
+	}
+}

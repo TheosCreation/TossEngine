@@ -43,10 +43,14 @@ public:
      */
     Vector2(float x, float y) : x(x), y(y) {}
 
+#ifdef __PROSPERO__
+    Vector2(const SceVector2 v) : x(v.getX()), y(v.getY()) {}
+#else
     /**
      * @brief Constructs from a glm::vec2.
      */
     Vector2(const glm::vec2& v) : x(v.x), y(v.y) {}
+#endif
 
     // --- Utility Functions ---
 

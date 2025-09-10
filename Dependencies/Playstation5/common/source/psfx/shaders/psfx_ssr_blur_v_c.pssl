@@ -1,0 +1,9 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#define BLUR_V
+#define SYMBOL_NAME "psfx::ssr_blur_v"
+#include "psfx_ssr_blur_h_c.pssl"

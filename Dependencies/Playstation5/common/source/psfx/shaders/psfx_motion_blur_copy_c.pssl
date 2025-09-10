@@ -1,0 +1,28 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_motion_blur.h"
+
+CopySrt* srt_data : S_SRT_DATA;
+
+[CxxSymbol("psfx::motion_blur_copy")]
+[NUM_THREADS(k_blur_group_size, k_blur_group_size, 1)]
+void main(
+   uint2 group_thread_id : S_GROUP_THREAD_ID,
+   uint group_id         : S_GROUP_ID)
+{
+   const uint group_div   = group_id / k_blur_groups_per_tile;
+   const uint group_mod   = group_id % k_blur_groups_per_tile;
+   const uint tile_packed = srt_data->tile_buffer[group_div];
+   const uint2 tile_index = uint2(tile_packed >> 16, tile_packed & 0xffff);
+
+   const int2 pos =
+      (tile_index * k_motion_blur_tile_size) +
+      (uint2(group_mod % k_blur_groups_per_tile_dim, group_mod / k_blur_groups_per_tile_dim) * k_blur_group_size) +
+      group_thread_id;
+
+   srt_data->dest[pos] = float4(srt_data->source[pos], 1.0f);
+}

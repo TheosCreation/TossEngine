@@ -1,0 +1,31 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2019 Sony Interactive Entertainment Inc. 
+ * 
+ */
+
+struct PS_INPUT
+{
+    float4 m_pos : S_POSITION;
+    float4 m_col : COLOR0;
+    float2 m_uv  : TEXCOORD0;
+};
+
+#include "imgui_srt_common.h"
+
+
+sce::SampleUtil::UIFramework::ImguiSrtData userData : S_SRT_DATA;
+
+#if defined ( __PROSPERO__ )
+[CxxSymbol("Shader::sampleutil_imgui_vv")]
+#endif
+PS_INPUT main(uint id : S_VERTEX_ID)
+{
+	sce::SampleUtil::UIFramework::ImDrawVert input = userData.m_frameData->m_vertex[id + userData.m_drawData->m_vtxOffset];
+
+    PS_INPUT output;
+    output.m_pos = mul( userData.m_frameData->m_mvp, float4(input.m_pos.xy, input.m_depth, 1.f));
+    output.m_col = float4((input.m_col & 0xff) / 255.0, ((input.m_col >> 8) & 0xff) / 255.0, ((input.m_col >> 16) & 0xff) / 255.0, ((input.m_col >> 24) & 0xff) / 255.0);
+    output.m_uv  = input.m_uv;
+    return output;
+}

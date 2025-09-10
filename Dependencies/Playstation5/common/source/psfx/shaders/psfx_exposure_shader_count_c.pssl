@@ -1,0 +1,121 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+
+static const int k_bin_count = 128;
+
+thread_group_memory uint EV_dist[k_bin_count];
+
+struct Buffers
+{
+#ifdef IS_MULTI_SAMPLE
+   MS_Texture2D<float3> source;
+#else
+   Texture2D<float3> source;
+#endif
+   RW_ByteBuffer buckets;
+};
+
+struct ShaderParams
+{
+   Buffers* buffers;
+   float2 tx_inv_size;
+   float ev_min;
+   float ev_max;
+   float ev_adjust;
+   uint2 offset;
+};
+
+static float3 k_luma_const_bt709 = float3(0.2126, 0.7152, 0.0722);
+static float3 k_luma_const_bt2020 = float3(0.2627, 0.6780, 0.0593);
+static float3 k_luma_const = k_luma_const_bt709;
+
+float4 nit_to_ev100(float4 nit, float log_wp)
+{
+   return log2(nit * 100 / 12.5) + log_wp;
+}
+
+const ShaderParams srt : S_SRT_DATA;
+
+#ifndef SYMBOL_NAME
+#define SYMBOL_NAME "psfx::exposure_shader_count"
+#endif
+[CxxSymbol(SYMBOL_NAME)]
+[NUM_THREADS(8, 8, 1)]
+void main(uint2 macro_tile_id : S_GROUP_ID, uint2 thread_id : S_GROUP_THREAD_ID)
+{
+   uint bucked_idx = (thread_id.x + thread_id.y * 8);
+   EV_dist[bucked_idx] = 0;
+   EV_dist[bucked_idx + 64] = 0;
+
+   ThreadGroupMemoryBarrierSync();
+
+   uint2 pixel_pos = macro_tile_id * 16 + thread_id * 2 + srt.offset;
+
+#ifndef IS_MULTI_SAMPLE
+   float2 location = (pixel_pos + 0.5) * srt.tx_inv_size;
+
+   const SamplerState point_sampler = make_point_sampler();
+
+   float4 samples[3];
+   samples[0] = srt.buffers->source.GatherRed(point_sampler, location);
+   samples[1] = srt.buffers->source.GatherGreen(point_sampler, location);
+   samples[2] = srt.buffers->source.GatherBlue(point_sampler, location);
+   float4 luma = samples[0] * k_luma_const.r +
+                 samples[1] * k_luma_const.g +
+                 samples[2] * k_luma_const.b;
+#else
+   // Multisample case read only the first sample, that should be alright for luminosity computation.
+   float4 luma = float4(0.0);
+   luma[0] = dot( (srt.buffers->source.Load(pixel_pos, 0)), k_luma_const);
+   luma[1] = dot( (srt.buffers->source.Load(pixel_pos + int2(1, 0), 0)), k_luma_const);
+   luma[2] = dot( (srt.buffers->source.Load(pixel_pos + int2(0, 1), 0)), k_luma_const);
+   luma[3] = dot( (srt.buffers->source.Load(pixel_pos + int2(1, 1), 0)), k_luma_const);
+#endif
+   int4 buckets = int4(-1);
+   const float4 ev = nit_to_ev100(luma + 1e-7, srt.ev_adjust);
+   const float  ev_scale = rcp(srt.ev_max - srt.ev_min);
+   const float4 norm_ev = ((ev - srt.ev_min) * ev_scale);
+   // Using floor here is correct as during the gather we consider the bucket as middle point
+   //  eg. All the value between 60.0 and 60.999 will end in bucket 60 and will be considered as 60.5
+   buckets = int4(floor(min(norm_ev * k_bin_count, (float4)(k_bin_count - 1))));
+
+
+
+   // This shader is bounded by LDS bank conflicts.
+   // Assuming that near pixel have similar luminosity
+   // we try to check how many pixels goes in the same bucket.
+   uint4 count;
+   [unroll]
+   for (uint start = 0; start < 4; ++start)
+   {
+      const int bucket = buckets[start];
+      count[start] = 1;
+      [unroll]
+      for (int i = start + 1; i < 4; ++i)
+      {
+         if(bucket == buckets[i])
+         {
+            count[start]++;
+            buckets[i] = -1;
+         }
+      }
+   }
+   [unroll]
+   for (int i = 0; i < 4; ++i)
+   {
+      if (buckets[i] >= 0)
+         AtomicAdd(EV_dist[buckets[i]], count[i]);
+   }
+
+   ThreadGroupMemoryBarrierSync();
+   uint store_id = 4 * bucked_idx;
+   uint A = EV_dist[bucked_idx];
+   srt.buffers->buckets.AtomicAdd(store_id,       A);
+   uint B = EV_dist[bucked_idx + 64];
+   srt.buffers->buckets.AtomicAdd(store_id + 256, B);
+}

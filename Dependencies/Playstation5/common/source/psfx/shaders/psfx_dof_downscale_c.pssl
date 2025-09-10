@@ -1,0 +1,99 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+#pragma argument(scheduler=cachethrashing)
+struct InTextures
+{
+   Texture2D<float3>  color_source;
+   Texture2D<float2>  coc_source;
+};
+
+struct OutTextures
+{
+   RW_Texture2D<float2> out_coc;
+   RW_Texture2D<float4> out_near;
+   RW_Texture2D<float4> out_far;
+};
+
+struct ShaderParam
+{
+   InTextures* in_tx;
+   OutTextures* out_tx;
+
+   float2 tx_inv_size;
+};
+
+static const SamplerState point_sampler = make_point_sampler();
+static const SamplerState bi_sampler = make_bilinear_sampler();
+
+float2 compute_coc(in float depth, float4 dof_params)
+{
+   float f0 = 1.0 - saturate((depth - dof_params.x) * dof_params.y);
+   float f1 = saturate((depth - dof_params.z) * dof_params.w);
+   return float2(f0, f1);
+}
+
+float4 compute_coc_near(in float4 depth, float4 dof_params)
+{
+   return 1.0 - saturate((depth - dof_params.x) * dof_params.y);
+}
+
+float4 compute_coc_far(in float4 depth, float4 dof_params)
+{
+   return saturate((depth - dof_params.z) * dof_params.w);
+}
+
+
+const ShaderParam srt_data : S_SRT_DATA;
+static const uint k_wavefront_size = 8;
+[CxxSymbol("psfx::dof_downscale")]
+[NUM_THREADS(64, 1, 1)]
+void main(uint3 tile_id : S_GROUP_ID, uint2 thread_id : S_GROUP_THREAD_ID)
+{
+    uint index = thread_id.x ;
+    uint x = (((index >> 2) & 0x0007) & 0xFFFE) | index & 0x0001;
+    uint y = ((index >> 1) & 0x0003)| (((index>>3) & 0x0007)& 0xFFFC);
+   const uint2 out_pixel = (tile_id * k_wavefront_size + uint2(x,y));
+   const uint2 start_point = out_pixel * 4;
+
+   float2 depth_min_max = { 1.0f, .0f };
+   float2 coc_avg = { 0.0f, .0f };
+
+
+   const uint2 offsets[] = { uint2(1, 1), uint2(3, 1), uint2(1, 3), uint2(3, 3) };
+   float3 sample_n = float3(0.f);
+   float3 sample_f = float3(0.f);
+
+   [unroll]
+   for (int i = 0; i < 4; ++i)
+   {
+      const uint2 read_pixel = start_point + offsets[i];
+      const float2 gather_uv = (read_pixel + 0.5) * srt_data.tx_inv_size;
+      const float4 coc_near  = srt_data.in_tx->coc_source.GatherRed(point_sampler, gather_uv, 0);
+      const float4 coc_far   = srt_data.in_tx->coc_source.GatherGreen(point_sampler, gather_uv, 0);
+
+      const float4 sample_R = srt_data.in_tx->color_source.GatherRed(point_sampler, gather_uv, 0);
+      const float4 sample_G = srt_data.in_tx->color_source.GatherGreen(point_sampler, gather_uv, 0);
+      const float4 sample_B = srt_data.in_tx->color_source.GatherBlue(point_sampler, gather_uv, 0);
+
+
+      depth_min_max.x = min3(min3(coc_near.x, coc_near.y, coc_near.z), depth_min_max.x, coc_near.w);
+      depth_min_max.y = max3(max3(coc_far.x, coc_far.y, coc_far.z), depth_min_max.y, coc_far.w);
+      coc_avg.x += dot(coc_near, float4(0.25));
+      coc_avg.y += dot(coc_far, float4(0.25));
+
+      sample_n += float3(dot(sample_R, coc_near), dot(sample_G, coc_near), dot(sample_B, coc_near));
+      sample_f += float3(dot(sample_R, coc_far),  dot(sample_G, coc_far),  dot(sample_B, coc_far));
+   }
+   float3 near_accum = sample_n * 0.25;
+   float3 far_accum  = sample_f * 0.25;
+
+   srt_data.out_tx->out_near[out_pixel] = float4(near_accum, coc_avg.x);
+   srt_data.out_tx->out_far[out_pixel]  = float4(far_accum,  coc_avg.y);
+   srt_data.out_tx->out_coc[out_pixel]  = float2(depth_min_max.x, depth_min_max.y);
+}
+

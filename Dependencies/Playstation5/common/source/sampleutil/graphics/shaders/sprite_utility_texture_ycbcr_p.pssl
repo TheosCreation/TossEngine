@@ -1,0 +1,107 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2022 Sony Interactive Entertainment Inc.
+ * 
+ */
+#include "helper_functions.pssli"
+
+struct UserData
+{
+#if defined ( __PROSPERO__ )
+	sce::Agc::Core::Sampler	m_ySampler;
+#endif
+#if defined ( __ORBIS__ )
+	SamplerState	m_ySampler;
+#endif
+	Texture2D		m_yTexture;
+#if defined ( __PROSPERO__ )
+	sce::Agc::Core::Sampler	m_cbcrSampler;
+#endif
+#if defined ( __ORBIS__ )
+	SamplerState	m_cbcrSampler;
+#endif
+	Texture2D		m_cbcrTexture;
+	uint			m_bitDepth;
+	uint			m_yuvMode;
+	uint			m_isClampToLastTexel;
+	float2			m_yMinUv;
+	float2			m_yMaxUv;
+	float2			m_cbcrMinUv;
+	float2			m_cbcrMaxUv;
+};
+
+struct RenderParameters
+{
+	float4		m_rgba;
+	int			m_hdr;
+	int			__padding__[1];
+	UserData	*m_pUserData;
+};
+
+float3	yuv2rgb(const float3	yuv, const float3	B, const float3	D, const float	Kr, const float	Kg, const float	Kb, const float	NFCb, const float	NFCr)
+{
+	const float3 ycbcr = (yuv -	B) / D;
+	float3 rgb = 0;
+	rgb.b =	ycbcr.y	* NFCb + ycbcr.x;
+	rgb.r =	ycbcr.z	* NFCr + ycbcr.x;
+	rgb.g = (ycbcr.x - Kr *	rgb.r -	Kb * rgb.b)	/ Kg;
+
+	return	rgb;
+}
+
+#if defined ( __PROSPERO__ )
+[CxxSymbol("Shader::sprite_utility_texture_ycbcr_p")]
+#endif
+float4	main(in float2	uv, RenderParameters	srtData : S_SRT_DATA) : S_TARGET_OUTPUT
+{
+	float3	yuv;
+#if defined ( __PROSPERO__ )
+	float2	yUv = uv;
+	float2	cbcrUv = uv;
+	if (srtData.m_pUserData->m_cbcrSampler.getTextureCoordinates() == sce::Agc::Core::Sampler::TextureCoordinates::kUnnormalized)
+	{
+		cbcrUv *= 0.5f;
+	}
+
+	if (srtData.m_pUserData->m_isClampToLastTexel)
+	{
+		yuv = float3(croppedSample(srtData.m_pUserData->m_yTexture, srtData.m_pUserData->m_ySampler, yUv, srtData.m_pUserData->m_yMinUv, srtData.m_pUserData->m_yMaxUv).x,
+					croppedSample(srtData.m_pUserData->m_cbcrTexture, srtData.m_pUserData->m_cbcrSampler, cbcrUv, srtData.m_pUserData->m_cbcrMinUv, srtData.m_pUserData->m_cbcrMaxUv).xy);
+	} else {
+		yuv = float3(srtData.m_pUserData->m_yTexture.Sample(srtData.m_pUserData->m_ySampler, yUv).x,
+					srtData.m_pUserData->m_cbcrTexture.Sample(srtData.m_pUserData->m_cbcrSampler, cbcrUv).xy);
+	}
+#else
+	yuv = float3(srtData.m_pUserData->m_yTexture.Sample(srtData.m_pUserData->m_ySampler, uv).x,
+				srtData.m_pUserData->m_cbcrTexture.Sample(srtData.m_pUserData->m_cbcrSampler, uv).xy);
+#endif
+	if (srtData.m_pUserData->m_bitDepth > 8)
+	{
+		yuv	*= (float)(1 <<	(16	- srtData.m_pUserData->m_bitDepth));
+	}
+	float3 rgb = 0;
+	if (srtData.m_pUserData->m_yuvMode == 0)
+	{
+		// bt601
+		rgb	= yuv2rgb(yuv, float3(16.f, 128.f, 128.f) / 255.f, float3(235.f - 16.f, 240.f - 16.f, 240.f - 16.f) / 255.f, 0.299f, 0.587f, 0.114f, 1.772f, 1.402f);
+	} else if (srtData.m_pUserData->m_yuvMode == 1)
+	{
+		// bt709
+		rgb	= yuv2rgb(yuv, float3(16.f, 128.f, 128.f) / 255.f, float3(235.f - 16.f, 240.f - 16.f, 240.f - 16.f) / 255.f, 0.2126f, 0.7152f, 0.0722f, 1.8556f, 1.5748f);
+	} else {
+		// bt2020
+		rgb	= yuv2rgb(yuv, float3(16.f, 128.f, 128.f) / 255.f, float3(235.f - 16.f, 240.f - 16.f, 240.f - 16.f) / 255.f, 0.2627f, 0.6780f, 0.0593f, 1.8814f, 1.4746f);
+	}
+	float4 output = float4(rgb, 1.f) * srtData.m_rgba;
+	switch(srtData.m_hdr)
+	{
+	case 1: // kBT2020_PQ
+		return	PQ_OETF(float4((srtData.m_pUserData->m_yuvMode != 2) ? mul(BT709_TO_BT2020, output.rgb) : output.rgb, output.a));
+	case 2: // kBT2020_Linear
+		return	float4(kSdrWhiteLevel *((srtData.m_pUserData->m_yuvMode != 2) ? mul(BT709_TO_BT2020, output.rgb) : output.rgb), output.a);
+	case 3: // kP3D65
+		return	BT1886_OETF(float4(mul((srtData.m_pUserData->m_yuvMode != 2) ? BT709_TO_DCIP3 : mul(XYZ_TO_DCIP3, BT2020_TO_XYZ), output.rgb), output.a));
+	default: // kBt709
+		return	float4((srtData.m_pUserData->m_yuvMode == 2) ? mul(BT2020_TO_BT709, output.rgb) : output.rgb, output.a);
+	}
+}

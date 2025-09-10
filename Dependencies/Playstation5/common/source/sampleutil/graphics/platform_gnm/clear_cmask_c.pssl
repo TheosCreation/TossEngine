@@ -1,0 +1,25 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2015 Sony Interactive Entertainment Inc.
+ * 
+ */
+
+#include "sampleutil/graphics/shader_common.h"
+
+RW_DataBuffer<float4>	g_dstDataBuffer	: register(u0);
+
+struct UserData
+{
+	RW_DataBuffer<float4>	*pDstDataBuffer;
+};
+
+[NUM_THREADS(64,1,1)]
+void	main(in uint2 gid : S_GROUP_ID, in uint2 tid : S_GROUP_THREAD_ID, UserData srt_data : S_SRT_DATA)
+{
+	// Resource
+	g_dstDataBuffer	= *srt_data.pDstDataBuffer;
+
+	int pos = gid.x * 128 + tid.x;
+	g_dstDataBuffer[pos]		= 0;
+	g_dstDataBuffer[pos + 64]	= 0;
+}

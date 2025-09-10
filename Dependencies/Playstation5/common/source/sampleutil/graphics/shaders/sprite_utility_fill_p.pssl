@@ -1,0 +1,31 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2022 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "helper_functions.pssli"
+
+struct RenderParameters
+{
+	float4	m_rgba;
+	int		m_hdr;
+};
+
+#if defined ( __PROSPERO__ )
+[CxxSymbol("Shader::sprite_utility_fill_p")]
+#endif
+float4	main( RenderParameters srtData : S_SRT_DATA ) : S_TARGET_OUTPUT
+{
+	switch(srtData.m_hdr)
+	{
+	case 1: // kBT2020_PQ
+		return	PQ_OETF(float4(mul(BT709_TO_BT2020, srtData.m_rgba.rgb), srtData.m_rgba.a));
+	case 2: // kBT2020_Linear
+		return	float4(kSdrWhiteLevel * mul(BT709_TO_BT2020, srtData.m_rgba.rgb), srtData.m_rgba.a);
+	case 3: // kP3D65
+		return	BT1886_OETF(float4(mul(BT709_TO_DCIP3, srtData.m_rgba.rgb), srtData.m_rgba.a));
+	default: // kBT709
+		return	srtData.m_rgba;
+	}
+}

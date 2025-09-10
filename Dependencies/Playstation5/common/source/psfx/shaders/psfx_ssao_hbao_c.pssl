@@ -1,0 +1,185 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#ifndef SSAO_ARRAY_INPUT
+#define SSAO_ARRAY_INPUT 0
+#endif
+
+
+#include "psfx_common.h"
+
+struct SsaoShaderTexture
+{
+   #if SSAO_ARRAY_INPUT
+   Texture2D_Array<float>    input;
+   #else
+   Texture2D<float>    input;
+   #endif
+   RW_Texture2D<float> output;
+};
+
+struct SsaoShaderParam
+{
+   SsaoShaderTexture* texture;
+   RegularBuffer<float> w_table;
+   float2 tx_inv_size;
+   float inv_diameter;
+   float  reject_falloff;
+   float  depth_scale;
+};
+
+SsaoShaderParam srt : S_SRT_DATA;
+
+static const int k_kernel_radius = 4;
+static const int k_wavefront_size = 8;
+static const int k_lds_line_size = k_kernel_radius * 2 + k_wavefront_size;
+static const int k_lds_size = k_lds_line_size * k_lds_line_size;
+static const float k_hemisphere_radius = 5.0;
+
+thread_group_memory float depth_store[k_lds_size];
+
+uint lds_idx(uint2 coord)
+{
+   return coord.x + k_lds_line_size * coord.y;
+}
+
+constexpr int lds_offset(int coord_x, int coord_y)
+{
+   return coord_x + k_lds_line_size * coord_y;
+}
+
+static const SamplerState point_sampler = make_point_sampler();
+
+void fill_lds(int3 tile_start, uint2 thread_id)
+{
+   const int2 pixel_to_load = tile_start.xy + thread_id * 2 - int2(k_kernel_radius);
+   #if SSAO_ARRAY_INPUT
+   const float3 gather_uv = float3((pixel_to_load + float2(1.0)) * srt.tx_inv_size, tile_start.z);
+   #else
+   const float2 gather_uv = (pixel_to_load + float2(1.0)) * srt.tx_inv_size;
+   #endif
+   const float4 g_value = decode_linear_z(srt.texture->input.GatherRed(point_sampler, gather_uv), 0.1f, srt.depth_scale);
+
+   const uint idx = lds_idx(thread_id) * 2;
+   depth_store[idx]                   = g_value.w;
+   depth_store[idx+1]                 = g_value.z;
+   depth_store[idx+k_lds_line_size]   = g_value.x;
+   depth_store[idx+k_lds_line_size+1] = g_value.y;
+
+   ThreadGroupMemoryBarrierSync();
+}
+
+constexpr float get_inv_tickness(int x, int y)
+{
+   return rsqrt( 1 - (sqr((float)x/k_hemisphere_radius) + sqr((float)y/k_hemisphere_radius)) );
+}
+
+float occlusion(int2 offset, int base_idx, float inv_range, float front_depth)
+{
+   const float falloff = srt.reject_falloff;
+   // As we said before depth on the front of the sphere is central_depth - range * 0.5
+   // we want disocclusion to be normalized between 0 and 1.
+   // 0 when in front of the sphere and 1 when on the back of the sphere
+   // depth - (central_depth - range * 0.5) / range
+   // where range is diameter the sphere tickness * central_depth
+
+   // We can simplify and transform everything in a multiply-add.
+   // sphere_pos = depth / range - (1 / tickness - 0.5)
+
+   // if both sphere_pos are on the front of the sphere this couple of sample will result in a total occlusion (sum 0)
+   // if both sample are equal to front depth both sample are 0.5 and the sum will be 1.0, no occlusion.
+   // if the samples are in opposite position (0.8, and 0.2) the sum will also be 1.0 resulting in no occlusion.
+   float pos_1 = mad(depth_store[base_idx + offset], inv_range, -front_depth);
+   float pos_2 = mad(depth_store[base_idx - offset], inv_range, -front_depth);
+
+   // Samples that fall in front of the sphere should't not be considered
+   // To exclude them a pseudo disoccluded is computed. If the pos_1 is in front of the sphere
+   //    it's position is flipped (falloff is always negative) and the flipped value is used to clamp pos_2
+   // Example: if pos_1 is negative (-5) pseudo_disocclusion_1 will be 5 saturated -> 1
+   //    pos_2 is now clamped between 1 and 1. pos_1 = 0 + pos_2 = 1 => 1 no occlusion.
+   //    setting falloff to numbers closer to negative zero reduce the effect of the disocclusion.
+   float pseudo_disocclusion_1 = saturate(falloff * pos_1);
+   float pseudo_disocclusion_2 = saturate(falloff * pos_2);
+   return saturate(
+        clamp(pos_1, pseudo_disocclusion_2, 1.0)
+      + clamp(pos_2, pseudo_disocclusion_1, 1.0)
+      - pseudo_disocclusion_1 * pseudo_disocclusion_2);
+}
+
+float horizon2(int2 pos0, uint2 pos1, int base_idx, float inv_depth)
+{
+   // Inverse thickness of the sphere
+   const float inv_tickness = srt.inv_diameter * get_inv_tickness(pos0.x, pos0.y);
+   //const float inv_range = inv_tickness * inv_depth;
+   // The front point of the sphere is:
+   //   ref_depth - thickness * diameter / 2
+   // To normalize everything in the range 1 (front) -1 (back) we should divide everything by range (thickness * diameter )
+   // we get 1 / thickness
+   const float front_depth  = inv_tickness - 0.5;
+   const float inv_range    = inv_tickness * inv_depth;
+
+   return occlusion(lds_offset(pos0.x, pos0.y), base_idx, inv_range, front_depth) +
+            occlusion(lds_offset(pos1.x, pos1.y), base_idx, inv_range, front_depth);
+}
+
+float horizon4(int2 pos0, uint2 pos1, uint2 pos2, uint2 pos3, int base_idx, float inv_depth)
+{
+   // Check horizon2 for comments
+   const float inv_tickness = srt.inv_diameter * get_inv_tickness(pos0.x, pos0.y);
+   const float front_depth  = inv_tickness - 0.5;
+   const float inv_range    = inv_tickness * inv_depth;
+
+   return occlusion(lds_offset(pos0.x, pos0.y), base_idx, inv_range, front_depth) +
+            occlusion(lds_offset(pos1.x, pos1.y), base_idx, inv_range, front_depth) +
+            occlusion(lds_offset(pos2.x, pos2.y), base_idx, inv_range, front_depth) +
+            occlusion(lds_offset(pos3.x, pos3.y), base_idx, inv_range, front_depth);
+}
+
+float compute_AO(float ref_depth, int base_idx)
+{
+   const float inv_depth = rcp(ref_depth);
+
+   float ao = 0;
+   // Cross
+   ao += srt.w_table[0] * horizon2(int2(1, 0), int2(0, 1), base_idx, inv_depth);
+   ao += srt.w_table[1] * horizon2(int2(2, 0), int2(0, 2), base_idx, inv_depth);
+   ao += srt.w_table[2] * horizon2(int2(3, 0), int2(0, 3), base_idx, inv_depth);
+   ao += srt.w_table[3] * horizon2(int2(4, 0), int2(0, 4), base_idx, inv_depth);
+   // Diagonal
+   ao += srt.w_table[4] * horizon2(int2(1, 1), int2(-1, 1), base_idx, inv_depth);
+   ao += srt.w_table[5] * horizon2(int2(2, 2), int2(-2, 2), base_idx, inv_depth);
+   ao += srt.w_table[6] * horizon2(int2(3, 3), int2(-3, 3), base_idx, inv_depth);
+   // Corners
+   ao += srt.w_table[7]  * horizon4(int2(1, 2), int2( 2, 1), int2(1,-2), int2(2,-1), base_idx, inv_depth);
+   ao += srt.w_table[8]  * horizon4(int2(1, 3), int2( 3, 1), int2(1,-3), int2(3,-1), base_idx, inv_depth);
+   ao += srt.w_table[9]  * horizon4(int2(1, 4), int2( 4, 1), int2(1,-4), int2(4,-1), base_idx, inv_depth);
+   ao += srt.w_table[10] * horizon4(int2(2, 3), int2( 3, 2), int2(2,-3), int2(3,-2), base_idx, inv_depth);
+   ao += srt.w_table[11] * horizon4(int2(2, 4), int2( 4, 2), int2(2,-4), int2(4,-2), base_idx, inv_depth);
+   return ao;
+}
+#ifndef SYMBOL_NAME
+#define SYMBOL_NAME "psfx::ssao_hbao"
+#endif
+[CxxSymbol(SYMBOL_NAME)]
+[NUM_THREADS(k_wavefront_size, k_wavefront_size, 1)]
+void main(uint3 tile_id : S_GROUP_ID, uint2 thread_id : S_GROUP_THREAD_ID)
+{
+   const int3 tile_start = int3(tile_id.xy * k_wavefront_size, tile_id.z);
+   fill_lds(tile_start, thread_id);
+
+   const int    base_idx   = lds_idx(thread_id + int2(k_kernel_radius));
+   const float  ref_depth  = depth_store[base_idx];
+
+   const float  ao         = compute_AO(ref_depth, base_idx);
+
+   int2   out_pixel  = tile_start.xy + thread_id;
+   #if  SSAO_ARRAY_INPUT
+   out_pixel *= 4;
+   out_pixel.x += BitFieldExtract(tile_id.z, 0, 2);
+   out_pixel.y += BitFieldExtract(tile_id.z, 2, 2);
+   #endif
+   srt.texture->output[out_pixel] = ao;
+}

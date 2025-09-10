@@ -1,0 +1,64 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+
+struct BloomTx
+{
+   Texture2D<half3>    high_res;
+   Texture2D<half3>    low_res;
+   RW_Texture2D<half3>    dest;
+};
+
+
+struct BloomParams
+{
+   BloomTx const* tx;
+   float2 tx_scale;
+   float2 weigths;
+};
+
+BloomParams srt : S_SRT_DATA;
+
+float3 QuadSwizzle_f3(float3 to_swizzle, int o0, int o1, int o2, int o3)
+{
+   float3 out_value;
+   out_value.r = QuadSwizzle(to_swizzle.r, o0, o1, o2, o3);
+   out_value.g = QuadSwizzle(to_swizzle.g, o0, o1, o2, o3);
+   out_value.b = QuadSwizzle(to_swizzle.b, o0, o1, o2, o3);
+   return out_value;
+}
+
+static const int k_tile_size_X = 8;
+static const int k_tile_size_Y = 8;
+
+static const SamplerState tx_sampler = make_bilinear_sampler();
+
+[CxxSymbol("psfx::bloom_upscale")]
+[NUM_THREADS(64, 1, 1)]
+void main(uint2 offset : S_GROUP_ID, uint tid : S_GROUP_THREAD_ID)
+{
+   uint2 tile_offset = offset * uint2(k_tile_size_X, k_tile_size_Y);
+   const uint quad_offset_x = ((tid & 0x10) >> 2) + ((tid & 0x4) >> 1);
+   const uint quad_offset_y = ((tid & 0x20) >> 3) + ((tid & 0x8) >> 2);
+
+   const uint x_offset = (tid & 0x1);
+   const uint y_offset = (tid & 0x2) >> 1;
+
+   const float2 corner_offset = float2(x_offset, y_offset) - 0.5;
+   const uint2 out_pixel = tile_offset + uint2(quad_offset_x, quad_offset_y) + uint2(x_offset, y_offset);
+
+   float2 uv = float2(out_pixel + corner_offset + 0.5) * srt.tx_scale;
+   float3 s0 = srt.tx->low_res.SampleLOD(tx_sampler, uv, 0);
+   float3 s1 = QuadSwizzle_f3(s0, 1, 0, 3, 2);
+   float3 s2 = QuadSwizzle_f3(s0, 2, 3, 0, 1);
+   float3 s3 = QuadSwizzle_f3(s0, 3, 2, 1, 0);
+
+   const float4 sample_weigth = float4(9, 3, 3, 1)/16.0;
+   const float3 blurred = s0 * sample_weigth.x + (s1+s2) * sample_weigth.y + s3*sample_weigth.w;
+   const half3 x0 = srt.tx->high_res[out_pixel] * (half)srt.weigths.x;
+   srt.tx->dest[out_pixel] = (half3)(mad(blurred, (half)srt.weigths.y, x0));
+}

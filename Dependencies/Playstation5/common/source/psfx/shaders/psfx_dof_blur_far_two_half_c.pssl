@@ -1,0 +1,15 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#define FAR_PASS 1
+#define NEAR_PASS 0
+#define FIRST_PASS 0
+#define RAD_HALF 1
+#define SYMBOL_NAME "psfx::dof_blur_far_two_half"
+#include "psfx_dof_blur_buffers.h"
+
+
+

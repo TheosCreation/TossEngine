@@ -1,0 +1,140 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+
+struct BloomParamsTx
+{
+   Texture2D<float3>    src;
+   RW_Texture2D<float3> dst;
+};
+
+static const int k_wavefront_size = 8;
+
+struct BloomParams
+{
+   BloomParamsTx* tx;
+   DataBuffer<float> exposure_stats;
+   float2 uv_scale;
+   float  intensity;
+   float  threshold;
+};
+
+BloomParams srt : S_SRT_DATA;
+
+float luma_709(float3 color)
+{
+   return dot(color, float3(0.2126, 0.7152, 0.0722));
+}
+
+float3 Karis_avg(float3 box0, float3 box1, float3 box2, float3 box3)
+{
+#ifdef REMOVE_FLICKERING
+   const float w0 = rcp(1 + luma_709(box0));
+   const float w1 = rcp(1 + luma_709(box1));
+   const float w2 = rcp(1 + luma_709(box2));
+   const float w3 = rcp(1 + luma_709(box3));
+   const float3 avg = (box0 * w0) + (box1 * w1) + (box2 * w2) + (box3 * w3);
+   const float w = w0 + w1 + w2 + w3;
+   const float3 res = avg / w;
+#else
+   const float3 res = (box0 + box1 + box2 + box3) * 0.25;
+#endif
+   return res;
+}
+
+float3 QuadSwizzle_f3(float3 to_swizzle, int o0, int o1, int o2, int o3)
+{
+   float3 out_value;
+   out_value.r = QuadSwizzle(to_swizzle.r, o0, o1, o2, o3);
+   out_value.g = QuadSwizzle(to_swizzle.g, o0, o1, o2, o3);
+   out_value.b = QuadSwizzle(to_swizzle.b, o0, o1, o2, o3);
+   return out_value;
+}
+#ifndef SYMBOL_NAME
+#define SYMBOL_NAME "psfx::bloom_downscale"
+#endif
+[CxxSymbol(SYMBOL_NAME)]
+[NUM_THREADS(k_wavefront_size, k_wavefront_size, 1)]
+void main( uint2 offset : S_GROUP_ID, uint2 thread_id : S_GROUP_THREAD_ID)
+{
+   const uint2 tile_offset = offset * k_wavefront_size;
+   // In order to use QuadSwizzle lanes need to be organized in quad.
+   // Compute the quad offset in the tile
+   const uint quad_offset_x = ((thread_id.x & 0xC) >>1) + (thread_id.y & 0x1) * 4;
+   const uint quad_offset_y =  (thread_id.y & 0xE);
+   const uint x_offset = (thread_id.x & 0x1);
+   const uint y_offset = (thread_id.x & 0x2) >> 1;
+   const uint2 out_pixel = tile_offset + uint2(quad_offset_x, quad_offset_y) + uint2(x_offset, y_offset);
+
+   float2 uv_offset = srt.uv_scale;
+   const float2 uv = (float2(out_pixel) + 0.5) * srt.uv_scale;
+
+   SamplerState tx_sampler = make_bilinear_sampler();
+
+   // Termporal stable box filtering.
+   // [Jimenez14] http://goo.gl/eomGso
+   // . . . . . . .
+   // . A . B . C .
+   // . . D . E . .
+   // . F . G . H .
+   // . . I . J . .
+   // . K . L . M .
+   // . . . . . . .
+   const int k_sample_count = 4;
+   const float2 half_px_offset = uv_offset * 0.5;
+   // Reading D, E, I, J
+   float3 box_0 =
+       Karis_avg(srt.tx->src.SampleLOD(tx_sampler, uv + float2(-half_px_offset.x, -half_px_offset.y), 0),
+        srt.tx->src.SampleLOD(tx_sampler, uv + float2(+half_px_offset.x, -half_px_offset.y), 0),
+        srt.tx->src.SampleLOD(tx_sampler, uv + float2(-half_px_offset.x, +half_px_offset.y), 0),
+        srt.tx->src.SampleLOD(tx_sampler, uv + float2(+half_px_offset.x, +half_px_offset.y), 0));
+
+   // Shared samples
+   // Location of shared sample are swapped based on the quad position
+   // in a way that is easier to access neighbour sample.
+   uv_offset.x *= (x_offset == 0) ? 1.0 : -1.0;
+   uv_offset.y *= (y_offset == 0) ? -1.0 : 1.0;
+   const float2 sample_location[] = {
+      float2(-uv_offset.x, -uv_offset.y),
+      float2(+uv_offset.x, +uv_offset.y),
+      float2(+uv_offset.x, -uv_offset.y),
+      float2(-uv_offset.x, +uv_offset.y),
+   };
+
+   // Reading A, C, K, M
+   float3 samples[k_sample_count];
+   [unroll]
+   for (int i = 0; i < k_sample_count; ++i)
+   {
+      samples[i] = srt.tx->src.SampleLOD(tx_sampler, uv + sample_location[i], 0);
+   }
+
+   // Read neighbour lines
+   // Sample B and L can be taken form the left neighbour lane A, K
+   // Sample F, H can be taken from the low neighbour lane A, C
+   // Central sample G can be read from the diagonally opposed neighbour
+   float3 swizzle_samples[5];
+   swizzle_samples[0] = QuadSwizzle_f3(samples[1], 1, 0, 3, 2);
+   swizzle_samples[1] = QuadSwizzle_f3(samples[0], 2, 3, 0, 1);
+   swizzle_samples[2] = QuadSwizzle_f3(samples[2], 2, 3, 0, 1);
+   swizzle_samples[3] = QuadSwizzle_f3(samples[2], 1, 0, 3, 2);
+   swizzle_samples[4] = QuadSwizzle_f3(samples[2], 3, 2, 1, 0);
+
+   const float3 box_1 = Karis_avg(samples[0], swizzle_samples[4], swizzle_samples[1], swizzle_samples[3]);
+   const float3 box_2 = Karis_avg(samples[1], swizzle_samples[4], swizzle_samples[0], swizzle_samples[2]);
+   const float3 box_3 = Karis_avg(samples[2], swizzle_samples[4], swizzle_samples[2], swizzle_samples[3]);
+   const float3 box_4 = Karis_avg(samples[3], swizzle_samples[4], swizzle_samples[0], swizzle_samples[1]);
+   const float3 result = (box_0 * 0.5) + (box_1 + box_2 + box_3 + box_4) * 0.125;
+
+#ifdef THRESHOLD
+   float exposure = srt.exposure_stats[0];
+   float3 output = max(0.0, exposure * result - srt.threshold) / exposure;
+#else
+   float3 output = result;
+#endif
+   srt.tx->dst[out_pixel] = srt.intensity * output;
+}

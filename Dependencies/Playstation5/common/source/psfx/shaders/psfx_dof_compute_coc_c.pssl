@@ -1,0 +1,54 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#pragma argument(scheduler=cachethrashing)
+
+#include "psfx_common.h"
+
+struct Textures
+{
+   Texture2D<float> linear_depth;
+   RW_Texture2D<float2> out_coc;
+};
+
+struct ShaderParam
+{
+   Textures* texture;
+
+   float2 tx_inv_size;
+   float2 near_range;
+   float4 dof_params; // near start, near range, far start, far range
+};
+
+float2 compute_coc(in float depth, float4 dof_params)
+{
+   float f0 = 1.0 - saturate((depth - dof_params.x) * dof_params.y);
+   float f1 = saturate((depth - dof_params.z) * dof_params.w);
+   return float2(f0, f1);
+}
+
+const ShaderParam srt_data : S_SRT_DATA;
+static const uint k_wavefront_size = 8;
+[CxxSymbol("psfx::dof_compute_coc")]
+[NUM_THREADS(k_wavefront_size, k_wavefront_size, 1)]
+void main(uint3 tile_id : S_GROUP_ID, uint2 thread_id : S_GROUP_THREAD_ID)
+{
+   const uint2 quad_coord = (tile_id * k_wavefront_size + thread_id) * 2;
+   const uint2 offsets[] = { uint2(0, 1), uint2(1, 1), uint2(1, 0), uint2(0, 0) };
+
+   auto point_sampler = make_point_sampler();
+
+   const float2 gather_uv = (quad_coord + 0.5) * srt_data.tx_inv_size;
+   const float4 enc_z = srt_data.texture->linear_depth.GatherRed(point_sampler, gather_uv, 0);
+   const float4 linear_z = decode_linear_z(enc_z, srt_data.near_range.x, srt_data.near_range.y);
+
+   [unroll]
+   for (uint i = 0; i < 4; ++i)
+   {
+      const uint2 out_pixel = quad_coord + offsets[i];
+      srt_data.texture->out_coc[out_pixel] = compute_coc(linear_z[i], srt_data.dof_params);
+   }
+}

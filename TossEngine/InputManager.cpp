@@ -15,9 +15,13 @@ Mail : theo.morris@mds.ac.nz
 #include "TossEngine.h"
 #include "ProjectSettings.h"
 #include <imgui.h>
+#ifdef __PROSPERO__
+// Prospero: no GLFW, no ImGui-GLFW glue
+#else
 #include <imgui_impl_glfw.h>
 #include <glew.h>
 #include <glfw3.h>
+#endif
 
 double InputManager::scrollX = 0.0;
 double InputManager::scrollY = 0.0;
@@ -29,30 +33,85 @@ std::map<Key, bool> InputManager::previousKeyStates;
 std::map<MouseButton, bool> InputManager::currentMouseStates;
 std::map<MouseButton, bool> InputManager::previousMouseStates;
 
+
+
 void InputManager::Init(ProjectSettingsPtr& projectSettings)
 {
-	if (isInitilized) return;
+    if (isInitilized) return;
 
-	WindowPtr = TossEngine::GetInstance().GetWindow()->getWindow();
-	glfwSetScrollCallback(WindowPtr, scroll_callback); // Set the scroll callback function
-	glfwSetKeyCallback(WindowPtr, key_callback);       // Set the key callback function
-	glfwSetMouseButtonCallback(WindowPtr, mouse_button_callback); // Set the mouse button callback function
-    glfwSetCharCallback(WindowPtr, char_callback); // Set the char callback function
+#ifdef __PROSPERO__
+    // TODO: Hook into Prospero input system later
+#else
+    WindowPtr = TossEngine::GetInstance().GetWindow()->getNativeHandle();
+    glfwSetScrollCallback(static_cast<GLFWwindow*>(WindowPtr), scroll_callback);
+    glfwSetKeyCallback(static_cast<GLFWwindow*>(WindowPtr), key_callback);
+    glfwSetMouseButtonCallback(static_cast<GLFWwindow*>(WindowPtr), mouse_button_callback);
+    glfwSetCharCallback(static_cast<GLFWwindow*>(WindowPtr), char_callback);
+#endif
 
-	isInitilized = true;
+    isInitilized = true;
 }
 
 void InputManager::Init(TossPlayerSettingsPtr& playerSettings)
 {
     if (isInitilized) return;
 
-    WindowPtr = TossEngine::GetInstance().GetWindow()->getWindow();
-    glfwSetScrollCallback(WindowPtr, scroll_callback); // Set the scroll callback function
-    glfwSetKeyCallback(WindowPtr, key_callback);       // Set the key callback function
-    glfwSetMouseButtonCallback(WindowPtr, mouse_button_callback); // Set the mouse button callback function
-    glfwSetCharCallback(WindowPtr, char_callback); // Set the char callback function
+#ifdef __PROSPERO__
+    // TODO: Hook into Prospero input system later
+#else
+    WindowPtr = TossEngine::GetInstance().GetWindow()->getNativeHandle();
+    glfwSetScrollCallback(static_cast<GLFWwindow*>(WindowPtr), scroll_callback);
+    glfwSetKeyCallback(static_cast<GLFWwindow*>(WindowPtr), key_callback);
+    glfwSetMouseButtonCallback(static_cast<GLFWwindow*>(WindowPtr), mouse_button_callback);
+    glfwSetCharCallback(static_cast<GLFWwindow*>(WindowPtr), char_callback);
+#endif
 
     isInitilized = true;
+}
+
+void InputManager::onUpdate()
+{
+#ifdef __PROSPERO__
+    // TODO: Poll controller/mouse later
+    m_deltaMouse = { 0.0f, 0.0f };
+#else
+    double newMouseX, newMouseY;
+    glfwGetCursorPos(static_cast<GLFWwindow*>(WindowPtr), &newMouseX, &newMouseY);
+    currentMouseX = static_cast<float>(newMouseX);
+    currentMouseY = static_cast<float>(newMouseY);
+
+    if (m_playEnable)
+    {
+        float centerX = (m_screenArea.x * 0.5f);
+        float centerY = (m_screenArea.y * 0.5f);
+        m_deltaMouse = Vector2(currentMouseX - centerX, currentMouseY - centerY);
+        glfwSetCursorPos(static_cast<GLFWwindow*>(WindowPtr), centerX, centerY);
+    }
+    else
+    {
+        m_deltaMouse = Vector2(currentMouseX - m_oldMousePos.x, currentMouseY - m_oldMousePos.y);
+    }
+#endif
+}
+
+void InputManager::onLateUpdate()
+{
+#ifdef __PROSPERO__
+    // No cursor reset needed on PS5
+#else
+    previousKeyStates = currentKeyStates;
+    previousMouseStates = currentMouseStates;
+    resetMouseScroll();
+
+    if (m_playEnable)
+    {
+        float centerX = (m_screenArea.x * 0.5f);
+        float centerY = (m_screenArea.y * 0.5f);
+        glfwSetCursorPos(static_cast<GLFWwindow*>(WindowPtr), centerX, centerY);
+    }
+
+    m_oldMousePos = Vector2(currentMouseX, currentMouseY);
+#endif
 }
 
 bool InputManager::isKeyDown(Key key, bool checkPlayMode) const
@@ -136,13 +195,17 @@ void InputManager::enablePlayMode(bool enable, bool alsoChangeGameplayMode)
         m_gameMode = enable;
     }
 
-	if (enable) {
-		glfwSetInputMode(WindowPtr, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		glfwSetCursorPos(WindowPtr, m_screenArea.x / 2.0f, m_screenArea.y / 2.0f);
-	}
-	else {
-		glfwSetInputMode(WindowPtr, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	}
+#ifdef __PROSPERO__
+    // TODO: Hook into Prospero input system later
+#else
+    if (enable) {
+        glfwSetInputMode(static_cast<GLFWwindow*>(WindowPtr), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetCursorPos(static_cast<GLFWwindow*>(WindowPtr), m_screenArea.x / 2.0f, m_screenArea.y / 2.0f);
+    }
+    else {
+        glfwSetInputMode(static_cast<GLFWwindow*>(WindowPtr), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+#endif
 }
 
 void InputManager::togglePlayMode(bool alsoChangeGameplayMode)
@@ -165,86 +228,43 @@ void InputManager::setScreenArea(const Vector2& area)
 	m_screenArea = area;
 }
 
-void InputManager::onUpdate()
-{
-    double newMouseX, newMouseY;
-    glfwGetCursorPos(WindowPtr, &newMouseX, &newMouseY);
-
-    currentMouseX = static_cast<float>(newMouseX);
-    currentMouseY = static_cast<float>(newMouseY);
-
-    if (m_playEnable)
-    {
-        float centerX = (m_screenArea.x * 0.5f);
-        float centerY = (m_screenArea.y * 0.5f);
-
-        // m_deltaMouse is relative inside viewport!
-        m_deltaMouse = Vector2(currentMouseX - centerX, currentMouseY - centerY);
-
-        glfwSetCursorPos(WindowPtr, centerX, centerY);
-    }
-    else
-    {
-        m_deltaMouse = Vector2(currentMouseX - m_oldMousePos.x, currentMouseY - m_oldMousePos.y);
-    }
-}
-
-void InputManager::onLateUpdate()
-{
-    previousKeyStates = currentKeyStates;
-    previousMouseStates = currentMouseStates;
-
-    resetMouseScroll();
-
-    if (m_playEnable)
-    {
-        float centerX = (m_screenArea.x * 0.5f);
-        float centerY = (m_screenArea.y * 0.5f);
-
-            glfwSetCursorPos(WindowPtr, centerX, centerY);
-    }
-
-    m_oldMousePos = Vector2(currentMouseX, currentMouseY);
-}
-
-
+#ifndef __PROSPERO__
+// GLFW + ImGui callbacks only compiled for PC
 void InputManager::scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
 {
-	scrollX = xOffset;
-	scrollY = yOffset;
-
+    scrollX = xOffset;
+    scrollY = yOffset;
     ImGui_ImplGlfw_ScrollCallback(window, xOffset, yOffset);
 }
 
 void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	Key translatedKey = static_cast<Key>(key);
-
+    Key translatedKey = static_cast<Key>(key);
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 
-	if (action == GLFW_PRESS && !currentKeyStates[translatedKey]) {
-		currentKeyStates[translatedKey] = true;
-	}
-	else if (action == GLFW_RELEASE) {
-		currentKeyStates[translatedKey] = false;
-	}
+    if (action == GLFW_PRESS && !currentKeyStates[translatedKey]) {
+        currentKeyStates[translatedKey] = true;
+    }
+    else if (action == GLFW_RELEASE) {
+        currentKeyStates[translatedKey] = false;
+    }
 }
 
 void InputManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	MouseButton translatedButton = static_cast<MouseButton>(button);
-
+    MouseButton translatedButton = static_cast<MouseButton>(button);
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 
-	if (action == GLFW_PRESS && !currentMouseStates[translatedButton]) {
-		currentMouseStates[translatedButton] = true;
-	}
-	else if (action == GLFW_RELEASE) {
-		currentMouseStates[translatedButton] = false;
-	}
+    if (action == GLFW_PRESS && !currentMouseStates[translatedButton]) {
+        currentMouseStates[translatedButton] = true;
+    }
+    else if (action == GLFW_RELEASE) {
+        currentMouseStates[translatedButton] = false;
+    }
 }
 
 void InputManager::char_callback(GLFWwindow* window, unsigned int c)
 {
     ImGui_ImplGlfw_CharCallback(window, c);
 }
+#endif

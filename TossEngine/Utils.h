@@ -19,8 +19,6 @@ Mail : theo.morris@mds.ac.nz
 #include <vector>
 #include <map>
 #include <glm.hpp>
-#include "Rect.h"
-#include "Math.h"
 #include <unordered_map>
 #include <unordered_set>
 #include <any>
@@ -37,8 +35,9 @@ Mail : theo.morris@mds.ac.nz
 #include <boost/describe/enumerators.hpp>
 #include <boost/mp11/algorithm.hpp>
 #include <condition_variable>
-#include <glew.h>
+#include "Math.h"
 #include "Debug.h"
+#include "Rect.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"

@@ -1,0 +1,79 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+#include "psfx_ssr.h"
+
+ClassifySrt srt_data : S_SRT_DATA;
+
+static const SamplerState point_sampler = make_point_sampler();
+
+thread_group_memory uint need_ssr_lds;
+
+[CxxSymbol("psfx::ssr_classify")]
+[NUM_THREADS(k_classify_group_size, k_classify_group_size, 1)]
+void main(
+   uint2 dispatch_thread_id : S_DISPATCH_THREAD_ID,
+   uint2 group_id           : S_GROUP_ID,
+   uint group_thread_index  : S_GROUP_INDEX)
+{
+   const bool use_lds = (k_classify_group_size * k_classify_group_size) > get_lanes_per_wave();
+
+   // Each thread reads 2x2 pixels using gather.
+   const uint2 thread_pix = dispatch_thread_id * 2;
+   const float2 gather_uv = (thread_pix + float2(1.0)) * srt_data.inv_target_size;
+   const float4 roughness = srt_data.normal_roughness.GatherAlpha(point_sampler, gather_uv);
+
+   if (use_lds)
+   {
+      if (group_thread_index == 0)
+      {
+         need_ssr_lds = 0;
+      }
+
+      ThreadGroupMemoryBarrierSync();
+   }
+
+   // Determine whether any pixel in the wave needs SSR.
+   const uint thread_need_ssr = (any(roughness < srt_data.roughness_cutoff)) ? 1 : 0;
+   const uint wave_need_ssr   = (ballot(thread_need_ssr) != 0) ? 1 : 0;
+
+   // If we have more than 1 wave per tile, collect results via LDS.
+   if (use_lds)
+   {
+      if (wave::IsFirstActiveLane())
+      {
+         AtomicOr(need_ssr_lds, wave_need_ssr);
+      }
+
+      ThreadGroupMemoryBarrierSync();
+   }
+
+   if (group_thread_index == 0)
+   {
+      const uint tile_need_ssr = (use_lds) ? need_ssr_lds : wave_need_ssr;
+      const uint tile_packed   = (group_id.x << 16) | (group_id.y & 0xffff);
+
+      // Add to the indirect draw list for the tile type.
+      uint offset;
+      if (tile_need_ssr)
+      {
+         ClassifySrtBuffers buffers = *srt_data.buffers[k_tile_type_ssr];
+         AtomicAdd(buffers.indirect_buffer[0], k_trace_groups_per_tile, offset);
+         buffers.tile_buffer[offset / k_trace_groups_per_tile] = tile_packed;
+
+         // This flag is a combined result across all tiles, used as a predicate to skip work when
+         // there is no SSR required in the frame.
+         AtomicOr(buffers.need_ssr[0], 1);
+      }
+      else
+      {
+         ClassifySrtBuffers buffers = *srt_data.buffers[k_tile_type_clear];
+         AtomicAdd(buffers.indirect_buffer[0], k_trace_groups_per_tile, offset);
+         buffers.tile_buffer[offset / k_trace_groups_per_tile] = tile_packed;
+      }
+   }
+}

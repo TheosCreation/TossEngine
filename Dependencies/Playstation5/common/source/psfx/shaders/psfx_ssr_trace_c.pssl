@@ -1,0 +1,410 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+//
+// References: see psfx_ssr.cpp
+//
+
+#include "psfx_common.h"
+#include "psfx_ssr.h"
+
+#pragma argument(scheduler=minpressure)
+
+#ifndef SYMBOL_NAME
+#define SYMBOL_NAME "psfx::ssr_trace"
+#endif
+
+// Outputs a heat map of number of ray tracing steps per pixel (goes from blue through green to
+// red with increasing number of iterations) to the reflection buffer (mask will be output as 0).
+//#define DEBUG_NUM_ITERATIONS
+
+// Output a heatmap of minimum occupancy (number of active lanes per wave) reached during tracing
+// (goes from blue through green to red with decreasing occupancy).
+//#define DEBUG_OCCUPANCY
+
+// Output the intersection position to the reflection buffer (mask will be output as 0).
+//#define DEBUG_INTERSECT_POS
+
+// Plot all the points tested along the ray for a single pixel (specify integer coordinates). All
+// other pixels will have no output. Final position will be red if the hit was rejected, otherwise
+// green.
+//#define DEBUG_PLOT_RAY uint2(123, 456)
+
+#ifdef DEBUG_PLOT_RAY
+   #define PLOT_RAY(screen_pix, intersect_pos) \
+      srt_data->dest_reflection[intersect_pos * float2(srt_data->target_size)] = float3(1.0f)
+#else
+   #define PLOT_RAY(screen_pix, intersect_pos)
+#endif
+
+TraceSrtInline srt_inline : S_SRT_DATA;
+static TraceSrtIndirect* srt_data = srt_inline.indirect;
+
+static const SamplerState point_sampler = make_point_sampler();
+
+// For debug options.
+float3 heat(uint value, uint maximum)
+{
+    const float3 red   = float3(1.0f, 0.0f, 0.0f);
+    const float3 green = float3(0.0f, 1.0f, 0.0f);
+    const float3 blue  = float3(0.0f, 0.0f, 1.0f);
+
+    const float fraction = min(float(value) / float(maximum), 1.0f);
+
+    if (fraction < 0.5f)
+    {
+        return lerp(blue, green, fraction * 2);
+    }
+    else
+    {
+        return lerp(green, red, (fraction - 0.5f) * 2);
+    }
+}
+
+float3 normal(const float3 normal_sample)
+{
+   return (normal_sample * 2.0f) - 1.0f;
+}
+
+// Project a view-space position to a screen-space UV + depth.
+float3 view_to_screen(const float3 view_pos)
+{
+   const float4 clip_pos = mul(srt_data->projection_matrix, float4(view_pos, 1.0f));
+   const float3 ndc_pos  = clip_pos.xyz / clip_pos.w;
+   return float3(
+      (ndc_pos.xy * float2(0.5f, -0.5f)) + 0.5f,
+      (srt_inline.flags & k_trace_clip_space_dx) ? ndc_pos.z : (ndc_pos.z * 0.5f) + 0.5f);
+}
+
+// Unproject screen-space UV + depth to a view-space position.
+float3 screen_to_view(const float3 screen_pos)
+{
+   const float4 ndc_pos = float4(
+      (screen_pos.xy - 0.5f) * float2(2.0f, -2.0f),
+      (srt_inline.flags & k_trace_clip_space_dx) ? screen_pos.z : (screen_pos.z - 0.5f) * 2.0f,
+      1.0f);
+   const float4 view_pos = mul(srt_data->inv_projection_matrix, ndc_pos);
+   return view_pos.xyz / view_pos.w;
+}
+
+float2 get_cell_index(const float3 pos, const float2 cell_count)
+{
+   return floor(pos * cell_count);
+}
+
+float3 intersect_depth_plane(const float3 ray_origin, const float3 ray_dir, const float t)
+{
+   return ray_origin + (ray_dir * t);
+}
+
+float3 intersect_cell_boundary(
+   const float3 ray_origin,
+   const float3 ray_dir,
+   const float2 ray_dir_inv,
+   const float2 old_cell_index,
+   const float min_depth,
+   const float2 cell_count_inv,
+   const float2 cross_step,
+   const float2 cross_offset)
+{
+   const float2 cell_uv = ((old_cell_index + cross_step) * cell_count_inv) + cross_offset;
+
+   // Determine ray interpolation factor for this cell. We clamp to the minimum plane for the
+   // current cell here to avoid overshooting the ray when we're getting close to the intersection
+   // point.
+   const float2 delta = (cell_uv - ray_origin.xy) * ray_dir_inv.xy;
+   const float t      = min3(delta.x, delta.y, min_depth);
+
+   return intersect_depth_plane(ray_origin, ray_dir, t);
+}
+
+float sample_depth_chain(float2 intersect_pos, float level)
+{
+   // Our depth chain texture doesn't include the original depth (it effectively starts with level
+   // 1), so we use the original depth texture when sampling level 0. This does require divergence
+   // for sampling, but the cost of this is very small and it means we don't have to copy the
+   // original texture into the chain which saves a lot of time.
+   float ret;
+   if (level > 0.0f)
+   {
+      ret = srt_inline.depth_chain.SampleLOD(point_sampler, intersect_pos, level - 1.0f);
+   }
+   else
+   {
+      ret = srt_data->depth.SampleLOD(point_sampler, intersect_pos, 0.0f);
+   }
+   
+   // The easiest way to support both Z directions is to flip depth values in the reverse Z case so
+   // that the rest of the code remains the same. TODO: Could suffer from some precision issues, but
+   // seems to work OK for now.
+#ifdef REVERSE_Z
+   ret = 1.0f - ret;
+#endif
+   return ret;
+}
+
+float hiz_ray_trace(
+   float3 pos,
+   float3 screen_reflect,
+   const float3 view_reflect,
+   const uint2 screen_pix,
+   out float3 intersect_pos,
+   out uint iterations,
+   out uint min_occupancy)
+{
+   static const float k_start_level = 2.0f;
+
+   (void)screen_pix;
+
+   iterations = 0;
+   min_occupancy = get_lanes_per_wave();
+
+#ifdef REVERSE_Z
+   pos.z = 1.0f - pos.z;
+   screen_reflect.z = -screen_reflect.z;
+#endif
+
+   if (screen_reflect.z < 0.00001f)
+   {
+      // TODO: Can't trace towards the camera, implement solution proposed by [Bitsquid17].
+      intersect_pos = float3(0.0f);
+      return 0.0f;
+   }
+
+   // Direction towards the next cell, and a small offset to advance past the cell boundary.
+   float2 cross_step         = float2(screen_reflect.x >= 0.0f ? 1.0f : -1.0f, screen_reflect.y >= 0.0f ? 1.0f : -1.0f);
+   const float2 cross_offset = cross_step * 0.5f * srt_data->inv_target_size;
+   cross_step                = saturate(cross_step);
+
+   // Get the ray origin/direction extending from the near plane to the far plane. With this we can
+   // get the screen-space position along the ray at depth d with (ray_origin + (ray_dir * d)).
+   const float3 ray_dir     = screen_reflect / screen_reflect.z; // z = 1.0
+   const float2 ray_dir_inv = rcp(ray_dir.xy);
+   const float3 ray_origin  = pos + (ray_dir * -pos.z); // z = 0.0
+
+   // Resolution of the current HiZ buffer level.
+   float2 cell_count     = srt_data->target_size * pow(0.5f, k_start_level);
+   float2 cell_count_inv = rcp(cell_count);
+
+   // Start in the next cell as we'd otherwise intersect with the starting point.
+   const float2 first_cell_index = get_cell_index(pos, cell_count);
+   intersect_pos                 = intersect_cell_boundary(ray_origin, ray_dir, ray_dir_inv, first_cell_index, 1.0f, cell_count_inv, cross_step, cross_offset);
+
+   // We can stop once we try to go down below the top level, as this means we've refined down to
+   // an exact point.
+   float level         = k_start_level;
+   uint max_iterations = srt_data->max_iterations;
+   [loop] while (level >= 0.0f && iterations < max_iterations && intersect_pos.z < 1.0f)
+   {
+      PLOT_RAY(screen_pix, intersect_pos);
+#ifdef DEBUG_OCCUPANCY
+      min_occupancy = min(min_occupancy, wave::GetActiveLaneCount());
+#endif
+
+      const float min_depth = sample_depth_chain(intersect_pos.xy, level);
+
+      const float2 old_cell_index = get_cell_index(intersect_pos, cell_count);
+
+      // This will give us back the same position if it's already behind the minimum depth plane
+      // for this cell. Otherwise we'll get a new ray reaching the minimum plane.
+      intersect_pos = intersect_depth_plane(ray_origin, ray_dir, max(intersect_pos.z, min_depth));
+
+      const float2 new_cell_index = get_cell_index(intersect_pos, cell_count);
+
+      if (any(old_cell_index != new_cell_index))
+      {
+         // The difference between our current position and the minimum plane for this cell is
+         // large enough that we've crossed a cell boundary. Set our ray to the boundary for
+         // the cell and move up a level.
+         intersect_pos = intersect_cell_boundary(ray_origin, ray_dir, ray_dir_inv, old_cell_index, min_depth, cell_count_inv, cross_step, cross_offset);
+         level += 1.0f;
+         cell_count *= 0.5f;
+         cell_count_inv *= 2.0f;
+      }
+      else
+      {
+         level -= 1.0f;
+         cell_count *= 2.0f;
+         cell_count_inv *= 0.5f;
+      }
+
+      iterations++;
+   }
+
+   PLOT_RAY(screen_pix, intersect_pos);
+
+#ifdef DEBUG_OCCUPANCY
+   // Only active lanes would have updated this so take the minimum across the whole wave.
+   min_occupancy = CrossLaneMin(min_occupancy);
+#endif
+
+   // Reject rays which go outside screen space, or hit the background. These can fall back to the
+   // cube map.
+   if (intersect_pos.x < 0.0f || intersect_pos.x > 1.0f || intersect_pos.y < 0.0f || intersect_pos.y > 1.0f || intersect_pos.z >= 1.0f)
+   {
+      return 0.0f;
+   }
+
+#ifdef REVERSE_Z
+   intersect_pos.z = 1.0f - intersect_pos.z;
+#endif
+
+   // Reject the hit if the intersection point is further behind the depth buffer value than our
+   // object thickness threshold.
+   const float depth               = srt_data->depth.SampleLOD(point_sampler, intersect_pos.xy, 0.0f);
+   const float3 view_intersect_pos = screen_to_view(intersect_pos);
+   const float3 view_surface_pos   = screen_to_view(float3(intersect_pos.xy, depth));
+   if (abs(view_intersect_pos.z - view_surface_pos.z) > srt_data->object_thickness)
+   {
+      return 0.0f;
+   }
+
+   // Reject rays that hit the back of a surface.
+   const float3 intersect_normal      = normal(srt_data->normal_roughness.SampleLOD(point_sampler, intersect_pos.xy, 0.0f).rgb);
+   const float3 view_intersect_normal = mul(srt_data->view_matrix, float4(intersect_normal, 0.0f)).xyz;
+   if (dot(view_reflect, view_intersect_normal) > 0.0f)
+   {
+      return 0.0f;
+   }
+
+   // Fade out towards screen edges.
+   const float2 uv               = intersect_pos.xy;
+   const float2 edge_fade_factor = srt_data->edge_fade_threshold * float2(srt_data->target_size.y * srt_data->inv_target_size.x, 1.0f);
+   const float2 edge_fade        = smoothstep(0.0f, edge_fade_factor, uv) * (1.0f - smoothstep(1.0f - edge_fade_factor, 1.0f, uv));
+
+   return edge_fade.x * edge_fade.y;
+}
+
+[CxxSymbol(SYMBOL_NAME)]
+[NUM_THREADS(k_trace_group_size, k_trace_group_size, 1)]
+void main(
+   uint2 group_thread_id : S_GROUP_THREAD_ID,
+   uint group_id         : S_GROUP_ID)
+{
+   // Find which tile/pixel we're working on.
+   const uint group_div   = group_id / k_trace_groups_per_tile;
+   const uint group_mod   = group_id % k_trace_groups_per_tile;
+   const uint tile_packed = srt_inline.tile_buffer[group_div];
+   const uint2 tile_index = uint2(tile_packed >> 16, tile_packed & 0xffff);
+
+   const uint2 screen_pix =
+      (tile_index * k_classify_tile_size) +
+      (uint2(group_mod % k_trace_groups_per_tile_dim, group_mod / k_trace_groups_per_tile_dim) * k_trace_group_size) +
+      group_thread_id;
+   const float2 screen_uv = (float2(screen_pix) + 0.5f) * srt_data->inv_target_size;
+
+#ifdef DEBUG_PLOT_RAY
+   // In this debug mode all writes to the reflection target should be done by the one pixel we
+   // want to debug to avoid conflicts with other threads, so we have to clear the whole target
+   // on this thread.
+   srt_data->dest_mask[screen_pix] = 0.0f;
+   if (all(screen_pix == DEBUG_PLOT_RAY))
+   {
+      for (uint y = 0; y < srt_data->target_size.y; y++)
+      {
+         for (uint x = 0; x < srt_data->target_size.x; x++)
+         {
+            srt_data->dest_reflection[int2(x, y)] = float3(0.0f);
+         }
+      }
+   }
+   else
+   {
+      return;
+   }
+#endif
+
+   const float4 normal_roughness = srt_data->normal_roughness[screen_pix];
+   const float3 world_normal     = normal(normal_roughness.rgb);
+   const float roughness         = normal_roughness.a;
+
+   // Early exit if this pixel is above the roughness threshold.
+   if (roughness >= srt_inline.roughness_cutoff)
+   {
+      srt_data->dest_reflection[screen_pix] = float3(0.0f);
+      srt_data->dest_mask[screen_pix]       = 0.0f;
+      srt_data->dest_mip_level[screen_pix]  = 0.0f;
+      return;
+   }
+
+   const float depth       = srt_data->depth[screen_pix];
+   const float3 screen_pos = float3(screen_uv, depth);
+
+   // Calculate view-space reflection ray direction based on pixel position/normal.
+   const float3 view_pos     = screen_to_view(screen_pos);
+   const float3 view_normal  = mul(srt_data->view_matrix, float4(world_normal, 0.0f)).xyz;
+   const float3 view_reflect = reflect(normalize(view_pos), view_normal);
+
+   // Calculate screen-space reflection vector.
+   const float3 screen_reflect_target = view_to_screen(view_pos + view_reflect);
+   const float3 screen_reflect        = screen_reflect_target - screen_pos;
+
+   float3 intersect_pos;
+   uint iterations;
+   uint min_occupancy;
+   const float mask = hiz_ray_trace(screen_pos, screen_reflect, view_reflect, screen_pix, intersect_pos, iterations, min_occupancy);
+
+#ifdef DEBUG_NUM_ITERATIONS
+   srt_data->dest_reflection[screen_pix] = heat(iterations, srt_data->max_iterations);
+   srt_data->dest_mask[screen_pix]       = 0.0f;
+   return;
+#endif
+
+#ifdef DEBUG_OCCUPANCY
+   srt_data->dest_reflection[screen_pix] = heat(get_lanes_per_wave() - min_occupancy, get_lanes_per_wave());
+   srt_data->dest_mask[screen_pix]       = 0.0f;
+   return;
+#endif
+
+#ifdef DEBUG_INTERSECT_POS
+   srt_data->dest_reflection[screen_pix] = mask > 0.0f ? intersect_pos : float3(0.0f);
+   srt_data->dest_mask[screen_pix]       = 0.0f;
+   return;
+#endif
+
+#ifdef DEBUG_PLOT_RAY
+   srt_data->dest_reflection[intersect_pos * float2(srt_data->target_size)] = (mask > 0.0f) ? float3(0.0f, 1.0f, 0.0f) : float3(1.0f, 0.0f, 0.0f);
+   return;
+#endif
+
+   float3 colour = float3(0.0f);
+   float mip_level = roughness * srt_data->reflection_mip_count * srt_data->reflection_mip_scale;
+
+   if (mask > 0.0f)
+   {
+      colour = srt_data->colour.SampleLOD(point_sampler, intersect_pos.xy, 0.0f);
+
+      // This implements a fake contact hardening effect. It is not physically accurate at all.
+      // The intention is to improve appearance of reflections near contact areas by avoiding
+      // reflection leaking, which happens due to downsampling/blurring.
+      //
+      // We bias the mip level that we sample from when generating the final output reflections
+      // based on distance between the surface and the intersection position. Distance over which
+      // hardening occurs is user-configurable, and scaled based on roughness (shorter if rougher).
+      // There is a maximum mip bias to avoid having too harsh an effect on rougher surfaces.
+      //
+      // The mip level calculated is used in the output pass, but we calculate it here since it is
+      // based on both hit distance and roughness which we already have here, so we only need to
+      // write out 1 value, instead of writing hit distance and then having to read both that and
+      // the roughness in the output pass.
+      const float max_bias     = min(srt_data->contact_max_mip_bias, mip_level);
+      const float max_distance = srt_data->contact_max_distance * (1.0f - roughness);
+
+      const float hit_distance = length(intersect_pos - screen_pos);
+
+      const float bias_scale = (max_distance > 0.0f)
+         ? 1.0f - (clamp(hit_distance, 0.0f, max_distance) / max_distance)
+         : 0.0f;
+
+      mip_level -= bias_scale * max_bias;
+   }
+
+   srt_data->dest_reflection[screen_pix] = colour;
+   srt_data->dest_mask[screen_pix]       = mask;
+
+   // UNorm target, scale to 0-1.
+   srt_data->dest_mip_level[screen_pix] = mip_level / srt_data->reflection_mip_count;
+}

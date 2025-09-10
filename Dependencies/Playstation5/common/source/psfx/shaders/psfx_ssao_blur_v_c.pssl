@@ -1,0 +1,100 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+
+struct TexRef
+{
+   Texture2D<float>    interleaved_ao;
+   Texture2D<float>    linear_depth;
+};
+
+struct SsaoBlurParams
+{
+   RW_Texture2D<float> output;
+   TexRef* tx_ref;
+   float2 tx_inv_size;
+   float depth_scale;
+};
+
+SsaoBlurParams srt : S_SRT_DATA;
+
+static const int k_kernel_radius = 4;
+static const int k_wavefront_size = 8;
+static const int k_lds_line_size = k_wavefront_size; // 16
+static const int k_lds_size = k_wavefront_size * (k_wavefront_size + k_kernel_radius * 2); // 128
+
+thread_group_memory float ao_store[k_lds_size];    // 512 byte
+thread_group_memory float depth_store[k_lds_size]; // 512 byte
+
+int to_lds_idx(int2 coord)
+{
+   return k_lds_line_size * coord.y + coord.x;
+}
+
+void fill_lds(int2 tile_start, uint2 thread_id)
+{
+   const SamplerState point_sampler = make_point_sampler();
+   const int2 pixel_to_load = thread_id * 2 + tile_start.xy - int2(0, k_kernel_radius);
+
+   const float2 gather_uv = (pixel_to_load + float2(1.0)) * srt.tx_inv_size;
+
+   // Near plane offset isn't needed here since we're dealing in depth differences.
+   const float4 z_value = decode_linear_z(srt.tx_ref->linear_depth.GatherRed(point_sampler, gather_uv), 0, srt.depth_scale);
+
+   const int lds_offset = to_lds_idx(thread_id*2);
+   depth_store[lds_offset]                   = z_value.w;
+   depth_store[lds_offset+1]                 = z_value.z;
+   depth_store[lds_offset+k_lds_line_size]   = z_value.x;
+   depth_store[lds_offset+k_lds_line_size+1] = z_value.y;
+
+   const float4 ao_value = srt.tx_ref->interleaved_ao.GatherRed(point_sampler, gather_uv);
+   ao_store[lds_offset]                      = ao_value.w;
+   ao_store[lds_offset+1]                    = ao_value.z;
+   ao_store[lds_offset+k_lds_line_size]      = ao_value.x;
+   ao_store[lds_offset+k_lds_line_size+1]    = ao_value.y;
+}
+
+// TODO: Access pattern is not optimal, if we store differently we may have better performance
+float box_blur(int lds_start)
+{
+   float ao = ao_store[lds_start];
+   float weight = 1.0;
+   float ref_depth = depth_store[lds_start];
+   [unroll]
+   for (int i = 1; i < k_kernel_radius; ++i)
+   {
+      float delta_d = ref_depth - depth_store[lds_start + i * k_lds_line_size];
+      float w = exp(-abs(delta_d));
+      ao += ao_store[lds_start + i * k_lds_line_size] * w;
+      weight += w;
+   }
+   [unroll]
+   for (int i = 1; i < k_kernel_radius; ++i)
+   {
+      float delta_d = ref_depth - depth_store[lds_start - i * k_lds_line_size];
+      float w = exp(-abs(delta_d));
+      ao += ao_store[lds_start - i * k_lds_line_size] * w;
+      weight += w;
+   }
+   return ao / weight;
+}
+[CxxSymbol("psfx::ssao_blur_v")]
+[NUM_THREADS(k_wavefront_size, k_wavefront_size, 1)]
+void main( uint2 offset : S_GROUP_ID, uint2 thread_id : S_GROUP_THREAD_ID)
+{
+   const int2 tile_start = offset * int2(k_wavefront_size);
+   if ((thread_id.x < 4) && (thread_id.y < 16)) // 8*4
+   {
+      fill_lds(tile_start, thread_id);
+   }
+   ThreadGroupMemoryBarrierSync();
+
+   const int lds_start = to_lds_idx(thread_id + int2(0, k_kernel_radius));
+
+   const float value = box_blur(lds_start);
+   srt.output[tile_start + thread_id] = value;
+}

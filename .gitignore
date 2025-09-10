@@ -42,3 +42,6 @@ TossEditor/TossPlayer/C++Scripts.dll
 TossEngine/TossEngine.dll
 TossEngine/TossEngine.exp
 TossEngine/TossEngine.lib
+*.o
+*.lastbuildstate
+*.tlog

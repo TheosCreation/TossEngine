@@ -13,6 +13,25 @@ Mail : theo.morris@mds.ac.nz
 
 #pragma once
 
+#ifdef __PROSPERO__
+#include <vectormath.h>
+
+using SceMatrix4 = sce::Vectormath::Simd::Aos::Matrix4;
+using SceMatrix3 = sce::Vectormath::Simd::Aos::Matrix3;
+
+using SceQuaternion = sce::Vectormath::Simd::Aos::Quat;
+
+using SceVector2 = sce::Vectormath::Simd::Aos::Vector2;
+using SceVector3 = sce::Vectormath::Simd::Aos::Vector3;
+using SceVector4 = sce::Vectormath::Simd::Aos::Vector4;
+
+using ScePoint3 = sce::Vectormath::Simd::Aos::Point3;
+
+
+#define DEG2RAD(x) ((x) * (M_PI / 180.0f))
+#define RAD2DEG(x) ((x) * (180.0f / M_PI))
+
+#else
 // Core GLM includes
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
@@ -21,6 +40,7 @@ Mail : theo.morris@mds.ac.nz
 #define GLM_ENABLE_EXPERIMENTAL
 #include <gtx/component_wise.hpp>
 #include <gtx/quaternion.hpp>
+#endif
 
 // Standard includes
 #include <cstdlib>

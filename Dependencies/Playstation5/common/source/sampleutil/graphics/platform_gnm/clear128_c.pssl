@@ -1,0 +1,22 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2015 Sony Interactive Entertainment Inc.
+ * 
+*/
+
+#include "sampleutil/graphics/shader_common.h"
+
+struct UserData
+{
+	uint4	m_dstDataBuffer;
+	uint4	m_value;
+};
+
+[NUM_THREADS(64,1,1)]
+void	main(uint ID : S_DISPATCH_THREAD_ID, UserData srt_data : S_SRT_DATA)
+{
+	uint4 vsharp = srt_data.m_dstDataBuffer;
+	uint4 value = srt_data.m_value;
+
+	__buffer_store_format_xyzw(value, uint2(ID, 0), vsharp, 0, __kBuffer_SLC | __kBuffer_IDXEN);
+}

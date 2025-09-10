@@ -1,0 +1,52 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2021 Sony Interactive Entertainment Inc.
+ * 
+ */
+#pragma once
+
+float D_GGX(float2	alpha, float	NoH)
+{
+	float a2 = dot(alpha, alpha);
+	float d = (NoH * a2 - NoH) * NoH + 1.f;
+	return a2 / max(M_PI * d * d, 1e-20);
+}
+
+float Vis_SmithJointApprox(float2 alpha, float NoV, float NoL)
+{
+	float a = sqrt(dot(alpha, alpha));
+	float Vis_SmithV = max(NoL * (NoV * (1.f - a) + a), 1e-10);
+	float Vis_SmithL = max(NoV * (NoL * (1.f - a) + a), 1e-10);
+	return 0.5f * rcp(Vis_SmithV + Vis_SmithL);
+}
+
+float3 F_Schlick(float3 specularColor, float VoH)
+{
+	float Fc = pow(1.f - VoH, 5.f);
+	return saturate(50.f * specularColor.g) * Fc + (1.f - Fc) * specularColor;
+}
+
+float3	getLighting(float3			lightPosition,
+					float3			cameraVector, 
+					float3			N,
+					float3			shadow,
+					float2			alpha,
+					float3			diffuseColor,
+					float3			specularColor)
+{
+	float3 V =-normalize(cameraVector);
+	float3 L = lightPosition;
+
+	float3 H = normalize(V + L);
+	float NoL =	saturate(dot(N, L));
+
+	float NoV =	abs(dot(N, V)) + 1e-5;
+	float VoH =	saturate(dot(V, H));
+
+	float NoH =	saturate(dot(N, H));
+	float D	= D_GGX(alpha, NoH);
+	float Vis= Vis_SmithJointApprox(alpha, NoV, NoL);
+	float3 F = F_Schlick(specularColor, VoH);
+
+	return (diffuseColor / M_PI + (D * Vis * F)) * NoL * shadow;
+}

@@ -1,0 +1,43 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_motion_blur.h"
+
+TileRangeVSrt srt_data : S_SRT_DATA;
+
+[CxxSymbol("psfx::motion_blur_tile_range_v")]
+[NUM_THREADS(k_tile_range_group_size, k_tile_range_group_size, 1)]
+void main(uint2 thread_id : S_DISPATCH_THREAD_ID)
+{
+   float min_length    = 1000.0f;
+   float2 min_velocity = float2(0.0f, 0.0f);
+
+   float max_length    = 0.0f;
+   float2 max_velocity = float2(0.0f, 0.0f);
+
+   // Each thread reads the column of horizontal min/max values for a tile and takes the min/max.
+   uint2 pos = uint2(thread_id.x, thread_id.y * k_motion_blur_tile_size);
+   for (uint i = 0; i < k_motion_blur_tile_size; i++, pos.y++)
+   {
+      const float4 range_h     = srt_data.tile_range_h[pos];
+      const float min_length_h = length(range_h.xy);
+      const float max_length_h = length(range_h.zw);
+
+      if (min_length_h < min_length)
+      {
+         min_velocity = range_h.xy;
+         min_length   = min_length_h;
+      }
+
+      if (max_length_h > max_length)
+      {
+         max_velocity = range_h.zw;
+         max_length   = max_length_h;
+      }
+   }
+
+   srt_data.tile_range[thread_id] = float4(min_velocity, max_velocity);
+}

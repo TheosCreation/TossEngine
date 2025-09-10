@@ -1,0 +1,9 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#define REVERSE_Z
+#define SYMBOL_NAME "psfx::ssr_trace_reverse_z"
+#include "psfx_ssr_trace_c.pssl"

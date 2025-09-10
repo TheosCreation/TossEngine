@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ORBIS">
+      <Configuration>Debug</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Prospero">
+      <Configuration>Debug</Configuration>
+      <Platform>Prospero</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ORBIS">
+      <Configuration>Release</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Prospero">
+      <Configuration>Release</Configuration>
+      <Platform>Prospero</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{392EFE5E-EBB1-467F-AF44-55345AFF5A48}</ProjectGuid>
+    <RootNamespace>PhysicsEffectsLibprospero</RootNamespace>
+    <Keyword>ProsperoProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Prospero'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Prospero'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Prospero'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Prospero'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Prospero'">..\lib\$(Platform)_$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">..\lib\$(Platform)_$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Prospero'">$(Platform)_$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">$(Platform)_$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Prospero'">..\lib\$(Platform)_$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">..\lib\$(Platform)_$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Prospero'">$(Platform)_$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">$(Platform)_$(Configuration)\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Prospero'">libScePhysicsEffects</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">libScePhysicsEffects</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Prospero'">libScePhysicsEffects</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">libScePhysicsEffects</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Prospero'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>../include;../src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PosIndependentCode>true</PosIndependentCode>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(TargetDir)$(TargetFileName)</OutputFile>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>../include;../src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PosIndependentCode>true</PosIndependentCode>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(TargetDir)$(TargetFileName)</OutputFile>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Prospero'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>../include;../src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <FastMath>false</FastMath>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <UnrollLoops>false</UnrollLoops>
+      <PosIndependentCode>true</PosIndependentCode>
+      <LinkTimeOptimization>false</LinkTimeOptimization>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(TargetDir)$(TargetFileName)</OutputFile>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>../include;../src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <FastMath>false</FastMath>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <UnrollLoops>false</UnrollLoops>
+      <PosIndependentCode>true</PosIndependentCode>
+      <LinkTimeOptimization>false</LinkTimeOptimization>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(TargetDir)$(TargetFileName)</OutputFile>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_common.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_error_code.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_large_position.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_perf_counter.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_simd_utils.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_vectormath_include.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_vec_int3.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\broadphase\pfx_broadphase_pair.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_aabb.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_box.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_capsule.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_circle.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_collidable.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_collidable_implementation.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_contact_cache.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_contact_manifold.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_convex_mesh.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_core_sphere.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_cylinder.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_detect_collision_func.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_intersect_moving_capsule_func.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_intersect_moving_circle_func.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_intersect_moving_sphere_func.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_intersect_ray_func.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_large_tri_mesh.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_ray.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_shape.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_shape_implementation.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_sphere.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_sub_data.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\particle\pfx_particle_physics.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\rigidbody\pfx_rigid_body.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\rigidbody\pfx_rigid_state.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_constraint_pair.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_constraint_row.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_contact_constraint.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_integrate.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_ball.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_constraint.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_constraint_func.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_distance.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_fix.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_hinge.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_motor.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_shoulder.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_slider.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_swing_twist.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_universal.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\sort\pfx_sort.h" />
+    <ClInclude Include="..\include\physics_effects\base_level\sort\pfx_sort_data.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\broadphase\pfx_broadphase.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\broadphase\pfx_broadphase_proxy_container.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_rigid_body_cache_container.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_circle_cast.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_collision_detection.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_contact_container.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_simulation_island.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_ray_cast.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_sphere_cast.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\rigidbody\pfx_compound_container.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\rigidbody\pfx_rigid_body_context.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\rigidbody\pfx_user_custom_function.h" />
+    <ClInclude Include="..\include\physics_effects\low_level\solver\pfx_constraint_solver.h" />
+    <ClInclude Include="..\include\physics_effects\util\pfx_debug_render.h" />
+    <ClInclude Include="..\include\physics_effects\util\pfx_mass.h" />
+    <ClInclude Include="..\include\physics_effects\util\pfx_mesh_creator.h" />
+    <ClInclude Include="..\include\physics_effects\util\pfx_mesh_serializer.h" />
+    <ClInclude Include="..\include\physics_effects\util\pfx_static_array.h" />
+    <ClInclude Include="..\include\physics_effects\util\pfx_static_array_implementation.h" />
+    <ClInclude Include="..\include\physics_effects\util\pfx_util_common.h" />
+    <ClInclude Include="..\include\physics_effects\util\pfx_util_include.h" />
+    <ClInclude Include="..\include\physics_effects\util\pfx_world_serializer.h" />
+    <ClInclude Include="..\src\base_level\broadphase\pfx_check_collidable.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_closest_large_tri_mesh.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_closest_tri_mesh_sphere.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_collision_templates.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_box_box.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_box_capsule.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_box_sphere.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_capsule_capsule.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_capsule_sphere.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_large_tri_mesh.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_sphere_sphere.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_tri_mesh_box.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_tri_mesh_capsule.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_tri_mesh_convex.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_tri_mesh_cylinder.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_tri_mesh_sphere.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_convex_mesh_impl.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_decoded_tri_mesh.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_ellipse.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_gjk_solver.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_gjk_support_func.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_all_cast_large_tri_mesh_obj_template.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_common.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_capsule_all_facets.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_capsule_large_tri_mesh.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_circle_all_facets.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_circle_large_tri_mesh.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_all_facets.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_box.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_capsule.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_convex.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_cylinder.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_large_tri_mesh.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_sphere.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_all_facets.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_box.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_capsule.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_convex.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_cylinder.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_large_tri_mesh.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_sphere.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_large_tri_mesh_impl.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_line_segment.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_mesh_common.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_simplex_solver.h" />
+    <ClInclude Include="..\src\base_level\collision\pfx_tri_mesh.h" />
+    <ClInclude Include="..\src\base_level\solver\pfx_check_solver.h" />
+    <ClInclude Include="..\src\base_level\solver\pfx_constraint_row_solver.h" />
+    <ClInclude Include="..\src\low_level\broadphase\pfx_bounding_volume.h" />
+    <ClInclude Include="..\src\low_level\broadphase\pfx_broadphase_stage.h" />
+    <ClInclude Include="..\src\low_level\broadphase\pfx_pair_container.h" />
+    <ClInclude Include="..\src\low_level\broadphase\pfx_progressive_bvh.h" />
+    <ClInclude Include="..\src\low_level\broadphase\pfx_proxy_container_callback.h" />
+    <ClInclude Include="..\src\low_level\collision\pfx_bounding_volume_vector3.h" />
+    <ClInclude Include="..\src\low_level\collision\pfx_contact_complex.h" />
+    <ClInclude Include="..\src\low_level\collision\pfx_detect_collision_stage.h" />
+    <ClInclude Include="..\src\low_level\collision\pfx_rigid_body_cache_manager.h" />
+    <ClInclude Include="..\src\low_level\collision\pfx_contact_manager.h" />
+    <ClInclude Include="..\src\low_level\rigidbody\pfx_compound_container_impl.h" />
+    <ClInclude Include="..\src\low_level\rigidbody\pfx_context.h" />
+    <ClInclude Include="..\src\low_level\rigidbody\pfx_simulation_stage.h" />
+    <ClInclude Include="..\src\low_level\rigidbody\pfx_user_custom_stage.h" />
+    <ClInclude Include="..\src\low_level\solver\pfx_gather_solver_pairs_stage.h" />
+    <ClInclude Include="..\src\low_level\solver\pfx_island_creation_stage.h" />
+    <ClInclude Include="..\src\low_level\solver\pfx_pair_graph.h" />
+    <ClInclude Include="..\src\low_level\solver\pfx_solve_constraints_stage.h" />
+    <ClInclude Include="..\src\low_level\solver\radix_sort.h" />
+    <ClInclude Include="..\src\low_level\task\pfx_atomic.h" />
+    <ClInclude Include="..\src\low_level\task\pfx_critical_section.h" />
+    <ClInclude Include="..\src\low_level\task\pfx_job_system.h" />
+    <ClInclude Include="..\src\util\pfx_array.h" />
+    <ClInclude Include="..\src\util\pfx_array_implementation.h" />
+    <ClInclude Include="..\src\util\pfx_binary_reader_writer.h" />
+    <ClInclude Include="..\src\util\pfx_debug_render_impl.h" />
+    <ClInclude Include="..\src\util\pfx_hash_array.h" />
+    <ClInclude Include="..\src\util\pfx_heap_manager.h" />
+    <ClInclude Include="..\src\util\pfx_mesh_internal.h" />
+    <ClInclude Include="..\src\util\pfx_oneway_allocator.h" />
+    <ClInclude Include="..\src\util\pfx_pool_array.h" />
+    <ClInclude Include="..\src\util\pfx_pool_array_implementation.h" />
+    <ClInclude Include="..\src\util\pfx_world_binary_serializer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\base_level\base\pfx_global_context.cpp" />
+    <ClCompile Include="..\src\base_level\base\pfx_large_position.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_closest_large_tri_mesh.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_closest_tri_mesh_sphere.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_collidable.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_box_box.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_box_capsule.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_box_sphere.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_cache.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_capsule_capsule.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_capsule_sphere.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_large_tri_mesh.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_manifold.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_sphere_sphere.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_tri_mesh_box.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_tri_mesh_capsule.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_tri_mesh_convex.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_tri_mesh_cylinder.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_tri_mesh_sphere.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_convex_mesh.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_core_sphere.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_detect_collision_func.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_gjk_solver.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_common.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_capsule_all_facets.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_capsule_func.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_capsule_large_tri_mesh.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_circle_all_facets.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_circle_func.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_circle_large_tri_mesh.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_all_facets.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_box.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_capsule.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_convex.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_cylinder.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_func.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_large_tri_mesh.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_sphere.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_all_facets.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_box.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_capsule.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_convex.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_cylinder.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_func.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_large_tri_mesh.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_sphere.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_large_tri_mesh.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_shape.cpp" />
+    <ClCompile Include="..\src\base_level\collision\pfx_simplex_solver.cpp" />
+    <ClCompile Include="..\src\base_level\particle\pfx_particle_physics.cpp" />
+    <ClCompile Include="..\src\base_level\rigidbody\pfx_rigid_body.cpp" />
+    <ClCompile Include="..\src\base_level\rigidbody\pfx_rigid_state.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_contact_constraint.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_integrate.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_joint.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_ball.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_constraint_func.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_distance.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_fix.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_hinge.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_motor.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_shoulder.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_slider.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_swing_twist.cpp" />
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_universal.cpp" />
+    <ClCompile Include="..\src\base_level\sort\pfx_sort.cpp" />
+    <ClCompile Include="..\src\low_level\broadphase\pfx_broadphase.cpp" />
+    <ClCompile Include="..\src\low_level\broadphase\pfx_broadphase_proxy_container.cpp" />
+    <ClCompile Include="..\src\low_level\broadphase\pfx_broadphase_stage.cpp" />
+    <ClCompile Include="..\src\low_level\broadphase\pfx_pair_container.cpp" />
+    <ClCompile Include="..\src\low_level\broadphase\pfx_progressive_bvh.cpp" />
+    <ClCompile Include="..\src\low_level\collision\pfx_detect_collision_stage.cpp" />
+    <ClCompile Include="..\src\low_level\collision\pfx_rigid_body_cache_manager.cpp" />
+    <ClCompile Include="..\src\low_level\collision\pfx_capsule_cast.cpp" />
+    <ClCompile Include="..\src\low_level\collision\pfx_circle_cast.cpp" />
+    <ClCompile Include="..\src\low_level\collision\pfx_collision_detection.cpp" />
+    <ClCompile Include="..\src\low_level\collision\pfx_contact_container.cpp" />
+    <ClCompile Include="..\src\low_level\collision\pfx_contact_manager.cpp" />
+    <ClCompile Include="..\src\low_level\collision\pfx_rigid_body_cache_container.cpp" />
+    <ClCompile Include="..\src\low_level\collision\pfx_ray_cast.cpp" />
+    <ClCompile Include="..\src\low_level\collision\pfx_sphere_cast.cpp" />
+    <ClCompile Include="..\src\low_level\rigidbody\pfx_compound_container.cpp" />
+    <ClCompile Include="..\src\low_level\rigidbody\pfx_context.cpp" />
+    <ClCompile Include="..\src\low_level\rigidbody\pfx_rigid_body_context.cpp" />
+    <ClCompile Include="..\src\low_level\rigidbody\pfx_user_custom_function.cpp" />
+    <ClCompile Include="..\src\low_level\rigidbody\pfx_user_custom_stage.cpp" />
+    <ClCompile Include="..\src\low_level\solver\pfx_constraint_solver.cpp" />
+    <ClCompile Include="..\src\low_level\solver\pfx_gather_solver_pairs_stage.cpp" />
+    <ClCompile Include="..\src\low_level\solver\pfx_island_creation_stage.cpp" />
+    <ClCompile Include="..\src\low_level\solver\pfx_pair_graph.cpp" />
+    <ClCompile Include="..\src\low_level\solver\pfx_solve_constraints_stage.cpp" />
+    <ClCompile Include="..\src\low_level\task\pfx_job_system.cpp" />
+    <ClCompile Include="..\src\util\pfx_binary_reader_writer.cpp" />
+    <ClCompile Include="..\src\util\pfx_debug_render.cpp" />
+    <ClCompile Include="..\src\util\pfx_debug_render_impl.cpp" />
+    <ClCompile Include="..\src\util\pfx_mass.cpp" />
+    <ClCompile Include="..\src\util\pfx_mesh_creator.cpp" />
+    <ClCompile Include="..\src\util\pfx_mesh_internal.cpp" />
+    <ClCompile Include="..\src\util\pfx_mesh_serializer.cpp" />
+    <ClCompile Include="..\src\util\pfx_util_common.cpp" />
+    <ClCompile Include="..\src\util\pfx_world_binary_serializer.cpp" />
+    <ClCompile Include="..\src\util\pfx_world_serializer.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

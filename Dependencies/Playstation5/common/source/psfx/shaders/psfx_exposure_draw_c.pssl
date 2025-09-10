@@ -1,0 +1,70 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+static const int k_bin_count = 128;
+
+thread_group_memory int EV_dist[k_bin_count];
+
+struct DrawConstantBuffer
+{
+   DataBuffer<uint> buckets;
+   DataBuffer<float> exposure_stats;
+};
+
+struct DrawParams
+{
+   RW_Texture2D<float4> dest;
+   DrawConstantBuffer* buffers;
+   uint x, y, w, h;
+   float scale;
+   float alpha;
+};
+
+float nit_to_ev100(float nit)
+{
+   return log2(nit * 100 / 12.5);
+}
+
+DrawParams srt : S_SRT_DATA;
+[CxxSymbol("psfx::exposure_shader_draw")]
+[NUM_THREADS(8, 8, 1)]
+void main(uint2 group_id : S_DISPATCH_THREAD_ID)
+{
+   const uint bucket = (k_bin_count * group_id.x + 2) / srt.w;
+   const float bucket_log_value = log10((float)srt.buffers->buckets[bucket]+0.05f);
+   const float log_value = srt.scale * (float)(srt.h - group_id.y) / srt.h;
+   const float ev_avg = nit_to_ev100(srt.buffers->exposure_stats[1]);
+   const float ev_min = srt.buffers->exposure_stats[2];
+   const float ev_range = srt.buffers->exposure_stats[3];
+   const int avg_bucket = (int)(128.0 * ((ev_avg - ev_min) / (ev_range)));
+
+   const int min_bucket = (int)srt.buffers->exposure_stats[4];
+   const int max_bucket = (int)srt.buffers->exposure_stats[5] + 1;
+   const bool avg_line = (avg_bucket == bucket);
+   const bool line = (min_bucket == bucket) || (max_bucket == bucket);
+
+   float3 color = float3(0.0);
+   if (avg_line)
+   {
+      color = float3(0.0, 1.0, 0.0);
+   }
+   else if (line)
+   {
+      color = float3(1.0, 0.0, 1.0);
+   }
+   else if (bucket_log_value > log_value)
+   {
+      color = float3(1.0);
+      if (bucket < min_bucket || bucket > max_bucket)
+      {
+         color = float3(1.0, 0.0, 0.0);
+      }
+   }
+   int2 store_pos = int2(srt.x, srt.y) + group_id;
+   srt.dest[store_pos] = float4(color, srt.alpha);
+}
+
+

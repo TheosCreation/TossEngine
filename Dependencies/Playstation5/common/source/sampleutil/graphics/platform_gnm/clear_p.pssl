@@ -1,0 +1,22 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2017 Sony Interactive Entertainment Inc.
+ * 
+ */
+#include "sampleutil/graphics/shader_common.h"
+
+#ifdef USE_32BIT_RT
+#pragma PSSL_target_output_format(default FMT_32_ABGR)
+#endif
+
+ConstantBuffer ClearColor : register(b0)
+{
+	float4	m_clearColor;
+};
+
+float4	main(struct UserData { float4 m_clearColor; } srt_data : S_SRT_DATA) : S_TARGET_OUTPUT
+{
+	m_clearColor = srt_data.m_clearColor;
+
+	return m_clearColor;
+}

@@ -1,0 +1,37 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+
+struct Textures
+{
+   Texture2D<float2>   input;
+   RW_Texture2D<float> out_depth;
+};
+
+struct ShaderParam
+{
+   Textures* text;
+   float2 tx_inv_size;
+};
+
+static const uint k_wavefront_size = 8;
+
+ShaderParam srt_data : S_SRT_DATA;
+[CxxSymbol("psfx::dof_max_near")]
+[NUM_THREADS(k_wavefront_size, k_wavefront_size, 1)]
+void main(uint2 tile_id : S_GROUP_ID, uint2 thread_id : S_GROUP_THREAD_ID)
+{
+   const SamplerState sampler = make_point_sampler();
+
+   uint2 end_point = (tile_id * k_wavefront_size + thread_id);
+   const uint2 load_coords = end_point * 2;
+   const float2 gather_uv = (load_coords + float2(1.0) + float2(0.5)) * srt_data.tx_inv_size;
+   const float4 sample_depth = srt_data.text->input.Gather(sampler, gather_uv);
+   const float max_d = max3(sample_depth.x, sample_depth.y, sample_depth.z);
+
+   srt_data.text->out_depth[end_point] = max(max_d, sample_depth.w);
+}

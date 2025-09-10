@@ -1,0 +1,24 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2019 Sony Interactive Entertainment Inc. 
+ * 
+ */
+#include "sampleutil/graphics/shader_common.h"
+
+#define THREADS_PER_WAVEFRONT 64
+
+struct UserData
+{
+	RW_DataBuffer<uint>	*destination;
+	DataBuffer<uint>	*source;
+	uint				m_destUints;
+	uint				m_srcUintsMinusOne;
+};
+
+[NUM_THREADS(THREADS_PER_WAVEFRONT,1,1)]
+void main(uint ID : S_DISPATCH_THREAD_ID, UserData srt_data : S_SRT_DATA)
+{
+	if(ID < srt_data.m_destUints)
+		(*srt_data.destination)[ID] = (*srt_data.source)[ID & srt_data.m_srcUintsMinusOne];
+}
+

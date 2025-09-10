@@ -1,4 +1,5 @@
 #include "ImGuiLogger.h"
+#include "imgui.h"
 
 ImGuiLogger::ImGuiLogger()
 {

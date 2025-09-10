@@ -1,0 +1,18 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2019 Sony Interactive Entertainment Inc. 
+ * 
+ */
+#pragma once
+
+#include <scebase_common.h>
+
+#if _SCE_TARGET_OS_PROSPERO
+
+#include "platform_agc/sprite_utility_agc.h"
+
+#elif _SCE_TARGET_OS_ORBIS
+
+#include "platform_gnm/sprite_utility_gnm.h"
+
+#endif

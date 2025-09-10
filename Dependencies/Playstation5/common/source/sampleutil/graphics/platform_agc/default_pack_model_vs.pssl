@@ -1,0 +1,206 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2023 Sony Interactive Entertainment Inc.
+ * 
+ */
+
+#include "../shaders/default_pack_model_vs.pssli"
+
+// No normal
+[CxxSymbol("Shader::default_pack_model_vv"), profile("vs_vs")]
+auto 	default_pack_model_vv(PackVertex<false, false, 0, 0, false>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_C_vv"), profile("vs_vs")]
+auto 	default_pack_model_C_vv(PackVertex<true, false, 0, 0, false>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_U0_vv"), profile("vs_vs")]
+auto 	default_pack_model_U0_vv(PackVertex<false, false, 1, 0, false>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_CU0_vv"), profile("vs_vs")]
+auto 	default_pack_model_CU0_vv(PackVertex<true, false, 1, 0, false>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_U1_vv"), profile("vs_vs")]
+auto 	default_pack_model_U1_vv(PackVertex<false, false, 2, 0, false>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_CU1_vv"), profile("vs_vs")]
+auto 	default_pack_model_CU1_vv(PackVertex<true, false, 2, 0, false>	input)
+{
+	return	transformVertex(input);
+}
+
+// With normal
+
+[CxxSymbol("Shader::default_pack_model_N_vv"), profile("vs_vs")]
+auto 	default_pack_model_N_vv(PackVertex<false, false, 0, 0>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NC_vv"), profile("vs_vs")]
+auto 	default_pack_model_NC_vv(PackVertex<true, false, 0, 0>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NU0_vv"), profile("vs_vs")]
+auto 	default_pack_model_NU0_vv(PackVertex<false, false, 1, 0>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NCU0_vv"), profile("vs_vs")]
+auto 	default_pack_model_NCU0_vv(PackVertex<true, false, 1, 0>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NTU0_vv"), profile("vs_vs")]
+auto 	default_pack_model_NTU0_vv(PackVertex<false, true, 1, 0>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NCTU0_vv"), profile("vs_vs")]
+auto 	default_pack_model_NCTU0_vv(PackVertex<true, true, 1, 0>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NU1_vv"), profile("vs_vs")]
+auto 	default_pack_model_NU1_vv(PackVertex<false, false, 2, 0>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NCU1_vv"), profile("vs_vs")]
+auto 	default_pack_model_NCU1_vv(PackVertex<true, false, 2, 0>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NTU1_vv"), profile("vs_vs")]
+auto 	default_pack_model_NTU1_vv(PackVertex<false, true, 2, 0>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NCTU1_vv"), profile("vs_vs")]
+auto 	default_pack_model_NCTU1_vv(PackVertex<true, true, 2, 0>	input)
+{
+	return	transformVertex(input);
+}
+
+// Skinning without normals
+
+[CxxSymbol("Shader::default_pack_model_S_vv"), profile("vs_vs")]
+auto 	default_pack_model_S_vv(PackVertex<false, false, 0, 4, false>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_CS_vv"), profile("vs_vs")]
+auto 	default_pack_model_CS_vv(PackVertex<true, false, 0, 4, false>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_U0S_vv"), profile("vs_vs")]
+auto 	default_pack_model_U0S_vv(PackVertex<false, false, 1, 4, false>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_CU0S_vv"), profile("vs_vs")]
+auto 	default_pack_model_CU0S_vv(PackVertex<true, false, 1, 4, false>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_U1S_vv"), profile("vs_vs")]
+auto 	default_pack_model_U1S_vv(PackVertex<false, false, 2, 4, false>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_CU1S_vv"), profile("vs_vs")]
+auto 	default_pack_model_CU1S_vv(PackVertex<true, false, 2, 4, false>	input)
+{
+	return	transformVertex(input);
+}
+
+// Skinning with normals
+
+[CxxSymbol("Shader::default_pack_model_NS_vv"), profile("vs_vs")]
+auto 	default_pack_model_NS_vv(PackVertex<false, false, 0, 4>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NCS_vv"), profile("vs_vs")]
+auto 	default_pack_model_NCS_vv(PackVertex<true, false, 0, 4>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NU0S_vv"), profile("vs_vs")]
+auto 	default_pack_model_NU0S_vv(PackVertex<false, false, 1, 4>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NCU0S_vv"), profile("vs_vs")]
+auto 	default_pack_model_NCU0S_vv(PackVertex<true, false, 1, 4>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NTU0S_vv"), profile("vs_vs")]
+auto 	default_pack_model_NTU0S_vv(PackVertex<false, true, 1, 4>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NCTU0S_vv"), profile("vs_vs")]
+auto 	default_pack_model_NCTU0S_vv(PackVertex<true, true, 1, 4>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NU1S_vv"), profile("vs_vs")]
+auto 	default_pack_model_NU1S_vv(PackVertex<false, false, 2, 4>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NCU1S_vv"), profile("vs_vs")]
+auto 	default_pack_model_NCU1S_vv(PackVertex<true, false, 2, 4>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NTU1S_vv"), profile("vs_vs")]
+auto 	default_pack_model_NTU1S_vv(PackVertex<false, true, 2, 4>	input)
+{
+	return	transformVertex(input);
+}
+
+[CxxSymbol("Shader::default_pack_model_NCTU1S_vv"), profile("vs_vs")]
+auto 	default_pack_model_NCTU1S_vv(PackVertex<true, true, 2, 4>	input)
+{
+	return	transformVertex(input);
+}

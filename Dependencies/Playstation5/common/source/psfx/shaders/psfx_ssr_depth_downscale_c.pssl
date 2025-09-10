@@ -1,0 +1,81 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+#include "psfx_ssr.h"
+
+#ifndef SYMBOL_NAME
+#define SYMBOL_NAME "psfx::ssr_depth_downscale"
+#endif
+
+DepthDownscaleSrt* srt_data : S_SRT_DATA;
+
+static const SamplerState point_sampler = make_point_sampler();
+
+template <typename T>
+T scale_depth(T d)
+{
+   // We flip sign of depth for computing "minimum" if using reverse Z, and then flip it back when
+   // writing - what we really mean by "minimum" is closest to the camera, even though this is
+   // numerically the maximum with reverse Z.
+   return d * srt_data->depth_scale;
+}
+
+float load_depth(int2 source_start, int2 offset)
+{
+   return scale_depth(srt_data->depth.Load(int3(source_start, srt_data->source_level), offset));
+}
+
+[CxxSymbol(SYMBOL_NAME)]
+[NUM_THREADS(k_depth_group_size, k_depth_group_size, 1)]
+void main(int2 thread_id : S_DISPATCH_THREAD_ID)
+{
+   const int2 dest_pix     = thread_id;
+   const int2 source_start = thread_id * 2;
+
+   // Gather samples from parent cell.
+   //
+   // When the source level has odd dimensions, simply sampling a 2x2 block does not correctly
+   // capture the full range of depth values for the cell in the destination, leading to
+   // incorrect tracing results with lots of visible glitches.
+   //
+   // To fix this, we sample 3 pixels from the source along axes with odd dimensions. The extra
+   // cost of doing this is tiny as it only affects smaller mip levels. This means adjacent cells
+   // sample overlapping areas, but this is not a problem.
+   //
+   // When source dimensions are both even we'll use a gather-based implementation, as this is
+   // a little quicker.
+   float min_depth;
+#ifdef GATHER_DEPTH
+   const float2 gather_uv      = (source_start + float2(1.0)) * srt_data->inv_source_size;
+   const float4 gather_samples = scale_depth(srt_data->depth.GatherLODRed(point_sampler, gather_uv, float(srt_data->source_level)));
+   min_depth = min(min3(gather_samples.x, gather_samples.y, gather_samples.z), gather_samples.w);
+#else
+   min_depth = load_depth(source_start, int2(0, 0));
+   min_depth = min(load_depth(source_start, int2(1, 0)), min_depth);
+   min_depth = min(load_depth(source_start, int2(0, 1)), min_depth);
+   min_depth = min(load_depth(source_start, int2(1, 1)), min_depth);
+
+   if (srt_data->source_size.x & 1)
+   {
+      min_depth = min(load_depth(source_start, int2(2, 0)), min_depth);
+      min_depth = min(load_depth(source_start, int2(2, 1)), min_depth);
+      if (srt_data->source_size.y & 1)
+      {
+         min_depth = min(load_depth(source_start, int2(2, 2)), min_depth);
+      }
+   }
+
+   if (srt_data->source_size.y & 1)
+   {
+      min_depth = min(load_depth(source_start, int2(0, 2)), min_depth);
+      min_depth = min(load_depth(source_start, int2(1, 2)), min_depth);
+   }
+#endif
+
+   // See scale_depth().
+   srt_data->dest_depth[dest_pix] = min_depth * srt_data->depth_scale;
+}

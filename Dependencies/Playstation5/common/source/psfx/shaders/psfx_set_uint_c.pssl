@@ -1,0 +1,23 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#define THREADS_PER_WAVEFRONT 64
+
+struct Params
+{
+   RW_DataBuffer<uint> destination;
+   uint value;
+   uint src_size_minus_one_DW;
+};
+
+Params srt_data : S_SRT_DATA;
+[CxxSymbol("psfx::set_uint")]
+[NUM_THREADS(64,1,1)]
+void main(uint ID : S_DISPATCH_THREAD_ID)
+{
+   srt_data.destination[ID] = srt_data.value;
+}
+

@@ -1,0 +1,193 @@
+﻿/* SIE CONFIDENTIAL
+ PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2021 Sony Interactive Entertainment Inc.
+ * 
+ */
+#pragma once
+
+#define PI 3.1415926535897932384626433832795
+#define kRefWhiteLevel 100.0 //in-the-spec, SDR 1.0 = 100 nits
+#define kSdrWhiteLevel 300.0 //"Common" SDR TVs usually interpret 1.0 to 250-400 nits.
+
+//Using higher-precision calculated gamut conversion matrices instead of values from the spec
+//#define MORE_CONSTANT_FLOAT_DIGITS 1
+
+//To void re-calculation everytime in the shader
+#define PQ_100NITS	0.508078421 //PQ_OETF(1.0)
+
+#ifndef M_INF
+#define M_INF (1.0/0.0)
+#endif
+
+#define Hdr2SdrTonemap ReinhardTonemap
+
+float3 ReinhardTonemap(float3 orig)
+{
+	orig = clamp(orig, 0.0, M_INF); //ensure all-positive inputs
+	return orig / (float3(1.0) + orig);
+}
+#if MORE_CONSTANT_FLOAT_DIGITS
+//calculated using CIE1931 primaries in 32-bit float precisions
+static const float3x3 BT709_TO_BT2020 = {
+        0.6274038959, 0.3292830384, 0.0433130657,
+        0.0690972894, 0.9195403951, 0.0113623156,
+        0.0163914389, 0.0880133079, 0.8955952532,
+};
+static const float3x3 BT2020_TO_BT709 = {
+        1.6604910021, -0.5876411388, -0.0728498633,
+        -0.1245504745, 1.1328998971, -0.0083494226,
+        -0.0181507634, -0.1005788980, 1.1187296614,
+};
+
+#else
+static const float3x3 BT709_TO_BT2020 = { //ref: ARIB STD-B62 and BT.2087
+	0.6274,    0.3293,    0.0433,
+	0.0691,    0.9195,    0.0114,
+	0.0164,    0.0880,    0.8956
+};
+
+static const float3x3 BT2020_TO_BT709 = { //inv(BT709_TO_BT2020)
+	1.6605,		-0.5877,	-0.0728,
+	-0.1246,	1.1330,		-0.0084,
+	-0.0182,	-0.1006,	1.1187
+};
+#endif
+static const float3x3 BT709_TO_DCIP3 = {
+	0.822457254,	0.177542567,	5.96046448e-08,
+	0.0331932120,	0.966806769,	-1.67638063e-08,
+	0.0170850381,	0.0724098086,	0.910505235
+};
+static const float3x3 BT2020_TO_XYZ = {
+	0.6369535326957703, 0.1446191817522049, 0.16885586082935333,
+	0.26269835233688354, 0.6780087351799011, 0.05929289758205414,
+	0.0, 0.028073128312826157, 1.0608272552490234
+};
+static const float3x3 XYZ_TO_DCIP3  = {
+	2.493508815765381, -0.9313879013061523, -0.4027126729488373,
+	-0.8294732570648193, 1.7626304626464844, 0.023624250665307045,
+	0.03585126996040344, -0.07618395239114761, 0.9570295214653015
+};
+
+float4 SRGB_OETF(float4 L)
+{
+	float3 dark = L.xyz * 12.92;
+    float3 light = 1.055 * (float3)pow(L.xyz, 1.0 / 2.4) - 0.055;
+
+    float4 r;
+	bool3 cri = L.xyz <= 0.0031308;
+	r.x = CndMask(cri.x, dark.x, light.x);
+	r.y = CndMask(cri.y, dark.y, light.y);
+	r.z = CndMask(cri.z, dark.z, light.z);
+	r.w = L.w;
+    return r;
+}
+
+float4 SRGB_EOTF(float4 E)
+{
+	float3 dark = E.xyz/12.92;
+	float3 light = pow((E.xyz+0.055)/(1+0.055), 2.4);
+	float4 r;
+	bool3 cri = E.xyz <= 0.04045;
+	r.x = CndMask(cri.x, dark.x, light.x);
+	r.y = CndMask(cri.y, dark.y, light.y);
+	r.z = CndMask(cri.z, dark.z, light.z);
+	r.w = E.w;
+	return r;
+}
+
+float4	BT1886_OETF(float4	L)
+{
+	float	gamma = 2.2f;
+	float	Lw = 1.f;
+	float	Lb = 0.f;
+	// The reference EOTF specified in Rec. ITU-R BT.1886
+	// L = a(max[(V+b),0])^g
+	float	a = pow(pow(Lw, 1.f / gamma) - pow(Lb, 1.f / gamma), gamma);
+	float	b = pow(Lb, 1.f / gamma) / (pow(Lw, 1.f / gamma) - pow(Lb, 1.f / gamma));
+	float4	V = float4(pow(max(L.rgb / a, 0.f), 1.f / gamma) - b, L.a);
+	return	V;
+}
+
+//apply BT.2100 OOTF to (minL, maxL).
+float4 BT2100_OOTF(float4 L, float minLNits, float maxLNits, float gamma, bool inverse)
+{
+	float3 nits = L.xyz * kRefWhiteLevel;
+	bool3 cri = nits >= minLNits && nits < maxLNits;
+	float4 i = float4((nits - minLNits) / (maxLNits - minLNits), 1.0);
+	float3 j; 
+	if(inverse){
+		j = SRGB_EOTF(pow(i, 1/gamma)).xyz;
+	}else{
+		j = pow( SRGB_OETF(i).xyz, gamma);
+	}
+	float3 adj =  (minLNits + (maxLNits - minLNits) * j) / kRefWhiteLevel;
+	float4 ret;
+	ret.x = CndMask(cri.x, adj.x, L.x);
+	ret.y = CndMask(cri.y, adj.y, L.y);
+	ret.z = CndMask(cri.z, adj.z, L.z);
+	ret.w = L.w;
+	return ret;
+}
+
+//constants for PQ calculations
+static const float c1 = 0.8359375;//3424.f/4096.f;
+static const float c2 = 18.8515625;//2413.f/4096.f*32.f;
+static const float c3 = 18.6875; //2392.f/4096.f*32.f;
+static const float m1 = 0.1593017578125; //2610.f / 4096.f / 4;
+static const float m2 = 78.84375;// 2523.f / 4096.f * 128.f;
+
+
+//input: normalized L in units of RefWhite (1.0=100nits), output: normalized E
+float4 PQ_OETF(float4 L, uint ootf_adj = 0, float gamma = 2.2)
+{
+	if(ootf_adj)
+		L = BT2100_OOTF(L, 0.0, 300.0, gamma, false);
+	L.xyz = L.xyz * kRefWhiteLevel / 10000.0; 
+	float3 Lm1 = pow(L.xyz, m1);
+	float3 X = (c1 + c2 * Lm1) / (1 + c3 * Lm1);
+	float4 res = float4(pow(X, m2), L.w);
+	return res;
+}
+
+//input: normalized E (0.0, 1.0), output: normalized L in units of RefWhite
+float4 PQ_EOTF(float4 E, uint ootf_adj = 0, float gamma = 2.2)
+{
+	float3 M = c2 - c3 * pow(E.xyz, 1/m2);
+	float3 N = max(pow(E.xyz,1/m2)-c1, 0);
+	float3 L = pow(N/M, 1/m1); //normalized nits (1.0 = 10000nits)
+	L = L * 10000.0 / kRefWhiteLevel; //convert to normalized L in units of RefWhite
+	return ootf_adj ? BT2100_OOTF(float4(L, E.w), 0.0, 300.0, gamma, true) : float4(L, E.w);
+
+}
+
+bool2	isOdd(float2	val)
+{
+	return ((int2)val) & 1;
+}
+
+#if defined ( __PROSPERO__ )
+template<typename T>
+T	croppedSample(Texture2D<T>	tex, sce::Agc::Core::Sampler	sampler, float2	uv, float2	minUv, float2	maxUv)
+{
+	uint2	dims;
+	tex.GetDimensionsFast(dims.x, dims.y);
+
+	float2	unnormalizedUv = uv;
+	if (sampler.getTextureCoordinates()	== sce::Agc::Core::Sampler::TextureCoordinates::kAuto)
+	{
+		unnormalizedUv *= (float2)dims;
+		minUv *= (float2)dims;
+		maxUv *= (float2)dims;
+		sampler.setTextureCoordinates(sce::Agc::Core::Sampler::TextureCoordinates::kUnnormalized);
+	}
+
+	bool2	isMirror(sampler.getWrapModeX() == sce::Agc::Core::Sampler::WrapMode::kMirror, sampler.getWrapModeY() == sce::Agc::Core::Sampler::WrapMode::kMirror);
+
+	float2	modUv	= fmod(unnormalizedUv, float2(dims));
+	modUv =	(isMirror && isOdd(floor(modUv))) ?	(float)dims	- modUv	: modUv;
+	float2	uvAdjust = max(ceil(minUv) + 0.5f - modUv, 0.f) + min(floor(maxUv) - 0.5f - modUv, 0.f);
+	unnormalizedUv += isMirror ? -uvAdjust : uvAdjust;
+
+	return	tex.Sample(SamplerState(sampler), unnormalizedUv);
+}
+#endif

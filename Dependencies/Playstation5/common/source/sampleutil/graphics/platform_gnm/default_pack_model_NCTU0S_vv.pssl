@@ -1,0 +1,12 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2023 Sony Interactive Entertainment Inc.
+ * 
+ */
+
+#include "../shaders/default_pack_model_vs.pssli"
+
+auto	main(PackVertex</*HasColor=*/true, /*HasTangent=*/true, /*UvCount=*/1, /*BoneCount=*/4>	input)
+{
+	return	transformVertex(input);
+}

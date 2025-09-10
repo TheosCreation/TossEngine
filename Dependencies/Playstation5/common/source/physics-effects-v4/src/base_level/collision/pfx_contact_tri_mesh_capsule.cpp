@@ -1,0 +1,877 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ *                Copyright (C) 2020 Sony Interactive Entertainment Inc.
+ *                                                
+ */
+
+#include "pfx_precompiled.h"
+#include "../../../include/physics_effects/base_level/base/pfx_simd_utils.h"
+#include "pfx_contact_tri_mesh_capsule.h"
+#include "pfx_intersect_common.h"
+#include "pfx_mesh_common.h"
+#include "pfx_decoded_tri_mesh.h"
+#include "pfx_gjk_solver.h"
+#include "pfx_gjk_support_func.h"
+
+namespace sce {
+namespace pfxv4 {
+
+// 分離軸が見つかった場合はすぐに処理を抜けるため最短距離が返されるわけではないことに注意
+
+/*
+	○ カプセル分離軸(x19)
+	面法線
+	カプセル軸 x エッジ0
+	カプセル軸 x エッジ1
+	カプセル軸 x エッジ2
+	((カプセル点0-面点0) x エッジ0) x エッジ0
+	((カプセル点0-面点1) x エッジ1) x エッジ1
+	((カプセル点0-面点2) x エッジ2) x エッジ2
+	((カプセル点1-面点0) x エッジ0) x エッジ0
+	((カプセル点1-面点1) x エッジ1) x エッジ1
+	((カプセル点1-面点2) x エッジ2) x エッジ2
+	((面点0-カプセル点0) x カプセル軸) x カプセル軸
+	((面点1-カプセル点0) x カプセル軸) x カプセル軸
+	((面点2-カプセル点0) x カプセル軸) x カプセル軸
+	面点0-カプセル点0
+	面点1-カプセル点0
+	面点2-カプセル点0
+	面点0-カプセル点1
+	面点1-カプセル点1
+	面点2-カプセル点1
+ */
+
+// checkNormal : skip this axis if it has an opposite direction of a facet normal
+inline bool CHECK_SAT(
+	const PfxVector3 &axis, PfxFloat AMin, PfxFloat AMax, PfxFloat BMin, PfxFloat BMax,
+	const PfxVector3 &facetNormal, PfxFloat &distMin, PfxVector3 &axisMin, bool &invalid)
+{
+	PfxFloat d1 = AMin - BMax;
+	PfxFloat d2 = BMin - AMax;
+	PfxFloat checkNormal = dot(-facetNormal, axis);
+	if(distMin < d1 /* && checkNormal >= -0.26f */) {
+		distMin = d1;
+		axisMin = axis;
+		invalid = checkNormal < 0.0f;
+	}
+	if(distMin < d2 /* && -checkNormal >= -0.26f */) {
+		distMin = d2;
+		axisMin = -axis;
+		invalid = -checkNormal < 0.0f;
+	}
+	if(d1 > 0.0f || d2 > 0.0f) {
+		return false;
+	}
+	return true;
+}
+
+#ifndef ENABLE_MPR_FOR_PRIMITIVES
+
+static bool pfxContactTriangleCapsule(PfxContactCache &contacts,PfxUInt32 facetId,
+							const PfxVector3 &normal,const PfxVector3 &p0,const PfxVector3 &p1,const PfxVector3 &p2,
+							const PfxFloat thickness,const PfxVector3 &edgeAngle,PfxUInt32 edgeChk,
+							const PfxCapsule &capsule)
+{
+	const PfxFloat epsilon = 0.00001f;
+
+	PfxFloat capsuleHalfLen = capsule.m_halfLen;
+	PfxFloat capsuleRadius = capsule.m_radius;
+
+	// 最も浅い貫通深度とそのときの分離軸
+	PfxFloat distMin = -SCE_PFX_FLT_MAX;
+	PfxVector3 axisMin(0.0f);
+	bool invalid = false;
+
+	const PfxVector3 capP[2] = {
+		PfxVector3( capsuleHalfLen,0.0f,0.0f),
+		PfxVector3(-capsuleHalfLen,0.0f,0.0f)
+	};
+
+	//-------------------------------------------
+	// １．分離軸判定
+	{
+		PfxVector3 facetPnts[6] = {
+			p0,p1,p2,p0-thickness*normal,p1-thickness*normal,p2-thickness*normal
+		};
+
+		PfxVector3 edges[3] = {
+			normalize(facetPnts[1] - facetPnts[0]),
+			normalize(facetPnts[2] - facetPnts[1]),
+			normalize(facetPnts[0] - facetPnts[2]),
+		};
+
+		PfxVector3 sideNml[3] = {
+			normalize(cross(edges[0],normal)),
+			normalize(cross(edges[1],normal)),
+			normalize(cross(edges[2],normal)),
+		};
+
+		bool insideThickness = false;
+
+		{
+			const PfxVector3 &sepAxis = normal;
+
+			// 分離平面
+			PfxPlane plane(sepAxis,(facetPnts[0]+facetPnts[1]+facetPnts[2])/3.0f);
+
+			// Capsule(B)を分離軸に投影して範囲を取得
+			PfxFloat test1,test2,BMin,BMax;
+			test1 = plane.onPlane(capP[0]);
+			test2 = plane.onPlane(capP[1]);
+			BMax = SCE_PFX_MAX(test1,test2) + capsuleRadius;
+			BMin = SCE_PFX_MIN(test1,test2) - capsuleRadius;
+
+			// 判定
+			if(BMin > 0.0f || BMax < -thickness) {
+				return false;
+			}
+
+			if(thickness > SCE_PFX_THICKNESS_THRESHOLD && BMax < 0.0f) {
+				insideThickness = true;
+			}
+
+			if(distMin < BMin) {
+				distMin = BMin;
+				axisMin = -sepAxis;
+			}
+		}
+
+		if(!insideThickness) {
+
+		//-------------------------------------------
+		// カプセル軸 x 面エッジ0,1,2
+
+		{
+			for(int e=0;e<3;e++) {
+				PfxVector3 &dir = edges[e];
+
+				// エッジが平行であれば判定しない
+				if(pfxIsSameDirection(dir,PfxVector3(1.0f,0.0f,0.0f))) continue;
+
+				PfxVector3 sepAxis = normalize(cross(PfxVector3(1.0f,0.0f,0.0f),dir));
+
+#if 0
+				// 分離軸が面の外側に向くように調整
+				if(dot(sepAxis,facetPnts[(e+2)%3] - facetPnts[e]) > 0.0f) {
+					sepAxis = -sepAxis;
+				}
+
+				// カプセルを分離軸に投影
+				PfxFloat a = dot(sepAxis,capP[0] - facetPnts[e]);
+				PfxFloat b = dot(sepAxis,capP[1] - facetPnts[e]);
+				PfxFloat c = dot(-sepAxis,capP[0] - facetPnts[e]) - capsuleRadius;
+				PfxFloat BMin = dot(sepAxis,capP[0] - facetPnts[e]) - capsuleRadius;
+
+				// 判定
+				if(BMin > 0.0f) {
+					return false;
+				}
+
+				if(distMin < BMin) {
+					distMin = BMin;
+					axisMin = -sepAxis;
+				}
+#else
+				// Triangleを分離軸に投影
+				PfxFloat AMin=SCE_PFX_FLT_MAX,AMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts6(facetPnts,sepAxis,AMin,AMax);
+
+				// カプセルを分離軸に投影
+				PfxFloat BMin=SCE_PFX_FLT_MAX,BMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts2(capP,sepAxis,BMin,BMax);
+				BMin -= capsuleRadius;
+				BMax += capsuleRadius;
+
+				if (!CHECK_SAT(sepAxis, AMin, AMax, BMin, BMax, normal, distMin, axisMin, invalid)) {
+					return false;
+				}
+#endif
+			}
+		}
+
+		//-------------------------------------------
+		// ((カプセル点0-面点0,1,2) x エッジ0,1,2) x エッジ0,1,2
+
+		{
+			for(int e=0;e<3;e++) {
+				PfxVector3 &edge = edges[e];
+				PfxVector3 sepAxis = cross(cross(capP[0]-facetPnts[e],edge),edge);
+				if(lengthSqr(sepAxis) < epsilon) continue;
+				sepAxis = normalize(sepAxis);
+
+#if 0
+				// 分離軸が面の外側に向くように調整
+				if(dot(sepAxis,facetPnts[(e+2)%3] - facetPnts[e]) > 0.0f) {
+					sepAxis = -sepAxis;
+				}
+
+				// 分離平面
+				PfxPlane planeA(sepAxis,facetPnts[e]);
+
+				// カプセルを分離軸に投影
+				PfxFloat tmp1 = planeA.onPlane(capP[0]);
+				PfxFloat tmp2 = planeA.onPlane(capP[1]);
+				PfxFloat BMin = SCE_PFX_MIN(tmp1,tmp2) - capsuleRadius;
+
+				// 判定
+				if(BMin > 0.0f) {
+					return false;
+				}
+
+				if(distMin < BMin) {
+					distMin = BMin;
+					axisMin = -sepAxis;
+				}
+#else
+				// Triangleを分離軸に投影
+				PfxFloat AMin=SCE_PFX_FLT_MAX,AMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts6(facetPnts,sepAxis,AMin,AMax);
+
+				// カプセルを分離軸に投影
+				PfxFloat BMin=SCE_PFX_FLT_MAX,BMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts2(capP,sepAxis,BMin,BMax);
+				BMin -= capsuleRadius;
+				BMax += capsuleRadius;
+
+				if (!CHECK_SAT(sepAxis, AMin, AMax, BMin, BMax, normal, distMin, axisMin, invalid)) {
+					return false;
+				}
+#endif
+			}
+		}
+
+		//-------------------------------------------
+		// ((カプセル点1-面点0,1,2) x エッジ0,1,2) x エッジ0,1,2
+
+		{
+			for(int e=0;e<3;e++) {
+				PfxVector3 &edge = edges[e];
+				PfxVector3 sepAxis = cross(cross(capP[1]-facetPnts[e],edge),edge);
+				if(lengthSqr(sepAxis) < epsilon) continue;
+				sepAxis = normalize(sepAxis);
+
+				// Triangleを分離軸に投影
+				PfxFloat AMin=SCE_PFX_FLT_MAX,AMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts6(facetPnts,sepAxis,AMin,AMax);
+
+				// カプセルを分離軸に投影
+				PfxFloat BMin=SCE_PFX_FLT_MAX,BMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts2(capP,sepAxis,BMin,BMax);
+				BMin -= capsuleRadius;
+				BMax += capsuleRadius;
+
+				if (!CHECK_SAT(sepAxis, AMin, AMax, BMin, BMax, normal, distMin, axisMin, invalid)) {
+					return false;
+				}
+			}
+		}
+
+		//-------------------------------------------
+		// ((面点0,1,2-カプセル点0) x カプセル軸) x カプセル軸
+
+		{
+			for(int e=0;e<3;e++) {
+				PfxVector3 capdir = capP[1]-capP[0];
+				PfxVector3 sepAxis = cross(cross(facetPnts[e]-capP[0],capdir),capdir);
+				if(lengthSqr(sepAxis) < epsilon) continue;
+				sepAxis = normalize(sepAxis);
+
+				// Triangleを分離軸に投影
+				PfxFloat AMin=SCE_PFX_FLT_MAX,AMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts6(facetPnts,sepAxis,AMin,AMax);
+
+				// カプセルを分離軸に投影
+				PfxFloat BMin=SCE_PFX_FLT_MAX,BMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts2(capP,sepAxis,BMin,BMax);
+				BMin -= capsuleRadius;
+				BMax += capsuleRadius;
+
+				if (!CHECK_SAT(sepAxis, AMin, AMax, BMin, BMax, normal, distMin, axisMin, invalid)) {
+					return false;
+				}
+			}
+		}
+
+		//-------------------------------------------
+		// 面点0,1,2-カプセル点0
+
+		{
+			for(int e=0;e<3;e++) {
+				PfxVector3 sepAxis = facetPnts[e]-capP[0];
+				if(lengthSqr(sepAxis) < epsilon) continue;
+				sepAxis = normalize(sepAxis);
+
+				// Triangleを分離軸に投影
+				PfxFloat AMin=SCE_PFX_FLT_MAX,AMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts6(facetPnts,sepAxis,AMin,AMax);
+
+				// カプセルを分離軸に投影
+				PfxFloat BMin=SCE_PFX_FLT_MAX,BMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts2(capP,sepAxis,BMin,BMax);
+				BMin -= capsuleRadius;
+				BMax += capsuleRadius;
+
+				if (!CHECK_SAT(sepAxis, AMin, AMax, BMin, BMax, normal, distMin, axisMin, invalid)) {
+					return false;
+				}
+			}
+		}
+
+		//-------------------------------------------
+		// 面点0,1,2-カプセル点1
+
+		{
+			for(int e=0;e<3;e++) {
+				PfxVector3 sepAxis = facetPnts[e]-capP[1];
+				if(lengthSqr(sepAxis) < epsilon) continue;
+				sepAxis = normalize(sepAxis);
+
+				// Triangleを分離軸に投影
+				PfxFloat AMin=SCE_PFX_FLT_MAX,AMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts6(facetPnts,sepAxis,AMin,AMax);
+
+				// カプセルを分離軸に投影
+				PfxFloat BMin=SCE_PFX_FLT_MAX,BMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts2(capP,sepAxis,BMin,BMax);
+				BMin -= capsuleRadius;
+				BMax += capsuleRadius;
+
+				if (!CHECK_SAT(sepAxis, AMin, AMax, BMin, BMax, normal, distMin, axisMin, invalid)) {
+					return false;
+				}
+			}
+		}
+
+		} // if(!insideThickness)
+
+		// 面に厚みがある場合の補助的な判定（面法線 x カプセル軸）
+		// 交差するかしないかだけを判定
+		if(thickness > SCE_PFX_THICKNESS_THRESHOLD) {
+			// 厚み側面の法線
+			for(int i=0;i<3;i++) {
+				// 分離平面
+				PfxPlane plane(sideNml[i],facetPnts[i]);
+
+				// カプセルを分離軸に投影して範囲を取得
+				PfxFloat test1,test2,BMin;
+				test1 = plane.onPlane(capP[0]);
+				test2 = plane.onPlane(capP[1]);
+				BMin = SCE_PFX_MIN(test1,test2) - capsuleRadius;
+
+				if(BMin > 0.0f) {
+					return false;
+				}
+			}
+
+			// ２つの厚み側面の法線
+			for(int e=0;e<3;e++) {
+				PfxVector3 vec = normalize(sideNml[(e+1)%3] + sideNml[e]);
+
+				PfxPlane plane(vec,facetPnts[(e+1)%3]);
+
+				// カプセルを分離軸に投影して範囲を取得
+				PfxFloat test1,test2,BMin;
+				test1 = plane.onPlane(capP[0]);
+				test2 = plane.onPlane(capP[1]);
+				BMin = SCE_PFX_MIN(test1,test2) - capsuleRadius;
+
+				if(BMin > 0.0f) {
+					return false;
+				}
+			}
+
+			// ２つの厚み側面のなすエッジ3×カプセル軸
+			for(int e=0;e<3;e++) {
+				PfxVector3 edgeVec = normalize(cross(sideNml[(e+1)%3],sideNml[e]));
+				PfxVector3 capVec(1.0f,0.0f,0.0f);
+
+				// エッジが平行であれば判定しない
+				if(pfxIsSameDirection(edgeVec,capVec)) continue;
+
+				PfxVector3 sepAxis = normalize(cross(edgeVec,capVec));
+
+				// Trianglesを分離軸に投影して範囲を取得
+				PfxFloat triMin,triMax;
+				pfxGetProjAxisPnts3(facetPnts,sepAxis,triMin,triMax);
+
+				// カプセルを分離軸に投影して範囲を取得
+				PfxFloat BMin=SCE_PFX_FLT_MAX,BMax=-SCE_PFX_FLT_MAX;
+				pfxGetProjAxisPnts2(capP,sepAxis,BMin,BMax);
+				BMin -= capsuleRadius;
+				BMax += capsuleRadius;
+
+				if(triMax < BMin || BMax < triMin) {
+					return false;
+				}
+			}
+		}
+	}
+
+	// It returns false, if the closest feature is invalid. (It means a normal direction is opposite to a facet normal)
+	if (invalid) return false;
+
+	//-------------------------------------------
+	// ２．衝突点の探索
+
+	{
+		// 分離軸方向に引き離す(最近接を判定するため、交差回避させる)
+		PfxVector3 sepAxis = 1.1f * fabsf(distMin) * axisMin;
+
+		const PfxVector3 facetPnts[3] = {
+			p0 + sepAxis,
+			p1 + sepAxis,
+			p2 + sepAxis,
+		};
+
+		//--------------------------------------------------------------------
+		// 衝突点の探索
+
+		PfxClosestPoints cp;
+		PfxVector3 sA,sB;
+
+		//--------------------------------------------------------------------
+		//Triangleの頂点 -> Capsule
+
+		// カプセルの線分と面のエッジx3の最近接点の算出
+		pfxClosestTwoLines(capP[0],capP[1],facetPnts[0],facetPnts[1],sB,sA);
+		cp.add(PfxPoint3(sA),PfxPoint3(sB + normalize(sA-sB)*capsuleRadius),lengthSqr(sA-sB));
+
+		pfxClosestTwoLines(capP[0],capP[1],facetPnts[1],facetPnts[2],sB,sA);
+		cp.add(PfxPoint3(sA),PfxPoint3(sB + normalize(sA-sB)*capsuleRadius),lengthSqr(sA-sB));
+
+		pfxClosestTwoLines(capP[0],capP[1],facetPnts[2],facetPnts[0],sB,sA);
+		cp.add(PfxPoint3(sA),PfxPoint3(sB + normalize(sA-sB)*capsuleRadius),lengthSqr(sA-sB));
+
+		// カプセルの端点と面の最近接点の算出
+		PfxTriangle triangleA(facetPnts[0],facetPnts[1],facetPnts[2]);
+		pfxClosestPointTriangle(capP[0],triangleA,sA);
+		cp.add(PfxPoint3(sA),PfxPoint3(capP[0]+normalize(sA-capP[0])*capsuleRadius),lengthSqr(sA-capP[0]));
+
+		pfxClosestPointTriangle(capP[1],triangleA,sA);
+		cp.add(PfxPoint3(sA),PfxPoint3(capP[1]+normalize(sA-capP[1])*capsuleRadius),lengthSqr(sA-capP[1]));
+
+		for(int i=0;i<cp.numPoints;i++) {
+			if(cp.distSqr[i] < cp.closestDistSqr + epsilon) {
+				cp.pA[i] -= sepAxis;
+				// 面上の最近接点が凸エッジ上でない場合は法線を変える
+				if (pfxPointIsOnTriangleEdge(PfxVector3(cp.pA[i]), edgeChk, p0, p1, p2)) {
+					axisMin = -normal;
+				}
+
+				PfxSubData subData;
+				subData.setFacetId(facetId);
+				contacts.addContactPoint(-length(cp.pB[i]-cp.pA[i]),axisMin,cp.pA[i],cp.pB[i],subData,PfxSubData());
+			}
+		}
+	}
+
+	return true;
+}
+
+#else
+
+static bool pfxContactTriangleCapsule(PfxContactCache &contacts,PfxUInt32 facetId,
+							const PfxVector3 &normal,const PfxVector3 &p0,const PfxVector3 &p1,const PfxVector3 &p2,
+							const PfxFloat thickness,const PfxVector3 &edgeAngle,PfxUInt32 edgeChk,
+							const PfxCapsule &capsule)
+{
+	{
+		// 早期チェック + 裏側の誤判定を防ぐ
+		PfxVector3 sA(0.0f);
+		getSupportVertex(&capsule, normal, sA, 0.0f);
+		PfxFloat projA = dot(sA, normal);
+		PfxFloat projB = dot(p0, normal);
+		if (projA + thickness < projB) return false;
+
+		// 面法線を分離軸にとる
+		getSupportVertex(&capsule, -normal, sA, 0.0f);
+		projA = dot(sA, normal);
+
+		if (projA > projB) return false; // 面より上にある
+	}
+
+	// 膨らませる
+	float fat = (length(p0 - p1) + length(p1 - p2) + length(p2 - p0)) * 0.033f;
+	PfxVector3 facetPnts[4] = {
+		p0, p1, p2, (p0 + p1 + p2) / 3.0f - fat * normal,
+	};
+
+	PfxPoint3 pA(0.0f), pB(0.0f);
+	PfxVector3 nml(0.0f);
+
+	PfxFatTriangle fatTriangle;
+	fatTriangle.points[0] = facetPnts[0];
+	fatTriangle.points[1] = facetPnts[1];
+	fatTriangle.points[2] = facetPnts[2];
+	fatTriangle.points[3] = facetPnts[3];
+
+	PfxMpr<PfxFatTriangle, PfxCapsule> collider(&fatTriangle, &capsule);
+
+	PfxFloat d;
+	PfxVector3 cachedAxis(0.0f);
+	PfxUInt32 featureIdA = 0, featureIdB = 0;
+	PfxInt32 ret = collider.collideRetry(d, nml, pA, pB, featureIdA, featureIdB, cachedAxis, SCE_PFX_FLT_MAX);
+	if (ret != kPfxGjkResultOk || d >= 0.0f) return false;
+
+	PfxVector3 pointsOnTriangle = PfxVector3(pA);
+	PfxVector3 axis = nml;
+
+	// Ignore a contact if a normal direction is opposed to a facet normal
+	if (dot(-normal, axis) < 0.0f) return false;
+
+	// 面上の最近接点が凸エッジ上でない場合は法線を変える
+	if (pfxPointIsOnTriangleEdge(pointsOnTriangle, edgeChk, p0, p1, p2)) {
+		axis = -normal;
+	}
+
+	PfxSubData subData;
+	subData.setFacetId(facetId);
+	contacts.addContactPoint(d, axis, pA, pB, subData, PfxSubData());
+
+	return true;
+}
+
+#endif // ENABLE_MPR_FOR_PRIMITIVES
+
+
+template<>
+PfxInt32 pfxContactTriMesh<PfxCapsule, PfxExpandedTriMesh> (
+	PfxContactCache &contacts,
+	const PfxLargeTriMeshImpl *largeMeshA, const PfxExpandedTriMesh *meshA, bool flipTriangle,
+	const PfxCapsule &capsuleB,
+	const PfxTransform3 &transformB,
+	PfxFloat distanceThreshold)
+{
+	(void) largeMeshA;
+	(void) distanceThreshold;
+
+	PfxTransform3 transformBA = inverse(transformB);
+	PfxMatrix3 rotationBA_n = transpose(inverse(transformBA.getUpper3x3()));
+
+	//-------------------------------------------
+	// 判定する面を絞り込む.
+
+	PfxUInt8 selFacets[SCE_PFX_NUMMESHFACETS] = { 0 };
+	PfxUInt32 numSelFacets = pfxGatherFacets(meshA,
+		transformB.getTranslation(),
+		absPerElem(transformB.getUpper3x3()) * PfxVector3(capsuleB.m_halfLen+capsuleB.m_radius),selFacets);
+	if(numSelFacets == 0) return 0;
+
+	PfxContactCache localContacts;
+
+	int vi[3] = {0,1,2};
+	int ei[3] = {0,1,2};
+	if(flipTriangle) {vi[0]=2;vi[2]=0;ei[0]=1;ei[1]=0;}
+
+	for(PfxUInt32 f = 0; f < numSelFacets; f++) {
+		const PfxExpandedFacet &facet = meshA->m_facets[selFacets[f]];
+
+		PfxVector3 facetNormal = normalize(rotationBA_n * facet.m_normal);
+
+		PfxVector3 facetPntsA[3] = {
+			transformBA.getTranslation() + transformBA.getUpper3x3() * meshA->m_verts[facet.m_vertIds[vi[0]]],
+			transformBA.getTranslation() + transformBA.getUpper3x3() * meshA->m_verts[facet.m_vertIds[vi[1]]],
+			transformBA.getTranslation() + transformBA.getUpper3x3() * meshA->m_verts[facet.m_vertIds[vi[2]]],
+		};
+
+		const PfxEdge *edge[3] = {
+			&meshA->m_edges[facet.m_edgeIds[ei[0]]],
+			&meshA->m_edges[facet.m_edgeIds[ei[1]]],
+			&meshA->m_edges[facet.m_edgeIds[ei[2]]],
+		};
+
+		PfxUInt32 edgeChk = edge[0]->m_angleType | (edge[1]->m_angleType << 2) | (edge[2]->m_angleType << 4);
+
+		PfxVector3 edgeAngle = 0.5f*SCE_PFX_PI/255.0f*PfxVector3(edge[0]->m_tilt,edge[1]->m_tilt,edge[2]->m_tilt);
+
+		pfxContactTriangleCapsule(localContacts,selFacets[f],
+							facetNormal,facetPntsA[0],facetPntsA[1],facetPntsA[2],
+							facet.m_thickness,edgeAngle,edgeChk,capsuleB);
+	}
+
+	PfxMatrix3 rotationB_n = transpose(inverse(transformB.getUpper3x3()));
+
+	for(PfxUInt32 i=0;i<localContacts.getNumContactPoints();i++) {
+		PfxSubData subData = localContacts.getContactSubDataA(i);
+
+		const PfxExpandedFacet &facet = meshA->m_facets[subData.getFacetId()];
+
+		PfxTriangle triangleA(
+			meshA->m_verts[facet.m_vertIds[vi[0]]],
+			meshA->m_verts[facet.m_vertIds[vi[1]]],
+			meshA->m_verts[facet.m_vertIds[vi[2]]]);
+
+		PfxFloat s=0.0f,t=0.0f;
+		pfxCalcBarycentricCoords(PfxVector3(localContacts.getContactLocalPointA(i)),triangleA,s,t);
+		subData.setType(PfxSubData::MESH_INFO);
+		subData.setFacetLocalS(s);
+		subData.setFacetLocalT(t);
+		subData.setUserData(facet.m_userData);
+
+		contacts.addContactPoint(
+			localContacts.getContactDistance(i),
+			rotationB_n * localContacts.getContactNormal(i),
+			transformB * localContacts.getContactLocalPointA(i),
+			localContacts.getContactLocalPointB(i),
+			subData,PfxSubData());
+	}
+
+	return contacts.getNumContactPoints();
+}
+
+template<>
+PfxInt32 pfxContactTriMesh<PfxCapsule, PfxQuantizedTriMeshBvh> (
+	PfxContactCache &contacts,
+	const PfxLargeTriMeshImpl *largeMeshA, const PfxQuantizedTriMeshBvh *meshA, bool flipTriangle,
+	const PfxCapsule &capsuleB,
+	const PfxTransform3 &transformB,
+	PfxFloat distanceThreshold)
+{
+	(void) distanceThreshold;
+
+	PfxTransform3 transformBA = inverse(transformB);
+	PfxMatrix3 rotationBA_n = transpose(inverse(transformBA.getUpper3x3()));
+
+	//	building aabb of the capsule within A local
+	PfxVector3 _aabbB(capsuleB.m_halfLen+capsuleB.m_radius,capsuleB.m_radius,capsuleB.m_radius);
+
+	PfxVector3 aabbMin = transformB.getTranslation() - absPerElem(transformB.getUpper3x3()) * _aabbB;
+	PfxVector3 aabbMax = transformB.getTranslation() + absPerElem(transformB.getUpper3x3()) * _aabbB;
+
+	//	operate back-tracking through Largemsh's BV-tree
+	PfxUInt8 selFacets[SCE_PFX_NUMMESHFACETS] = {0};
+	PfxUInt32 numSelFacets = pfxGatherFacets(meshA,aabbMin,aabbMax,selFacets);
+	if(numSelFacets == 0) return 0;
+
+	//-------------------------------------------
+	//	operating "separating hyperplane theorem"
+
+	PfxDecodedTriMesh decodedMesh;
+	PfxContactCache localContacts;
+
+	int vi[3] = {0,1,2};
+	int ei[3] = {0,1,2};
+	if(flipTriangle) {vi[0]=2;vi[2]=0;ei[0]=1;ei[1]=0;}
+
+	for(PfxUInt32 f = 0; f < numSelFacets; f++ ) {
+		const PfxQuantizedFacetBvh &facet = meshA->m_facets[selFacets[f]];
+
+		// デコード
+		PfxDecodedFacet decodedFacet;
+		const PfxUInt32 vId[3] = {facet.m_vertIds[vi[0]],facet.m_vertIds[vi[1]],facet.m_vertIds[vi[2]]};
+
+		decodedFacet.m_normal = normalize(rotationBA_n * largeMeshA->decodeNormal(facet.m_normal));
+		decodedFacet.m_thickness = largeMeshA->decodeFloat(facet.m_thickness);
+
+		for(int v=0;v<3;v++) {
+			if(!decodedMesh.isDecodedVertex(vId[v])) {
+				PfxVector3 vert = largeMeshA->decodePosition(meshA->m_verts[vId[v]]);
+				decodedMesh.m_verts[vId[v]] = transformBA.getTranslation() + transformBA.getUpper3x3() * vert;
+				decodedMesh.m_decodedVertex[vId[v]>>5] |= 1 << (vId[v]&0x1f);
+			}
+		}
+
+		PfxVector3 facetNormal = decodedFacet.m_normal;
+
+		PfxVector3 facetPntsA[3] = {
+			decodedMesh.m_verts[vId[0]],
+			decodedMesh.m_verts[vId[1]],
+			decodedMesh.m_verts[vId[2]],
+		};
+
+		const PfxEdge *edge[3] = {
+			&meshA->m_edges[facet.m_edgeIds[ei[0]]],
+			&meshA->m_edges[facet.m_edgeIds[ei[1]]],
+			&meshA->m_edges[facet.m_edgeIds[ei[2]]],
+		};
+
+		PfxUInt32 edgeChk = edge[0]->m_angleType | (edge[1]->m_angleType << 2) | (edge[2]->m_angleType << 4);
+
+		PfxVector3 edgeAngle = 0.5f*SCE_PFX_PI/255.0f*PfxVector3(edge[0]->m_tilt,edge[1]->m_tilt,edge[2]->m_tilt);
+
+		pfxContactTriangleCapsule(localContacts, selFacets[f],
+			facetNormal, facetPntsA[0], facetPntsA[1], facetPntsA[2],
+			decodedFacet.m_thickness, edgeAngle, edgeChk, capsuleB);
+	}
+
+	PfxMatrix3 rotationB_n = transpose(inverse(transformB.getUpper3x3()));
+
+	for(PfxUInt32 i=0;i<localContacts.getNumContactPoints();i++) {
+		PfxSubData subData = localContacts.getContactSubDataA(i);
+
+		const PfxQuantizedFacetBvh &facet = meshA->m_facets[subData.getFacetId()];
+
+		PfxTriangle triangleA(
+			decodedMesh.m_verts[facet.m_vertIds[vi[0]]],
+			decodedMesh.m_verts[facet.m_vertIds[vi[1]]],
+			decodedMesh.m_verts[facet.m_vertIds[vi[2]]]);
+
+		PfxFloat s=0.0f,t=0.0f;
+		pfxCalcBarycentricCoords(PfxVector3(localContacts.getContactLocalPointA(i)),triangleA,s,t);
+		subData.setType(PfxSubData::MESH_INFO);
+		subData.setFacetLocalS(s);
+		subData.setFacetLocalT(t);
+		subData.setUserData(facet.m_userData);
+
+		contacts.addContactPoint(
+			localContacts.getContactDistance(i),
+			rotationB_n * localContacts.getContactNormal(i),
+			transformB * localContacts.getContactLocalPointA(i),
+			localContacts.getContactLocalPointB(i),
+			subData,PfxSubData());
+	}
+
+	return contacts.getNumContactPoints();
+}
+
+template<>
+PfxInt32 pfxContactTriMesh<PfxCapsule, PfxCompressedTriMesh> (
+	PfxContactCache &contacts,
+	const PfxLargeTriMeshImpl *largeMeshA, const PfxCompressedTriMesh *meshA, bool flipTriangle,
+	const PfxCapsule &capsuleB,
+	const PfxTransform3 &transformB,
+	PfxFloat distanceThreshold)
+{
+	(void) distanceThreshold;
+
+	PfxTransform3 transformBA = inverse(transformB);
+
+	//	building aabb of the capsule within A local
+	PfxVector3 _aabbB(capsuleB.m_halfLen+capsuleB.m_radius,capsuleB.m_radius,capsuleB.m_radius);
+
+	PfxVector3 aabbMin = transformB.getTranslation() - absPerElem(transformB.getUpper3x3()) * _aabbB;
+	PfxVector3 aabbMax = transformB.getTranslation() + absPerElem(transformB.getUpper3x3()) * _aabbB;
+
+	//	operate back-tracking through Largemsh's BV-tree
+	PfxUInt8 selFacets[SCE_PFX_NUMMESHFACETS] = {0};
+	PfxUInt32 numSelFacets = pfxGatherFacets(meshA,(PfxFacetBvhNode*)largeMeshA->m_bvhNodeBuffer,aabbMin,aabbMax,selFacets);
+	if(numSelFacets == 0) return 0;
+
+	//-------------------------------------------
+	//	operating "separating hyperplane theorem"
+
+	PfxDecodedTriMesh decodedMesh;
+	PfxContactCache localContacts;
+
+	int vi[4] = {0,1,2,3};
+	if(flipTriangle) {vi[0]=2;vi[2]=0;}
+
+	for(PfxUInt32 f = 0; f < numSelFacets; f++ ) {
+		const PfxCompressedFacet2 &facet = ((PfxCompressedFacet2*)largeMeshA->m_facetBuffer)[meshA->m_facets + selFacets[f]];
+
+		const PfxUInt32 vId[4] = {facet.m_vertIds[vi[0]],facet.m_vertIds[vi[1]],facet.m_vertIds[vi[2]],facet.m_vertIds[vi[3]]};
+
+		for(int v=0;v<4;v++) {
+			if(!decodedMesh.isDecodedVertex(vId[v])) {
+				PfxVector3 vert = largeMeshA->decodePosition(*((PfxQuantize3*)largeMeshA->m_vertexBuffer + meshA->m_verts + vId[v]));
+				decodedMesh.m_verts[vId[v]] = transformBA.getTranslation() + transformBA.getUpper3x3() * vert;
+				decodedMesh.m_decodedVertex[vId[v]>>5] |= 1 << (vId[v]&0x1f);
+			}
+		}
+
+		PfxVector3 facetPntsA[4] = {
+			decodedMesh.m_verts[vId[0]],
+			decodedMesh.m_verts[vId[1]],
+			decodedMesh.m_verts[vId[2]],
+			decodedMesh.m_verts[vId[3]],
+		};
+
+		if(facet.m_facetInfo & 0x8000) {
+			// double facets
+			PfxVector3 facetNormal0 = normalize(cross(facetPntsA[1]-facetPntsA[0],facetPntsA[2]-facetPntsA[0]));
+			PfxVector3 facetNormal1 = normalize(cross(facetPntsA[3]-facetPntsA[2],facetPntsA[0]-facetPntsA[2]));
+
+			PfxUInt32 edgeChk0 = facet.m_edgeInfo & 0x3f;
+			PfxUInt32 edgeChk1 = facet.m_edgeInfo>>4;
+
+			if(flipTriangle) {
+				edgeChk0 = ((edgeChk0>>2)&0x0c) | ((edgeChk0<<2)&0x30) | (edgeChk0&0x03);
+				edgeChk1 = ((edgeChk1>>2)&0x0c) | ((edgeChk1<<2)&0x30) | (edgeChk1&0x03);
+			}
+
+			PfxUInt8 facetId0 = selFacets[f];
+			PfxUInt8 facetId1 = selFacets[f] | 0x80;
+
+			PfxVector3 edgeAngle(0.0f);
+
+			pfxContactTriangleCapsule(localContacts, facetId0,
+								facetNormal0,facetPntsA[0],facetPntsA[1],facetPntsA[2],
+								largeMeshA->m_defaultThickness,edgeAngle,
+								edgeChk0,capsuleB);
+
+			pfxContactTriangleCapsule(localContacts, facetId1,
+								facetNormal1,facetPntsA[0],facetPntsA[2],facetPntsA[3],
+								largeMeshA->m_defaultThickness,edgeAngle,
+								edgeChk1,capsuleB);
+		}
+		else {
+			// signle facet
+			PfxVector3 facetNormal = normalize(cross(facetPntsA[1]-facetPntsA[0],facetPntsA[2]-facetPntsA[0]));
+
+			PfxUInt32 edgeChk = facet.m_edgeInfo & 0x3f;
+
+			if(flipTriangle) {
+				edgeChk = ((edgeChk>>2)&0x0c) | ((edgeChk<<2)&0x30) | (edgeChk&0x03);
+			}
+
+			PfxVector3 edgeAngle(0.0f);
+
+			pfxContactTriangleCapsule(localContacts, selFacets[f],
+								facetNormal,facetPntsA[0],facetPntsA[1],facetPntsA[2],
+								largeMeshA->m_defaultThickness,edgeAngle,
+								edgeChk,capsuleB);
+		}
+	}
+
+	PfxMatrix3 rotationB_n = transpose(inverse(transformB.getUpper3x3()));
+
+	for(PfxUInt32 i=0;i<localContacts.getNumContactPoints();i++) {
+		PfxSubData subData = localContacts.getContactSubDataA(i);
+
+		PfxUInt8 facetId = subData.getFacetId();
+
+		const PfxCompressedFacet2 &facet = ((PfxCompressedFacet2*)largeMeshA->m_facetBuffer)[meshA->m_facets + (facetId&0x7f)];
+
+		PfxVector3 p[3];
+		PfxUInt32 userData;
+
+		if(facetId&0x80) {
+			// facet 1
+			p[0] = decodedMesh.m_verts[facet.m_vertIds[vi[0]]];
+			p[1] = decodedMesh.m_verts[facet.m_vertIds[vi[2]]];
+			p[2] = decodedMesh.m_verts[facet.m_vertIds[vi[3]]];
+			userData = facet.m_userData[1];
+			facetId = (facet.m_facetInfo&0xFF)+1; // Calculate the actual facet index
+		}
+		else {
+			// facet 0
+			p[0] = decodedMesh.m_verts[facet.m_vertIds[vi[0]]];
+			p[1] = decodedMesh.m_verts[facet.m_vertIds[vi[1]]];
+			p[2] = decodedMesh.m_verts[facet.m_vertIds[vi[2]]];
+			userData = facet.m_userData[0];
+			facetId = (facet.m_facetInfo&0xFF); // Calculate the actual facet index
+		}
+
+		PfxTriangle triangleA(p[0],p[1],p[2]);
+
+		PfxFloat s=0.0f,t=0.0f;
+		pfxCalcBarycentricCoords(PfxVector3(localContacts.getContactLocalPointA(i)),triangleA,s,t);
+		subData.setType(PfxSubData::MESH_INFO);
+		subData.setFacetLocalS(s);
+		subData.setFacetLocalT(t);
+		subData.setUserData(userData);
+		subData.setFacetId(facetId);
+
+		contacts.addContactPoint(
+			localContacts.getContactDistance(i),
+			rotationB_n * localContacts.getContactNormal(i),
+			transformB * localContacts.getContactLocalPointA(i),
+			localContacts.getContactLocalPointB(i),
+			subData,PfxSubData());
+	}
+
+	return contacts.getNumContactPoints();
+}
+
+} //namespace pfxv4
+} //namespace sce

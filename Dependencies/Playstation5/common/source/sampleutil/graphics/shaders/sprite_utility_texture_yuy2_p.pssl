@@ -1,0 +1,63 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2022 Sony Interactive Entertainment Inc.
+ * 
+ */
+#include "helper_functions.pssli"
+
+struct UserData
+{
+	SamplerState	m_sampler;
+	Texture2D		m_texture;
+};
+
+struct RenderParameters
+{
+	float4		m_rgba;
+	int			m_hdr;
+	int			__padding__[1];
+	UserData	*m_pUserData;
+};
+
+#if defined ( __PROSPERO__ )
+[CxxSymbol("Shader::sprite_utility_texture_yuy2_p")]
+#endif
+float4	main(in float2 uv, RenderParameters	srtData : S_SRT_DATA ) : S_TARGET_OUTPUT
+{
+	const float3 yubof = float3(0.0f, -0.500f, -0.500f);
+	const float3 yuv2r = float3(1.0f,  0.000f,  1.402f);
+	const float3 yuv2g = float3(1.0f, -0.344f, -0.714f);
+	const float3 yuv2b = float3(1.0f,  1.772f,  0.000f);
+
+	float2 textureSize;
+	srtData.m_pUserData->m_texture.GetDimensionsFast(textureSize.x, textureSize.y);
+
+	const float2 texcoord = uv * textureSize;
+
+	const float4 textureElements = srtData.m_pUserData->m_texture.Sample(srtData.m_pUserData->m_sampler, uv);
+
+	const float y = (0.5f > frac(texcoord.x)) ? textureElements.x : textureElements.z;
+	const float u = textureElements.y;
+	const float v = textureElements.w;
+
+	const float3 yuv = float3(y, u, v) + yubof;
+
+	float4 color;
+	color.r = dot(yuv, yuv2r);
+	color.g = dot(yuv, yuv2g);
+	color.b = dot(yuv, yuv2b);
+	color.a = 1.0;
+
+	color *= srtData.m_rgba;
+	switch(srtData.m_hdr)
+	{
+	case 1: // kBT2020_PQ
+		return	PQ_OETF(float4(mul(BT709_TO_BT2020, color.rgb), color.a));
+	case 2: // kBT2020_Linear
+		return	float4(kSdrWhiteLevel * mul(BT709_TO_BT2020, color.rgb), color.a);
+	case 3: // kP3D65
+		return	BT1886_OETF(float4(mul(BT709_TO_DCIP3, color.rgb), color.a));
+	default: // kBT709
+		return	color;
+	}
+}

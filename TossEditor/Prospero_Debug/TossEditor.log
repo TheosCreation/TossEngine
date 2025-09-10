@@ -1,0 +1,1797 @@
+﻿  GraphEditor.cpp
+  imgui_draw.cpp
+  ImCurveEdit.cpp
+  ImGradient.cpp
+  ImGuizmo.cpp
+  imgui.cpp
+  ImSequencer.cpp
+  imgui_demo.cpp
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(324,3): error : no member named 'fmaf' in the global namespace
+    324 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(325,3): error : no member named 'fmaf' in the global namespace
+    325 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(339,3): error : no member named 'fmaf' in the global namespace
+    339 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), -vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(340,3): error : no member named 'fmaf' in the global namespace
+    340 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), -vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(378,3): error : no member named 'sqrtf' in the global namespace
+    378 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(379,3): error : no member named 'sqrtf' in the global namespace
+    379 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(392,12): error : no member named 'sqrtf' in the global namespace
+    392 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ) ),
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(393,12): error : no member named 'sqrtf' in the global namespace
+    393 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() ) )
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(401,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    401 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(402,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    402 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(408,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    408 |         float x0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getX().getAsFloat() ); float x1 = vec1.getX().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(409,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    409 |         float y0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getY().getAsFloat() ); float y1 = vec1.getY().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(544,21): error : no member named 'sqrtf' in the global namespace
+    544 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_SQRTF( lengthSqr( vec ).getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(558,21): error : no member named 'atan2f' in the global namespace
+    558 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ATAN2F( vec.getY().getAsFloat(), vec.getX().getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(138,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ATAN2F'
+    138 | #define _SCE_VECTORMATH_BUILTIN_ATAN2F(y,x)     ::atan2f((y),(x))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(566,32): error : no member named 'sqrtf' in the global namespace
+    566 |         float cosAngle = dotProduct / _SCE_VECTORMATH_BUILTIN_SQRTF( len0 * len1 );
+        |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(569,21): error : no member named 'acosf' in the global namespace
+    569 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ACOSF(  cosAngle ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(135,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ACOSF'
+    135 | #define _SCE_VECTORMATH_BUILTIN_ACOSF(v)        ::acosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(583,12): error : no member named 'sinf' in the global namespace
+    583 |         float s = _SCE_VECTORMATH_BUILTIN_SINF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(150,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SINF'
+    150 | #define _SCE_VECTORMATH_BUILTIN_SINF(v)         ::sinf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(584,12): error : no member named 'cosf' in the global namespace
+    584 |         float c = _SCE_VECTORMATH_BUILTIN_COSF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(140,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_COSF'
+    140 | #define _SCE_VECTORMATH_BUILTIN_COSF(v)         ::cosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\GraphEditor.cpp:29:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(619,7): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    619 |         if ( _SCE_VECTORMATH_BUILTIN_FABSF( cosAngle ) < tol ) {
+        |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+CLANGCL : fatal error : too many errors emitted, stopping now [-ferror-limit=]
+  20 errors generated.
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(324,3): error : no member named 'fmaf' in the global namespace
+    324 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(325,3): error : no member named 'fmaf' in the global namespace
+    325 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(339,3): error : no member named 'fmaf' in the global namespace
+    339 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), -vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(340,3): error : no member named 'fmaf' in the global namespace
+    340 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), -vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(378,3): error : no member named 'sqrtf' in the global namespace
+    378 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(379,3): error : no member named 'sqrtf' in the global namespace
+    379 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(392,12): error : no member named 'sqrtf' in the global namespace
+    392 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ) ),
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(393,12): error : no member named 'sqrtf' in the global namespace
+    393 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() ) )
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(401,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    401 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(402,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    402 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(408,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    408 |         float x0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getX().getAsFloat() ); float x1 = vec1.getX().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(409,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    409 |         float y0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getY().getAsFloat() ); float y1 = vec1.getY().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(544,21): error : no member named 'sqrtf' in the global namespace
+    544 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_SQRTF( lengthSqr( vec ).getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(558,21): error : no member named 'atan2f' in the global namespace
+    558 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ATAN2F( vec.getY().getAsFloat(), vec.getX().getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(138,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ATAN2F'
+    138 | #define _SCE_VECTORMATH_BUILTIN_ATAN2F(y,x)     ::atan2f((y),(x))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(566,32): error : no member named 'sqrtf' in the global namespace
+    566 |         float cosAngle = dotProduct / _SCE_VECTORMATH_BUILTIN_SQRTF( len0 * len1 );
+        |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(569,21): error : no member named 'acosf' in the global namespace
+    569 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ACOSF(  cosAngle ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(135,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ACOSF'
+    135 | #define _SCE_VECTORMATH_BUILTIN_ACOSF(v)        ::acosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(583,12): error : no member named 'sinf' in the global namespace
+    583 |         float s = _SCE_VECTORMATH_BUILTIN_SINF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(150,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SINF'
+    150 | #define _SCE_VECTORMATH_BUILTIN_SINF(v)         ::sinf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(584,12): error : no member named 'cosf' in the global namespace
+    584 |         float c = _SCE_VECTORMATH_BUILTIN_COSF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(140,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_COSF'
+    140 | #define _SCE_VECTORMATH_BUILTIN_COSF(v)         ::cosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImCurveEdit.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(619,7): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    619 |         if ( _SCE_VECTORMATH_BUILTIN_FABSF( cosAngle ) < tol ) {
+        |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+CLANGCL : fatal error : too many errors emitted, stopping now [-ferror-limit=]
+  20 errors generated.
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(324,3): error : no member named 'fmaf' in the global namespace
+    324 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(325,3): error : no member named 'fmaf' in the global namespace
+    325 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(339,3): error : no member named 'fmaf' in the global namespace
+    339 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), -vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(340,3): error : no member named 'fmaf' in the global namespace
+    340 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), -vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(378,3): error : no member named 'sqrtf' in the global namespace
+    378 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(379,3): error : no member named 'sqrtf' in the global namespace
+    379 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(392,12): error : no member named 'sqrtf' in the global namespace
+    392 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ) ),
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(393,12): error : no member named 'sqrtf' in the global namespace
+    393 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() ) )
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(401,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    401 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(402,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    402 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(408,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    408 |         float x0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getX().getAsFloat() ); float x1 = vec1.getX().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(409,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    409 |         float y0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getY().getAsFloat() ); float y1 = vec1.getY().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(544,21): error : no member named 'sqrtf' in the global namespace
+    544 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_SQRTF( lengthSqr( vec ).getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(558,21): error : no member named 'atan2f' in the global namespace
+    558 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ATAN2F( vec.getY().getAsFloat(), vec.getX().getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(138,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ATAN2F'
+    138 | #define _SCE_VECTORMATH_BUILTIN_ATAN2F(y,x)     ::atan2f((y),(x))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(566,32): error : no member named 'sqrtf' in the global namespace
+    566 |         float cosAngle = dotProduct / _SCE_VECTORMATH_BUILTIN_SQRTF( len0 * len1 );
+        |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(569,21): error : no member named 'acosf' in the global namespace
+    569 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ACOSF(  cosAngle ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(135,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ACOSF'
+    135 | #define _SCE_VECTORMATH_BUILTIN_ACOSF(v)        ::acosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(583,12): error : no member named 'sinf' in the global namespace
+    583 |         float s = _SCE_VECTORMATH_BUILTIN_SINF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(150,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SINF'
+    150 | #define _SCE_VECTORMATH_BUILTIN_SINF(v)         ::sinf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(584,12): error : no member named 'cosf' in the global namespace
+    584 |         float c = _SCE_VECTORMATH_BUILTIN_COSF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(140,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_COSF'
+    140 | #define _SCE_VECTORMATH_BUILTIN_COSF(v)         ::cosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_draw.cpp:36:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(619,7): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    619 |         if ( _SCE_VECTORMATH_BUILTIN_FABSF( cosAngle ) < tol ) {
+        |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+CLANGCL : fatal error : too many errors emitted, stopping now [-ferror-limit=]
+  20 errors generated.
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(324,3): error : no member named 'fmaf' in the global namespace
+    324 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(325,3): error : no member named 'fmaf' in the global namespace
+    325 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(339,3): error : no member named 'fmaf' in the global namespace
+    339 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), -vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(340,3): error : no member named 'fmaf' in the global namespace
+    340 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), -vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(378,3): error : no member named 'sqrtf' in the global namespace
+    378 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(379,3): error : no member named 'sqrtf' in the global namespace
+    379 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(392,12): error : no member named 'sqrtf' in the global namespace
+    392 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ) ),
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(393,12): error : no member named 'sqrtf' in the global namespace
+    393 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() ) )
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(401,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    401 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(402,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    402 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(408,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    408 |         float x0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getX().getAsFloat() ); float x1 = vec1.getX().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(409,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    409 |         float y0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getY().getAsFloat() ); float y1 = vec1.getY().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(544,21): error : no member named 'sqrtf' in the global namespace
+    544 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_SQRTF( lengthSqr( vec ).getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(558,21): error : no member named 'atan2f' in the global namespace
+    558 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ATAN2F( vec.getY().getAsFloat(), vec.getX().getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(138,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ATAN2F'
+    138 | #define _SCE_VECTORMATH_BUILTIN_ATAN2F(y,x)     ::atan2f((y),(x))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(566,32): error : no member named 'sqrtf' in the global namespace
+    566 |         float cosAngle = dotProduct / _SCE_VECTORMATH_BUILTIN_SQRTF( len0 * len1 );
+        |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(569,21): error : no member named 'acosf' in the global namespace
+    569 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ACOSF(  cosAngle ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(135,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ACOSF'
+    135 | #define _SCE_VECTORMATH_BUILTIN_ACOSF(v)        ::acosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(583,12): error : no member named 'sinf' in the global namespace
+    583 |         float s = _SCE_VECTORMATH_BUILTIN_SINF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(150,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SINF'
+    150 | #define _SCE_VECTORMATH_BUILTIN_SINF(v)         ::sinf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(584,12): error : no member named 'cosf' in the global namespace
+    584 |         float c = _SCE_VECTORMATH_BUILTIN_COSF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(140,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_COSF'
+    140 | #define _SCE_VECTORMATH_BUILTIN_COSF(v)         ::cosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGuizmo.cpp:31:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(619,7): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    619 |         if ( _SCE_VECTORMATH_BUILTIN_FABSF( cosAngle ) < tol ) {
+        |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+CLANGCL : fatal error : too many errors emitted, stopping now [-ferror-limit=]
+  20 errors generated.
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(324,3): error : no member named 'fmaf' in the global namespace
+    324 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(325,3): error : no member named 'fmaf' in the global namespace
+    325 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(339,3): error : no member named 'fmaf' in the global namespace
+    339 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), -vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(340,3): error : no member named 'fmaf' in the global namespace
+    340 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), -vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(378,3): error : no member named 'sqrtf' in the global namespace
+    378 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(379,3): error : no member named 'sqrtf' in the global namespace
+    379 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(392,12): error : no member named 'sqrtf' in the global namespace
+    392 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ) ),
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(393,12): error : no member named 'sqrtf' in the global namespace
+    393 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() ) )
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(401,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    401 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(402,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    402 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(408,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    408 |         float x0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getX().getAsFloat() ); float x1 = vec1.getX().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(409,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    409 |         float y0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getY().getAsFloat() ); float y1 = vec1.getY().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(544,21): error : no member named 'sqrtf' in the global namespace
+    544 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_SQRTF( lengthSqr( vec ).getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(558,21): error : no member named 'atan2f' in the global namespace
+    558 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ATAN2F( vec.getY().getAsFloat(), vec.getX().getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(138,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ATAN2F'
+    138 | #define _SCE_VECTORMATH_BUILTIN_ATAN2F(y,x)     ::atan2f((y),(x))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(566,32): error : no member named 'sqrtf' in the global namespace
+    566 |         float cosAngle = dotProduct / _SCE_VECTORMATH_BUILTIN_SQRTF( len0 * len1 );
+        |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(569,21): error : no member named 'acosf' in the global namespace
+    569 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ACOSF(  cosAngle ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(135,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ACOSF'
+    135 | #define _SCE_VECTORMATH_BUILTIN_ACOSF(v)        ::acosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(583,12): error : no member named 'sinf' in the global namespace
+    583 |         float s = _SCE_VECTORMATH_BUILTIN_SINF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(150,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SINF'
+    150 | #define _SCE_VECTORMATH_BUILTIN_SINF(v)         ::sinf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(584,12): error : no member named 'cosf' in the global namespace
+    584 |         float c = _SCE_VECTORMATH_BUILTIN_COSF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(140,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_COSF'
+    140 | #define _SCE_VECTORMATH_BUILTIN_COSF(v)         ::cosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImGradient.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(619,7): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    619 |         if ( _SCE_VECTORMATH_BUILTIN_FABSF( cosAngle ) < tol ) {
+        |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+CLANGCL : fatal error : too many errors emitted, stopping now [-ferror-limit=]
+  20 errors generated.
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(324,3): error : no member named 'fmaf' in the global namespace
+    324 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(325,3): error : no member named 'fmaf' in the global namespace
+    325 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(339,3): error : no member named 'fmaf' in the global namespace
+    339 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), -vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(340,3): error : no member named 'fmaf' in the global namespace
+    340 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), -vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(378,3): error : no member named 'sqrtf' in the global namespace
+    378 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(379,3): error : no member named 'sqrtf' in the global namespace
+    379 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(392,12): error : no member named 'sqrtf' in the global namespace
+    392 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ) ),
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(393,12): error : no member named 'sqrtf' in the global namespace
+    393 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() ) )
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(401,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    401 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(402,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    402 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(408,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    408 |         float x0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getX().getAsFloat() ); float x1 = vec1.getX().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(409,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    409 |         float y0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getY().getAsFloat() ); float y1 = vec1.getY().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(544,21): error : no member named 'sqrtf' in the global namespace
+    544 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_SQRTF( lengthSqr( vec ).getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(558,21): error : no member named 'atan2f' in the global namespace
+    558 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ATAN2F( vec.getY().getAsFloat(), vec.getX().getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(138,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ATAN2F'
+    138 | #define _SCE_VECTORMATH_BUILTIN_ATAN2F(y,x)     ::atan2f((y),(x))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(566,32): error : no member named 'sqrtf' in the global namespace
+    566 |         float cosAngle = dotProduct / _SCE_VECTORMATH_BUILTIN_SQRTF( len0 * len1 );
+        |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(569,21): error : no member named 'acosf' in the global namespace
+    569 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ACOSF(  cosAngle ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(135,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ACOSF'
+    135 | #define _SCE_VECTORMATH_BUILTIN_ACOSF(v)        ::acosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(583,12): error : no member named 'sinf' in the global namespace
+    583 |         float s = _SCE_VECTORMATH_BUILTIN_SINF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(150,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SINF'
+    150 | #define _SCE_VECTORMATH_BUILTIN_SINF(v)         ::sinf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(584,12): error : no member named 'cosf' in the global namespace
+    584 |         float c = _SCE_VECTORMATH_BUILTIN_COSF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(140,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_COSF'
+    140 | #define _SCE_VECTORMATH_BUILTIN_COSF(v)         ::cosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUIZMO\ImSequencer.cpp:28:
+  In file included from D:\Users\MDS3000164\TossEngine\/Dependencies/IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(619,7): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    619 |         if ( _SCE_VECTORMATH_BUILTIN_FABSF( cosAngle ) < tol ) {
+        |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+CLANGCL : fatal error : too many errors emitted, stopping now [-ferror-limit=]
+  20 errors generated.
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(324,3): error : no member named 'fmaf' in the global namespace
+    324 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(325,3): error : no member named 'fmaf' in the global namespace
+    325 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(339,3): error : no member named 'fmaf' in the global namespace
+    339 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), -vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(340,3): error : no member named 'fmaf' in the global namespace
+    340 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), -vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(378,3): error : no member named 'sqrtf' in the global namespace
+    378 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(379,3): error : no member named 'sqrtf' in the global namespace
+    379 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(392,12): error : no member named 'sqrtf' in the global namespace
+    392 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ) ),
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(393,12): error : no member named 'sqrtf' in the global namespace
+    393 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() ) )
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(401,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    401 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(402,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    402 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(408,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    408 |         float x0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getX().getAsFloat() ); float x1 = vec1.getX().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(409,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    409 |         float y0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getY().getAsFloat() ); float y1 = vec1.getY().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(544,21): error : no member named 'sqrtf' in the global namespace
+    544 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_SQRTF( lengthSqr( vec ).getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(558,21): error : no member named 'atan2f' in the global namespace
+    558 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ATAN2F( vec.getY().getAsFloat(), vec.getX().getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(138,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ATAN2F'
+    138 | #define _SCE_VECTORMATH_BUILTIN_ATAN2F(y,x)     ::atan2f((y),(x))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(566,32): error : no member named 'sqrtf' in the global namespace
+    566 |         float cosAngle = dotProduct / _SCE_VECTORMATH_BUILTIN_SQRTF( len0 * len1 );
+        |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(569,21): error : no member named 'acosf' in the global namespace
+    569 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ACOSF(  cosAngle ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(135,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ACOSF'
+    135 | #define _SCE_VECTORMATH_BUILTIN_ACOSF(v)        ::acosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(583,12): error : no member named 'sinf' in the global namespace
+    583 |         float s = _SCE_VECTORMATH_BUILTIN_SINF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(150,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SINF'
+    150 | #define _SCE_VECTORMATH_BUILTIN_SINF(v)         ::sinf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(584,12): error : no member named 'cosf' in the global namespace
+    584 |         float c = _SCE_VECTORMATH_BUILTIN_COSF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(140,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_COSF'
+    140 | #define _SCE_VECTORMATH_BUILTIN_COSF(v)         ::cosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_demo.cpp:136:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(619,7): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    619 |         if ( _SCE_VECTORMATH_BUILTIN_FABSF( cosAngle ) < tol ) {
+        |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+CLANGCL : fatal error : too many errors emitted, stopping now [-ferror-limit=]
+  20 errors generated.
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(324,3): error : no member named 'fmaf' in the global namespace
+    324 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(325,3): error : no member named 'fmaf' in the global namespace
+    325 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(339,3): error : no member named 'fmaf' in the global namespace
+    339 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getX().getAsFloat(), vec1.getX().getAsFloat(), -vec2.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(340,3): error : no member named 'fmaf' in the global namespace
+    340 |                 _SCE_VECTORMATH_BUILTIN_FMAF( vec0.getY().getAsFloat(), vec1.getY().getAsFloat(), -vec2.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(180,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FMAF'
+    180 | #define _SCE_VECTORMATH_BUILTIN_FMAF(x,y,z)     ::fmaf((x),(y),(z))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(378,3): error : no member named 'sqrtf' in the global namespace
+    378 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(379,3): error : no member named 'sqrtf' in the global namespace
+    379 |                 _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(392,12): error : no member named 'sqrtf' in the global namespace
+    392 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getX().getAsFloat() ) ),
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(393,12): error : no member named 'sqrtf' in the global namespace
+    393 |                 ( 1.0f / _SCE_VECTORMATH_BUILTIN_SQRTF( vec.getY().getAsFloat() ) )
+        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(401,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    401 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getX().getAsFloat() ),
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(402,3): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    402 |                 _SCE_VECTORMATH_BUILTIN_FABSF( vec.getY().getAsFloat() )
+        |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(408,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    408 |         float x0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getX().getAsFloat() ); float x1 = vec1.getX().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(409,16): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    409 |         float y0abs = _SCE_VECTORMATH_BUILTIN_FABSF( vec0.getY().getAsFloat() ); float y1 = vec1.getY().getAsFloat();
+        |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(544,21): error : no member named 'sqrtf' in the global namespace
+    544 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_SQRTF( lengthSqr( vec ).getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(558,21): error : no member named 'atan2f' in the global namespace
+    558 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ATAN2F( vec.getY().getAsFloat(), vec.getX().getAsFloat() ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(138,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ATAN2F'
+    138 | #define _SCE_VECTORMATH_BUILTIN_ATAN2F(y,x)     ::atan2f((y),(x))
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(566,32): error : no member named 'sqrtf' in the global namespace
+    566 |         float cosAngle = dotProduct / _SCE_VECTORMATH_BUILTIN_SQRTF( len0 * len1 );
+        |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(152,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SQRTF'
+    152 | #define _SCE_VECTORMATH_BUILTIN_SQRTF(v)        ::sqrtf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(569,21): error : no member named 'acosf' in the global namespace
+    569 |         return floatInVec( _SCE_VECTORMATH_BUILTIN_ACOSF(  cosAngle ) );
+        |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(135,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_ACOSF'
+    135 | #define _SCE_VECTORMATH_BUILTIN_ACOSF(v)        ::acosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(583,12): error : no member named 'sinf' in the global namespace
+    583 |         float s = _SCE_VECTORMATH_BUILTIN_SINF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(150,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_SINF'
+    150 | #define _SCE_VECTORMATH_BUILTIN_SINF(v)         ::sinf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(584,12): error : no member named 'cosf' in the global namespace
+    584 |         float c = _SCE_VECTORMATH_BUILTIN_COSF( rot.getAsFloat() );
+        |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(140,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_COSF'
+    140 | #define _SCE_VECTORMATH_BUILTIN_COSF(v)         ::cosf(v)
+        |                                                 ~~^
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp:1099:
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_internal.h:58:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\math.h:17:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath.h:23:
+  In file included from D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vectormath_aos.h:9081:
+D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/vec_aos.h(619,7): error : no member named 'fabsf' in the global namespace; did you mean 'labs'?
+    619 |         if ( _SCE_VECTORMATH_BUILTIN_FABSF( cosAngle ) < tol ) {
+        |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  D:\SCE\Prospero SDKs\11.000/target/include_common\vectormath/scalar_cpp/internal/internal.h(143,51): note: expanded from macro '_SCE_VECTORMATH_BUILTIN_FABSF'
+    143 | #define _SCE_VECTORMATH_BUILTIN_FABSF(v)        ::fabsf(v)
+        |                                                 ~~^
+  D:\SCE\Prospero SDKs\11.000/target/include\stdlib.h(94,6): note: 'labs' declared here
+     94 | long labs(long);
+        |      ^
+CLANGCL : fatal error : too many errors emitted, stopping now [-ferror-limit=]
+  20 errors generated.

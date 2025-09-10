@@ -1,0 +1,9 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#define  IS_MULTI_SAMPLE
+#define SYMBOL_NAME "psfx::exposure_shader_count_MS"
+#include "psfx_exposure_shader_count_c.pssl"

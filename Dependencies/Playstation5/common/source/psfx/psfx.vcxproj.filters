@@ -1,0 +1,259 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;cc;s;asm</Extensions>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{b9da203d-899e-415a-811d-c9d14a137551}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="shaders\psfx_ssao_prepare_depth.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="src\psfx_details.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\psfx_dof_filters.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\psfx_dof_blur_buffers.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\psfx_common.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\psfx_linearize_depth.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\psfx_motion_blur.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\psfx_ssr.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\psfx_types.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\psfx\psfx.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\psfx\psfx_bloom.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\psfx\psfx_common.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\psfx\psfx_dof.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\psfx\psfx_exposure.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\psfx\psfx_linearize_depth.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\psfx\psfx_motion_blur.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\psfx\psfx_ssao.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\psfx\psfx_ssr.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\psfx_ssao.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\psfx_common.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\psfx_exposure.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\psfx_shaders.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\psfx_bloom.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\psfx_dof.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\psfx_linearize_depth.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\psfx_motion_blur.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\psfx_ssr.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <WavePsslc Include="shaders\psfx_bloom_downscale_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_bloom_downscale_threshold_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_bloom_downscale_threshold_no_flicker_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_bloom_upscale_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_far_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_far_two_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_near_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_near_two_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_composite_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_compute_coc_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_max_near_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_downscale_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_exposure_draw_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_exposure_shader_count_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_exposure_shader_count_MS_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_exposure_shader_gather_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_set_uint_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssao_blur_h_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssao_blur_v_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssao_hbao_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssao_hbao_interleaved_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssao_prepare_depth_downscale_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssao_prepare_depth_downscale_interleave_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssao_upsample_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssao_upsample_coarse_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssao_upsample_coarse_fine_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssao_upsample_fine_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_linearize_depth_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_motion_blur_tile_range_h_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_motion_blur_tile_range_v_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_motion_blur_neighbour_range_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_motion_blur_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_motion_blur_copy_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_motion_blur_fast_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssr_trace_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssr_reproject_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssr_depth_downscale_gather_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssr_depth_downscale_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssr_output_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssr_blur_h_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssr_blur_v_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssr_classify_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssr_clear_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_ssr_trace_reverse_z_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_far_half_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_far_two_half_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_near_half_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_near_two_half_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_far_quart_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_far_two_quart_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_near_quart_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="shaders\psfx_dof_blur_near_two_quart_c.pssl">
+      <Filter>shaders</Filter>
+    </WavePsslc>
+  </ItemGroup>
+</Project>

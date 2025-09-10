@@ -1,0 +1,9 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#define FAST_PATH 1
+#define SYMBOL_NAME "psfx::motion_blur_fast"
+#include "psfx_motion_blur_c.pssl"

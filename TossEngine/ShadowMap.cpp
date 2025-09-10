@@ -1,5 +1,11 @@
 #include "ShadowMap.h"
 
+#ifdef __PROSPERO__
+#else
+#include <glew.h>
+#include <glfw3.h>
+#endif
+
 ShadowMap::ShadowMap(Vector2 _resolution) : Texture("", "", nullptr)
 {
     m_resolution = _resolution;

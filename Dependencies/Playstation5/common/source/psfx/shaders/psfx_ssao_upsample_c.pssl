@@ -1,0 +1,84 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+
+struct SsaoShaderTxRef
+{
+   Texture2D<float> coarse_depth;
+   Texture2D<float> fine_depth;
+
+   Texture2D<float> coarse_0_ao;
+   Texture2D<float> coarse_1_ao;
+
+   Texture2D<float> fine_ao;
+
+   RW_Texture2D<float> result;
+};
+
+struct SsaoShaderParam
+{
+   SsaoShaderTxRef* tx_ref;
+   float2 inv_coarse_resolution;
+   float2 inv_fine_resolution;
+   float upscale_threshold;
+};
+
+SsaoShaderParam srt : S_SRT_DATA;
+
+float bilateral_filter(float z_fine, float4 z_coarse, float4 ao_coarse)
+{
+   const float4 k_bilinear_weight = float4(9, 3, 3, 1);
+   const float  k_epsilon = 1e-6;
+   const float4 z = abs(z_coarse * rcp(z_fine));
+   const float4 depth_weights = pow(1 - z + k_epsilon, -6.0);
+   //const float4 weights = min(1.0, k_bilinear_weight * depth_weights);
+   const float4 weights = k_bilinear_weight * depth_weights;
+   const float  total_weight = rcp(dot(weights, 1));
+   const float  weighted_sum = dot(weights, ao_coarse);
+   return weighted_sum * total_weight;
+}
+static const int k_wavefront_size = 8;
+#ifndef SYMBOL_NAME
+#define SYMBOL_NAME "psfx::ssao_upsample"
+#endif
+[CxxSymbol(SYMBOL_NAME)]
+[NUM_THREADS( 8, 8, 1 )]
+void main(uint3 t_id : S_DISPATCH_THREAD_ID)
+{
+   const SamplerState point_sampler = make_point_sampler();
+
+   const uint2  low_res_px  = t_id.xy;
+   const uint2  high_res_px = (t_id.xy * 2);
+
+   const float2 fine_UV    = (high_res_px - 0.5) * srt.inv_fine_resolution;
+   const float2 coarse_UV  = (low_res_px - 0.5)  * srt.inv_coarse_resolution;
+
+   const float4 fine_z   = decode_linear_z(srt.tx_ref->fine_depth.GatherRed(point_sampler, fine_UV), 0, 1);
+   const float4 coarse_z = decode_linear_z(srt.tx_ref->coarse_depth.GatherRed(point_sampler, coarse_UV), 0, 1);
+   float4 coarse_ao_temp = srt.tx_ref->coarse_0_ao.GatherRed(point_sampler, coarse_UV);
+#ifdef COMBINE_COARSE_RESOLUTIONS
+   coarse_ao_temp = min(srt.tx_ref->coarse_1_ao.GatherRed(point_sampler, coarse_UV), coarse_ao_temp);
+#endif
+
+   float4 coarse_ao;
+   coarse_ao.x = bilateral_filter(fine_z.x, coarse_z.xywz, coarse_ao_temp.xywz);
+   coarse_ao.y = bilateral_filter(fine_z.y, coarse_z.yxzw, coarse_ao_temp.yxzw);
+   coarse_ao.z = bilateral_filter(fine_z.z, coarse_z.zywx, coarse_ao_temp.zywx);
+   coarse_ao.w = bilateral_filter(fine_z.w, coarse_z.wxzy, coarse_ao_temp.wxzy);
+
+#ifdef COMBINE_FINE_RESOLUTION
+   const float4 fine_ao  = srt.tx_ref->fine_ao.GatherRed(point_sampler, fine_UV);
+   const float4 final_ao = 0.5 * (fine_ao + coarse_ao);
+#else
+   const float4 final_ao = coarse_ao;
+#endif
+
+   srt.tx_ref->result[high_res_px + int2(-1,-1)] = final_ao.w;
+   srt.tx_ref->result[high_res_px + int2( 0,-1)] = final_ao.z;
+   srt.tx_ref->result[high_res_px + int2(-1, 0)] = final_ao.x;
+   srt.tx_ref->result[high_res_px + int2( 0, 0)] = final_ao.y;
+}

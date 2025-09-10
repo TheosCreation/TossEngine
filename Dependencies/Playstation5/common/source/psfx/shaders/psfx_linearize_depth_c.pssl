@@ -1,0 +1,67 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2020 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+#include "psfx_linearize_depth.h"
+
+LinearizeDepthSrt* srt_data : S_SRT_DATA;
+
+static const SamplerState point_sampler = make_point_sampler();
+
+thread_group_memory float lds_results[k_linearize_depth_group_size * 2][k_linearize_depth_group_size * 2];
+
+[CxxSymbol("psfx::linearize_depth")]
+[NUM_THREADS(k_linearize_depth_group_size, k_linearize_depth_group_size, 1)]
+void main(
+   uint2 thread_id : S_DISPATCH_THREAD_ID,
+   uint2 group_thread_id : S_GROUP_THREAD_ID)
+{
+   const uint2 start_pix = thread_id * 2;
+
+   // Read 2x2 depth samples per thread and linearize.
+   const float2 gather_uv   = (start_pix + float2(1.0)) * srt_data->inv_source_size;
+   const float4 z_samples   = srt_data->depth.Gather(point_sampler, gather_uv);
+   const float4 linear_z    = to_linear_z(srt_data->plane_eq, z_samples);
+   const float4 store_value = encode_linear_z(linear_z, srt_data->near, srt_data->inv_range);
+
+   // Simply writing each of our 4 depth values in turn will result in each image_store instruction
+   // accessing non-consecutive texels, e.g. for 2 threads, the 4 stores would write the following
+   // texels:
+   //
+   //   Thread 0|Thread 1
+   //   -----------------
+   //   | 0 | 1 | 0 | 1 |
+   //   -----------------
+   //   | 2 | 3 | 2 | 3 |
+   //   -----------------
+   //
+   // When using DCC for the output texture, this means that each image_store instruction will not
+   // fully overwrite a DCC block, and therefore must perform a decompress/modify/recompress cycle
+   // for each block. This results in worse performance than if DCC were disabled.
+   //
+   // We can fix this by gathering our results in LDS, and then making each image_store write out
+   // a whole 8x8 block across the wavefront - if the block is fully overwritten, its existing
+   // contents need not be decompressed.
+   static const uint2 i_offsets[4] = { uint2(0, 1), uint2(1, 1), uint2(1, 0), uint2(0, 0) };
+
+   [unroll]
+   for (int i = 0; i < 4; i++)
+   {
+      const uint2 lds_pix = (group_thread_id * 2) + i_offsets[i];
+      lds_results[lds_pix.y][lds_pix.x] = store_value[i];
+   }
+
+   const uint2 out_pix_top = ReadFirstLane(start_pix);
+
+   [unroll]
+   for (int i = 0; i < 4; i++)
+   {
+      const uint2 offset  = (i_offsets[i] * k_linearize_depth_group_size);
+      const uint2 lds_pix = group_thread_id + offset;
+      const uint2 out_pix = out_pix_top + lds_pix;
+      srt_data->linear_depth[out_pix] = lds_results[lds_pix.y][lds_pix.x];
+   }
+}

@@ -1,0 +1,52 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2019 Sony Interactive Entertainment Inc.
+ * 
+ */
+#include "sampleutil/graphics/vertex_define.h"
+using namespace sce::SampleUtil::Graphics;
+
+struct VS_OUT
+{
+	float4	m_position			: S_POSITION;
+	float2	m_uv				: TEXCOORD;
+	float3 	m_positionInWorld	: WORLDPOS;
+	float3 	m_normalInWorld		: NORMAL;
+	uint	m_instanceId		: INSTANCE_ID;
+};
+
+struct RenderParameters
+{
+	RegularBuffer< Vertex >		m_vertices;
+	RegularBuffer< float4x4	>	m_modelMatrices;
+	float4x4					m_viewMatrix;
+	float4x4					m_projectionMatrix;
+};
+
+struct SrtData
+{
+	RenderParameters * m_renderParameters;
+};
+
+#if defined ( __PROSPERO__ )
+[CxxSymbol("Shader::sprite_utility_3d_vv")]
+#endif
+VS_OUT	main( uint		vertexId	: S_VERTEX_ID,
+			  uint		instanceId	: S_INSTANCE_ID,
+			  SrtData	srtData		: S_SRT_DATA
+			)
+{
+	const RenderParameters	renderParameters			= *srtData.m_renderParameters;
+	const Vertex			vertex						= renderParameters.m_vertices[vertexId];
+	const float4x4			modelViewProjectionMatrix	= mul( renderParameters.m_projectionMatrix, mul( renderParameters.m_viewMatrix, renderParameters.m_modelMatrices[instanceId] ) );
+
+	VS_OUT output = 0;
+
+	output.m_position			= mul(modelViewProjectionMatrix, float4(vertex.m_position, 1.f));
+	output.m_uv					= vertex.m_uv;
+	output.m_positionInWorld	= mul(renderParameters.m_modelMatrices[instanceId], float4(vertex.m_position, 1.f)).xyz;
+	output.m_normalInWorld		= mul(float3x3(renderParameters.m_modelMatrices[instanceId]), vertex.m_normal);
+	output.m_instanceId			= instanceId;
+
+	return output;
+}

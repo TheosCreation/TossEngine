@@ -1,0 +1,58 @@
+﻿  imgui.cpp
+  Button.cpp
+  Camera.cpp
+  tinyfiledialogs.c
+  AudioEngine.cpp
+  imgui_impl_opengl3.cpp
+  AudioSource.cpp
+  imgui_impl_glfw.cpp
+D:\Users\MDS3000164\TossEngine\Dependencies\tinyfiledialogs\tinyfiledialogs.c(117,11): fatal error : 'dirent.h' file not found
+    117 |  #include <dirent.h> /* on old systems try <sys/dir.h> instead */
+        |           ^~~~~~~~~~
+  1 error generated.
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_impl_opengl3.cpp:172:
+D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_impl_opengl3_loader.h(672,10): fatal error : 'dlfcn.h' file not found
+    672 | #include <dlfcn.h>
+        |          ^~~~~~~~~
+  1 error generated.
+  In file included from D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui_impl_glfw.cpp:97:
+D:\Users\MDS3000164\TossEngine\Dependencies/GLFW/Include\glfw3.h(241,12): fatal error : 'GL/gl.h' file not found
+    241 |   #include <GL/gl.h>
+        |            ^~~~~~~~~
+  1 error generated.
+D:\Users\MDS3000164\TossEngine\Dependencies\IMGUI\imgui.cpp(20801,10): fatal error : 'sys/wait.h' file not found
+   20801 | #include <sys/wait.h>
+         |          ^~~~~~~~~~~~
+  1 error generated.
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\AudioEngine.cpp:5:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\AudioEngine.h:20:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Sound.h:14:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Resource.h:17:
+D:\Users\MDS3000164\TossEngine\TossEngine\Utils.h(35,10): fatal error : 'boost/describe/enumerators.hpp' file not found
+     35 | #include <boost/describe/enumerators.hpp>
+        |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1 error generated.
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\AudioSource.cpp:1:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\AudioSource.h:2:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Component.h:2:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Serializable.h:17:
+D:\Users\MDS3000164\TossEngine\TossEngine\SerializationMacros.h(3,10): fatal error : 'boost/preprocessor/variadic/to_seq.hpp' file not found
+      3 | #include <boost/preprocessor/variadic/to_seq.hpp>
+        |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1 error generated.
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Camera.cpp:13:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Camera.h:14:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Component.h:2:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Serializable.h:17:
+D:\Users\MDS3000164\TossEngine\TossEngine\SerializationMacros.h(3,10): fatal error : 'boost/preprocessor/variadic/to_seq.hpp' file not found
+      3 | #include <boost/preprocessor/variadic/to_seq.hpp>
+        |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1 error generated.
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Button.cpp:1:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Button.h:2:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Component.h:2:
+  In file included from D:\Users\MDS3000164\TossEngine\TossEngine\Serializable.h:17:
+D:\Users\MDS3000164\TossEngine\TossEngine\SerializationMacros.h(3,10): fatal error : 'boost/preprocessor/variadic/to_seq.hpp' file not found
+      3 | #include <boost/preprocessor/variadic/to_seq.hpp>
+        |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1 error generated.

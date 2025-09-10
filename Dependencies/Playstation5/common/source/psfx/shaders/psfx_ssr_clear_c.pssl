@@ -1,0 +1,31 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+#include "psfx_ssr.h"
+
+ClearSrt* srt_data : S_SRT_DATA;
+
+[CxxSymbol("psfx::ssr_clear")]
+[NUM_THREADS(k_trace_group_size, k_trace_group_size, 1)]
+void main(
+   uint2 group_thread_id : S_GROUP_THREAD_ID,
+   uint group_id         : S_GROUP_ID)
+{
+   // Find which tile/pixel we're working on.
+   const uint group_div   = group_id / k_trace_groups_per_tile;
+   const uint group_mod   = group_id % k_trace_groups_per_tile;
+   const uint tile_packed = srt_data->tile_buffer[group_div];
+   const uint2 tile_index = uint2(tile_packed >> 16, tile_packed & 0xffff);
+
+   const uint2 screen_pix =
+      (tile_index * k_classify_tile_size) +
+      (uint2(group_mod % k_trace_groups_per_tile_dim, group_mod / k_trace_groups_per_tile_dim) * k_trace_group_size) +
+      group_thread_id;
+
+   srt_data->dest_reflection[screen_pix] = float3(0.0f);
+   srt_data->dest_mask[screen_pix]       = 0.0f;
+}

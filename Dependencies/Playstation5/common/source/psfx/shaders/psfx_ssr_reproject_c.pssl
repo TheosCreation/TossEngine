@@ -1,0 +1,31 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+#include "psfx_ssr.h"
+
+ReprojectSrt* srt_data : S_SRT_DATA;
+
+static const SamplerState bilinear_sampler = make_bilinear_sampler();
+
+[CxxSymbol("psfx::ssr_reproject")]
+[NUM_THREADS(k_reproject_group_size, k_reproject_group_size, 1)]
+void main(uint2 thread_id : S_DISPATCH_THREAD_ID)
+{
+   const uint2 screen_pix = thread_id;
+   const float2 screen_uv = (float2(screen_pix) + 0.5f) * srt_data->inv_dest_size;
+
+   // Really simple reprojection based on pixel velocity. This isn't the most correct thing for
+   // reflections, because the reflection vectors are view-dependent. See
+   // http://bitsquid.blogspot.com/2017/06/reprojecting-reflections_22.html
+   //
+   // However this looks good enough for our scene for now.
+   const float2 velocity = srt_data->velocity[screen_pix];
+   const float2 prev_uv  = screen_uv - velocity;
+
+   srt_data->dest_reflection[screen_pix] = srt_data->reflection.SampleLOD(bilinear_sampler, prev_uv, 0.0f);
+   srt_data->dest_mask[screen_pix]       = srt_data->mask.SampleLOD(bilinear_sampler, prev_uv, 0.0f);
+}

@@ -17,7 +17,6 @@ Mail : theo.morris@mds.ac.nz
 #include <mutex>
 #include <cstdarg>
 #include <cstdio>
-#include "imgui.h"
 #include "TossEngineAPI.h"
 
 /**

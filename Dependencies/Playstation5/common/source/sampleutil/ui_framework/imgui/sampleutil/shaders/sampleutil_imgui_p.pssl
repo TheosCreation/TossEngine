@@ -1,0 +1,50 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2022 Sony Interactive Entertainment Inc. 
+ * 
+ */
+
+#include "helper_functions.pssli"
+
+struct PS_INPUT
+{
+    float4 m_pos : S_POSITION;
+    float4 m_col : COLOR0;
+    float2 m_uv  : TEXCOORD0;
+};
+
+#include "imgui_srt_common.h"
+
+sce::SampleUtil::UIFramework::ImguiSrtData userData : S_SRT_DATA;
+
+#if defined ( __PROSPERO__ )
+[CxxSymbol("Shader::sampleutil_imgui_p")]
+#endif
+float4 main(PS_INPUT input) : S_TARGET_OUTPUT
+{
+#ifdef __PROSPERO__
+	sce::Agc::Core::Sampler	sampler;
+	sampler.init()
+		.setMipFilterMode(sce::Agc::Core::Sampler::MipFilterMode::kLinear)
+		.setXyFilterMode(sce::Agc::Core::Sampler::FilterMode::kBilinear, sce::Agc::Core::Sampler::FilterMode::kBilinear);
+#endif
+#ifdef __ORBIS__
+	sce::Gnm::Sampler	sampler;
+	sampler.init();
+	sampler.setMipFilterMode(sce::Gnm::kMipFilterModeLinear);
+	sampler.setXyFilterMode(sce::Gnm::kFilterModeBilinear, sce::Gnm::kFilterModeBilinear);
+#endif
+
+	float4 out_col = input.m_col * userData.m_drawData->m_texture.Sample(sampler, input.m_uv);
+	switch(userData.m_frameData->m_hdr)
+	{
+	case 1: // kBT2020_PQ
+		return	PQ_OETF(float4(mul(BT709_TO_BT2020, out_col.rgb), out_col.a));
+	case 2: // kBT2020_Linear
+		return	float4(kSdrWhiteLevel * mul(BT709_TO_BT2020, out_col.rgb), out_col.a);
+	case 3: // kP3D65
+		return	BT1886_OETF(float4(mul(BT709_TO_DCIP3, out_col.rgb), out_col.a));
+	default: // kBT709
+		return	out_col;
+	}
+}

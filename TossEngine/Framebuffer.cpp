@@ -14,8 +14,12 @@ Mail : theo.morris@mds.ac.nz
 #include "GraphicsEngine.h"
 #include "Texture2D.h"
 #include "Shader.h"
+
+#ifdef __PROSPERO__
+#else
 #include <glew.h>
 #include <glfw3.h>
+#endif
 
 Framebuffer::Framebuffer(Vector2 _windowSize)
 {

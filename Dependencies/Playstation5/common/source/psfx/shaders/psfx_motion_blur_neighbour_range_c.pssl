@@ -1,0 +1,94 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_motion_blur.h"
+
+NeighbourRangeSrt* srt_data : S_SRT_DATA;
+
+static const float k_fast_path_threshold = 0.85f;
+
+[CxxSymbol("psfx::motion_blur_neighbour_range")]
+[NUM_THREADS(k_neighbour_range_group_size, k_neighbour_range_group_size, 1)]
+void main(uint2 thread_id : S_DISPATCH_THREAD_ID)
+{
+   // Early out on out of bounds threads, these must not try writing to the tile/indirect buffers.
+   if (thread_id.x > srt_data->tex_max.x || thread_id.y > srt_data->tex_max.y)
+   {
+      return;
+   }
+
+   float min_length    = 1000.0f;
+   float2 min_velocity = float2(0.0f, 0.0f);
+
+   float max_length    = 0.0f;
+   float2 max_velocity = float2(0.0f, 0.0f);
+
+   // Just loop over reading the whole neighbourhood for each tile/thread. The tile_range target
+   // is small enough that attempting to optimise this by loading all tiles in a group into LDS
+   // (to reduce number of loads from the texture) actually ends up a little slower than this
+   // naive loop.
+   for (int x = -1; x <= 1; x++)
+   {
+      for (int y = -1; y <= 1; y++)
+      {
+         // Clamp to prevent out of bounds reads returning 0 and incorrectly giving us a 0 minimum
+         // on edge tiles.
+         const int2 pos = clamp(int2(thread_id) + int2(x, y), int2(0, 0), srt_data->tex_max);
+
+         const float4 range_tile     = srt_data->tile_range[pos];
+         const float min_length_tile = length(range_tile.xy);
+         const float max_length_tile = length(range_tile.zw);
+
+         if (min_length_tile < min_length)
+         {
+            min_velocity = range_tile.xy;
+            min_length   = min_length_tile;
+         }
+
+         if (max_length_tile > max_length)
+         {
+            max_velocity = range_tile.zw;
+            max_length   = max_length_tile;
+         }
+      }
+   }
+
+   // Classify the tile:
+   //
+   //  - If max_length is less than half a pixel, we won't blur at all.
+   //  - If (max_length - min_length) is small, we can use a fast path (see the main blur shader for
+   //    details).
+   //  - Otherwise, we need the slower path.
+   //
+   // This feeds into indirect dispatches for the two paths. Unaffected tiles don't get any thread
+   // groups dispatched for them at all.
+   const float2 min_velocity_pix  = min_velocity * srt_data->velocity_scale;
+   const float2 max_velocity_pix  = max_velocity * srt_data->velocity_scale;
+   const float min_length_sqr_pix = dot(min_velocity_pix, min_velocity_pix);
+   const float max_length_sqr_pix = dot(max_velocity_pix, max_velocity_pix);
+
+   if (max_length_sqr_pix >= 0.5f * 0.5f)
+   {
+      const uint tile_packed = (thread_id.x << 16) | (thread_id.y & 0xffff);
+
+      uint offset;
+
+      // fast_path = min_length_pix > threshold * max_length_pix
+      if (min_length_sqr_pix > k_fast_path_threshold * k_fast_path_threshold * max_length_sqr_pix)
+      {
+         AtomicAdd(srt_data->indirect_buffers[k_tile_type_fast][0], k_blur_groups_per_tile, offset);
+         srt_data->tile_buffers[k_tile_type_fast][offset / k_blur_groups_per_tile] = tile_packed;
+      }
+      else
+      {
+         AtomicAdd(srt_data->indirect_buffers[k_tile_type_regular][0], k_blur_groups_per_tile, offset);
+         srt_data->tile_buffers[k_tile_type_regular][offset / k_blur_groups_per_tile] = tile_packed;
+      }
+
+      // Blur shader doesn't need minimum, it's only used for classification.
+      srt_data->neighbour_max[thread_id] = max_velocity;
+   }
+}

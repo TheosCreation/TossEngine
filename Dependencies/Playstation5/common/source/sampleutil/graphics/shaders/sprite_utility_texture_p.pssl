@@ -1,0 +1,41 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2022 Sony Interactive Entertainment Inc.
+ * 
+ */
+#include "helper_functions.pssli"
+
+struct UserData
+{
+	SamplerState	m_sampler;
+	Texture2D		m_texture;
+};
+
+struct RenderParameters
+{
+	float4		m_rgba;
+	int			m_hdr;
+	int			__padding__[1];
+	UserData	*m_pUserData;
+};
+
+#if defined ( __PROSPERO__ )
+[CxxSymbol("Shader::sprite_utility_texture_p")]
+#endif
+float4	main(in float2 uv, RenderParameters	srtData : S_SRT_DATA) : S_TARGET_OUTPUT
+{
+	float4	tex = srtData.m_pUserData->m_texture.Sample(srtData.m_pUserData->m_sampler, uv);
+	if (tex.a == 0.f) discard;
+	float4 output =	tex	 * srtData.m_rgba;
+	switch(srtData.m_hdr)
+	{
+	case 1: // kBT2020_PQ
+		return	PQ_OETF(float4(mul(BT709_TO_BT2020, output.rgb), output.a));
+	case 2: // kBT2020_Linear
+		return	float4(kSdrWhiteLevel * mul(BT709_TO_BT2020, output.rgb), output.a);
+	case 3: // kP3D65
+		return	BT1886_OETF(float4(mul(BT709_TO_DCIP3, output.rgb), output.a));
+	default: // kBT709
+		return	output;
+	}
+}

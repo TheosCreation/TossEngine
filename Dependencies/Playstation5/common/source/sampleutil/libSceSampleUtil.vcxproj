@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Prospero">
+      <Configuration>Debug</Configuration>
+      <Platform>Prospero</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Prospero">
+      <Configuration>Release</Configuration>
+      <Platform>Prospero</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ORBIS">
+      <Configuration>Debug</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ORBIS">
+      <Configuration>Release</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{DA6CDB7E-EC94-4F62-8A25-6ED58893A6CE}</ProjectGuid>
+    <ProjectName>libSceSampleUtil</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Prospero'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(AMM)|Prospero'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Prospero'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release(AMM)|Prospero'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Prospero'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug(AMM)|Prospero'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Prospero'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release(AMM)|Prospero'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Platform)'=='Prospero'">
+    <Import Project="$(ProjectDir)\libSceSampleUtil.props" Condition="exists('$(ProjectDir)\libSceSampleUtil.props')" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Platform)'=='ORBIS'">
+    <Import Project="$(ProjectDir)\libSceSampleUtil.props" Condition="exists('$(ProjectDir)\libSceSampleUtil.props')" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(SolutionDir)\Sample.$(Platform).props" Condition="exists('$(SolutionDir)\Sample.$(Platform).props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Prospero'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;SCE_SAMPLE_UTIL_ASSERTS_ENABLED=1;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\include;$(ProjectDir)\..\sampleutil;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Wno-unknown-pragmas  -Wnull-conversion %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+    <WavePsslc>
+      <OutputFileName>$(IntDir)%(FileName).ags</OutputFileName>
+      <AdditionalOptions>-debug-info-user-prefix "$(ProjectName)" %(AdditionalOptions)</AdditionalOptions>
+      <Embed>true</Embed>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\include;$(ProjectDir)\graphics\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <SymbolCacheFile>true</SymbolCacheFile>
+      <SymbolCacheDir>$(ProjectDir)..\..\..\..\shader_debug_info</SymbolCacheDir>
+    </WavePsslc>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;SCE_SAMPLE_UTIL_ASSERTS_ENABLED=1;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SAMPLE_DIR)\sample_code\graphics\api_gnm;$(SCE_ORBIS_SAMPLE_DIR)\sample_code\graphics\api_gnm\toolkit;$(ProjectDir)\..\..\include;$(ProjectDir)\..\sampleutil;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Wno-unknown-pragmas  -Wnull-conversion %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+    <WavePsslc>
+      <Embed>true</Embed>
+      <SdbCache>Cache</SdbCache>
+      <AdditionalOptions>-ttrace 1 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\include;$(ProjectDir)\graphics\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </WavePsslc>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Prospero'">
+    <ClCompile>
+      <PreprocessorDefinitions>SCE_SAMPLE_UTIL_ASSERTS_ENABLED=1;SCE_SAMPLE_UTIL_RELEASE=1;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\include;$(ProjectDir)\..\sampleutil;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Wno-unknown-pragmas %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Warnings>MoreWarnings</Warnings>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </ClCompile>
+    <WavePsslc>
+      <OutputFileName>$(IntDir)%(FileName).ags</OutputFileName>
+      <AdditionalOptions>-debug-info-user-prefix "$(ProjectName)" %(AdditionalOptions)</AdditionalOptions>
+      <Embed>true</Embed>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\include;$(ProjectDir)\graphics\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <SymbolCacheFile>true</SymbolCacheFile>
+      <SymbolCacheDir>$(ProjectDir)..\..\..\..\shader_debug_info</SymbolCacheDir>
+    </WavePsslc>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>SCE_SAMPLE_UTIL_ASSERTS_ENABLED=1;SCE_SAMPLE_UTIL_RELEASE=1;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SAMPLE_DIR)\sample_code\graphics\api_gnm;$(SCE_ORBIS_SAMPLE_DIR)\sample_code\graphics\api_gnm\toolkit;$(ProjectDir)\..\..\include;$(ProjectDir)\..\sampleutil;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Wno-unknown-pragmas %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Warnings>MoreWarnings</Warnings>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </ClCompile>
+    <WavePsslc>
+      <Embed>true</Embed>
+      <SdbCache>Cache</SdbCache>
+      <AdditionalOptions>-ttrace 1 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\include;$(ProjectDir)\graphics\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </WavePsslc>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\pack\agc_utils.h" />
+    <ClInclude Include="..\..\include\pack\array.h" />
+    <ClInclude Include="..\..\include\pack\ext\ext_bvh.h" />
+    <ClInclude Include="..\..\include\pack\ext\ext_edge_anim.h" />
+    <ClInclude Include="..\..\include\pack\material_models.h" />
+    <ClInclude Include="..\..\include\pack\pack_file.h" />
+    <ClInclude Include="..\..\include\sampleutil.h" />
+    <ClInclude Include="..\..\include\sampleutil\audio\audio_player.h" />
+    <ClInclude Include="..\..\include\sampleutil\audio\audio_out.h" />
+    <ClInclude Include="..\..\include\sampleutil\debug\api_capture.h" />
+    <ClInclude Include="..\..\include\sampleutil\debug\console.h" />
+    <ClInclude Include="..\..\include\sampleutil\debug\menu.h" />
+    <ClInclude Include="..\..\include\sampleutil\debug\perf.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\compat.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\context.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\default_pack_model_shaders.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\deserialize.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\depth_render_target.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\graphics_memory.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\hdr.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\material.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\matrix4unaligned.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\matrix4x3unaligned.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\mesh.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\mesh_common.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\pack_model.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\pack_model_common.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\depth_render_target_agc.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\link_libraries_agc.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\render_target_agc.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\ringbuffer_safe_srt_binding.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\shader_ags.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\sprite_utility_agc.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\surface_utility_agc.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_gnm\depth_render_target_gnm.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_gnm\render_target_gnm.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_gnm\shader_gnm.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_gnm\sprite_utility_gnm.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_gnm\surface_utility_gnm.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\render_target.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\reprojection.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\serialize.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\shader_common.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\shader_material_common.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\skeletal_animation.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\sprite_utility.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\surface_utility.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\texture_library.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\texture_load.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\vector2unaligned.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\vector3unaligned.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\vector4unaligned.h" />
+    <ClInclude Include="..\..\include\sampleutil\graphics\vertex_define.h" />
+    <ClInclude Include="..\..\include\sampleutil\helper\imgui_helper.h" />
+    <ClInclude Include="..\..\include\sampleutil\helper\job_helpler.h" />
+    <ClInclude Include="..\..\include\sampleutil\helper\prospero\async_asset_loader_prospero.h" />
+    <ClInclude Include="..\..\include\sampleutil\helper\prospero\asset_pack_prospero.h" />
+    <ClInclude Include="..\..\include\sampleutil\helper\memory_stream.h" />
+    <ClInclude Include="..\..\include\sampleutil\input.h" />
+    <ClInclude Include="..\..\include\sampleutil\input\controller.h" />
+    <ClInclude Include="..\..\include\sampleutil\input\keyboard.h" />
+    <ClInclude Include="..\..\include\sampleutil\input\motion.h" />
+    <ClInclude Include="..\..\include\sampleutil\input\osk.h" />
+    <ClInclude Include="..\..\include\sampleutil\input\vr_tracker.h" />
+    <ClInclude Include="..\..\include\sampleutil\memory.h" />
+    <ClInclude Include="..\..\include\sampleutil\memory\allocator_base.h" />
+    <ClInclude Include="..\..\include\sampleutil\memory\cpu_memory.h" />
+    <ClInclude Include="..\..\include\sampleutil\memory\dmem_mapper.h" />
+    <ClInclude Include="..\..\include\sampleutil\memory\heap_allocator.h" />
+    <ClInclude Include="..\..\include\sampleutil\memory\memory_analyzer.h" />
+    <ClInclude Include="..\..\include\sampleutil\memory\ring_allocator.h" />
+    <ClInclude Include="..\..\include\sampleutil\network\initialize.h" />
+    <ClInclude Include="..\..\include\sampleutil\sampleutil_common.h" />
+    <ClInclude Include="..\..\include\sampleutil\sampleutil_error.h" />
+    <ClInclude Include="..\..\include\sampleutil\script.h" />
+    <ClInclude Include="..\..\include\sampleutil\skeleton.h" />
+    <ClInclude Include="..\..\include\sampleutil\system.h" />
+    <ClInclude Include="..\..\include\sampleutil\thread\job.h" />
+    <ClInclude Include="..\..\include\sampleutil\thread\thread.h" />
+    <ClInclude Include="..\..\include\sampleutil\ui_framework\imgui\platform_agc\imgui_impl_agc.h" />
+    <ClInclude Include="..\..\include\sampleutil\ui_framework\imgui\platform_gnm\imgui_impl_gnm.h" />
+    <ClInclude Include="..\..\include\sampleutil\ui_framework\ui_framework.h" />
+    <ClInclude Include="audio\audio_decoder.h" />
+    <ClInclude Include="audio\audio_internal.h" />
+    <ClInclude Include="audio\audio_paraser.h" />
+    <ClInclude Include="debug\debug_menu_internal.h" />
+    <ClInclude Include="debug\xml_internal.h" />
+    <ClInclude Include="ui_framework\imgui\sampleutil\shaders\imgui_srt_common.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(SCE_ORBIS_SAMPLE_DIR)\sample_code\graphics\api_gnm\toolkit\dataformat_interpreter.cpp">
+      <ExcludedFromBuild Condition="'$(Platform)'!='ORBIS'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(SCE_ORBIS_SAMPLE_DIR)\sample_code\graphics\api_gnm\toolkit\floating_point.cpp">
+      <ExcludedFromBuild Condition="'$(Platform)'!='ORBIS'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(SCE_ORBIS_SAMPLE_DIR)\sample_code\graphics\api_gnm\toolkit\half.cpp">
+      <ExcludedFromBuild Condition="'$(Platform)'!='ORBIS'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\imgui\imgui.cpp" />
+    <ClCompile Include="..\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\imgui\orbis\imgui_libfont_orbis.cpp" />
+    <ClCompile Include="..\imgui\prospero\imgui_libfont_prospero.cpp" />
+    <ClCompile Include="..\pack\agc_utils.cpp">
+      <ExcludedFromBuild Condition="'$(Platform)'=='ORBIS'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\pack\ext\ext_bvh.cpp">
+      <ExcludedFromBuild Condition="'$(Platform)'=='ORBIS'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\pack\ext\ext_edge_anim.cpp" />
+    <ClCompile Include="..\pack\obj_serialization.cpp" />
+    <ClCompile Include="..\pack\pack_file.cpp" />
+    <ClCompile Include="audio\audio.cpp" />
+    <ClCompile Include="audio\audio_decoder.cpp" />
+    <ClCompile Include="audio\audio_paraser.cpp" />
+    <ClCompile Include="audio\audio_player.cpp" />
+    <ClCompile Include="audio\orbis\audio_decoder_orbis.cpp" />
+    <ClCompile Include="audio\orbis\audio_orbis.cpp" />
+    <ClCompile Include="audio\prospero\audio_decoder_prospero.cpp" />
+    <ClCompile Include="audio\prospero\audio_prospero.cpp" />
+    <ClCompile Include="debug\api_capture.cpp" />
+    <ClCompile Include="debug\console.cpp" />
+    <ClCompile Include="debug\debug_menu_item_group.cpp" />
+    <ClCompile Include="debug\menu.cpp" />
+    <ClCompile Include="debug\perf.cpp" />
+    <ClCompile Include="debug\xml.cpp" />
+    <ClCompile Include="graphics\graphics.cpp" />
+    <ClCompile Include="graphics\graphics_memory.cpp" />
+    <ClCompile Include="graphics\material.cpp" />
+    <ClCompile Include="graphics\mesh.cpp" />
+    <ClCompile Include="graphics\pack_model.cpp" />
+    <ClCompile Include="graphics\platform_agc\context_agc.cpp" />
+    <ClCompile Include="graphics\platform_agc\default_pack_model_shaders_ags.cpp" />
+    <ClCompile Include="graphics\platform_agc\graphics_memory_agc.cpp" />
+    <ClCompile Include="graphics\platform_agc\pack_model_agc.cpp" />
+    <ClCompile Include="graphics\platform_agc\reprojection_prospero.cpp" />
+    <ClCompile Include="graphics\platform_agc\shader_ags.cpp" />
+    <ClCompile Include="graphics\platform_agc\sprite_utility_agc.cpp" />
+    <ClCompile Include="graphics\platform_agc\sprite_utility_font_agc.cpp" />
+    <ClCompile Include="graphics\platform_agc\surface_agc.cpp" />
+    <ClCompile Include="graphics\platform_agc\surface_utility_agc.cpp" />
+    <ClCompile Include="graphics\platform_agc\texture_load_agc.cpp" />
+    <ClCompile Include="graphics\platform_gnm\context_gnm.cpp" />
+    <ClCompile Include="graphics\platform_gnm\default_pack_model_shaders_gnm.cpp" />
+    <ClCompile Include="graphics\platform_gnm\graphics_memory_gnm.cpp" />
+    <ClCompile Include="graphics\platform_gnm\pack_model_gnm.cpp" />
+    <ClCompile Include="graphics\platform_gnm\shader_gnm.cpp" />
+    <ClCompile Include="graphics\platform_gnm\sprite_utility_font_gnm.cpp" />
+    <ClCompile Include="graphics\platform_gnm\sprite_utility_gnm.cpp" />
+    <ClCompile Include="graphics\platform_gnm\surface_gnm.cpp" />
+    <ClCompile Include="graphics\platform_gnm\surface_utility_gnm.cpp" />
+    <ClCompile Include="graphics\platform_gnm\texture_load_gnm.cpp" />
+    <ClCompile Include="graphics\skeletal_animation.cpp" />
+    <ClCompile Include="graphics\texture_library.cpp" />
+    <ClCompile Include="graphics\texture_load.cpp" />
+    <ClCompile Include="helper\imgui_helper.cpp" />
+    <ClCompile Include="helper\job_helper.cpp" />
+    <ClCompile Include="helper\prospero\asset_pack_prospero.cpp" />
+    <ClCompile Include="helper\prospero\async_asset_loader_prospero.cpp" />
+    <ClCompile Include="input\keyboard_common.cpp" />
+    <ClCompile Include="input\orbis\keyboard_orbis.cpp" />
+    <ClCompile Include="input\orbis\osk_orbis.cpp" />
+    <ClCompile Include="input\orbis\pad_orbis.cpp" />
+    <ClCompile Include="input\pad_common.cpp" />
+    <ClCompile Include="input\prospero\keyboard_prospero.cpp" />
+    <ClCompile Include="input\prospero\osk_prospero.cpp" />
+    <ClCompile Include="input\prospero\pad_prospero.cpp" />
+    <ClCompile Include="input\prospero\vr_tracker_prospero.cpp" />
+    <ClCompile Include="memory\heap_allocator.cpp" />
+    <ClCompile Include="memory\memory.cpp" />
+    <ClCompile Include="memory\prospero\dmem_mapper_prospero.cpp" />
+    <ClCompile Include="memory\ring_allocator.cpp" />
+    <ClCompile Include="network\net_initialize.cpp" />
+    <ClCompile Include="sampleutil_common.cpp" />
+    <ClCompile Include="script.cpp" />
+    <ClCompile Include="skeleton.cpp" />
+    <ClCompile Include="system\orbis\user_orbis.cpp" />
+    <ClCompile Include="system\prospero\user_prospero.cpp" />
+    <ClCompile Include="thread\job.cpp" />
+    <ClCompile Include="thread\orbis\cond_orbis.cpp" />
+    <ClCompile Include="thread\orbis\mutex_orbis.cpp" />
+    <ClCompile Include="thread\orbis\rwlock_orbis.cpp" />
+    <ClCompile Include="thread\orbis\semaphore_orbis.cpp" />
+    <ClCompile Include="thread\orbis\thread_orbis.cpp" />
+    <ClCompile Include="thread\prospero\cond_prospero.cpp" />
+    <ClCompile Include="thread\prospero\mutex_prospero.cpp" />
+    <ClCompile Include="thread\prospero\rwlock_prospero.cpp" />
+    <ClCompile Include="thread\prospero\semaphore_prospero.cpp" />
+    <ClCompile Include="thread\prospero\thread_prospero.cpp" />
+    <ClCompile Include="thread\thread.cpp" />
+    <ClCompile Include="ui_framework\imgui\sampleutil\orbis\imgui_impl_gnm.cpp" />
+    <ClCompile Include="ui_framework\imgui\sampleutil\prospero\imgui_impl_agc.cpp" />
+    <ClCompile Include="ui_framework\ui_framework.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <WavePsslc Include="graphics\platform_agc\default_pack_model_ps.pssl">
+      <Profile>LIB</Profile>
+      <ExcludedFromBuild Condition="'$(Platform)'=='ORBIS'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_agc\default_pack_model_vs.pssl">
+      <Profile>LIB</Profile>
+      <ExcludedFromBuild Condition="'$(Platform)'=='ORBIS'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear128_c.pssl">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ORBIS'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear32_p.pssl">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ORBIS'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear_c.pssl">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ORBIS'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear_cmask_c.pssl">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ORBIS'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear_dcc_c.pssl">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ORBIS'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear_p.pssl">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ORBIS'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\default_pack_model_diffuse_NCTU0_p.pssl">
+      <ExcludedFromBuild Condition="'$(Platform)'=='Prospero'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\default_pack_model_NCTU0S_vv.pssl">
+      <ExcludedFromBuild Condition="'$(Platform)'=='Prospero'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\default_pack_model_NU0S_vv.pssl">
+      <ExcludedFromBuild Condition="'$(Platform)'=='Prospero'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\default_pack_model_diffuse_NU0_p.pssl">
+      <ExcludedFromBuild Condition="'$(Platform)'=='Prospero'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\set_uint_fast_c.pssl">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ORBIS'">true</ExcludedFromBuild>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_2d_vv.pssl">
+      <FileType>Document</FileType>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_3d_fill_p.pssl">
+      <FileType>Document</FileType>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_3d_vv.pssl">
+      <FileType>Document</FileType>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_fill_p.pssl">
+      <FileType>Document</FileType>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_texture_p.pssl">
+      <FileType>Document</FileType>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_texture_ycbcr_p.pssl">
+      <FileType>Document</FileType>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_texture_yuy2_p.pssl">
+      <FileType>Document</FileType>
+    </WavePsslc>
+    <WavePsslc Include="ui_framework\imgui\sampleutil\shaders\sampleutil_imgui_p.pssl">
+      <FileType>Document</FileType>
+    </WavePsslc>
+    <WavePsslc Include="ui_framework\imgui\sampleutil\shaders\sampleutil_imgui_vv.pssl">
+      <FileType>Document</FileType>
+    </WavePsslc>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="graphics\shaders\helper_functions.pssli" />
+    <None Include="graphics\shaders\lighting.pssli" />
+  </ItemGroup>
+  <ItemGroup>
+    <WavePssli Include="graphics\shaders\default_pack_model_ps.pssli" />
+    <WavePssli Include="graphics\shaders\default_pack_model_vs.pssli" />
+    <WavePssli Include="graphics\shaders\pack_vertex.pssli" />
+  </ItemGroup>
+  <Import Condition="'$(ConfigurationType)' == 'Makefile' and Exists('$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets')" Project="$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

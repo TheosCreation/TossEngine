@@ -1,0 +1,7 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2016 Sony Interactive Entertainment Inc.
+ * 
+ */
+#define USE_32BIT_RT
+#include "clear_p.pssl"

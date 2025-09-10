@@ -13,8 +13,6 @@ Mail : theo.morris@mds.ac.nz
 #pragma once
 #include "Utils.h"
 #include "Texture.h"
-#include <glew.h>
-#include <glfw3.h>
 
 /**
  * @class ShadowMap
@@ -47,5 +45,5 @@ public:
 private:
     uint FBO = 0;              //!< Framebuffer Object ID used for depth rendering.
     Vector2 m_resolution = {}; //!< Shadow map resolution.
-    GLint m_prevViewport[4] = { 0, 0, 0, 0 }; //!< Previous OpenGL viewport settings (restored after unbinding).
+    int m_prevViewport[4] = { 0, 0, 0, 0 }; //!< Previous OpenGL viewport settings (restored after unbinding).
 };

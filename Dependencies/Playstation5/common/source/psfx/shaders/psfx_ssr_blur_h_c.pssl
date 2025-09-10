@@ -1,0 +1,110 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+#include "psfx_ssr.h"
+
+#pragma argument(realtypes)
+
+#ifndef SYMBOL_NAME
+#define SYMBOL_NAME "psfx::ssr_blur_h"
+#endif
+
+BlurSrt* srt_data : S_SRT_DATA;
+
+// Gaussian blur weights. Sum to 1 for all samples (weight[0] = centre).
+static const uint k_blur_radius = 4;
+static const half k_blur_weight[k_blur_radius + 1] = { 0.2270270270h, 0.1945945946h, 0.1216216216h, 0.0540540541h, 0.0162162162h };
+
+// LDS data size (pixels within the group and the required border pixels).
+static const uint k_lds_row_size = k_blur_group_size + (k_blur_radius * 2);
+static const uint k_lds_size = k_lds_row_size * k_blur_group_size;
+
+thread_group_memory half4 lds_reflection[k_lds_size];
+
+uint to_lds_idx(uint2 pos)
+{
+   return k_lds_row_size * pos.y + pos.x;
+}
+
+// Reads required source pixel values for the whole group into LDS.
+// This is hardcoded for the current blur radius/group size, each thread fills 2 values.
+//
+// For the horizontal pass, we also downsample from the previous mip level as we load into LDS.
+//
+// For the vertical pass, we transpose the data when loading into LDS so that the rest of the
+// implementation is the same as for the horizontal pass.
+void fill_lds(int2 tile_start, uint2 group_thread_id)
+{
+   const uint2 lds_pos = uint2(group_thread_id.x * 2, group_thread_id.y);
+   const uint lds_idx  = to_lds_idx(lds_pos);
+
+#ifdef BLUR_V
+   const SamplerState sampler = make_point_sampler();
+
+   const int2 row_start  = tile_start - int2(0, k_blur_radius);
+   const int2 source_pix = row_start + lds_pos.yx;
+   const float2 uv_inc   = float2(0.0f, srt_data->inv_dest_size.y);
+#else
+   // Downsample, using bilinear sampler.
+   const SamplerState sampler = make_bilinear_sampler();
+
+   const int2 row_start  = tile_start - int2(k_blur_radius, 0);
+   const int2 source_pix = row_start + lds_pos;
+   const float2 uv_inc   = float2(srt_data->inv_dest_size.x, 0.0f);
+#endif
+
+   float2 source_uv = (float2(source_pix) + 0.5f) * srt_data->inv_dest_size;
+
+   half4 value;
+   value.a   = srt_data->mask.SampleLOD(sampler, source_uv, srt_data->source_level);
+   value.rgb = (value.a > 0.0h) ? srt_data->reflection.SampleLOD(sampler, source_uv, srt_data->source_level) : half3(0.0h);
+   lds_reflection[lds_idx] = value;
+
+   source_uv += uv_inc;
+
+   value.a   = srt_data->mask.SampleLOD(sampler, source_uv, srt_data->source_level);
+   value.rgb = (value.a > 0.0h) ? srt_data->reflection.SampleLOD(sampler, source_uv, srt_data->source_level) : half3(0.0h);
+   lds_reflection[lds_idx + 1] = value;
+}
+
+half4 blur(uint2 group_thread_id)
+{
+   const uint lds_start = to_lds_idx(group_thread_id);
+
+   half4 accum;
+   accum  = lds_reflection[lds_start + 0] * k_blur_weight[4];
+   accum += lds_reflection[lds_start + 1] * k_blur_weight[3];
+   accum += lds_reflection[lds_start + 2] * k_blur_weight[2];
+   accum += lds_reflection[lds_start + 3] * k_blur_weight[1];
+   accum += lds_reflection[lds_start + 4] * k_blur_weight[0];
+   accum += lds_reflection[lds_start + 5] * k_blur_weight[1];
+   accum += lds_reflection[lds_start + 6] * k_blur_weight[2];
+   accum += lds_reflection[lds_start + 7] * k_blur_weight[3];
+   accum += lds_reflection[lds_start + 8] * k_blur_weight[4];
+
+   return accum;
+}
+
+[CxxSymbol(SYMBOL_NAME)]
+[NUM_THREADS(k_blur_group_size, k_blur_group_size, 1)]
+void main(uint2 group_id : S_GROUP_ID, uint2 group_thread_id : S_GROUP_THREAD_ID)
+{
+   const uint2 tile_start = group_id * k_blur_group_size;
+
+   fill_lds(tile_start, group_thread_id);
+   ThreadGroupMemoryBarrierSync();
+
+   const half4 result = blur(group_thread_id);
+
+#ifdef BLUR_V
+   const uint2 dest_pix = tile_start + group_thread_id.yx;
+#else
+   const uint2 dest_pix = tile_start + group_thread_id;
+#endif
+   srt_data->dest_reflection[dest_pix] = result.rgb;
+   srt_data->dest_mask[dest_pix]       = result.a;
+}

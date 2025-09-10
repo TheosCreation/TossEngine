@@ -1,0 +1,208 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+//
+// References:
+// [1] A Reconstruction Filter for Plausible Motion Blur
+//     https://casual-effects.com/research/McGuire2012Blur/index.html
+// [2] Next Generation Post Processing in Call of Duty: Advanced Warfare
+//     http://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare
+//
+
+// This considerably improves performance (measured up to 35%). While it reduces our occupancy
+// considerably compared to the default scheduler, the wavefronts spend much less time waiting
+// on memory accesses and we get far fewer cache misses, giving an overall improvement.
+#pragma argument(scheduler=cachethrashing)
+
+#ifndef SYMBOL_NAME
+#define SYMBOL_NAME "psfx::motion_blur"
+#endif
+
+#include "psfx_common.h"
+#include "psfx_motion_blur.h"
+
+BlurSrt* srt_data : S_SRT_DATA;
+
+static const uint k_steps              = 7;
+static const float k_soft_depth_extent = 1.0f;
+
+// Generate a random number between [0, 1]. From https://thebookofshaders.com/10/
+float rand(float2 uv)
+{
+   const float result = frac(sin(dot(uv, float2(12.9898f, 78.233f))) * 43758.5453123f);
+   return result;
+}
+
+// Given a velocity buffer value, return velocity in pixels, scaled according to the framerate
+// and exposure time.
+float2 velocity(float2 raw_velocity)
+{
+   return raw_velocity * srt_data->velocity_scale;
+}
+
+struct Sample
+{
+   float3 colour;
+#ifndef FAST_PATH
+   float depth;
+   float velocity_length;
+#endif
+};
+
+Sample get_sample(int2 pos)
+{
+   // Clamp sample positions within the texture. Near edges we can go outside the texture, without
+   // clamping we would get 0 from the out of bounds reads, which leads to artifacts. Getting the
+   // edge pixel is still not entirely correct but much better than 0.
+   pos = clamp(pos, int2(0, 0), srt_data->source_max);
+
+   Sample s;
+   s.colour = srt_data->colour[pos];
+
+#ifndef FAST_PATH
+   const float2 v = velocity(srt_data->velocity[pos]);
+
+   s.depth           = decode_linear_z(srt_data->linear_depth[pos], srt_data->z_near, srt_data->z_range);
+   s.velocity_length = clamp(length(v), 0.5f, srt_data->max_blur);
+#endif
+
+   return s;
+}
+
+float2 depth_cmp(float centre_depth, float sample_depth, float depth_scale)
+{
+   return saturate(0.5 + float2(depth_scale, -depth_scale) * (sample_depth - centre_depth));
+}
+
+float2 spread_cmp(float offset_length, float2 spread_length, float pixel_to_sample_scale)
+{
+   return saturate((pixel_to_sample_scale * spread_length) - max(offset_length - 1.0f, 0.0f));
+}
+
+float sample_weight(
+   float centre_depth, float sample_depth,
+   float offset_length, float centre_spread_length, float sample_spread_length,
+   float pixel_to_sample_scale, float depth_scale)
+{
+   const float2 depth  = depth_cmp(centre_depth, sample_depth, depth_scale);
+   const float2 spread = spread_cmp(offset_length, float2(centre_spread_length, sample_spread_length), pixel_to_sample_scale);
+
+   return dot(depth, spread);
+}
+
+[CxxSymbol(SYMBOL_NAME)]
+[NUM_THREADS(k_blur_group_size, k_blur_group_size, 1)]
+void main(
+   uint2 group_thread_id : S_GROUP_THREAD_ID,
+   uint group_id         : S_GROUP_ID)
+{
+   // Find which tile/pixel we're working on.
+   const uint group_div   = group_id / k_blur_groups_per_tile;
+   const uint group_mod   = group_id % k_blur_groups_per_tile;
+   const uint tile_packed = srt_data->tile_buffer[group_div];
+   const uint2 tile_index = uint2(tile_packed >> 16, tile_packed & 0xffff);
+
+   const int2 centre_pos =
+      (tile_index * k_motion_blur_tile_size) +
+      (uint2(group_mod % k_blur_groups_per_tile_dim, group_mod / k_blur_groups_per_tile_dim) * k_blur_group_size) +
+      group_thread_id;
+
+   const float2 centre_pos_f = float2(centre_pos) + 0.5f;
+
+   float2 neighbour_max       = velocity(srt_data->neighbour_max[tile_index]);
+   float neighbour_max_length = length(neighbour_max);
+
+   // Clamp to tile size (maximum blur radius).
+   const float clamp_length = min(neighbour_max_length, srt_data->max_blur);
+   neighbour_max            = (neighbour_max * clamp_length) / neighbour_max_length;
+   neighbour_max_length     = clamp_length;
+
+   // Random offset for sample positions.
+   const float random = rand(centre_pos_f / float2(srt_data->source_max + 1));
+
+#ifndef FAST_PATH
+   // Sample centre (current) pixel.
+   const Sample centre = get_sample(centre_pos);
+
+   // Scales a value in pixel units to be in sample units.
+   const float pixel_to_sample_scale = float(k_steps) / neighbour_max_length;
+#endif
+
+   float4 sum = float4(0);
+
+   // Each step we take 2 samples mirrored around the centre (with a random offset).
+   float2 offset_length = float2(random - 0.5f, 0.5f - random) + 0.5f;
+
+   float2 sample_pos[2] =
+   {
+      centre_pos_f + ((offset_length.x / float(k_steps)) * neighbour_max),
+      centre_pos_f - ((offset_length.y / float(k_steps)) * neighbour_max)
+   };
+
+   const float2 step_pos = neighbour_max / float(k_steps);
+
+   for (uint i = 0; i < k_steps; i++)
+   {
+#ifdef FAST_PATH
+      // As (neighbour_max - neighbour_min) approaches 0, the algorithm converges to a simple
+      // colour average. Therefore, when the difference is smaller than a threshold, we'll use
+      // the colour average instead (don't need to sample depth or velocity at all).
+      sum.rgb += get_sample(int2(sample_pos[0])).colour;
+      sum.rgb += get_sample(int2(sample_pos[1])).colour;
+#else
+      Sample samples[2];
+      float weights[2];
+
+      [unroll]
+      for (uint j = 0; j < 2; j++)
+      {
+         samples[j] = get_sample(int2(sample_pos[j]));
+         weights[j] = sample_weight(
+            centre.depth,
+            samples[j].depth,
+            offset_length.x,
+            centre.velocity_length,
+            samples[j].velocity_length,
+            pixel_to_sample_scale,
+            k_soft_depth_extent);
+      }
+
+      // Mirrored background reconstruction.
+      bool2 mirror = bool2(samples[0].depth > samples[1].depth, samples[1].velocity_length > samples[0].velocity_length);
+      weights[0] = (all(mirror)) ? weights[1] : weights[0];
+      weights[1] = (any(mirror)) ? weights[1] : weights[0];
+
+      // Accumulate.
+      sum.rgb += (weights[0] * samples[0].colour) + (weights[1] * samples[1].colour);
+      sum.a   += weights[0] + weights[1];
+#endif
+
+      offset_length.x += 1.0f;
+      sample_pos[0] += step_pos;
+      sample_pos[1] -= step_pos;
+   }
+
+   sum /= 2.0f * float(k_steps);
+
+   float3 colour;
+
+#ifdef FAST_PATH
+   colour = sum.rgb;
+#else
+   colour = sum.rgb + ((1.0f - sum.a) * centre.colour);
+#endif
+
+   // For checking tile classification.
+#if 0
+#ifdef FAST_PATH
+   srt_data->output[centre_pos] = float3(0, 1, 0);
+#else
+   srt_data->output[centre_pos] = float3(0, 0, 1);
+#endif
+#else
+   srt_data->output[centre_pos] = colour;
+#endif
+}

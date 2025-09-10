@@ -52,6 +52,16 @@ public:
     void Init(TossPlayerSettingsPtr& playerSettings);
 
     /**
+     * @brief Updates input states (should be called every frame).
+     */
+    void onUpdate();
+
+    /**
+     * @brief Post-render update (late frame adjustments).
+     */
+    void onLateUpdate();
+
+    /**
      * @brief Returns true if the specified key is currently being held down.
      * @param key The key code to query.
      * @param checkPlayMode Whether to require play mode to be enabled.
@@ -156,16 +166,6 @@ public:
      */
     void setScreenArea(const Vector2& area);
 
-    /**
-     * @brief Updates input states (should be called every frame).
-     */
-    void onUpdate();
-
-    /**
-     * @brief Post-render update (late frame adjustments).
-     */
-    void onLateUpdate();
-
 private:
     // Private constructor and destructor
     InputManager() = default;
@@ -173,11 +173,15 @@ private:
 
     bool isInitilized = false; //!< Tracks whether the input manager is initialized.
 
+#ifdef __PROSPERO__
+    // Prospero: no GLFW, no ImGui-GLFW glue
+#else
     // GLFW input callbacks
-    static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
+    static void scroll_callback(class GLFWwindow* window, double xOffset, double yOffset);
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
     static void char_callback(GLFWwindow* window, unsigned int c);
+#endif
 
     // Mouse position and scroll tracking
     static float currentMouseX; //!< Current mouse x position.
@@ -197,7 +201,7 @@ private:
     static void resetMouseScroll();
 
     // Internal variables
-    GLFWwindow* WindowPtr = nullptr; //!< Pointer to the GLFW window context.
+    void* WindowPtr = nullptr; //!< Pointer to the window.
     bool m_playEnable = false; //!< Indicates if play mode is active.
     bool m_gameMode = false;   //!< Indicates if game mode is active.
     Vector2 m_oldMousePos{};   //!< Previous mouse position for delta calculations.

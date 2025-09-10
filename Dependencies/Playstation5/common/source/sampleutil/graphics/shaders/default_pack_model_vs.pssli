@@ -1,0 +1,91 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2023 Sony Interactive Entertainment Inc.
+ * 
+ */
+#pragma once
+
+#include <sampleutil/graphics/pack_model_common.h>
+#include "pack_vertex.pssli"
+
+#pragma argument(scalarizesharps)
+
+using namespace sce::SampleUtil::Graphics;
+
+struct ShadingUserData
+{
+	float4x4	m_viewProjectionMatrix;
+	float3		m_cameraPosition;
+	float3		m_lightPosition;
+	float		m_ambient;
+	float		m_shininess;
+};
+		
+struct VsUserData
+{
+	RegularBuffer<PackModelInstanceUserData>	m_packModelInstanceBuffer;
+	RegularBuffer<MeshInstanceUserData>			m_meshInstanceBuffer;
+	ShadingUserData								*m_pShadingUserData;
+	uint										m_meshInstanceBaseIndex;
+	uint										m_numMeshInstances;
+} g_userData : S_SRT_DATA;
+
+template<typename T>
+V2P<T>	transformVertex(const T	&input)
+{
+	V2P<T>	output	= 0;
+
+	const uint	meshInstanceIndex = g_userData.m_meshInstanceBaseIndex + (input.m_instanceId % g_userData.m_numMeshInstances);
+
+	const PackModelInstanceUserData	&packModelInstance	= g_userData.m_packModelInstanceBuffer[input.m_instanceId / g_userData.m_numMeshInstances];
+	const MeshInstanceUserData		&meshInstance		= g_userData.m_meshInstanceBuffer[meshInstanceIndex];
+
+	float3	positionInModel	= mul(transpose(meshInstance.m_transform), float4(input.m_position, 1.f));
+	float3	normalInModel	= 0;
+	float3	tangentInModel	= 0;
+	if constexpr(T::kHasNormal) {
+		normalInModel	= normalize(mul(transpose(meshInstance.m_transform), float4(input.m_normal, 0.f)));
+	}
+	if constexpr(T::kHasTangent) {
+		tangentInModel	= normalize(mul(transpose(meshInstance.m_transform), float4(input.m_tangent.xyz, 0.f)));
+	}
+	if constexpr(T::kBoneCount > 0) {
+		if (input.m_boneIndices.x != SkinVertex::kDummyBoneIndex)
+		{
+			const float4			boneWeights			= float4(input.m_boneWeights.xyz, 1.f - input.m_boneWeights.x - input.m_boneWeights.y - input.m_boneWeights.z);
+			const uint4				boneIndices			= input.m_boneIndices;
+			RegularBuffer<float4x4>	skinningMatrices	= packModelInstance.m_skinningMatricesArray[meshInstance.m_skeletonIndex];
+			float4x4 skinningMat	= 0;
+			for(uint i = 0; i < meshInstance.m_bonesPerVertex; i++) {
+				skinningMat	+= skinningMatrices[boneIndices[i]] * boneWeights[i];
+			}
+
+			positionInModel	= mul(float3x4(skinningMat), float4(positionInModel, 1.f));
+			normalInModel	= mul(float3x3(skinningMat), normalInModel);
+			tangentInModel	= mul(float3x3(skinningMat), tangentInModel);
+		}
+	}
+
+	output.m_positionInWorld		= mul(transpose(packModelInstance.m_transform), float4(positionInModel, 1.f));
+	if constexpr(T::kHasNormal) {
+		output.m_normalInWorld		= normalize(mul(transpose(packModelInstance.m_transform), float4(normalInModel, 0.f)));
+	}
+	if constexpr(T::kHasTangent) {
+		output.m_tangentInWorld.xyz	= normalize(mul(transpose(packModelInstance.m_transform), float4(tangentInModel, 0.f)));
+		output.m_tangentInWorld.w	= input.m_tangent.w;
+	}
+	output.m_position				= mul(g_userData.m_pShadingUserData->m_viewProjectionMatrix, float4(output.m_positionInWorld, 1.f));
+	if constexpr(T::kUvCount > 0) {
+		output.m_uv0  				= input.m_uv0;
+	}
+	if constexpr(T::kUvCount > 1) {
+		output.m_uv1  				= input.m_uv1;
+	}
+	if constexpr(T::kHasColor) {
+		output.m_color				= input.m_color;
+	}
+
+	output.m_instanceId	= meshInstanceIndex;
+
+	return	output;
+}

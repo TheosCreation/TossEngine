@@ -1,0 +1,60 @@
+﻿/* SIE CONFIDENTIAL
+ PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2023 Sony Interactive Entertainment Inc.
+ * 
+ */
+
+#pragma once
+
+ namespace sce { namespace SampleUtil { namespace Graphics {
+
+ struct Empty{};
+
+template<bool enable, typename T>
+struct enable_if {typedef  Empty type; };
+
+template<typename T>
+struct enable_if<true, T> {typedef  T type; };
+
+template<bool HasColor, bool HasTangent, int UvCount, int BoneCount = 0, bool HasNormal = true>
+struct	PackVertex
+{
+	static constexpr bool	kHasNormal	= HasNormal;
+	static constexpr bool	kHasTangent	= HasNormal && HasTangent && (UvCount > 0);
+	static constexpr bool	kHasColor	= HasColor;
+	static constexpr int	kUvCount	= UvCount;
+	static constexpr int	kBoneCount	= BoneCount;
+
+	float3													m_position;
+	typename enable_if<kHasNormal,			float3>::type	m_normal;
+	typename enable_if<kHasTangent,			float4>::type	m_tangent;
+	typename enable_if<kHasColor,			float4>::type	m_color;
+	typename enable_if<(kUvCount > 0),		float2>::type	m_uv0;
+	typename enable_if<(kUvCount > 1),		float2>::type	m_uv1;
+	typename enable_if<(kBoneCount > 0),	uint4>::type	m_boneIndices;
+	typename enable_if<(kBoneCount > 0),	float4>::type	m_boneWeights;
+	uint													m_instanceId : S_INSTANCE_ID;
+};
+
+// Vertex to pixel interface. This is automaticcaly generated from the Vertex input.
+// Note: We can reduce the number of ps permutation by adding some default
+// This will increase the size of the cache used by each vertex.
+template<typename T>
+struct V2P
+{
+	static constexpr bool	kHasNormal	= template T::kHasNormal;
+	static constexpr bool	kHasTangent	= template T::kHasTangent;
+	static constexpr bool	kHasColor	= template T::kHasColor;
+	static constexpr int	kUvCount	= template T::kUvCount;
+
+	float4												m_position			: S_POSITION;
+	float3												m_positionInWorld	: POSITION;
+	typename enable_if<kHasNormal,		float3>::type	m_normalInWorld		: NORMAL;
+	typename enable_if<kHasTangent,		float4>::type	m_tangentInWorld	: TANGENT;	// xyz tangent vector, w binormal sign
+	typename enable_if<kHasColor,		float4>::type	m_color				: COLOR;
+	typename enable_if<(kUvCount > 0),	float2>::type	m_uv0				: TEXCOORD0;
+	typename enable_if<(kUvCount > 1),	float2>::type	m_uv1				: TEXCOORD1;
+	uint												m_instanceId		: INSTANCE_ID;
+};
+
+}}} // namespace sce::SampleUtil::Graphics

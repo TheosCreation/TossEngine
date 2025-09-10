@@ -1,0 +1,800 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;cc;s;asm</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp</Extensions>
+    </Filter>
+    <Filter Include="Source Files\graphics">
+      <UniqueIdentifier>{b1346de6-e476-4511-b903-d7900f31aa0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\input">
+      <UniqueIdentifier>{77dd35ea-1790-4bdf-932a-211ab73b875b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\platform_gnm">
+      <UniqueIdentifier>{ecf91a0b-ee15-4b04-abf4-f61372b83438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\debug">
+      <UniqueIdentifier>{1a668115-ef74-4445-8af9-808390b4ad4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\input\orbis">
+      <UniqueIdentifier>{04f123fb-f86e-4833-9370-401bd85796c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\system">
+      <UniqueIdentifier>{c4a34eee-25ee-427d-966b-0f1123e33beb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\system\orbis">
+      <UniqueIdentifier>{f9c9275c-0ccf-4206-b558-7ccbb825e264}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\platform_agc">
+      <UniqueIdentifier>{e7af4589-6fc0-47bb-8b02-35cf5a6a4729}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\input\prospero">
+      <UniqueIdentifier>{33ebb311-1745-410b-89bc-d50e12b26e12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\system\prospero">
+      <UniqueIdentifier>{290a3834-c456-4d40-87ec-0436cf65683c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui_framework">
+      <UniqueIdentifier>{0ff4aeb6-cf84-4353-a247-b24932d6c4e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\thread">
+      <UniqueIdentifier>{ceb3b241-4089-44e8-9db0-5060432908bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\thread\prospero">
+      <UniqueIdentifier>{c8d1e6c1-153d-4938-99bf-51175b5deb40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\thread\orbis">
+      <UniqueIdentifier>{d5c62bed-f296-4bf7-8502-f04e22619064}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\network">
+      <UniqueIdentifier>{9b6966ae-52d6-4f49-a832-acfdcac0af6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui_framework\imgui">
+      <UniqueIdentifier>{f3dc1c76-b7f0-4d39-996e-3b2b8caaf948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui_framework\imgui\prospero">
+      <UniqueIdentifier>{346347d4-f10b-4e96-87a5-6cf8aa3e4286}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{ee14eb82-0cac-4412-97d4-fab6606c27b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\prospero">
+      <UniqueIdentifier>{f1c31f62-440a-4d42-9e7d-386184b78c07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\orbis">
+      <UniqueIdentifier>{a4d33395-c963-470e-b41c-86972854b1e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\Shaders">
+      <UniqueIdentifier>{72c2a763-21f0-45be-9c3e-d33461b29dde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\memory">
+      <UniqueIdentifier>{97de27c0-1ebf-4ae2-8d22-7b4be3a24a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui_framework\imgui\shaders">
+      <UniqueIdentifier>{9ff635f0-c9b2-42fc-9729-017e412f0ce3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\helper">
+      <UniqueIdentifier>{f1cc0f1a-80fe-4bb6-8e9b-63c4d1911116}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui_framework\imgui\orbis">
+      <UniqueIdentifier>{a0bbb4f9-e191-4469-aa4c-17b4c04ec102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\platform_gnm\Shaders">
+      <UniqueIdentifier>{b45e3ed2-a2f6-47cf-9d07-78f0c4464f3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\memory\prospero">
+      <UniqueIdentifier>{e82fc215-498f-4c09-9d37-f6bc55905120}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio">
+      <UniqueIdentifier>{475d8b3e-c569-405e-ae6f-e365a2bf8365}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\debug">
+      <UniqueIdentifier>{09e2ddc6-9563-4fae-8a60-c1c1499a9493}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics">
+      <UniqueIdentifier>{02155831-4f6c-4313-be6c-0455083f264d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics\platform_gnm">
+      <UniqueIdentifier>{9a407e69-ecd3-488e-83a3-aed61cd20707}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics\platform_agc">
+      <UniqueIdentifier>{199e103b-aeff-4280-a934-3eb9986bff59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\helper">
+      <UniqueIdentifier>{a2b4e4ec-fc48-4fd4-9dd9-1f93a046787a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\input">
+      <UniqueIdentifier>{efe408b5-ffd2-43ae-9e89-89318a99b8f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\memory">
+      <UniqueIdentifier>{4728e676-8e4a-499d-93a0-1fbc685692eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\network">
+      <UniqueIdentifier>{89b4b4e9-9393-4147-86a3-5169b9201b04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\thread">
+      <UniqueIdentifier>{28b0d44b-729b-4175-91ad-c4777b987df3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui_framework">
+      <UniqueIdentifier>{d20a0c23-f49e-4de1-aaac-aaf6a0b6fdc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui_framework\imgui">
+      <UniqueIdentifier>{3e583315-3f36-44bb-88af-19bab8ebccad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui_framework\imgui\platform_agc">
+      <UniqueIdentifier>{be24ed35-02cf-412f-b289-0e1e8bf3046b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui_framework\imgui\platform_gnm">
+      <UniqueIdentifier>{dbfa883f-d191-4845-bed6-b8c87c05f427}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\helper\prospero">
+      <UniqueIdentifier>{dc3a8196-9d70-43b4-a2fa-743fab175e6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\helper\prospero">
+      <UniqueIdentifier>{9e8edbfd-c280-4066-bf79-316bb9265055}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics\platform_agc\fr_toolkit">
+      <UniqueIdentifier>{fc059711-d4db-49a7-96fe-3731c4204fee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\pack">
+      <UniqueIdentifier>{2832aa83-dbc1-4c04-96b2-80cc9f7d529e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics\pack">
+      <UniqueIdentifier>{0d1d782b-cd11-4b0c-94e0-1c1fab394c71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics\pack\ext">
+      <UniqueIdentifier>{89bca26b-445e-4a1b-9671-d9facc123557}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\pack\ext">
+      <UniqueIdentifier>{1a62b21f-ad0d-42e0-99f0-5f6444f3d0cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\platform_agc\Shaders">
+      <UniqueIdentifier>{a4f010f7-ee95-4878-948b-bf89a945fd27}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\sampleutil\graphics\context.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\debug\console.h">
+      <Filter>Header Files\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\debug\menu.h">
+      <Filter>Header Files\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\input\controller.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\input\motion.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="debug\debug_menu_internal.h">
+      <Filter>Source Files\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\thread\thread.h">
+      <Filter>Header Files\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\thread\job.h">
+      <Filter>Header Files\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\network\initialize.h">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\debug\api_capture.h">
+      <Filter>Header Files\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\ui_framework\ui_framework.h">
+      <Filter>Header Files\ui_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\input\keyboard.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\input\osk.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\audio\audio_out.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="audio\audio_internal.h">
+      <Filter>Source Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\helper\job_helpler.h">
+      <Filter>Header Files\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\shader_ags.h">
+      <Filter>Header Files\graphics\platform_agc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\graphics_memory.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\debug\perf.h">
+      <Filter>Header Files\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\render_target.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\render_target_agc.h">
+      <Filter>Header Files\graphics\platform_agc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\depth_render_target.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\depth_render_target_agc.h">
+      <Filter>Header Files\graphics\platform_agc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\surface_utility.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\surface_utility_agc.h">
+      <Filter>Header Files\graphics\platform_agc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\sprite_utility.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\sprite_utility_agc.h">
+      <Filter>Header Files\graphics\platform_agc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\mesh.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\ui_framework\imgui\platform_agc\imgui_impl_agc.h">
+      <Filter>Header Files\ui_framework\imgui\platform_agc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\texture_library.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\shader_common.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\vertex_define.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\shader_material_common.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\mesh_common.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\matrix4unaligned.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\matrix4x3unaligned.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\vector2unaligned.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\vector3unaligned.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\vector4unaligned.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\deserialize.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\memory\cpu_memory.h">
+      <Filter>Header Files\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_framework\imgui\sampleutil\shaders\imgui_srt_common.h">
+      <Filter>Source Files\ui_framework\imgui\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\memory\heap_allocator.h">
+      <Filter>Header Files\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\memory\ring_allocator.h">
+      <Filter>Header Files\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\audio\audio_player.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\memory\dmem_mapper.h">
+      <Filter>Header Files\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="audio\audio_paraser.h">
+      <Filter>Source Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="audio\audio_decoder.h">
+      <Filter>Source Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_gnm\depth_render_target_gnm.h">
+      <Filter>Header Files\graphics\platform_gnm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_gnm\render_target_gnm.h">
+      <Filter>Header Files\graphics\platform_gnm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_gnm\shader_gnm.h">
+      <Filter>Header Files\graphics\platform_gnm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_gnm\sprite_utility_gnm.h">
+      <Filter>Header Files\graphics\platform_gnm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_gnm\surface_utility_gnm.h">
+      <Filter>Header Files\graphics\platform_gnm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\compat.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\ui_framework\imgui\platform_gnm\imgui_impl_gnm.h">
+      <Filter>Header Files\ui_framework\imgui\platform_gnm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\sampleutil_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\sampleutil_error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\skeleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\material.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="debug\xml_internal.h">
+      <Filter>Source Files\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\hdr.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\ringbuffer_safe_srt_binding.h">
+      <Filter>Header Files\graphics\platform_agc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\memory\memory_analyzer.h">
+      <Filter>Header Files\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\platform_agc\link_libraries_agc.h">
+      <Filter>Header Files\graphics\platform_agc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\helper\prospero\async_asset_loader_prospero.h">
+      <Filter>Header Files\helper\prospero</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\helper\prospero\asset_pack_prospero.h">
+      <Filter>Header Files\helper\prospero</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\serialize.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\memory\allocator_base.h">
+      <Filter>Header Files\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\helper\memory_stream.h">
+      <Filter>Header Files\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\script.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\helper\imgui_helper.h">
+      <Filter>Header Files\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\input\vr_tracker.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\reprojection.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\pack\array.h">
+      <Filter>Header Files\graphics\pack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\pack\material_models.h">
+      <Filter>Header Files\graphics\pack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\pack\pack_file.h">
+      <Filter>Header Files\graphics\pack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\pack\ext\ext_edge_anim.h">
+      <Filter>Header Files\graphics\pack\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\pack_model.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\skeletal_animation.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\pack_model_common.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\pack\ext\ext_bvh.h">
+      <Filter>Header Files\graphics\pack\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\pack\agc_utils.h">
+      <Filter>Header Files\graphics\pack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\default_pack_model_shaders.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sampleutil\graphics\texture_load.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="skeleton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\console.cpp">
+      <Filter>Source Files\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\menu.cpp">
+      <Filter>Source Files\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="sampleutil_common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\debug_menu_item_group.cpp">
+      <Filter>Source Files\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="input\pad_common.cpp">
+      <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="system\orbis\user_orbis.cpp">
+      <Filter>Source Files\system\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="input\orbis\pad_orbis.cpp">
+      <Filter>Source Files\input\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_agc\context_agc.cpp">
+      <Filter>Source Files\graphics\platform_agc</Filter>
+    </ClCompile>
+    <ClCompile Include="input\prospero\pad_prospero.cpp">
+      <Filter>Source Files\input\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="system\prospero\user_prospero.cpp">
+      <Filter>Source Files\system\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="input\prospero\keyboard_prospero.cpp">
+      <Filter>Source Files\input\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="input\keyboard_common.cpp">
+      <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="input\orbis\keyboard_orbis.cpp">
+      <Filter>Source Files\input\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="input\orbis\osk_orbis.cpp">
+      <Filter>Source Files\input\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="input\prospero\osk_prospero.cpp">
+      <Filter>Source Files\input\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\api_capture.cpp">
+      <Filter>Source Files\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\job.cpp">
+      <Filter>Source Files\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\thread.cpp">
+      <Filter>Source Files\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\prospero\cond_prospero.cpp">
+      <Filter>Source Files\thread\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\prospero\mutex_prospero.cpp">
+      <Filter>Source Files\thread\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\prospero\semaphore_prospero.cpp">
+      <Filter>Source Files\thread\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\prospero\thread_prospero.cpp">
+      <Filter>Source Files\thread\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\orbis\cond_orbis.cpp">
+      <Filter>Source Files\thread\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\orbis\mutex_orbis.cpp">
+      <Filter>Source Files\thread\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\orbis\semaphore_orbis.cpp">
+      <Filter>Source Files\thread\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\orbis\thread_orbis.cpp">
+      <Filter>Source Files\thread\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\imgui.cpp">
+      <Filter>Source Files\ui_framework\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\imgui_draw.cpp">
+      <Filter>Source Files\ui_framework\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\ui_framework\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\prospero\imgui_libfont_prospero.cpp">
+      <Filter>Source Files\ui_framework\imgui\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="audio\audio.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="audio\prospero\audio_prospero.cpp">
+      <Filter>Source Files\audio\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="audio\orbis\audio_orbis.cpp">
+      <Filter>Source Files\audio\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\orbis\rwlock_orbis.cpp">
+      <Filter>Source Files\thread\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\prospero\rwlock_prospero.cpp">
+      <Filter>Source Files\thread\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\xml.cpp">
+      <Filter>Source Files\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_agc\surface_agc.cpp">
+      <Filter>Source Files\graphics\platform_agc</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_agc\surface_utility_agc.cpp">
+      <Filter>Source Files\graphics\platform_agc</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_agc\graphics_memory_agc.cpp">
+      <Filter>Source Files\graphics\platform_agc</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\graphics_memory.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\perf.cpp">
+      <Filter>Source Files\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\mesh.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_agc\sprite_utility_agc.cpp">
+      <Filter>Source Files\graphics\platform_agc</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\texture_library.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_framework\imgui\sampleutil\prospero\imgui_impl_agc.cpp">
+      <Filter>Source Files\ui_framework\imgui\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\memory.cpp">
+      <Filter>Source Files\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\heap_allocator.cpp">
+      <Filter>Source Files\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\ring_allocator.cpp">
+      <Filter>Source Files\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="audio\audio_player.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="audio\audio_paraser.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="audio\prospero\audio_decoder_prospero.cpp">
+      <Filter>Source Files\audio\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="audio\audio_decoder.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="helper\job_helper.cpp">
+      <Filter>Source Files\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_gnm\context_gnm.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_gnm\graphics_memory_gnm.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_gnm\surface_gnm.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_gnm\surface_utility_gnm.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SCE_ORBIS_SAMPLE_DIR)\sample_code\graphics\api_gnm\toolkit\dataformat_interpreter.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_gnm\shader_gnm.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_framework\imgui\sampleutil\orbis\imgui_impl_gnm.cpp">
+      <Filter>Source Files\ui_framework\imgui\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\orbis\imgui_libfont_orbis.cpp">
+      <Filter>Source Files\ui_framework\imgui\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_gnm\sprite_utility_gnm.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SCE_ORBIS_SAMPLE_DIR)\sample_code\graphics\api_gnm\toolkit\floating_point.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SCE_ORBIS_SAMPLE_DIR)\sample_code\graphics\api_gnm\toolkit\half.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="audio\orbis\audio_decoder_orbis.cpp">
+      <Filter>Source Files\audio\orbis</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\prospero\dmem_mapper_prospero.cpp">
+      <Filter>Source Files\memory\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\material.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\graphics.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_agc\sprite_utility_font_agc.cpp">
+      <Filter>Source Files\graphics\platform_agc</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_gnm\sprite_utility_font_gnm.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_agc\shader_ags.cpp">
+      <Filter>Source Files\graphics\platform_agc</Filter>
+    </ClCompile>
+    <ClCompile Include="helper\prospero\async_asset_loader_prospero.cpp">
+      <Filter>Source Files\helper\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="helper\prospero\asset_pack_prospero.cpp">
+      <Filter>Source Files\helper\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="script.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="helper\imgui_helper.cpp">
+      <Filter>Source Files\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="network\net_initialize.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="input\prospero\vr_tracker_prospero.cpp">
+      <Filter>Source Files\input\prospero</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_agc\reprojection_prospero.cpp">
+      <Filter>Source Files\graphics\platform_agc</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_framework\ui_framework.cpp">
+      <Filter>Source Files\ui_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pack\pack_file.cpp">
+      <Filter>Source Files\graphics\pack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pack\ext\ext_edge_anim.cpp">
+      <Filter>Source Files\graphics\pack\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pack\obj_serialization.cpp">
+      <Filter>Source Files\graphics\pack</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\pack_model.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_agc\pack_model_agc.cpp">
+      <Filter>Source Files\graphics\platform_agc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pack\agc_utils.cpp">
+      <Filter>Source Files\graphics\pack</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\skeletal_animation.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pack\ext\ext_bvh.cpp">
+      <Filter>Source Files\graphics\pack\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_gnm\pack_model_gnm.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_agc\default_pack_model_shaders_ags.cpp">
+      <Filter>Source Files\graphics\platform_agc</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_gnm\default_pack_model_shaders_gnm.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_agc\texture_load_agc.cpp">
+      <Filter>Source Files\graphics\platform_agc</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\platform_gnm\texture_load_gnm.cpp">
+      <Filter>Source Files\graphics\platform_gnm</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\texture_load.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <WavePsslc Include="ui_framework\imgui\sampleutil\shaders\sampleutil_imgui_p.pssl">
+      <Filter>Source Files\ui_framework\imgui\shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="ui_framework\imgui\sampleutil\shaders\sampleutil_imgui_vv.pssl">
+      <Filter>Source Files\ui_framework\imgui\shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear32_p.pssl">
+      <Filter>Source Files\graphics\platform_gnm\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear_p.pssl">
+      <Filter>Source Files\graphics\platform_gnm\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear_c.pssl">
+      <Filter>Source Files\graphics\platform_gnm\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear128_c.pssl">
+      <Filter>Source Files\graphics\platform_gnm\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear_dcc_c.pssl">
+      <Filter>Source Files\graphics\platform_gnm\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\clear_cmask_c.pssl">
+      <Filter>Source Files\graphics\platform_gnm\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\set_uint_fast_c.pssl">
+      <Filter>Source Files\graphics\platform_gnm\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_2d_vv.pssl">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_3d_fill_p.pssl">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_3d_vv.pssl">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_fill_p.pssl">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_texture_p.pssl">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_texture_ycbcr_p.pssl">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\shaders\sprite_utility_texture_yuy2_p.pssl">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_agc\default_pack_model_ps.pssl">
+      <Filter>Source Files\graphics\platform_agc\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_agc\default_pack_model_vs.pssl">
+      <Filter>Source Files\graphics\platform_agc\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\default_pack_model_diffuse_NU0_p.pssl">
+      <Filter>Source Files\graphics\platform_gnm\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\default_pack_model_NU0S_vv.pssl">
+      <Filter>Source Files\graphics\platform_gnm\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\default_pack_model_diffuse_NCTU0_p.pssl">
+      <Filter>Source Files\graphics\platform_gnm\Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="graphics\platform_gnm\default_pack_model_NCTU0S_vv.pssl">
+      <Filter>Source Files\graphics\platform_gnm\Shaders</Filter>
+    </WavePsslc>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="graphics\shaders\helper_functions.pssli">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </None>
+    <None Include="graphics\shaders\lighting.pssli">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WavePssli Include="graphics\shaders\pack_vertex.pssli">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </WavePssli>
+    <WavePssli Include="graphics\shaders\default_pack_model_ps.pssli">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </WavePssli>
+    <WavePssli Include="graphics\shaders\default_pack_model_vs.pssli">
+      <Filter>Source Files\graphics\Shaders</Filter>
+    </WavePssli>
+  </ItemGroup>
+</Project>

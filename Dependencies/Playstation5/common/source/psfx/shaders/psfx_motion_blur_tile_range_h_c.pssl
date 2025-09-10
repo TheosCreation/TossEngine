@@ -1,0 +1,75 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2021 Sony Interactive Entertainment Inc.
+* 
+*/
+
+#include "psfx_common.h"
+#include "psfx_motion_blur.h"
+
+// Disable "Derivatives are available only in pixel shaders, LOD0 will be always used", from
+// gather4h() - this is not a problem.
+#pragma warning(disable:7524)
+
+TileRangeHSrt* srt_data : S_SRT_DATA;
+
+static const SamplerState point_sampler = make_point_sampler();
+
+float4 gather4h(float2 uv, uint dmask)
+{
+   return asfloat(__image_gather4h(
+      float4(uv, 0, 0),
+      __get_tsharplo(srt_data->velocity),
+      __get_tsharphi(srt_data->velocity),
+      __get_ssharp(point_sampler),
+      __kImage_texture2d | dmask).data);
+}
+
+[CxxSymbol("psfx::motion_blur_tile_range_h")]
+[NUM_THREADS(k_tile_range_group_size, k_tile_range_group_size, 1)]
+void main(uint2 thread_id : S_DISPATCH_THREAD_ID)
+{
+   float min_length    = 1000.0f;
+   float2 min_velocity = float2(0.0f, 0.0f);
+
+   float max_length    = 0.0f;
+   float2 max_velocity = float2(0.0f, 0.0f);
+
+   // Each thread reads a row of pixels within a tile and takes the minimum and maximum (by
+   // magnitude).
+   //
+   // We use image_gather4h for this, which gathers 4 texels in a horizontal line centered
+   // on the sample position (hence the + 2 in the UV). This gives ~9% speedup for this pass
+   // compared to loading all 40 pixels in the row individually.
+   const uint2 pos   = uint2(thread_id.x * k_motion_blur_tile_size, thread_id.y);
+   float2 uv         = float2(pos.x + 2, pos.y) * srt_data->inv_source_size;
+   const float delta = 4 * srt_data->inv_source_size.x;
+
+   [unroll]
+   for (uint i = 0; i < k_motion_blur_tile_size; i += 4, uv.x += delta)
+   {
+      const float4 r = gather4h(uv, __kImage_dmask_r);
+      const float4 g = gather4h(uv, __kImage_dmask_g);
+
+      [unroll]
+      for (uint j = 0; j < 4; j++)
+      {
+         const float2 velocity_pix = float2(r[j], g[j]);
+         const float length_pix    = length(velocity_pix);
+
+         if (length_pix < min_length)
+         {
+            min_velocity = velocity_pix;
+            min_length   = length_pix;
+         }
+
+         if (length_pix > max_length)
+         {
+            max_velocity = velocity_pix;
+            max_length   = length_pix;
+         }
+      }
+   }
+
+   srt_data->tile_range_h[thread_id] = float4(min_velocity, max_velocity);
+}

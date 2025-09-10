@@ -1,0 +1,872 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\base_level">
+      <UniqueIdentifier>{e6898370-b84d-4500-b486-7ed7ac610587}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\base_level\broadphase">
+      <UniqueIdentifier>{bcac87b7-a73d-450e-aa58-e4d97c77778f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\base_level\collision">
+      <UniqueIdentifier>{93d421ad-6677-4e2a-b288-5e738894e9fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\base_level\base">
+      <UniqueIdentifier>{6fe3cf2f-e1f3-42ef-af9c-46bc28d22f5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\base_level\solver">
+      <UniqueIdentifier>{f270c481-623f-4cb7-82b5-1d813e34ab49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\base_level\sort">
+      <UniqueIdentifier>{9ac39dcf-9e98-418f-b6c4-a8a6191d289c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\base_level\rigidbody">
+      <UniqueIdentifier>{9d9a1eb4-3b10-42d5-a1a2-10e4aac91170}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\low_level">
+      <UniqueIdentifier>{41a87a14-0daa-4f8e-ae59-81d513181205}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\low_level\broadphase">
+      <UniqueIdentifier>{5b1dc535-ec52-458d-8ef7-d91eb0349fcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\low_level\collision">
+      <UniqueIdentifier>{d781c088-0189-4e48-8634-7a3e9bdedbc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\low_level\solver">
+      <UniqueIdentifier>{6de1dd53-9f45-4890-b756-0e3de7d90bcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\low_level\task">
+      <UniqueIdentifier>{9bd5d975-515e-4020-8a75-8289a60a28cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{f3674e9b-29f4-4c1d-be91-32fd627bd140}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\base_level">
+      <UniqueIdentifier>{db000215-de0c-49ed-9862-7ed349dd22a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\base_level\broadphase">
+      <UniqueIdentifier>{3544c708-68d6-4f52-9938-69ddfcd10f55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\base_level\collision">
+      <UniqueIdentifier>{bb8e4809-ad58-4680-b3e5-763f7d35a46d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\base_level\base">
+      <UniqueIdentifier>{ebfa6b18-b983-4f8e-8772-4710c3e7153b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\base_level\solver">
+      <UniqueIdentifier>{6c9e19b5-52e7-4913-b7ac-135b469a0193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\base_level\sort">
+      <UniqueIdentifier>{f42ee711-2bec-4696-b023-5bb79f157f77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\base_level\rigidbody">
+      <UniqueIdentifier>{c627b546-bc36-445b-b4b4-6aeb8268a6f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\low_level">
+      <UniqueIdentifier>{04c9e8de-01ba-4c5e-9123-5e15cca8c074}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\low_level\broadphase">
+      <UniqueIdentifier>{ecdf58e1-4137-450e-ba07-9121637d7893}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\low_level\collision">
+      <UniqueIdentifier>{1c57a6e3-5c92-48dc-9917-91ba9fe36677}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\low_level\solver">
+      <UniqueIdentifier>{5f14a971-d954-4783-a633-a9cecfad315b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\util">
+      <UniqueIdentifier>{d2623629-861d-4244-88dc-9790f3a36ca4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\low_level\rigidbody">
+      <UniqueIdentifier>{fe43a4b2-8f8a-418c-87b8-c3d339dd6005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\low_level\rigidbody">
+      <UniqueIdentifier>{078e3b57-2a2a-4f96-a018-7a1d0b02c68b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\base_level\particle">
+      <UniqueIdentifier>{563d63d8-2cc1-476e-92f4-8a7e0e17d61a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\base_level\particle">
+      <UniqueIdentifier>{c9e1b875-12f3-4311-a0a3-ffc995fb7987}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_common.h">
+      <Filter>Header Files\base_level\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_error_code.h">
+      <Filter>Header Files\base_level\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_large_position.h">
+      <Filter>Header Files\base_level\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_perf_counter.h">
+      <Filter>Header Files\base_level\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\broadphase\pfx_broadphase_pair.h">
+      <Filter>Header Files\base_level\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_aabb.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_box.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_capsule.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_collidable.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_collidable_implementation.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_cylinder.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_detect_collision_func.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_intersect_ray_func.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_large_tri_mesh.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_ray.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_shape.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_shape_implementation.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_sphere.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_sub_data.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\rigidbody\pfx_rigid_body.h">
+      <Filter>Header Files\base_level\rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\rigidbody\pfx_rigid_state.h">
+      <Filter>Header Files\base_level\rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_constraint_pair.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_constraint_row.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_contact_constraint.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_integrate.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_ball.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_constraint.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_fix.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_hinge.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_slider.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_swing_twist.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_universal.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\sort\pfx_sort.h">
+      <Filter>Header Files\base_level\sort</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\sort\pfx_sort_data.h">
+      <Filter>Header Files\base_level\sort</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\broadphase\pfx_broadphase.h">
+      <Filter>Header Files\low_level\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\broadphase\pfx_broadphase_proxy_container.h">
+      <Filter>Header Files\low_level\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_collision_detection.h">
+      <Filter>Header Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_contact_container.h">
+      <Filter>Header Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_ray_cast.h">
+      <Filter>Header Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\rigidbody\pfx_rigid_body_context.h">
+      <Filter>Header Files\low_level\rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\solver\pfx_constraint_solver.h">
+      <Filter>Header Files\low_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\util\pfx_debug_render.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\util\pfx_mass.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\util\pfx_mesh_creator.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\util\pfx_mesh_serializer.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\util\pfx_static_array.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\util\pfx_static_array_implementation.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\util\pfx_util_common.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\util\pfx_util_include.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\broadphase\pfx_check_collidable.h">
+      <Filter>Source Files\base_level\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_closest_large_tri_mesh.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_closest_tri_mesh_sphere.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_box_box.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_box_capsule.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_box_sphere.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_capsule_capsule.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_capsule_sphere.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_large_tri_mesh.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_sphere_sphere.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_tri_mesh_box.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_tri_mesh_capsule.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_tri_mesh_convex.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_tri_mesh_cylinder.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_contact_tri_mesh_sphere.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_decoded_tri_mesh.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_gjk_solver.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_gjk_support_func.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_common.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_box.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_capsule.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_convex.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_cylinder.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_large_tri_mesh.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_sphere.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_mesh_common.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_simplex_solver.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\solver\pfx_check_solver.h">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\solver\pfx_constraint_row_solver.h">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\broadphase\pfx_bounding_volume.h">
+      <Filter>Source Files\low_level\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\collision\pfx_contact_manager.h">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\pfx_binary_reader_writer.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_contact_manifold.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_simd_utils.h">
+      <Filter>Header Files\base_level\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_vec_int3.h">
+      <Filter>Header Files\base_level\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_contact_cache.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_convex_mesh.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_tri_mesh.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_convex_mesh_impl.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_large_tri_mesh_impl.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_constraint_func.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_simulation_island.h">
+      <Filter>Header Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\pfx_debug_render_impl.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\task\pfx_atomic.h">
+      <Filter>Source Files\low_level\task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\task\pfx_critical_section.h">
+      <Filter>Source Files\low_level\task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\pfx_mesh_internal.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\broadphase\pfx_proxy_container_callback.h">
+      <Filter>Source Files\low_level\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\pfx_oneway_allocator.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_intersect_moving_sphere_func.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_sphere_cast.h">
+      <Filter>Header Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_box.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_capsule.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_convex.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_cylinder.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_large_tri_mesh.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_sphere.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_motor.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_sphere_all_facets.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_ray_all_facets.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\pfx_hash_array.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\base\pfx_vectormath_include.h">
+      <Filter>Header Files\base_level\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_capsule_large_tri_mesh.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_capsule_all_facets.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\solver\pfx_pair_graph.h">
+      <Filter>Source Files\low_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_shoulder.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\solver\pfx_joint_distance.h">
+      <Filter>Header Files\base_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\rigidbody\pfx_compound_container_impl.h">
+      <Filter>Source Files\low_level\rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\rigidbody\pfx_compound_container.h">
+      <Filter>Header Files\low_level\rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_circle_all_facets.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_moving_circle_large_tri_mesh.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_circle.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_intersect_moving_capsule_func.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_intersect_moving_circle_func.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_circle_cast.h">
+      <Filter>Header Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_ellipse.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_line_segment.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\collision\pfx_rigid_body_cache_container.h">
+      <Filter>Header Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\collision\pfx_rigid_body_cache_manager.h">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_collision_templates.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\collision\pfx_core_sphere.h">
+      <Filter>Header Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\base_level\collision\pfx_intersect_all_cast_large_tri_mesh_obj_template.h">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\collision\pfx_bounding_volume_vector3.h">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\low_level\rigidbody\pfx_user_custom_function.h">
+      <Filter>Header Files\low_level\rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\broadphase\pfx_broadphase_stage.h">
+      <Filter>Source Files\low_level\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\broadphase\pfx_pair_container.h">
+      <Filter>Source Files\low_level\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\broadphase\pfx_progressive_bvh.h">
+      <Filter>Source Files\low_level\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\collision\pfx_contact_complex.h">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\collision\pfx_detect_collision_stage.h">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\rigidbody\pfx_context.h">
+      <Filter>Source Files\low_level\rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\rigidbody\pfx_simulation_stage.h">
+      <Filter>Source Files\low_level\rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\rigidbody\pfx_user_custom_stage.h">
+      <Filter>Source Files\low_level\rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\solver\pfx_gather_solver_pairs_stage.h">
+      <Filter>Source Files\low_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\solver\pfx_island_creation_stage.h">
+      <Filter>Source Files\low_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\solver\pfx_solve_constraints_stage.h">
+      <Filter>Source Files\low_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\solver\radix_sort.h">
+      <Filter>Source Files\low_level\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\low_level\task\pfx_job_system.h">
+      <Filter>Source Files\low_level\task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\util\pfx_world_serializer.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\pfx_world_binary_serializer.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\pfx_array.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\pfx_array_implementation.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\pfx_heap_manager.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\pfx_pool_array.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\pfx_pool_array_implementation.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\physics_effects\base_level\particle\pfx_particle_physics.h">
+      <Filter>Header Files\base_level\particle</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\base_level\base\pfx_global_context.cpp">
+      <Filter>Source Files\base_level\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\base\pfx_large_position.cpp">
+      <Filter>Source Files\base_level\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_closest_large_tri_mesh.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_closest_tri_mesh_sphere.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_collidable.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_box_box.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_box_capsule.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_box_sphere.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_cache.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_capsule_capsule.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_capsule_sphere.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_large_tri_mesh.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_manifold.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_sphere_sphere.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_tri_mesh_box.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_tri_mesh_capsule.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_tri_mesh_convex.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_tri_mesh_cylinder.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_contact_tri_mesh_sphere.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_detect_collision_func.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_gjk_solver.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_box.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_capsule.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_convex.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_cylinder.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_func.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_large_tri_mesh.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_sphere.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_shape.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_simplex_solver.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\rigidbody\pfx_rigid_state.cpp">
+      <Filter>Source Files\base_level\rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_contact_constraint.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_ball.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_fix.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_hinge.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_slider.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_swing_twist.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_universal.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\sort\pfx_sort.cpp">
+      <Filter>Source Files\base_level\sort</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\broadphase\pfx_broadphase.cpp">
+      <Filter>Source Files\low_level\broadphase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\broadphase\pfx_broadphase_proxy_container.cpp">
+      <Filter>Source Files\low_level\broadphase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\collision\pfx_collision_detection.cpp">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\collision\pfx_contact_container.cpp">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\collision\pfx_contact_manager.cpp">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\collision\pfx_ray_cast.cpp">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\solver\pfx_constraint_solver.cpp">
+      <Filter>Source Files\low_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\rigidbody\pfx_rigid_body_context.cpp">
+      <Filter>Source Files\low_level\rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\pfx_binary_reader_writer.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\pfx_mass.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\pfx_mesh_creator.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\pfx_mesh_serializer.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\pfx_util_common.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_large_tri_mesh.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_convex_mesh.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_constraint_func.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\pfx_debug_render.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\pfx_debug_render_impl.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_integrate.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\rigidbody\pfx_rigid_body.cpp">
+      <Filter>Source Files\base_level\rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\pfx_mesh_internal.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_common.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_box.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_capsule.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_convex.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_cylinder.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_func.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_large_tri_mesh.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_sphere.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\collision\pfx_sphere_cast.cpp">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_motor.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_sphere_all_facets.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_ray_all_facets.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_capsule_func.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_capsule_large_tri_mesh.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\collision\pfx_capsule_cast.cpp">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_capsule_all_facets.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\solver\pfx_pair_graph.cpp">
+      <Filter>Source Files\low_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_shoulder.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_joint_distance.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\rigidbody\pfx_compound_container.cpp">
+      <Filter>Source Files\low_level\rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_circle_all_facets.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_circle_func.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_intersect_moving_circle_large_tri_mesh.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\collision\pfx_circle_cast.cpp">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\collision\pfx_rigid_body_cache_manager.cpp">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\collision\pfx_rigid_body_cache_container.cpp">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\collision\pfx_core_sphere.cpp">
+      <Filter>Source Files\base_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\solver\pfx_joint.cpp">
+      <Filter>Source Files\base_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\broadphase\pfx_broadphase_stage.cpp">
+      <Filter>Source Files\low_level\broadphase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\broadphase\pfx_pair_container.cpp">
+      <Filter>Source Files\low_level\broadphase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\broadphase\pfx_progressive_bvh.cpp">
+      <Filter>Source Files\low_level\broadphase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\collision\pfx_detect_collision_stage.cpp">
+      <Filter>Source Files\low_level\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\rigidbody\pfx_context.cpp">
+      <Filter>Source Files\low_level\rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\rigidbody\pfx_user_custom_function.cpp">
+      <Filter>Source Files\low_level\rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\rigidbody\pfx_user_custom_stage.cpp">
+      <Filter>Source Files\low_level\rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\solver\pfx_gather_solver_pairs_stage.cpp">
+      <Filter>Source Files\low_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\solver\pfx_island_creation_stage.cpp">
+      <Filter>Source Files\low_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\solver\pfx_solve_constraints_stage.cpp">
+      <Filter>Source Files\low_level\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\low_level\task\pfx_job_system.cpp">
+      <Filter>Source Files\low_level\task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\pfx_world_binary_serializer.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\pfx_world_serializer.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base_level\particle\pfx_particle_physics.cpp">
+      <Filter>Source Files\base_level\particle</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

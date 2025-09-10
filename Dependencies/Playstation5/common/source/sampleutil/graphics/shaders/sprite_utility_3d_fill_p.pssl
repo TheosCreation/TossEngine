@@ -1,0 +1,53 @@
+﻿/* SIE CONFIDENTIAL
+ * PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+ * Copyright (C) 2022 Sony Interactive Entertainment Inc.
+ * 
+ */
+
+#include "helper_functions.pssli"
+
+struct RenderParameters
+{
+	float4	m_rgba;
+	int		m_hdr;
+	int		__padding__[3];
+	float3	m_lightPosition;
+	float	m_ambient;
+	float3	m_viewPosition;
+	float	m_shininess;
+};
+
+struct PS_IN
+{
+	float2	m_uv				: TEXCOORD;
+	float3 	m_positionInWorld	: WORLDPOS;
+	float3 	m_normalInWorld		: NORMAL;
+};
+
+#if defined ( __PROSPERO__ )
+[CxxSymbol("Shader::sprite_utility_3d_fill_p")]
+#endif
+float4	main(PS_IN input, RenderParameters srtData : S_SRT_DATA) : S_TARGET_OUTPUT
+{
+	const	float3	Nn			= normalize(input.m_normalInWorld);
+	const	float3	Ln			= normalize(srtData.m_lightPosition - input.m_positionInWorld);
+	const	float3	Vn			= normalize(srtData.m_viewPosition - input.m_positionInWorld);
+	const	float3	Hn			= normalize(Vn + Ln);
+
+	const	float	diffuseContribution		= max(0.f, dot(Ln, Nn));
+	const	float	specularContribution	= diffuseContribution * (dot(Hn, Nn) >= 0.f ? pow(dot(Hn, Nn), srtData.m_shininess) : 0.f);
+
+	float4	color = float4((diffuseContribution + srtData.m_ambient) * srtData.m_rgba.rgb + float3(specularContribution), srtData.m_rgba.a);
+
+	switch(srtData.m_hdr)
+	{
+	case 1: // kBT2020_PQ
+		return	PQ_OETF(float4(mul(BT709_TO_BT2020, color.rgb), color.a));
+	case 2: // kBT2020_Linear
+		return	float4(kSdrWhiteLevel * mul(BT709_TO_BT2020, color.rgb), color.a);
+	case 3: // kP3D65
+		return	BT1886_OETF(float4(mul(BT709_TO_DCIP3, color.rgb), color.a));
+	default: // kBT709
+		return	color;
+	}
+}

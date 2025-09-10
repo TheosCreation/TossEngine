@@ -13,10 +13,6 @@ Mail : theo.morris@mds.ac.nz
 #include "GraphicsEngine.h"
 #include <ImGuizmo.h>
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-#include <glew.h>
-#include <glfw3.h>
 #include "VertexArrayObject.h"
 #include "Shader.h"
 #include "Texture2D.h"
@@ -24,6 +20,14 @@ Mail : theo.morris@mds.ac.nz
 #include "TextureCubeMap.h"
 #include "ProjectSettings.h"
 #include "TossPlayerSettings.h"
+
+#ifdef __PROSPERO__
+#else
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include <glew.h>
+#include <glfw3.h>
+#endif
 
 void GraphicsEngine::Init(ProjectSettingsPtr& projectSettings)
 {
@@ -91,8 +95,11 @@ void GraphicsEngine::clear(const glm::vec4& color, bool clearDepth, bool clearSt
 
 void GraphicsEngine::createImGuiFrame()
 {
+#ifdef __PROSPERO__
+#else
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();
+#endif
     ImGui::NewFrame();
 }
 
@@ -106,7 +113,10 @@ ImGuiContext* GraphicsEngine::getImGuiContext()
 void GraphicsEngine::renderImGuiFrame()
 {
     ImGui::Render();
+#ifdef __PROSPERO__
+#else
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
 }
 
 void GraphicsEngine::setFaceCulling(const CullType& type)

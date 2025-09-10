@@ -16,8 +16,6 @@ Mail : theo.morris@mds.ac.nz
 #include "Utils.h"
 #include "Resizable.h"
 
-struct GLFWwindow;
-
 /**
  * @class Window
  * @brief Wraps a GLFWwindow instance. Handles window size, vsync, context control, and resize notifications.
@@ -49,7 +47,7 @@ public:
      * @brief Gets the underlying GLFWwindow pointer.
      * @return Pointer to the GLFWwindow.
      */
-    GLFWwindow* getWindow() const;
+    void* getNativeHandle() const;
 
     /**
      * @brief Sets the window title.
@@ -103,7 +101,7 @@ public:
     bool shouldClose() const;
 
 private:
-    GLFWwindow* m_windowPtr = nullptr;       //!< Pointer to the GLFWwindow.
+    void* m_nativeHandle = nullptr;       //!< Pointer to the window.
     bool vsync = false;                      //!< Whether VSync is currently enabled.
     Resizable* m_resizableOwner = nullptr;   //!< Object to notify on resize/maximize.
     std::string m_windowName;                //!< Window title.

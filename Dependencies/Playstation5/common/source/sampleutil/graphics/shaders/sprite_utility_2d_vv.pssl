@@ -1,0 +1,33 @@
+﻿/* SIE CONFIDENTIAL
+PlayStation(R)5 Programmer Tool Runtime Library Release 11.00.00.40-00.00.00.0.1
+* Copyright (C) 2019 Sony Interactive Entertainment Inc.
+* 
+*/
+#include "sampleutil/graphics/vertex_define.h"
+
+using namespace sce::SampleUtil::Graphics;
+
+struct SrtData
+{
+	RegularBuffer<Vertex>	m_vertices;
+	float2					m_scale;
+	float2					m_offset;
+	float					m_depth;
+};
+
+struct VS_OUT
+{
+	float4	m_position			: S_POSITION;
+	float2	m_uv				: TEXCOORD0;
+};
+
+#if defined ( __PROSPERO__ )
+[CxxSymbol("Shader::sprite_utility_2d_vv")]
+#endif
+VS_OUT	main(uint	vertexId : S_VERTEX_ID, SrtData	srtData	: S_SRT_DATA)
+{
+	VS_OUT output =	0;
+	output.m_position	= float4(srtData.m_vertices[vertexId].m_position.xy * srtData.m_scale + srtData.m_offset, srtData.m_depth, 1.f);
+	output.m_uv			= srtData.m_vertices[vertexId].m_uv;
+	return output;
+}
