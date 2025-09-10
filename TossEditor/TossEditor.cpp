@@ -1,20 +1,10 @@
 #include "TossEditor.h"
-#include "Window.h"
+#include "TossEngine.h"
 #include "ProjectSettings.h"
 #include "TossPlayerSettings.h"
-#include "GraphicsEngine.h"
 #include "EditorPlayer.h"
-#include "ISelectable.h"
-#include "FileWatcher.h"
-#include "Camera.h"
 #include "EditorPickProxy.h"
 #include "AssetBrowser.h"
-#include <imgui.h>
-#include <glfw3.h>
-
-#include "TossEngine.h"
-
-#include "imgui_internal.h"
 
 TossEditor::TossEditor()
 {
@@ -471,7 +461,7 @@ void TossEditor::onRenderInternal()
                     m_player->getCamera()->getProjectionMatrix(projectionMat);
 
 
-                    ImGuizmo::Manipulate(glm::value_ptr(cameraView.value), glm::value_ptr(projectionMat.value), m_currentManipulateOperation, ImGuizmo::WORLD, glm::value_ptr(transformMat.value));
+                    ImGuizmo::Manipulate(cameraView.Data(), projectionMat.Data(), m_currentManipulateOperation, ImGuizmo::WORLD, transformMat.Data());
 
                     if (ImGuizmo::IsUsing())
                     {

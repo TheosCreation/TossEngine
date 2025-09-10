@@ -48,6 +48,18 @@ Mail : theo.morris@mds.ac.nz
 #include "Time.h"
 #include "imgui.h"
 #include "imgui_stdlib.h"
+#include "imgui_internal.h"
+
+#if defined(_WIN32)
+#include <glew.h>
+#include <glfw3.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
+#elif defined(__PROSPERO__)
+// TODO: includes
+#endif
+
 
 namespace fs = std::filesystem;
 
