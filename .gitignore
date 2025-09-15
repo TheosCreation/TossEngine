@@ -4,7 +4,6 @@ TossEditor/C++Scripts/C++Scripts/x64
 TossEditor/x64
 TossEngine/x64
 TossPlayer/x64
-vcpkg_installed/x64-windows
 TossPlayer/C++Scripts.dll
 TossPlayer/TossEngine.dll
 TossPlayer/TossEngine.exp
