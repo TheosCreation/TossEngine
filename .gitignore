@@ -44,3 +44,4 @@ TossEngine/TossEngine.lib
 *.o
 *.lastbuildstate
 *.tlog
+vcpkg_installed
