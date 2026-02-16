@@ -406,14 +406,19 @@ void Collider::CallOnTriggerExitCallbacks(Collider* otherCollider) const
     m_owner->CallOnTriggerExitCallbacks(otherCollider);
 }
 
-void Collider::CallOnCollisionEnterCallbacks(Collider* otherCollider) const
+void Collider::CallOnCollisionEnterCallbacks(Collision& collision) const
 {
-    m_owner->CallOnCollisionEnterCallbacks(otherCollider);
+    m_owner->CallOnCollisionEnterCallbacks(collision);
 }
 
-void Collider::CallOnCollisionExitCallbacks(Collider* otherCollider) const
+void Collider::CallOnCollisionStayCallbacks(Collision& collision) const
 {
-    m_owner->CallOnCollisionExitCallbacks(otherCollider);
+    m_owner->CallOnCollisionStayCallbacks(collision);
+}
+
+void Collider::CallOnCollisionExitCallbacks(Collision& collision) const
+{
+    m_owner->CallOnCollisionExitCallbacks(collision);
 }
 
 void Collider::OnTransformScaleChanged()

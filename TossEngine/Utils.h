@@ -271,8 +271,8 @@ struct SoundDesc
 
 struct UniformBinding {
     std::string name;  // Name of the uniform
-    GLenum type;       // GL type (e.g. GL_FLOAT_VEC3, GL_INT, etc.)
-    GLint size;
+    uint type;       // GL type (e.g. GL_FLOAT_VEC3, GL_INT, etc.)
+    int size;
 };
 
 struct MaterialDesc

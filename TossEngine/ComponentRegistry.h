@@ -34,6 +34,8 @@ public:
     {
         static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
 
+        std::scoped_lock<std::mutex> lock(m_registryMutex);
+
         std::string typeName = getClassName(typeid(T));
         std::type_index currentType = std::type_index(typeid(T));
 
@@ -101,6 +103,8 @@ private:
     // For being able to unload
     std::unordered_map<std::string, void*> m_componentModules;
 
+    // For component registration
+    std::mutex m_registryMutex;
 
     /**
      * @brief Constructor for the ComponentRegistry class.

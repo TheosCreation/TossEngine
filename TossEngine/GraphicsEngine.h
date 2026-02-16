@@ -81,7 +81,7 @@ public:
 
     // --- Shader + Texture Binding ---
 
-    void setShader(const ShaderPtr& program);
+    void setShader(const ShaderPtr& _shader);
     void setVertexArrayObject(const VertexArrayObjectPtr& vao);
     void setVertexArrayObject(uint vaoId);
 
@@ -104,10 +104,13 @@ private:
 
     bool isInitilized = false;
 
-    GLenum m_depthType = GL_LESS; // Default value
+    DepthType m_depthType = DepthType::Less; // Default value
+    GLenum m_depthFunc = GL_LESS; // OpenGL specific 
+
+    CullType m_cullType = CullType::BackFace; // Default value
     bool m_depthTestingEnabled = true; // Default value
     bool m_depthMaskEnabled = true; // Default value
 
-    ShaderPtr currentShader = nullptr;
+    ShaderPtr m_currentActiveShader = nullptr;
     RenderingPath m_renderingPath;
 };

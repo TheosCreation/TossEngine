@@ -95,6 +95,14 @@ void Physics::CleanUp()
         m_commonSettings.destroyPhysicsWorld(m_prefabWorld);
         m_prefabWorld = nullptr;
     }
+    if (m_editorWorld)
+    {
+        m_commonSettings.destroyPhysicsWorld(m_editorWorld);
+        m_editorWorld = nullptr;
+    }
+
+    m_shapesToDestroy.clear();
+    m_raycastDebugEntries.clear();
 }
 
 PhysicsMaterialPtr Physics::GetDefaultPhysicsMaterial()
@@ -373,6 +381,9 @@ RaycastHit Physics::EditorRaycast(const Vector3& origin, const Vector3& directio
 
 void Physics::LoadWorld()
 {
+    m_shapesToDestroy.clear();
+    m_raycastDebugEntries.clear();
+
     PhysicsMaterialDesc physicsMaterialDesc; //full defaults set in the code atm
     m_defaultPhysicsMaterial = std::make_shared<PhysicsMaterial>(physicsMaterialDesc, "DefaultPhysicsMaterial", nullptr);
 
@@ -401,6 +412,9 @@ void Physics::LoadWorld()
 
 void Physics::UnLoadWorld()
 {
+    m_shapesToDestroy.clear();
+    m_raycastDebugEntries.clear();
+
     if (m_world)
     {
         m_commonSettings.destroyPhysicsWorld(m_world);
@@ -442,6 +456,8 @@ void Physics::UnLoadPrefabWorld()
 
 void Physics::LoadEditorWorld()
 {
+    m_shapesToDestroy.clear();
+
     rp3d::PhysicsWorld::WorldSettings settings;
     settings.worldName = "EditorPhysicsWorld";
     settings.gravity = static_cast<rp3d::Vector3>(m_gravity);
@@ -463,6 +479,7 @@ void Physics::LoadEditorWorld()
 
 void Physics::UnLoadEditorWorld()
 {
+    m_shapesToDestroy.clear();
     if (m_editorWorld)
     {
         m_commonSettings.destroyPhysicsWorld(m_editorWorld);
@@ -477,41 +494,94 @@ void Physics::DestroyShape(rp3d::CollisionShape* shape)
 
 void Physics::HandleContact(const rp3d::CollisionCallback::CallbackData& data)
 {
-    int nbContactPairs = data.getNbContactPairs();
-    if (nbContactPairs == 0) {
+    const int contactPairCount = static_cast<int>(data.getNbContactPairs());
+    if (contactPairCount == 0) {
         return;
     }
 
-    // Process each contact pair.
-    for (int i = 0; i < nbContactPairs; i++) {
-        const rp3d::CollisionCallback::ContactPair& contactPair = data.getContactPair(i);
-        int nbContactPoints = contactPair.getNbContactPoints();
+    for (int pairIndex = 0; pairIndex < contactPairCount; pairIndex++) {
 
-        // If no contact points, skip processing this pair.
-        if (nbContactPoints == 0) {
-            continue;
-        }
+        const rp3d::CollisionCallback::ContactPair& contactPair = data.getContactPair(pairIndex);
+        const rp3d::CollisionCallback::ContactPair::EventType eventType = contactPair.getEventType();
 
-        auto eventType = contactPair.getEventType();
-
-        // Retrieve the colliders.
         rp3d::Collider* collider1 = contactPair.getCollider1();
         rp3d::Collider* collider2 = contactPair.getCollider2();
 
-        if (collider1 && collider2) {
+        if (collider1 == nullptr) {
+            continue;
+        }
+        if (collider2 == nullptr) {
+            continue;
+        }
 
-            Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
-            Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
+        Collider* customCollider1 = static_cast<Collider*>(collider1->getUserData());
+        Collider* customCollider2 = static_cast<Collider*>(collider2->getUserData());
 
-            //for now all we are passing through is the other collider, we need to pass through the contact pair but reconstruct it
-            if (eventType == rp3d::EventListener::ContactPair::EventType::ContactStart) {
-                customCollider1->CallOnCollisionEnterCallbacks(customCollider2);
-                customCollider2->CallOnCollisionEnterCallbacks(customCollider1);
+        if (customCollider1 == nullptr) {
+            continue;
+        }
+        if (customCollider2 == nullptr) {
+            continue;
+        }
+
+        if (eventType == rp3d::CollisionCallback::ContactPair::EventType::ContactExit) {
+            Collision exitForBody1;
+            exitForBody1.contactPoint = Vector3(0.0f, 0.0f, 0.0f);
+            exitForBody1.contactNormal = Vector3(0.0f, 0.0f, 0.0f);
+            exitForBody1.otherCollider = customCollider2;
+            customCollider1->CallOnCollisionExitCallbacks(exitForBody1);
+
+            Collision exitForBody2;
+            exitForBody2.contactPoint = Vector3(0.0f, 0.0f, 0.0f);
+            exitForBody2.contactNormal = Vector3(0.0f, 0.0f, 0.0f);
+            exitForBody2.otherCollider = customCollider1;
+            customCollider2->CallOnCollisionExitCallbacks(exitForBody2);
+
+            continue;
+        }
+
+        const int contactPointCount = static_cast<int>(contactPair.getNbContactPoints());
+        if (contactPointCount == 0) {
+            continue;
+        }
+
+        const rp3d::Transform xform1 = collider1->getLocalToWorldTransform();
+        const rp3d::Transform xform2 = collider2->getLocalToWorldTransform();
+
+        for (int cpIndex = 0; cpIndex < contactPointCount; cpIndex++) {
+
+            const rp3d::CollisionCallback::ContactPoint cp = contactPair.getContactPoint(cpIndex);
+
+            const rp3d::Vector3 normalWorldRP3D = cp.getWorldNormal();  // Direction defined by RP3D
+            const Vector3 normalTowardBody1 = Vector3(normalWorldRP3D);
+            const Vector3 normalTowardBody2 = Vector3(-normalTowardBody1.x, -normalTowardBody1.y, -normalTowardBody1.z);
+
+            const rp3d::Vector3 localOn1 = cp.getLocalPointOnCollider1();
+            const rp3d::Vector3 localOn2 = cp.getLocalPointOnCollider2();
+
+            const rp3d::Vector3 worldOn1RP3D = xform1 * localOn1;
+            const rp3d::Vector3 worldOn2RP3D = xform2 * localOn2;
+
+            const Vector3 worldOn1 = Vector3(worldOn1RP3D);
+            const Vector3 worldOn2 = Vector3(worldOn2RP3D);
+
+            Collision enterForBody1;
+            enterForBody1.contactPoint = worldOn1;
+            enterForBody1.contactNormal = normalTowardBody1; // Normal points toward body1 per RP3D docs
+            enterForBody1.otherCollider = customCollider2;
+
+            Collision enterForBody2;
+            enterForBody2.contactPoint = worldOn2;
+            enterForBody2.contactNormal = normalTowardBody2;
+            enterForBody2.otherCollider = customCollider1;
+
+            if (eventType == rp3d::CollisionCallback::ContactPair::EventType::ContactStart) {
+                customCollider1->CallOnCollisionEnterCallbacks(enterForBody1);
+                customCollider2->CallOnCollisionEnterCallbacks(enterForBody2);
             }
-            else if (eventType == rp3d::EventListener::ContactPair::EventType::ContactExit) {
-
-                customCollider1->CallOnCollisionExitCallbacks(customCollider2);
-                customCollider2->CallOnCollisionExitCallbacks(customCollider1);
+            else {
+                customCollider1->CallOnCollisionStayCallbacks(enterForBody1);
+                customCollider2->CallOnCollisionStayCallbacks(enterForBody2);
             }
         }
     }

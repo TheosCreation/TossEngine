@@ -79,8 +79,8 @@ Rect Button::getScreenRect() const
     Rect worldRect = m_graphic->getWorldRect();
 
     Rect screenRect;
-    screenRect.left = viewportPosition.x + worldRect.left;
-    screenRect.top = viewportPosition.y - worldRect.top;
+    screenRect.left = static_cast<int>(viewportPosition.x + static_cast<float>(worldRect.left));
+    screenRect.top = static_cast<int>(viewportPosition.y - static_cast<float>(worldRect.top));
 
     screenRect.width = worldRect.width;
     screenRect.height = worldRect.height;

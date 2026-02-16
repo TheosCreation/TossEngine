@@ -18,6 +18,8 @@ Mail : theo.morris@mds.ac.nz
 #include "Window.h"
 #include <map>
 
+struct GLFWwindow;
+
 /**
  * @class InputManager
  * @brief Singleton class that manages real-time user input, including keyboard, mouse, and cursor control.

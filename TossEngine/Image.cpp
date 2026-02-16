@@ -190,7 +190,7 @@ void Image::Render(UniformData data, RenderingPath renderPath)
 	}
 
     shader->setVec3("color", m_color);
-    shader->setFloat("Time", TossEngine::GetTime());
+    shader->setFloat("Time", Time::CurrentTime);
     
     // Prepare the graphics engine for rendering
     graphicsEngine.setFaceCulling(CullType::None); // Disable face culling
