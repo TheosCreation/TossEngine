@@ -1,0 +1,496 @@
+﻿  Installing vcpkg dependencies to C:\Users\Theo\TossEngine\vcpkg_installed\x86-windows\
+  "C:\DEV\vcpkg\vcpkg.exe" install  --x-wait-for-lock --triplet "x86-windows" --vcpkg-root "C:\DEV\vcpkg\\" "--x-manifest-root=C:\Users\Theo\TossEngine\\" "--x-install-root=C:\Users\Theo\TossEngine\vcpkg_installed\x86-windows\\" 
+  Detecting compiler hash for triplet x64-windows...
+  Compiler found: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe
+  Detecting compiler hash for triplet x86-windows...
+  Compiler found: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x86/cl.exe
+  The following packages will be built and installed:
+    * boost-algorithm:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-algorithm\5fbb87958d9c33b5d6f53e63448f888655440619
+    * boost-align:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-align\e68b618a2cd8faa62bdb7512b8fb9026f66bccab
+    * boost-array:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-array\f274e18afc3061867f5b6e0a2432bcb172523aa6
+    * boost-assert:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-assert\82ba984fd01dc6d68d95f53429b831d9374c91be
+    * boost-atomic:x86-windows@1.87.0#1 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-atomic\604e592bcd79c781d31b61016047c9902a8f6856
+    * boost-bind:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-bind\df485ff721084787adfea9d99a3ed7f8019b8bd8
+    * boost-chrono:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-chrono\2f7531fb96d8f2e23d73aabefa1c8c092590996a
+    * boost-cmake:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-cmake\505ce95a9945e5733f94e90fc683c13b6f6b7457
+    * boost-concept-check:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-concept-check\0a3ddd0539fd3000331ac43db3fd6c11d3338ff8
+    * boost-config:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-config\2836a1f20087838a8254b7d6a4f91a59fe4fb53b
+    * boost-container:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-container\9ce8e6d6ddea731693f35c1f3d7f5a77b3826fbb
+    * boost-container-hash:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-container-hash\26e7cbd4b49c70c51a0a8a99c6e97f894e238f44
+    * boost-conversion:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-conversion\bb7a19c1745907812b385e1e6a6a31705409e78d
+    * boost-core:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-core\71a0f4b6ce5bad6dbe12494d93d803e5aee03dca
+    * boost-date-time:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-date-time\3c39184e47fc3b98f24db45892240eefc4c6a03f
+    * boost-describe:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-describe\12c35f33197b818aefc22b3c5c7ddd11fa0ca18d
+    * boost-detail:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-detail\177e493478ca855538e2ba2d74db157168a0a92d
+    * boost-endian:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-endian\7f833dd70809fe39992a281c727df7272ddd2fcb
+    * boost-exception:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-exception\e98b1b931df90dd5d25c28910815e9b17b83a2bf
+      boost-filesystem:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-filesystem\fd212350c540f3df5b7f00ece6653000643fc2ef
+    * boost-function:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-function\d5e6a6034a45067c02e51b4ee6808e48e8e51d2b
+    * boost-function-types:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-function-types\3cb3d8dbaaf5d4a17dc611f0a97ea399413e336a
+    * boost-functional:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-functional\c79b9680e38dd27a0979e2b636cf87f616b06215
+    * boost-fusion:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-fusion\36b8a6066c35c7a98bc09e109300014c3aa441a1
+    * boost-headers:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-headers\9fd041af7c0fe69b8048faf83ef3ee22eae4c1d5
+    * boost-integer:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-integer\85daf4d9f0176a39d09b9fd521edd223ecb098c2
+    * boost-intrusive:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-intrusive\543b1bdd8a5e50c2970fca90fa0742f22aa3187c
+    * boost-io:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-io\64fbc4e1f42d61e37d5e152012e3c7b3ef7e359d
+    * boost-iterator:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-iterator\5dc5136e9ababa4323919a8801c4bbd9fbb74122
+      boost-json:x86-windows@1.87.0#1 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-json\4d2314c91c86fc0e49669d8872030af877de65c5
+    * boost-lexical-cast:x86-windows@1.87.0#1 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-lexical-cast\6bd8ac437eb3b4a61ce0c8b0c3397c16d1cc1ee1
+    * boost-move:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-move\89ae8c8befe60f613693a29571a88c1e27db474e
+    * boost-mp11:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-mp11\bc1b2e78d6867f2aed28c4e7362b60d0149308f9
+    * boost-mpl:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-mpl\bc39d9de88b525e7f4fb5f1e9da5cc5acdee7aab
+    * boost-numeric-conversion:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-numeric-conversion\383b718f507081bc65d72ba2aee6932eed881e45
+    * boost-optional:x86-windows@1.87.0#1 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-optional\fe57251855d60463135bebf003e322373662baa4
+    * boost-phoenix:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-phoenix\45437083ef6e8d174ad9d49a056e56e5e3bdea23
+    * boost-pool:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-pool\2d1d41a831cc0d2fe7cd4431421f68a79ceaa1c1
+    * boost-predef:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-predef\b03d87958b87d7b6a214a2b92327db0b780e2ed3
+    * boost-preprocessor:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-preprocessor\e3380f553a2a9a50aa95639dcb703e13d226ce24
+    * boost-proto:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-proto\bfbdb650b3e8211eb952c209c25626574994ade2
+    * boost-range:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-range\9eec0027313670a26d9b3770252f223839f4caaa
+    * boost-ratio:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-ratio\db4e9073d21826b2dbc6128cf771d903a5b05634
+    * boost-regex:x86-windows@1.87.0#1 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-regex\0016517b443abba2253c0418a5d90fb69507c62f
+    * boost-scope:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-scope\a5abaf0bfd2bfbb385a5e0f28aa34d8563c9c404
+      boost-serialization:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-serialization\248b80e5738694649bc5794ef2fe96615a010339
+    * boost-smart-ptr:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-smart-ptr\5e6365ae738cb18fbe9208f05b442153429dc665
+    * boost-spirit:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-spirit\69bc4b2d4e89d40766823ba565d52467cb1b25d9
+    * boost-static-assert:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-static-assert\4a3601304b3bea0ecd0fbab68a65b1d874467f13
+    * boost-system:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-system\da37abf239e674e07a7e5a4ed30b19ab119d5800
+    * boost-thread:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-thread\51c3cab52d139b4efa73d40c05b98a310a16821c
+    * boost-throw-exception:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-throw-exception\4a56dd17aa1fb1a18f50d189593938893ec24386
+    * boost-tokenizer:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-tokenizer\30bfa8585c66192e1e6eddc5917df7ac3702a488
+    * boost-tuple:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-tuple\742499dcbd56ae28d11af26b2c563cc598732d83
+    * boost-type-index:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-type-index\3257ddc01fe4336f808951f5623ef8130319c82a
+    * boost-type-traits:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-type-traits\9d7ba43b84a0b63ead5148418f9557441060d248
+    * boost-typeof:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-typeof\c4ade6c1f9a40bdcbe45500476fe36fe79d14dc8
+    * boost-uninstall:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-uninstall\59deb8f474b417f62e4dea071edc08cfa61048f1
+    * boost-unordered:x86-windows@1.87.0#1 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-unordered\6409ee49a623fa9b3f4cc6b1e6cec7c29dc29d54
+    * boost-utility:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-utility\0c22f845af30943a807b8bf749b4f88ee472a958
+    * boost-variant:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-variant\0c1f7be40e58f90d88ce60f3a61221d11cf5f791
+    * boost-variant2:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-variant2\b4287c93efea644fe67c2304befa231cbc59025c
+    * boost-winapi:x86-windows@1.87.0 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-winapi\9c479ba00f4e2401e518595446748e4394cd9568
+      nlohmann-json:x86-windows@3.11.3#1 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\nlohmann-json\324d32ddba70bc49650d1a067ddcf3d0bfc6c9b6
+    * vcpkg-boost:x64-windows@2024-05-15 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\vcpkg-boost\aca8ab6ec76d120c4482a629de23cad5ad7e4643
+    * vcpkg-cmake:x64-windows@2024-04-23 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\vcpkg-cmake\e74aa1e8f93278a8e71372f1fa08c3df420eb840
+    * vcpkg-cmake-config:x64-windows@2024-05-23 -- C:\DEV\vcpkg\buildtrees\versioning_\versions\vcpkg-cmake-config\97a63e4bc1a17422ffe4eff71da53b4b561a7841
+  Additional packages (*) will be modified to complete this operation.
+  Restored 3 package(s) from C:\Users\Theo\AppData\Local\vcpkg\archives in 37.1 ms. Use --debug to see more details.
+  Installing 1/67 vcpkg-cmake-config:x64-windows@2024-05-23...
+  Elapsed time to handle vcpkg-cmake-config:x64-windows: 3.42 ms
+  vcpkg-cmake-config:x64-windows package ABI: 6455c48be710f7e925e5c955ddc995495fcd055b482e38b3bfcf202bf7f76c80
+  Installing 2/67 vcpkg-cmake:x64-windows@2024-04-23...
+  Elapsed time to handle vcpkg-cmake:x64-windows: 9.44 ms
+  vcpkg-cmake:x64-windows package ABI: f1326f4f62a3b258da1b1b8ed542358e5085024e16a67d424474d3c26a9bf8d7
+  Installing 3/67 vcpkg-boost:x64-windows@2024-05-15...
+  Elapsed time to handle vcpkg-boost:x64-windows: 9.86 ms
+  vcpkg-boost:x64-windows package ABI: b53322ca5abdf68a71c41bd293651c9b851a3ffaafb827ba2df957e3a0021ae3
+  Installing 4/67 boost-uninstall:x86-windows@1.87.0...
+  Building boost-uninstall:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-uninstall\59deb8f474b417f62e4dea071edc08cfa61048f1: info: installing overlay port from here
+  -- 
+  Please use the following command when you need to remove all boost ports/components:
+      "./vcpkg remove boost-uninstall:x86-windows --recurse"
+  
+  -- Skipping post-build validation due to VCPKG_POLICY_EMPTY_PACKAGE
+  Starting submission of boost-uninstall:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-uninstall:x86-windows: 74.2 ms
+  boost-uninstall:x86-windows package ABI: a814c01367eae7cdfda6fb6b491deb322dfc952a9faffd23b36b69e08b5811bb
+  Installing 5/67 boost-cmake:x86-windows@1.87.0...
+  Building boost-cmake:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-cmake\505ce95a9945e5733f94e90fc683c13b6f6b7457: info: installing overlay port from here
+  -- Using cached boostorg-boost-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-cmake/src/ost-1.87.0-e7ace312a5.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-boost-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-cmake/src/ost-1.87.0-e7ace312a5.clean
+  -- Using cached boostorg-cmake-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-cmake/src/ost-1.87.0-c89d1e33d6.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-cmake-boost-1.87.0.tar.gz
+  -- Applying patch vcpkg-build.diff
+  -- Applying patch fix-mpi.diff
+  -- Applying patch no-prefix.diff
+  -- Applying patch no-config-suffix.diff
+  -- Applying patch no-honor-static.diff
+  -- Applying patch add-optional-deps.diff
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-cmake/src/ost-1.87.0-c89d1e33d6.clean
+  -- Installing: C:/DEV/vcpkg/packages/boost-cmake_x86-windows/share/boost-cmake/usage
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-dbg
+  -- Building x86-windows-rel
+  -- Up-to-date: C:/DEV/vcpkg/packages/boost-cmake_x86-windows/share/boost/cmake-build
+  -- Installing: C:/DEV/vcpkg/packages/boost-cmake_x86-windows/share/boost/cmake-build/BoostFetch.cmake
+  -- Installing: C:/DEV/vcpkg/packages/boost-cmake_x86-windows/share/boost/cmake-build/BoostInstall.cmake
+  -- Installing: C:/DEV/vcpkg/packages/boost-cmake_x86-windows/share/boost/cmake-build/BoostMessage.cmake
+  -- Installing: C:/DEV/vcpkg/packages/boost-cmake_x86-windows/share/boost/cmake-build/BoostRoot.cmake
+  -- Installing: C:/DEV/vcpkg/packages/boost-cmake_x86-windows/share/boost/cmake-build/BoostTest.cmake
+  -- Installing: C:/DEV/vcpkg/packages/boost-cmake_x86-windows/share/boost/cmake-build/BoostTestJamfile.cmake
+  -- Installing: C:/DEV/vcpkg/packages/boost-cmake_x86-windows/share/boost-cmake/vcpkg-port-config.cmake
+  -- Installing: C:/DEV/vcpkg/packages/boost-cmake_x86-windows/share/boost-cmake/copyright
+  -- Performing post-build validation
+  Starting submission of boost-cmake:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-cmake:x86-windows: 1.4 s
+  boost-cmake:x86-windows package ABI: 364dac81642fb56425662d0dba1a4d18f957f33ee05751b01fd4d2c8de7abb3d
+  Completed submission of boost-uninstall:x86-windows@1.87.0 to 1 binary cache(s) in 31.4 ms
+  Installing 6/67 boost-headers:x86-windows@1.87.0...
+  Building boost-headers:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-headers\9fd041af7c0fe69b8048faf83ef3ee22eae4c1d5: info: installing overlay port from here
+  -- Using cached boostorg-headers-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-headers/src/ost-1.87.0-9accdc5627.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-headers-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-headers/src/ost-1.87.0-9accdc5627.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-headers_x86-windows/share/boost-headers/copyright
+  -- Performing post-build validation
+  Starting submission of boost-headers:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-headers:x86-windows: 1.7 s
+  boost-headers:x86-windows package ABI: 958ea770b70cb43785b3730c973ad0245d7e7b8095edb5bbda4969a418233789
+  Completed submission of boost-cmake:x86-windows@1.87.0 to 1 binary cache(s) in 47.6 ms
+  Installing 7/67 boost-config:x86-windows@1.87.0...
+  Building boost-config:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-config\2836a1f20087838a8254b7d6a4f91a59fe4fb53b: info: installing overlay port from here
+  -- Using cached boostorg-config-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-config/src/ost-1.87.0-f64f1ce7c1.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-config-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-config/src/ost-1.87.0-f64f1ce7c1.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-config_x86-windows/share/boost-config/copyright
+  -- Performing post-build validation
+  Starting submission of boost-config:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-config:x86-windows: 3.5 s
+  boost-config:x86-windows package ABI: dac9f11c21968539990b53d77a36c92a03c9aacfd07e9cd69044c226407302bb
+  Completed submission of boost-headers:x86-windows@1.87.0 to 1 binary cache(s) in 43.7 ms
+  Installing 8/67 boost-predef:x86-windows@1.87.0...
+  Building boost-predef:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-predef\b03d87958b87d7b6a214a2b92327db0b780e2ed3: info: installing overlay port from here
+  -- Using cached boostorg-predef-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-predef/src/ost-1.87.0-0d95ad98d1.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-predef-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-predef/src/ost-1.87.0-0d95ad98d1.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-predef_x86-windows/share/boost-predef/copyright
+  -- Performing post-build validation
+  Starting submission of boost-predef:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-predef:x86-windows: 2.7 s
+  boost-predef:x86-windows package ABI: 13e488c893c81362f287b6f52b57c22e5d3b09d5b9caabe5f434681c9bc8a1c2
+  Completed submission of boost-config:x86-windows@1.87.0 to 1 binary cache(s) in 228 ms
+  Installing 9/67 boost-winapi:x86-windows@1.87.0...
+  Building boost-winapi:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-winapi\9c479ba00f4e2401e518595446748e4394cd9568: info: installing overlay port from here
+  -- Using cached boostorg-winapi-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-winapi/src/ost-1.87.0-60c9610580.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-winapi-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-winapi/src/ost-1.87.0-60c9610580.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-winapi_x86-windows/share/boost-winapi/copyright
+  -- Performing post-build validation
+  Starting submission of boost-winapi:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-winapi:x86-windows: 2.3 s
+  boost-winapi:x86-windows package ABI: f2277281526b2fec326e3571c64b297bcfcbbed15dfbff8faabf5fe866bbaa25
+  Completed submission of boost-predef:x86-windows@1.87.0 to 1 binary cache(s) in 74.5 ms
+  Installing 10/67 boost-static-assert:x86-windows@1.87.0...
+  Building boost-static-assert:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-static-assert\4a3601304b3bea0ecd0fbab68a65b1d874467f13: info: installing overlay port from here
+  -- Using cached boostorg-static_assert-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-static-assert/src/ost-1.87.0-b6b7c49d77.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-static_assert-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-static-assert/src/ost-1.87.0-b6b7c49d77.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-static-assert_x86-windows/share/boost-static-assert/copyright
+  -- Performing post-build validation
+  Starting submission of boost-static-assert:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-static-assert:x86-windows: 1.5 s
+  boost-static-assert:x86-windows package ABI: 57c49fc32d350a47bc8fbb78ca6f355cfdcbb2767bc916fbddd846e7a08065de
+  Completed submission of boost-winapi:x86-windows@1.87.0 to 1 binary cache(s) in 66.1 ms
+  Installing 11/67 boost-type-traits:x86-windows@1.87.0...
+  Building boost-type-traits:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-type-traits\9d7ba43b84a0b63ead5148418f9557441060d248: info: installing overlay port from here
+  -- Using cached boostorg-type_traits-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-type-traits/src/ost-1.87.0-6327656598.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-type_traits-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-type-traits/src/ost-1.87.0-6327656598.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-type-traits_x86-windows/share/boost-type-traits/copyright
+  -- Performing post-build validation
+  Starting submission of boost-type-traits:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-type-traits:x86-windows: 3.4 s
+  boost-type-traits:x86-windows package ABI: ea56daf44af14794435b0783ff8f89a30a3c0e71fe277a2809b3014b1a320068
+  Completed submission of boost-static-assert:x86-windows@1.87.0 to 1 binary cache(s) in 40.5 ms
+  Installing 12/67 boost-mp11:x86-windows@1.87.0...
+  Building boost-mp11:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-mp11\bc1b2e78d6867f2aed28c4e7362b60d0149308f9: info: installing overlay port from here
+  -- Using cached boostorg-mp11-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-mp11/src/ost-1.87.0-93daebd109.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-mp11-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-mp11/src/ost-1.87.0-93daebd109.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-mp11_x86-windows/share/boost-mp11/copyright
+  -- Performing post-build validation
+  Starting submission of boost-mp11:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-mp11:x86-windows: 1.8 s
+  boost-mp11:x86-windows package ABI: 68e1e8b13909e85d07e391ee241a44e71af955dde40543caeff0567aed68eb27
+  Completed submission of boost-type-traits:x86-windows@1.87.0 to 1 binary cache(s) in 58.5 ms
+  Installing 13/67 boost-assert:x86-windows@1.87.0...
+  Building boost-assert:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-assert\82ba984fd01dc6d68d95f53429b831d9374c91be: info: installing overlay port from here
+  -- Using cached boostorg-assert-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-assert/src/ost-1.87.0-4a7000c4d5.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-assert-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-assert/src/ost-1.87.0-4a7000c4d5.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-assert_x86-windows/share/boost-assert/copyright
+  -- Performing post-build validation
+  Starting submission of boost-assert:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-assert:x86-windows: 1.5 s
+  boost-assert:x86-windows package ABI: 0fb2589e65751e48262413ac3afa4af644087b8dcec1fd15e87a365d419e4818
+  Completed submission of boost-mp11:x86-windows@1.87.0 to 1 binary cache(s) in 51.5 ms
+  Installing 14/67 boost-variant2:x86-windows@1.87.0...
+  Building boost-variant2:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-variant2\b4287c93efea644fe67c2304befa231cbc59025c: info: installing overlay port from here
+  -- Using cached boostorg-variant2-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-variant2/src/ost-1.87.0-2c52347c4b.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-variant2-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-variant2/src/ost-1.87.0-2c52347c4b.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-variant2_x86-windows/share/boost-variant2/copyright
+  -- Performing post-build validation
+  Starting submission of boost-variant2:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-variant2:x86-windows: 1.5 s
+  boost-variant2:x86-windows package ABI: 42cf2130a4ebd09ef3bebe56e2e3a8136e755f9bf87c8eb133d8f0a78a23814e
+  Completed submission of boost-assert:x86-windows@1.87.0 to 1 binary cache(s) in 43.3 ms
+  Installing 15/67 boost-throw-exception:x86-windows@1.87.0...
+  Building boost-throw-exception:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-throw-exception\4a56dd17aa1fb1a18f50d189593938893ec24386: info: installing overlay port from here
+  -- Using cached boostorg-throw_exception-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-throw-exception/src/ost-1.87.0-4085531790.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-throw_exception-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-throw-exception/src/ost-1.87.0-4085531790.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-throw-exception_x86-windows/share/boost-throw-exception/copyright
+  -- Performing post-build validation
+  Starting submission of boost-throw-exception:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-throw-exception:x86-windows: 1.4 s
+  boost-throw-exception:x86-windows package ABI: c89845ebded855a6101099b2a296f51ebd1f0d96ca2cd75fbb05ba5442bea2ec
+  Completed submission of boost-variant2:x86-windows@1.87.0 to 1 binary cache(s) in 47.9 ms
+  Installing 16/67 boost-system:x86-windows@1.87.0...
+  Building boost-system:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-system\da37abf239e674e07a7e5a4ed30b19ab119d5800: info: installing overlay port from here
+  -- Using cached boostorg-system-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-system/src/ost-1.87.0-8a93e73111.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-system-boost-1.87.0.tar.gz
+  -- Applying patch compat.diff
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-system/src/ost-1.87.0-8a93e73111.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-dbg
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-system_x86-windows/share/boost-system/copyright
+  -- Performing post-build validation
+  Starting submission of boost-system:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-system:x86-windows: 2.8 s
+  boost-system:x86-windows package ABI: 6e6e53019f2d8a5aaadfdf474f855cf7703737503e9c77af291df4eee72f9f8c
+  Completed submission of boost-throw-exception:x86-windows@1.87.0 to 1 binary cache(s) in 44.4 ms
+  Installing 17/67 boost-core:x86-windows@1.87.0...
+  Building boost-core:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-core\71a0f4b6ce5bad6dbe12494d93d803e5aee03dca: info: installing overlay port from here
+  -- Using cached boostorg-core-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-core/src/ost-1.87.0-d5692e4e03.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-core-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-core/src/ost-1.87.0-d5692e4e03.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-core_x86-windows/share/boost-core/copyright
+  -- Performing post-build validation
+  Starting submission of boost-core:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-core:x86-windows: 2.2 s
+  boost-core:x86-windows package ABI: d6a43c841c3586b993728f70b13dd788f12d5c24957b73d86f293148f3e1ad19
+  Completed submission of boost-system:x86-windows@1.87.0 to 1 binary cache(s) in 104 ms
+  Installing 18/67 boost-smart-ptr:x86-windows@1.87.0...
+  Building boost-smart-ptr:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-smart-ptr\5e6365ae738cb18fbe9208f05b442153429dc665: info: installing overlay port from here
+  -- Using cached boostorg-smart_ptr-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-smart-ptr/src/ost-1.87.0-9c39834a11.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-smart_ptr-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-smart-ptr/src/ost-1.87.0-9c39834a11.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-smart-ptr_x86-windows/share/boost-smart-ptr/copyright
+  -- Performing post-build validation
+  Starting submission of boost-smart-ptr:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-smart-ptr:x86-windows: 2.5 s
+  boost-smart-ptr:x86-windows package ABI: 120ef1735c2db6848a4aaa548ddf7a184ff945f3ccef53310cc4d1f566ea31fd
+  Completed submission of boost-core:x86-windows@1.87.0 to 1 binary cache(s) in 52.6 ms
+  Installing 19/67 boost-scope:x86-windows@1.87.0...
+  Building boost-scope:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-scope\a5abaf0bfd2bfbb385a5e0f28aa34d8563c9c404: info: installing overlay port from here
+  -- Using cached boostorg-scope-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-scope/src/ost-1.87.0-d3f3cd9ee1.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-scope-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-scope/src/ost-1.87.0-d3f3cd9ee1.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-scope_x86-windows/share/boost-scope/copyright
+  -- Performing post-build validation
+  Starting submission of boost-scope:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-scope:x86-windows: 1.7 s
+  boost-scope:x86-windows package ABI: e89e7853f36c2b6cd2b2ef349c2818f723008bd2fced31f5546caa8d1ba95ec5
+  Completed submission of boost-smart-ptr:x86-windows@1.87.0 to 1 binary cache(s) in 56.4 ms
+  Installing 20/67 boost-preprocessor:x86-windows@1.87.0...
+  Building boost-preprocessor:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-preprocessor\e3380f553a2a9a50aa95639dcb703e13d226ce24: info: installing overlay port from here
+  -- Using cached boostorg-preprocessor-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-preprocessor/src/ost-1.87.0-9d2feba51a.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-preprocessor-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-preprocessor/src/ost-1.87.0-9d2feba51a.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-preprocessor_x86-windows/share/boost-preprocessor/copyright
+  -- Performing post-build validation
+  Starting submission of boost-preprocessor:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-preprocessor:x86-windows: 5 s
+  boost-preprocessor:x86-windows package ABI: 0913adf24c882c38e3207e2d153fdeeea9a155344a5ab1210d221783687432e4
+  Completed submission of boost-scope:x86-windows@1.87.0 to 1 binary cache(s) in 51 ms
+  Installing 21/67 boost-io:x86-windows@1.87.0...
+  Building boost-io:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-io\64fbc4e1f42d61e37d5e152012e3c7b3ef7e359d: info: installing overlay port from here
+  -- Using cached boostorg-io-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-io/src/ost-1.87.0-9dd09438eb.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-io-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-io/src/ost-1.87.0-9dd09438eb.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-io_x86-windows/share/boost-io/copyright
+  -- Performing post-build validation
+  Starting submission of boost-io:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-io:x86-windows: 1.5 s
+  boost-io:x86-windows package ABI: 0b2167bee9774924dc45b052678b1175531f1b002c73edc5fc58d71067124106
+  Completed submission of boost-preprocessor:x86-windows@1.87.0 to 1 binary cache(s) in 110 ms
+  Installing 22/67 boost-utility:x86-windows@1.87.0...
+  Building boost-utility:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-utility\0c22f845af30943a807b8bf749b4f88ee472a958: info: installing overlay port from here
+  -- Using cached boostorg-utility-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-utility/src/ost-1.87.0-1e5f6918a7.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-utility-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-utility/src/ost-1.87.0-1e5f6918a7.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-utility_x86-windows/share/boost-utility/copyright
+  -- Performing post-build validation
+  Starting submission of boost-utility:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-utility:x86-windows: 1.7 s
+  boost-utility:x86-windows package ABI: d6dfcd6edb1de11ca5b273f95893f38ea421b20775cc0dd5bbd8df90378741dc
+  Completed submission of boost-io:x86-windows@1.87.0 to 1 binary cache(s) in 48.8 ms
+  Installing 23/67 boost-optional:x86-windows@1.87.0#1...
+  Building boost-optional:x86-windows@1.87.0#1...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-optional\fe57251855d60463135bebf003e322373662baa4: info: installing overlay port from here
+  -- Using cached boostorg-optional-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-optional/src/ost-1.87.0-545b190da2.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-optional-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-optional/src/ost-1.87.0-545b190da2.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-optional_x86-windows/share/boost-optional/copyright
+  -- Performing post-build validation
+  Starting submission of boost-optional:x86-windows@1.87.0#1 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-optional:x86-windows: 1.7 s
+  boost-optional:x86-windows package ABI: 612379c8cb105d65cdf90d9366ce85469bed35b4fc70032b4aef2b64f8ab0d93
+  Completed submission of boost-utility:x86-windows@1.87.0 to 1 binary cache(s) in 51.4 ms
+  Installing 24/67 boost-mpl:x86-windows@1.87.0...
+  Building boost-mpl:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-mpl\bc39d9de88b525e7f4fb5f1e9da5cc5acdee7aab: info: installing overlay port from here
+  -- Using cached boostorg-mpl-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-mpl/src/ost-1.87.0-fe056ea1a1.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-mpl-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-mpl/src/ost-1.87.0-fe056ea1a1.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-mpl_x86-windows/share/boost-mpl/copyright
+  -- Performing post-build validation
+  Starting submission of boost-mpl:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-mpl:x86-windows: 9.2 s
+  boost-mpl:x86-windows package ABI: e45c011d113867f772ae13ab769d24b58e5ef005f57ac1d92cea9e2939f0906a
+  Completed submission of boost-optional:x86-windows@1.87.0#1 to 1 binary cache(s) in 53.7 ms
+  Installing 25/67 boost-typeof:x86-windows@1.87.0...
+  Building boost-typeof:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-typeof\c4ade6c1f9a40bdcbe45500476fe36fe79d14dc8: info: installing overlay port from here
+  -- Using cached boostorg-typeof-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-typeof/src/ost-1.87.0-906d8b7af5.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-typeof-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-typeof/src/ost-1.87.0-906d8b7af5.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-typeof_x86-windows/share/boost-typeof/copyright
+  -- Performing post-build validation
+  Starting submission of boost-typeof:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-typeof:x86-windows: 1.7 s
+  boost-typeof:x86-windows package ABI: e6ad496cf8470c3c95bbffa19b06c5952ce8e7b6d99a4e8d12306b573cec7249
+  Completed submission of boost-mpl:x86-windows@1.87.0 to 1 binary cache(s) in 96.3 ms
+  Installing 26/67 boost-tuple:x86-windows@1.87.0...
+  Building boost-tuple:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-tuple\742499dcbd56ae28d11af26b2c563cc598732d83: info: installing overlay port from here
+  -- Using cached boostorg-tuple-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-tuple/src/ost-1.87.0-1a644c31aa.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-tuple-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-tuple/src/ost-1.87.0-1a644c31aa.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-tuple_x86-windows/share/boost-tuple/copyright
+  -- Performing post-build validation
+  Starting submission of boost-tuple:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-tuple:x86-windows: 1.5 s
+  boost-tuple:x86-windows package ABI: 10757cd6154d3ac20a157cfebfb55c0bb1e050ee45bff2c59d3c0bddacb13907
+  Completed submission of boost-typeof:x86-windows@1.87.0 to 1 binary cache(s) in 51.2 ms
+  Installing 27/67 boost-detail:x86-windows@1.87.0...
+  Building boost-detail:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-detail\177e493478ca855538e2ba2d74db157168a0a92d: info: installing overlay port from here
+  -- Using cached boostorg-detail-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-detail/src/ost-1.87.0-3c01eee779.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-detail-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-detail/src/ost-1.87.0-3c01eee779.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+  -- Building x86-windows-rel
+  -- Installing: C:/DEV/vcpkg/packages/boost-detail_x86-windows/share/boost-detail/copyright
+  -- Performing post-build validation
+  Starting submission of boost-detail:x86-windows@1.87.0 to 1 binary cache(s) in the background
+  Elapsed time to handle boost-detail:x86-windows: 1.7 s
+  boost-detail:x86-windows package ABI: b3178a3b7dec0b71154469a9ddd27e47cc9fc1e169475d7d911c08db4779b064
+  Completed submission of boost-tuple:x86-windows@1.87.0 to 1 binary cache(s) in 45.4 ms
+  Installing 28/67 boost-function-types:x86-windows@1.87.0...
+  Building boost-function-types:x86-windows@1.87.0...
+  C:\DEV\vcpkg\buildtrees\versioning_\versions\boost-function-types\3cb3d8dbaaf5d4a17dc611f0a97ea399413e336a: info: installing overlay port from here
+  -- Using cached boostorg-function_types-boost-1.87.0.tar.gz
+  -- Cleaning sources at C:/DEV/vcpkg/buildtrees/boost-function-types/src/ost-1.87.0-412e0b30dc.clean. Use --editable to skip cleaning for the packages you specify.
+  -- Extracting source C:/DEV/vcpkg/downloads/boostorg-function_types-boost-1.87.0.tar.gz
+  -- Using source at C:/DEV/vcpkg/buildtrees/boost-function-types/src/ost-1.87.0-412e0b30dc.clean
+  -- Found external ninja('1.12.1').
+  -- Configuring x86-windows
+C:\DEV\vcpkg\scripts\buildsystems\msbuild\vcpkg.targets(183,5): warning MSB5021: Terminating the task executable "cmd" and its child processes because the build was canceled.

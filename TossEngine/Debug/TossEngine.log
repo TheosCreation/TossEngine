@@ -1,0 +1,4 @@
+﻿  Installing vcpkg dependencies to C:\Users\Theo\TossEngine\vcpkg_installed\x86-windows\
+  "C:\DEV\vcpkg\vcpkg.exe" install  --x-wait-for-lock --triplet "x86-windows" --vcpkg-root "C:\DEV\vcpkg\\" "--x-manifest-root=C:\Users\Theo\TossEngine\\" "--x-install-root=C:\Users\Theo\TossEngine\vcpkg_installed\x86-windows\\" 
+  waiting to take filesystem lock on C:\DEV\vcpkg\.vcpkg-root...
+C:\DEV\vcpkg\scripts\buildsystems\msbuild\vcpkg.targets(183,5): warning MSB5021: Terminating the task executable "cmd" and its child processes because the build was canceled.
