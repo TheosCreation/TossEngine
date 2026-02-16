@@ -381,6 +381,9 @@ RaycastHit Physics::EditorRaycast(const Vector3& origin, const Vector3& directio
 
 void Physics::LoadWorld()
 {
+    m_shapesToDestroy.clear();
+    m_raycastDebugEntries.clear();
+
     PhysicsMaterialDesc physicsMaterialDesc; //full defaults set in the code atm
     m_defaultPhysicsMaterial = std::make_shared<PhysicsMaterial>(physicsMaterialDesc, "DefaultPhysicsMaterial", nullptr);
 
@@ -409,6 +412,9 @@ void Physics::LoadWorld()
 
 void Physics::UnLoadWorld()
 {
+    m_shapesToDestroy.clear();
+    m_raycastDebugEntries.clear();
+
     if (m_world)
     {
         m_commonSettings.destroyPhysicsWorld(m_world);
@@ -450,6 +456,8 @@ void Physics::UnLoadPrefabWorld()
 
 void Physics::LoadEditorWorld()
 {
+    m_shapesToDestroy.clear();
+
     rp3d::PhysicsWorld::WorldSettings settings;
     settings.worldName = "EditorPhysicsWorld";
     settings.gravity = static_cast<rp3d::Vector3>(m_gravity);
@@ -471,6 +479,7 @@ void Physics::LoadEditorWorld()
 
 void Physics::UnLoadEditorWorld()
 {
+    m_shapesToDestroy.clear();
     if (m_editorWorld)
     {
         m_commonSettings.destroyPhysicsWorld(m_editorWorld);

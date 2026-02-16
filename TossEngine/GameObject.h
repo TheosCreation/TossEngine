@@ -27,7 +27,7 @@ namespace reactphysics3d
 
 class MissingComponent;
 class Collider;
-class Collision;
+struct Collision;
 class Scene;
 class LightManager;
 

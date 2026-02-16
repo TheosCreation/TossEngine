@@ -8,7 +8,7 @@
 
 class GameObject;
 class Collider;
-class Collision;
+struct Collision;
 
 class TOSSENGINE_API Component : public Serializable, public ISelectable
 {

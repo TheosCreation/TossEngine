@@ -18,6 +18,8 @@ Mail : theo.morris@mds.ac.nz
 #include "Window.h"
 #include <map>
 
+struct GLFWwindow;
+
 /**
  * @class InputManager
  * @brief Singleton class that manages real-time user input, including keyboard, mouse, and cursor control.
@@ -175,7 +177,7 @@ private:
 
 #if defined(_WIN32)
     // GLFW input callbacks
-    static void scroll_callback(class GLFWwindow* window, double xOffset, double yOffset);
+    static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
     static void char_callback(GLFWwindow* window, unsigned int c);

@@ -236,19 +236,19 @@ void TossEditor::onUpdateInternal()
         scene->onUpdateInternal();
 
         // editor update stuff
-        CreateProxiesFromScene();
+        //CreateProxiesFromScene();
         // safe iteration: do not mutate the container inside the loop
-        for (auto& [id, sp] : m_editorProxies) {
-            if (sp && !sp->isDestroyed) sp->onUpdateInternal();
-        }
+        //for (auto& [id, sp] : m_editorProxies) {
+        //    if (sp && !sp->isDestroyed) sp->onUpdateInternal();
+        //}
 
         // process queued removals
-        if (!m_pendingProxyDeletes.empty()) {
-            for (size_t id : m_pendingProxyDeletes) DeleteProxy(id);
-            m_pendingProxyDeletes.clear();
-        }
+        //if (!m_pendingProxyDeletes.empty()) {
+        //    for (size_t id : m_pendingProxyDeletes) DeleteProxy(id);
+        //    m_pendingProxyDeletes.clear();
+        //}
 
-        CleanUpProxies();
+        //CleanUpProxies();
     }
 }
 
