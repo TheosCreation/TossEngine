@@ -105,6 +105,8 @@ private:
     bool isInitilized = false;
 
     DepthType m_depthType = DepthType::Less; // Default value
+    GLenum m_depthFunc = GL_LESS; // OpenGL specific 
+
     CullType m_cullType = CullType::BackFace; // Default value
     bool m_depthTestingEnabled = true; // Default value
     bool m_depthMaskEnabled = true; // Default value

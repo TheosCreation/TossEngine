@@ -11,9 +11,12 @@ Mail : theo.morris@mds.ac.nz
 **/
 
 #include "GraphicsEngine.h"
-
 #include <ImGuizmo.h>
 #include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include <glew.h>
+#include <glfw3.h>
 #include "VertexArrayObject.h"
 #include "Shader.h"
 #include "Texture2D.h"
@@ -21,15 +24,6 @@ Mail : theo.morris@mds.ac.nz
 #include "TextureCubeMap.h"
 #include "ProjectSettings.h"
 #include "TossPlayerSettings.h"
-
-#if defined(_WIN32)
-#include <glew.h>
-#include <glfw3.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-#elif defined(__PROSPERO__)
-// TODO:Implement
-#endif
 
 void GraphicsEngine::Init(ProjectSettingsPtr& projectSettings)
 {
@@ -59,7 +53,6 @@ VertexArrayObjectPtr GraphicsEngine::createVertexArrayObject(const VertexBufferD
 
 void GraphicsEngine::updateVertexArrayObject(const VertexArrayObjectPtr& vao, const void* vertexData, uint dataSize)
 {
-#if defined(_WIN32)
     // Bind the VAO (assumes your VAO encapsulates its VBO(s))
     glBindVertexArray(vao->getId());
 
@@ -73,14 +66,10 @@ void GraphicsEngine::updateVertexArrayObject(const VertexArrayObjectPtr& vao, co
     // Unbind the buffer and VAO for cleanliness.
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::clear(const glm::vec4& color, bool clearDepth, bool clearStencil)
 {
-#if defined(_WIN32)
     glClearColor(color.x, color.y, color.z, color.w);
 
     // Start with clearing the color buffer
@@ -98,18 +87,12 @@ void GraphicsEngine::clear(const glm::vec4& color, bool clearDepth, bool clearSt
 
     // Clear the specified buffers
     glClear(clearFlags);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::createImGuiFrame()
 {
-#ifdef __PROSPERO__
-#else
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();
-#endif
     ImGui::NewFrame();
 }
 
@@ -123,17 +106,12 @@ ImGuiContext* GraphicsEngine::getImGuiContext()
 void GraphicsEngine::renderImGuiFrame()
 {
     ImGui::Render();
-#ifdef __PROSPERO__
-#else
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-#endif
 }
 
 void GraphicsEngine::setFaceCulling(const CullType& type)
 {
-    m_cullType = type;
-#if defined(_WIN32)
-    uint cullType = GL_BACK;
+    auto cullType = GL_BACK;
     if (type == CullType::None)
     {
         glDisable(GL_CULL_FACE);
@@ -146,30 +124,25 @@ void GraphicsEngine::setFaceCulling(const CullType& type)
         glEnable(GL_CULL_FACE);
         glCullFace(cullType);
     }
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::setDepthFunc(const DepthType& type)
 {
     m_depthType = type;
 
-#if defined(_WIN32)
-    uint depth = GL_LESS;
-    switch (m_depthType)
+    switch (type)
     {
-    case DepthType::Never:        depth = GL_NEVER; break;
-    case DepthType::Less:         depth = GL_LESS; break;
-    case DepthType::Equal:        depth = GL_EQUAL; break;
-    case DepthType::LessEqual:    depth = GL_LEQUAL; break;
-    case DepthType::Greater:      depth = GL_GREATER; break;
-    case DepthType::NotEqual:     depth = GL_NOTEQUAL; break;
-    case DepthType::GreaterEqual: depth = GL_GEQUAL; break;
-    case DepthType::Always:       depth = GL_ALWAYS; break;
+    case DepthType::Never:        m_depthFunc = GL_NEVER; break;
+    case DepthType::Less:         m_depthFunc = GL_LESS; break;
+    case DepthType::Equal:        m_depthFunc = GL_EQUAL; break;
+    case DepthType::LessEqual:    m_depthFunc = GL_LEQUAL; break;
+    case DepthType::Greater:      m_depthFunc = GL_GREATER; break;
+    case DepthType::NotEqual:     m_depthFunc = GL_NOTEQUAL; break;
+    case DepthType::GreaterEqual: m_depthFunc = GL_GEQUAL; break;
+    case DepthType::Always:       m_depthFunc = GL_ALWAYS; break;
     }
 
-    if (m_depthType == DepthType::Never)
+    if (type == DepthType::Never)
     {
         m_depthTestingEnabled = false;
         glDisable(GL_DEPTH_TEST);
@@ -178,67 +151,38 @@ void GraphicsEngine::setDepthFunc(const DepthType& type)
     {
         m_depthTestingEnabled = true;
         glEnable(GL_DEPTH_TEST);
-        glDepthFunc(depth);
+        glDepthFunc(m_depthFunc);
     }
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::setDepthMask(bool writeEnabled)
 {
     m_depthMaskEnabled = writeEnabled;
-
-#if defined(_WIN32)
-    glDepthMask(m_depthMaskEnabled ? GL_TRUE : GL_FALSE);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
+    glDepthMask(writeEnabled ? GL_TRUE : GL_FALSE);
 }
 
 void GraphicsEngine::setDepthTest(bool testingEnabled)
 {
     m_depthTestingEnabled = testingEnabled;
 
-#if defined(_WIN32)
     if (m_depthTestingEnabled)
     {
         glEnable(GL_DEPTH_TEST);
-        uint depth = GL_LESS; //TODO: fix this make it not need to copy everywhere
-        switch (m_depthType)
-        {
-        case DepthType::Never:        depth = GL_NEVER; break;
-        case DepthType::Less:         depth = GL_LESS; break;
-        case DepthType::Equal:        depth = GL_EQUAL; break;
-        case DepthType::LessEqual:    depth = GL_LEQUAL; break;
-        case DepthType::Greater:      depth = GL_GREATER; break;
-        case DepthType::NotEqual:     depth = GL_NOTEQUAL; break;
-        case DepthType::GreaterEqual: depth = GL_GEQUAL; break;
-        case DepthType::Always:       depth = GL_ALWAYS; break;
-        }
-        glDepthFunc(depth);
+        glDepthFunc(m_depthFunc);
     }
     else
     {
         glDisable(GL_DEPTH_TEST);
     }
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::setScissorSize(const Rect size)
 {
-#if defined(_WIN32)
     glScissor(size.left, size.top, size.width, size.height);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::setScissor(bool enabled)
 {
-#if defined(_WIN32)
     if (enabled)
     {
         glEnable(GL_SCISSOR_TEST);
@@ -247,14 +191,10 @@ void GraphicsEngine::setScissor(bool enabled)
     {
         glDisable(GL_SCISSOR_TEST);
     }
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::setBlendFunc(const BlendType& srcType, const BlendType& dstType)
 {
-#if defined(_WIN32)
     GLenum blendType1 = GL_SRC_ALPHA; // Default source blend factor
     GLenum blendType2 = GL_ONE_MINUS_SRC_ALPHA; // Default destination blend factor
 
@@ -305,28 +245,20 @@ void GraphicsEngine::setBlendFunc(const BlendType& srcType, const BlendType& dst
         glEnable(GL_BLEND);
         glBlendFunc(blendType1, blendType2);
     }
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::setWindingOrder(const WindingOrder& type)
 {
-#if defined(_WIN32)
     auto orderType = GL_CW;
 
     if (type == WindingOrder::ClockWise) orderType = GL_CW;
     else if (type == WindingOrder::CounterClockWise) orderType = GL_CCW;
 
     glFrontFace(orderType);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::setStencil(const StencilOperationType& type)
 {
-#if defined(_WIN32)
     switch (type)
     {
     case StencilOperationType::Set:
@@ -344,23 +276,15 @@ void GraphicsEngine::setStencil(const StencilOperationType& type)
         glStencilMask(0xFF);
         break;
     }
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::setViewport(const Vector2& size)
 {
-#if defined(_WIN32)
     glViewport(0, 0, (int)size.x, (int)size.y);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::setMultiSampling(bool enabled)
 {
-#if defined(_WIN32)
     if (enabled)
     {
         glEnable(GL_MULTISAMPLE);
@@ -369,46 +293,27 @@ void GraphicsEngine::setMultiSampling(bool enabled)
     {
         glDisable(GL_MULTISAMPLE);
     }
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::setVertexArrayObject(const VertexArrayObjectPtr& vao)
 {
-#if defined(_WIN32)
     glBindVertexArray(vao->getId());
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::setVertexArrayObject(const uint vaoId)
 {
-#if defined(_WIN32)
     glBindVertexArray(vaoId);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
-void GraphicsEngine::setShader(const ShaderPtr& _shader)
+void GraphicsEngine::setShader(const ShaderPtr& program)
 {
-    m_currentActiveShader = _shader;
-#if defined(_WIN32)
-    glUseProgram(m_currentActiveShader->getId());
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
+    m_currentActiveShader = program;
+    glUseProgram(program->getId());
 }
 
 void GraphicsEngine::setTexture2D(const uint textureId, uint slot, std::string bindingName)
 {
-#if defined(_WIN32)
     m_currentActiveShader->setTexture2D(textureId, slot, bindingName);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 RenderingPath GraphicsEngine::getRenderingPath()
@@ -433,7 +338,6 @@ void GraphicsEngine::setTextureCubeMap(const TextureCubeMapPtr& texture, uint sl
 
 void GraphicsEngine::drawTriangles(const TriangleType& triangleType, uint vertexCount, uint offset)
 {
-#if defined(_WIN32)
     auto glTriType = GL_TRIANGLES;
 
     switch (triangleType)
@@ -443,14 +347,10 @@ void GraphicsEngine::drawTriangles(const TriangleType& triangleType, uint vertex
     case TriangleType::Points: { glTriType = GL_POINTS; break; }
     }
     glDrawArrays(glTriType, offset, vertexCount);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::drawIndexedTriangles(const TriangleType& triangleType, uint indicesCount)
 {
-#if defined(_WIN32)
     auto glTriType = GL_TRIANGLES;
 
     switch (triangleType)
@@ -459,14 +359,10 @@ void GraphicsEngine::drawIndexedTriangles(const TriangleType& triangleType, uint
     case TriangleType::TriangleStrip: { glTriType = GL_TRIANGLE_STRIP; break; }
     }
     glDrawElements(glTriType, indicesCount, GL_UNSIGNED_INT, nullptr);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::drawIndexedTrianglesInstanced(const TriangleType& triangleType, uint indicesCount, int instanceCount)
 {
-#if defined(_WIN32)
     auto glTriType = GL_TRIANGLES;
 
     switch (triangleType)
@@ -475,14 +371,10 @@ void GraphicsEngine::drawIndexedTrianglesInstanced(const TriangleType& triangleT
     case TriangleType::TriangleStrip: { glTriType = GL_TRIANGLE_STRIP; break; }
     }
     glDrawElementsInstanced(glTriType, indicesCount, GL_UNSIGNED_INT, nullptr, instanceCount);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::drawLines(const LineType& lineType, uint vertexCount, uint offset)
 {
-#if defined(_WIN32)
     GLenum glLineType = GL_LINES; // Default to GL_LINES
     switch (lineType)
     {
@@ -496,12 +388,10 @@ void GraphicsEngine::drawLines(const LineType& lineType, uint vertexCount, uint 
         break;
     }
     glDrawArrays(glLineType, offset, vertexCount);
-#elif defined(__PROSPERO__)
-    // TODO:Implement
-#endif
 }
 
 void GraphicsEngine::CleanUp()
 {
     m_currentActiveShader.reset();
 }
+
