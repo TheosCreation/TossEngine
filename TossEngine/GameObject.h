@@ -27,6 +27,7 @@ namespace reactphysics3d
 
 class MissingComponent;
 class Collider;
+class Collision;
 class Scene;
 class LightManager;
 
@@ -205,8 +206,9 @@ public:
     // --- Physics ---
 
     virtual reactphysics3d::PhysicsWorld* getWorld();
-    void CallOnCollisionEnterCallbacks(Collider* other) const;
-    void CallOnCollisionExitCallbacks(Collider* other);
+    void CallOnCollisionEnterCallbacks(Collision& collision) const;
+    void CallOnCollisionStayCallbacks(Collision& collision) const;
+    void CallOnCollisionExitCallbacks(Collision& collision) const;
     void CallOnTriggerEnterCallbacks(Collider* other) const;
     void CallOnTriggerExitCallbacks(Collider* other) const;
 

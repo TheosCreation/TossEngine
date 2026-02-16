@@ -40,7 +40,7 @@ using RaycastInfo = reactphysics3d::RaycastInfo;
 struct TOSSENGINE_API Collision
 {
     Vector3 contactPoint;
-    Collider* thisCollider;
+    Vector3 contactNormal;
     Collider* otherCollider;
 };
 

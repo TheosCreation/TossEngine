@@ -417,22 +417,32 @@ void GameObject::onDestroy()
     m_components.clear();
 }
 
-void GameObject::CallOnCollisionEnterCallbacks(Collider* other) const
+void GameObject::CallOnCollisionEnterCallbacks(Collision& collision) const
 {
     for (auto& pair : m_components) {
         if (pair.second)
         {
-            pair.second->onCollisionEnter(other);
+            pair.second->onCollisionEnter(collision);
         }
     }
 }
 
-void GameObject::CallOnCollisionExitCallbacks(Collider* other)
+void GameObject::CallOnCollisionStayCallbacks(Collision& collision) const
 {
     for (auto& pair : m_components) {
         if (pair.second)
         {
-            pair.second->onCollisionExit(other);
+            pair.second->onCollisionStay(collision);
+        }
+    }
+}
+
+void GameObject::CallOnCollisionExitCallbacks(Collision& collision) const
+{
+    for (auto& pair : m_components) {
+        if (pair.second)
+        {
+            pair.second->onCollisionExit(collision);
         }
     }
 }

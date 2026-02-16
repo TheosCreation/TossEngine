@@ -29,8 +29,9 @@ public:
 
     void CallOnTriggerEnterCallbacks(Collider* otherCollider) const;
     void CallOnTriggerExitCallbacks(Collider* otherCollider) const;
-    void CallOnCollisionEnterCallbacks(Collider* otherCollider) const;
-    void CallOnCollisionExitCallbacks(Collider* otherCollider) const;
+    void CallOnCollisionEnterCallbacks(Collision& collision) const;
+    void CallOnCollisionStayCallbacks(Collision& collision) const;
+    void CallOnCollisionExitCallbacks(Collision& collision) const;
 
     Vector3 GetExtent() const;
 

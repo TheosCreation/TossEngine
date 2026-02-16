@@ -8,6 +8,7 @@
 
 class GameObject;
 class Collider;
+class Collision;
 
 class TOSSENGINE_API Component : public Serializable, public ISelectable
 {
@@ -64,8 +65,9 @@ public:
     virtual void OnGameObjectSelected(){}
     virtual void OnGameObjectDeSelected() {}
 
-    virtual void onCollisionEnter(Collider* other) {}
-    virtual void onCollisionExit(Collider* other) {}
+    virtual void onCollisionEnter(Collision& collision) {}
+    virtual void onCollisionStay(Collision& collision) {}
+    virtual void onCollisionExit(Collision& collision) {}
     virtual void onTriggerEnter(Collider* other) {}
     virtual void onTriggerExit(Collider* other) {}
 
