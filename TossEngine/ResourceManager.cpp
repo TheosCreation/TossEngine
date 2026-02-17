@@ -285,8 +285,12 @@ std::string ResourceManager::GuessTypeFromExt(const std::string& ext) const
     if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".tga" || ext == ".bmp") return "Texture2D";
     if (ext == ".obj" || ext == ".fbx" || ext == ".gltf" || ext == ".glb")                 return "Mesh";
     if (ext == ".mat" || ext == ".material")                                           return "Material";
+    if (ext == ".vert" || ext == ".frag" || ext == ".comp")                           return "Shader";
     if (ext == ".prefab")                                                            return "Prefab";
-    if (ext == ".wav" || ext == ".mp3" || ext == ".ogg")                                  return "AudioClip";
+    if (ext == ".wav" || ext == ".mp3" || ext == ".ogg")                                  return "Sound";
+
+    // files such as .glsl is not technically a resource but should still show in the asset browser like a text file format to be able to view the contents
+    // also we should do debug warnings if a file is detected in the assets folder but was not loaded
     return {};
 }
 
@@ -333,7 +337,7 @@ void ResourceManager::loadResourcesFromFile(const std::string& filepath)
 
     //Above is old stuff
     const std::string assetsRoot = "Assets";                // adjust as needed
-    LoadImportCache("Library/importCache.json");            // optional cache location
+    //LoadImportCache("Library/importCache.json");            // optional cache location
     LoadAssetsFromFolder(assetsRoot);
     SaveImportCache("Library/importCache.json");
 

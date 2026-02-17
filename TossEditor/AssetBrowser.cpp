@@ -20,6 +20,41 @@ static std::vector<std::string> SplitPath(const std::string& p) {
     return out;
 }
 
+static void EnsureFolderNode(AssetNode& rootNode, const std::string& relFolder)
+{
+    if (relFolder.empty())
+    {
+        return;
+    }
+
+    std::vector<std::string> parts = SplitPath(relFolder);
+    AssetNode* node = &rootNode;
+
+    for (size_t i = 0; i < parts.size(); ++i)
+    {
+        const std::string& seg = parts[i];
+        std::unique_ptr<AssetNode>& childPtr = node->children[seg];
+
+        if (!childPtr)
+        {
+            std::unique_ptr<AssetNode> newNode = std::make_unique<AssetNode>();
+            newNode->name = seg;
+            if (node->path.empty())
+            {
+                newNode->path = seg;
+            }
+            else
+            {
+                newNode->path = node->path + "/" + seg;
+            }
+
+            childPtr = std::move(newNode);
+        }
+
+        node = childPtr.get();
+    }
+}
+
 AssetsBrowser::AssetsBrowser(TossEditor* editor)
 {
     Editor = editor;
@@ -29,56 +64,138 @@ AssetsBrowser::~AssetsBrowser()
 {
 }
 
-void AssetsBrowser::Rebuild() {
+
+void AssetsBrowser::Rebuild()
+{
     m_root = std::make_unique<AssetNode>();
     m_root->name = "Assets";
     m_root->path = "";
 
+    const std::filesystem::path assetsRoot = std::filesystem::path("Assets");
+    if (std::filesystem::exists(assetsRoot))
+    {
+        std::filesystem::recursive_directory_iterator endIt;
+        std::filesystem::recursive_directory_iterator it(assetsRoot, std::filesystem::directory_options::skip_permission_denied);
+
+        for (; it != endIt; ++it)
+        {
+            if (!it->is_directory())
+            {
+                continue;
+            }
+
+            std::filesystem::path dirPath = it->path();
+            std::filesystem::path relPath = dirPath.lexically_relative(assetsRoot);
+            std::string relFolder = relPath.generic_string(); // "" for root child? (first level folders become "Textures", etc.)
+
+            EnsureFolderNode(*m_root, relFolder);
+        }
+    }
+
+    // Now layer imported/known resources into the folder nodes
     ResourceManager& rm = ResourceManager::GetInstance();
-    auto& map = rm.GetAllResources();
-    for (auto& [uid, res] : map) {
-        if (uid.empty()) continue;
-        auto parts = SplitPath(uid);                   // ["Textures","ui","button.png"]
+    std::map<std::string, ResourcePtr>& map = rm.GetAllResources();
+
+    for (auto& kv : map)
+    {
+        const std::string& uid = kv.first;
+        const ResourcePtr& res = kv.second;
+
+        if (uid.empty())
+        {
+            continue;
+        }
+
+        std::vector<std::string> parts = SplitPath(uid);
         AssetNode* node = m_root.get();
 
         // walk/create folders for all but last token
-        for (size_t i = 0; i + 1 < parts.size(); ++i) {
-            auto& seg = parts[i];
-            auto& child = node->children[seg];
-            if (!child) {
-                child = std::make_unique<AssetNode>();
-                child->name = seg;
-                child->path = node->path.empty() ? seg : (node->path + "/" + seg);
+        for (size_t i = 0; i + 1 < parts.size(); ++i)
+        {
+            const std::string& seg = parts[i];
+            std::unique_ptr<AssetNode>& child = node->children[seg];
+
+            if (!child)
+            {
+                std::unique_ptr<AssetNode> newNode = std::make_unique<AssetNode>();
+                newNode->name = seg;
+                if (node->path.empty())
+                {
+                    newNode->path = seg;
+                }
+                else
+                {
+                    newNode->path = node->path + "/" + seg;
+                }
+                child = std::move(newNode);
             }
+
             node = child.get();
         }
-        // file item
+
         AssetItem item;
         item.uid = uid;
-        item.name = parts.empty() ? uid : parts.back();
+        if (parts.empty())
+        {
+            item.name = uid;
+        }
+        else
+        {
+            item.name = parts.back();
+        }
         item.type = getClassName(typeid(*res));
         item.res = res;
+
         node->items.push_back(std::move(item));
     }
 
-    // optional: sort folders and files
-    std::function<void(AssetNode&)> sortRec = [&](AssetNode& n) {
-        for (auto& [k, ch] : n.children) sortRec(*ch);
-        std::sort(n.items.begin(), n.items.end(), [](auto& a, auto& b) { return a.name < b.name; });
-        };
+    // Sort: folders by name, items by name
+    std::function<void(AssetNode&)> sortRec;
+    sortRec = [&](AssetNode& n)
+    {
+        for (auto& kv : n.children)
+        {
+            sortRec(*kv.second);
+        }
+
+        std::sort(n.items.begin(), n.items.end(),
+            [](const AssetItem& a, const AssetItem& b)
+            {
+                return a.name < b.name;
+            });
+    };
+
     sortRec(*m_root);
 }
 
-AssetNode* AssetsBrowser::findNode(const std::string& path) {
-    if (!m_root) return nullptr;
-    if (path.empty()) return m_root.get();
-    auto parts = SplitPath(path);
+AssetNode* AssetsBrowser::findNode(const std::string& path)
+{
+    if (!m_root)
+    {
+        return nullptr;
+    }
+
+    if (path.empty())
+    {
+        return m_root.get();
+    }
+
+    std::vector<std::string> parts = SplitPath(path);
     AssetNode* node = m_root.get();
-    for (auto& seg : parts) {
+
+    for (size_t i = 0; i < parts.size(); ++i)
+    {
+        const std::string& seg = parts[i];
         auto it = node->children.find(seg);
-        if (it == node->children.end()) return node; // fallback
+
+        if (it == node->children.end())
+        {
+            return m_root.get();
+        }
+
         node = it->second.get();
     }
+
     return node;
 }
 
@@ -156,69 +273,113 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
     }
 
     // Files
-    if (m_showGrid) {
-        // simple flow layout
+    if (m_showGrid)
+    {
         float avail = ImGui::GetContentRegionAvail().x;
         float cell = m_gridSize;
         float spacing = ImGui::GetStyle().ItemSpacing.x + 16.0f;
         int cols = max(1, (int)((avail + spacing) / (cell + spacing)));
         int col = 0;
-
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
-        for (auto& it : node.items) {
-            if (m_filter.IsActive() && !m_filter.PassFilter(it.name.c_str()) && !m_filter.PassFilter(it.type.c_str()))
-                continue;
-
+    
+        auto AdvanceCell = [&]()
+        {
+            col += 1;
+            if (col >= cols)
+            {
+                col = 0;
+            }
+            else
+            {
+                ImGui::SameLine();
+                ImGui::Dummy(ImVec2(16.0f, 0.0f));
+                ImGui::SameLine();
+            }
+        };
+    
+        // Folders
+        for (auto& kv : node.children)
+        {
+            const std::string& fname = kv.first;
+            AssetNode* childNode = kv.second.get();
+    
+            if (m_filter.IsActive())
+            {
+                if (!m_filter.PassFilter(fname.c_str()))
+                {
+                    continue;
+                }
+            }
+    
             ImGui::BeginGroup();
-            ImGui::Button((it.type + "##btn" + it.uid).c_str(), ImVec2(cell, cell)); // replace with thumbnail if available
-            if (ImGui::BeginDragDropSource()) {
+            ImGui::Button(("Folder##" + childNode->path).c_str(), ImVec2(cell, cell));
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+            {
+                m_currentFolder = childNode->path;
+            }
+            ImGui::TextWrapped("%s", fname.c_str());
+            ImGui::EndGroup();
+    
+            AdvanceCell();
+        }
+    
+        // Assets
+        for (auto& it : node.items)
+        {
+            if (m_filter.IsActive())
+            {
+                bool pass = false;
+                if (m_filter.PassFilter(it.name.c_str()))
+                {
+                    pass = true;
+                }
+                if (m_filter.PassFilter(it.type.c_str()))
+                {
+                    pass = true;
+                }
+                if (!pass)
+                {
+                    continue;
+                }
+            }
+    
+            ImGui::BeginGroup();
+            ImGui::Button((it.type + "##btn" + it.uid).c_str(), ImVec2(cell, cell));
+    
+            if (ImGui::BeginDragDropSource())
+            {
                 Resource* raw = it.res.get();
                 ImGui::SetDragDropPayload("DND_RESOURCE", &raw, sizeof(raw));
                 ImGui::Text("%s", it.uid.c_str());
                 ImGui::EndDragDropSource();
             }
-
-            // selection + open
-            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
+    
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+            {
                 SelectResource(it.res);
             }
-
-            // label or inline-rename
-            if (m_renameUID == it.uid) {
+    
+            if (m_renameUID == it.uid)
+            {
                 ImGui::SetNextItemWidth(cell);
                 if (ImGui::InputText(("##rename" + it.uid).c_str(), m_renameBuf, IM_ARRAYSIZE(m_renameBuf),
-                    ImGuiInputTextFlags_EnterReturnsTrue)) {
-                    if (m_renameBuf[0]) {
+                    ImGuiInputTextFlags_EnterReturnsTrue))
+                {
+                    if (m_renameBuf[0] != 0)
+                    {
                         rm.RenameResource(it.res, std::string(m_renameBuf));
                     }
                     m_renameUID.clear();
                 }
             }
-            else {
+            else
+            {
                 ImGui::TextWrapped("%s", it.name.c_str());
             }
-
-            // context
-            if (ImGui::BeginPopupContextItem((it.uid + "##itemctx").c_str())) {
-                if (ImGui::MenuItem("Rename")) {
-                    m_renameUID = it.uid;
-                    strncpy_s(m_renameBuf, it.name.c_str(), sizeof(m_renameBuf));
-                    m_renameBuf[sizeof(m_renameBuf) - 1] = 0;
-                }
-                if (ImGui::MenuItem("Delete")) {
-                    rm.DeleteResource(it.uid);
-                }
-                if (ImGui::MenuItem("Select")) {
-                    SelectResource(it.res);
-                }
-                ImGui::EndPopup();
-            }
+    
             ImGui::EndGroup();
-
-            if (++col >= cols) { col = 0; }
-            else { ImGui::SameLine(); ImGui::Dummy(ImVec2(16, 0)); ImGui::SameLine(); }
+    
+            AdvanceCell();
         }
-        ImGui::PopStyleVar();
     }
     else {
         // list view with table
