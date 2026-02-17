@@ -271,7 +271,6 @@ void ResourceManager::ImportOne(const std::string& absPath, const std::string& r
     // Build a small JSON payload the resource understands
     json payload;
     payload["m_path"] = absPath;
-    Debug::Log(absPath);
 
     res->deserialize(payload);
     // If new, onCreate/OnCreateLate already called inside createResource(...).
@@ -280,18 +279,35 @@ void ResourceManager::ImportOne(const std::string& absPath, const std::string& r
         fn->second = payload;
 }
 
-std::string ResourceManager::GuessTypeFromExt(const std::string& ext) const
+std::string ResourceManager::GuessTypeFromExt(const std::string& ext)
 {
     if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".tga" || ext == ".bmp") return "Texture2D";
     if (ext == ".obj" || ext == ".fbx" || ext == ".gltf" || ext == ".glb")                 return "Mesh";
     if (ext == ".mat" || ext == ".material")                                           return "Material";
-    if (ext == ".vert" || ext == ".frag" || ext == ".comp")                           return "Shader";
+    //if (ext == ".vert" || ext == ".frag" || ext == ".comp")                           return "Shader";
     if (ext == ".prefab")                                                            return "Prefab";
     if (ext == ".wav" || ext == ".mp3" || ext == ".ogg")                                  return "Sound";
 
     // files such as .glsl is not technically a resource but should still show in the asset browser like a text file format to be able to view the contents
     // also we should do debug warnings if a file is detected in the assets folder but was not loaded
     return {};
+}
+
+std::string ResourceManager::GetExtensionForType(const std::string& typeName)
+{
+    if (typeName == "Shader")
+    {
+        return ".shaderprog";
+    }
+    if (typeName == "Texture2D")
+    {
+        return ".texture2d";
+    }
+    if (typeName == "Material")
+    {
+        return ".material";
+    }
+    return ".asset";
 }
 
 void ResourceManager::SetSelectedResource(const ResourcePtr& selectedResource)

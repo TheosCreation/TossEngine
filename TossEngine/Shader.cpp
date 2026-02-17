@@ -49,7 +49,22 @@ void Shader::onDestroy()
 
 void Shader::onCreateLate()
 {
-    if (m_vertexShaderFilePath.empty() || m_fragShaderFilePath.empty()) return;
+    if (!m_computeShaderFilePath.empty())
+    {
+        Attach(m_computeShaderFilePath, ShaderType::ComputeShader);
+        link();
+        isLoaded = true;
+        return;
+    }
+
+    if (m_vertexShaderFilePath.empty())
+    {
+        return;
+    }
+    if (m_fragShaderFilePath.empty())
+    {
+        return;
+    }
 
     Attach(m_vertexShaderFilePath, ShaderType::VertexShader);
     Attach(m_fragShaderFilePath, ShaderType::FragmentShader);
@@ -279,18 +294,33 @@ std::string Shader::PreprocessShader(const std::string& shaderCode) {
 
 void Shader::link() const
 {
-	glLinkProgram(m_programId);
+    glLinkProgram(m_programId);
 
-	//get compile errors
-	int logLength = 0;
-	glGetShaderiv(m_programId, GL_INFO_LOG_LENGTH, &logLength);
-	if (logLength > 0)
-	{
-		std::vector<char> errorMessage(logLength + 1);
-		glGetShaderInfoLog(m_programId, logLength, NULL, &errorMessage[0]);
-		Debug::LogWarning("Shader | " + errorMessage[0]);
-		return;
-	}
+    GLint linkStatus = 0;
+    glGetProgramiv(m_programId, GL_LINK_STATUS, &linkStatus);
+
+    GLint logLength = 0;
+    glGetProgramiv(m_programId, GL_INFO_LOG_LENGTH, &logLength);
+
+    if (logLength > 1)
+    {
+        std::vector<char> errorMessage(static_cast<size_t>(logLength) + 1);
+        glGetProgramInfoLog(m_programId, logLength, nullptr, &errorMessage[0]);
+
+        if (linkStatus == GL_FALSE)
+        {
+            Debug::LogError("Shader | Link failed: " + std::string(errorMessage.data()), false);
+        }
+        else
+        {
+            Debug::LogWarning("Shader | Link warnings: " + std::string(errorMessage.data()));
+        }
+    }
+
+    if (linkStatus == GL_FALSE)
+    {
+        return;
+    }
 }
 
 uint Shader::getId() const

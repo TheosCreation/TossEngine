@@ -115,10 +115,12 @@ public:
     void SaveImportCache(const std::string& path);
     void LoadImportCache(const std::string& path);
 
+    static std::string GuessTypeFromExt(const std::string& ext);
+    static std::string GetExtensionForType(const std::string& typeName);
+    
 protected:
     bool ShouldImport(const std::string& absPath, const std::string& type, AssetImportRec& out);
     void ImportOne(const std::string& absPath, const std::string& relUID, const std::string& type);
-    std::string GuessTypeFromExt(const std::string& ext) const;
 
     std::unordered_map<std::string, AssetImportRec> m_importCache;
     //new ends

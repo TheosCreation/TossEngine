@@ -34,6 +34,10 @@ private:
     std::string m_renameUID;
     char m_renameBuf[256]{};
 
+    char iDBuffer[256] = "";                            //!< Temporary input buffer for IDs.
+    std::string selectedTypeName = "";                  //!< Selected resource type name.
+    bool createResource = false;                        //!< True if resource creation is requested.
+    
     ImGuiTextFilter m_filter;
     bool m_showGrid = false;
     float m_gridSize = 96.0f;

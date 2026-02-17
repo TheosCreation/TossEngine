@@ -54,6 +54,31 @@ static void EnsureFolderNode(AssetNode& rootNode, const std::string& relFolder)
         node = childPtr.get();
     }
 }
+static std::string JoinPath(const std::string& a, const std::string& b)
+{
+    if (a.empty())
+    {
+        return b;
+    }
+    return a + "/" + b;
+}
+
+static std::string GetAssetsFolderPathFromCurrentFolder(const std::string& currentFolder)
+{
+    if (currentFolder.empty())
+    {
+        return "Assets";
+    }
+    return JoinPath("Assets", currentFolder);
+}
+
+static std::string BuildResourceAssetPath(const std::string& currentFolder, const std::string& typeName, const std::string& resourceId)
+{
+    const std::string folderPath = GetAssetsFolderPathFromCurrentFolder(currentFolder);
+    const std::string extension = ResourceManager::GetExtensionForType(typeName);
+    const std::string fileName = resourceId + extension;
+    return JoinPath(folderPath, fileName);
+}
 
 AssetsBrowser::AssetsBrowser(TossEditor* editor)
 {
@@ -449,20 +474,66 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
 
 void AssetsBrowser::Draw() {
     if (!m_root) Rebuild();
+
+    
     ResourceManager& rm = ResourceManager::GetInstance();
+
+    
+    
     if (ImGui::Begin("Assets")) {
         // top bar create button
         if (ImGui::Button("Create")) ImGui::OpenPopup("CreateMenu");
-        if (ImGui::BeginPopup("CreateMenu")) {
-            for (auto& t : rm.GetCreatableResourceTypes()) {
-                if (ImGui::MenuItem(t.c_str())) {
+        if (ImGui::BeginPopup("CreateMenu"))
+        {
+            for (auto& t : rm.GetCreatableResourceTypes())
+            {
+                if (ImGui::MenuItem(t.c_str()))
+                {
                     // open your existing "Enter Resource ID" modal
-                    // set selectedTypeName = t, etc.
+                    selectedTypeName = t;
+                    createResource = true;
+                    //ImGui::OpenPopup("Enter Resource ID");
                 }
             }
             ImGui::EndPopup();
         }
+        
+        if (createResource) ImGui::OpenPopup("Enter Resource ID");
+        if (ImGui::BeginPopupModal("Enter Resource ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            createResource = false;
+            string label = selectedTypeName + " ID";
+            ImGui::InputText(label.c_str(), iDBuffer, sizeof(iDBuffer));
+    
+            if (ImGui::Button("Create"))
+            {
+                if (strlen(iDBuffer) > 0)
+                {
+                    const std::string resourceId = std::string(iDBuffer);
+                    const std::string assetPath = BuildResourceAssetPath(m_currentFolder, selectedTypeName, resourceId);
 
+                    json payload;
+                    payload["m_path"] = assetPath;
+                    rm.createResource(selectedTypeName, iDBuffer, payload);
+    
+                    // Reset state
+                    iDBuffer[0] = '\0';
+                    selectedTypeName.clear();
+    
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+
+            if (ImGui::Button("Cancel"))
+            {
+                selectedTypeName.clear();
+                iDBuffer[0] = '\0';
+            
+                ImGui::CloseCurrentPopup();
+            }
+            
+            ImGui::EndPopup();
+        }
         // panes with a splitter
         const float leftMin = 160.0f;
         static float leftWidth = 260.0f;
