@@ -1084,6 +1084,7 @@ void TossEditor::onQuit()
     }
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     resourceManager.saveResourcesToFile("Resources/Resources.json");
+    resourceManager.SaveResources();
     resourceManager.CleanUp();
     DebugDraw::GetInstance().CleanUp();
     GraphicsEngine::GetInstance().CleanUp();

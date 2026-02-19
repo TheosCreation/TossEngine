@@ -25,6 +25,11 @@ std::string Resource::getPath()
 	return m_path;
 }
 
+void Resource::setPath(const std::string& filepath)
+{
+    m_path = filepath;
+}
+
 const std::string& Resource::getUniqueID()
 {
 	return m_uniqueID;

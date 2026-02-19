@@ -248,6 +248,19 @@ void ResourceManager::LoadImportCache(const std::string& pathJson)
     }
 }
 
+void ResourceManager::SaveResources()
+{
+    for (auto& [uid, resource] : m_mapResources)
+    {
+        json payload = resource->serialize();
+
+        payload["type"] = getClassName(typeid(*resource));
+        payload["uniqueId"] = uid;
+
+        // save to .meta files unless the resource is special like the shader where it needs to be saved as .shaderprog lets add functionality to resource to be able to have that avaliable to override for the shader, for everything else we use the m_path of teh resource and save .meta
+    }
+}
+
 bool ResourceManager::ShouldImport(const std::string& absPath, const std::string& type, AssetImportRec& out)
 {
     auto it = m_importCache.find(absPath);
@@ -281,15 +294,13 @@ void ResourceManager::ImportOne(const std::string& absPath, const std::string& r
 
 std::string ResourceManager::GuessTypeFromExt(const std::string& ext)
 {
-    if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".tga" || ext == ".bmp") return "Texture2D";
-    if (ext == ".obj" || ext == ".fbx" || ext == ".gltf" || ext == ".glb")                 return "Mesh";
-    if (ext == ".mat" || ext == ".material")                                           return "Material";
-    //if (ext == ".vert" || ext == ".frag" || ext == ".comp")                           return "Shader";
-    if (ext == ".prefab")                                                            return "Prefab";
-    if (ext == ".wav" || ext == ".mp3" || ext == ".ogg")                                  return "Sound";
+    if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".tga" || ext == ".bmp") { return "Texture2D"; }
+    if (ext == ".obj" || ext == ".fbx" || ext == ".gltf" || ext == ".glb")                   { return "Mesh"; }
+    if (ext == ".mat" || ext == ".material")                                                 { return "Material"; }
+    if (ext == ".prefab")                                                                    { return "Prefab"; }
+    if (ext == ".wav" || ext == ".mp3" || ext == ".ogg")                                     { return "Sound"; }
+    if (ext == ".shaderprog")                                                                { return "Shader"; }
 
-    // files such as .glsl is not technically a resource but should still show in the asset browser like a text file format to be able to view the contents
-    // also we should do debug warnings if a file is detected in the assets folder but was not loaded
     return {};
 }
 

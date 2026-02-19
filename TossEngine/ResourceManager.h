@@ -110,10 +110,10 @@ public:
     void DeletePrefabs();
     void LoadPrefabs();
 
-    //neew
     void LoadAssetsFromFolder(const std::string& assetsRoot);
     void SaveImportCache(const std::string& path);
     void LoadImportCache(const std::string& path);
+    void SaveResources();
 
     static std::string GuessTypeFromExt(const std::string& ext);
     static std::string GetExtensionForType(const std::string& typeName);

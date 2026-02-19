@@ -70,6 +70,12 @@ public:
     std::string getPath();
 
     /**
+     * @brief Sets the file path for this resource.
+     * @param filepath The new filepath.
+     */
+    void setPath(const std::string& filepath);
+    
+    /**
      * @brief Gets the unique identifier for this resource.
      * @return The unique ID string.
      */

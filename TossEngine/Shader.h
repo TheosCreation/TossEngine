@@ -196,7 +196,7 @@ private:
     std::string m_fragShaderFilePath = "";
     std::string m_computeShaderFilePath = "";
 
-    SERIALIZABLE_MEMBERS(m_vertexShaderFilePath, m_fragShaderFilePath, m_computeShaderFilePath)
+    SERIALIZABLE_MEMBERS(m_vertexShaderFilePath, m_fragShaderFilePath, m_computeShaderFilePath, m_path) // TODO: rework this to just serialize the m_path
 };
 REGISTER_RESOURCE(Shader)
 
