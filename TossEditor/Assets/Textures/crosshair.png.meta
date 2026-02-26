@@ -1,0 +1,12 @@
+{
+    "m_numChannels": 4,
+    "m_path": "Assets\\Textures\\crosshair.png",
+    "m_textureSize": {
+        "height": 200,
+        "left": 0,
+        "top": 0,
+        "width": 200
+    },
+    "type": "Texture2D",
+    "uniqueId": "Textures/crosshair.png"
+}

@@ -1,0 +1,12 @@
+{
+    "m_numChannels": 3,
+    "m_path": "Assets\\Textures\\PolygonAncientWorlds_Texture_01_A.png",
+    "m_textureSize": {
+        "height": 4096,
+        "left": 0,
+        "top": 0,
+        "width": 4096
+    },
+    "type": "Texture2D",
+    "uniqueId": "Textures/PolygonAncientWorlds_Texture_01_A.png"
+}

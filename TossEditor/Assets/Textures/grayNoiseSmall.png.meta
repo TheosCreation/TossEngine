@@ -1,0 +1,12 @@
+{
+    "m_numChannels": 4,
+    "m_path": "Assets\\Textures\\grayNoiseSmall.png",
+    "m_textureSize": {
+        "height": 147,
+        "left": 0,
+        "top": 0,
+        "width": 286
+    },
+    "type": "Texture2D",
+    "uniqueId": "Textures/grayNoiseSmall.png"
+}

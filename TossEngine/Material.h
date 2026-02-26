@@ -53,6 +53,231 @@ using UniformValue = std::variant<
     TextureCubeMapBinding
 >;
 
+inline void to_json(json& j, const Texture2DBinding& b)
+{
+    j = json::object();
+    j["slot"] = b.slot;
+    j["texture"] = b.texture; // uses your existing to_json(Texture2DPtr)
+}
+
+inline void from_json(const json& j, Texture2DBinding& b)
+{
+    b.slot = 0;
+    b.texture = nullptr;
+
+    if (j.contains("slot"))
+    {
+        b.slot = j.at("slot").get<uint>();
+    }
+    if (j.contains("texture"))
+    {
+        b.texture = j.at("texture").get<Texture2DPtr>();
+    }
+}
+
+inline void to_json(json& j, const TextureCubeMapBinding& b)
+{
+    j = json::object();
+    j["slot"] = b.slot;
+    j["texture"] = b.texture; // needs to_json(TextureCubeMapPtr)
+}
+
+inline void from_json(const json& j, TextureCubeMapBinding& b)
+{
+    b.slot = 0;
+    b.texture = nullptr;
+
+    if (j.contains("slot"))
+    {
+        b.slot = j.at("slot").get<uint>();
+    }
+    if (j.contains("texture"))
+    {
+        b.texture = j.at("texture").get<TextureCubeMapPtr>();
+    }
+}
+
+static const char* UniformType_Int = "int";
+static const char* UniformType_Float = "float";
+static const char* UniformType_Vec2 = "vec2";
+static const char* UniformType_Vec3 = "vec3";
+static const char* UniformType_Vec4 = "vec4";
+static const char* UniformType_Mat4 = "mat4";
+static const char* UniformType_Tex2D = "tex2d";
+static const char* UniformType_TexCube = "texcube";
+
+inline void to_json(json& j, const UniformValue& value)
+{
+    j = json::object();
+
+    if (std::holds_alternative<int>(value))
+    {
+        j["t"] = UniformType_Int;
+        j["v"] = std::get<int>(value);
+        return;
+    }
+
+    if (std::holds_alternative<float>(value))
+    {
+        j["t"] = UniformType_Float;
+        j["v"] = std::get<float>(value);
+        return;
+    }
+
+    if (std::holds_alternative<Vector2>(value))
+    {
+        j["t"] = UniformType_Vec2;
+        j["v"] = std::get<Vector2>(value);
+        return;
+    }
+
+    if (std::holds_alternative<Vector3>(value))
+    {
+        j["t"] = UniformType_Vec3;
+        j["v"] = std::get<Vector3>(value);
+        return;
+    }
+
+    if (std::holds_alternative<Vector4>(value))
+    {
+        j["t"] = UniformType_Vec4;
+        j["v"] = std::get<Vector4>(value);
+        return;
+    }
+
+    if (std::holds_alternative<Mat4>(value))
+    {
+        j["t"] = UniformType_Mat4;
+        j["v"] = std::get<Mat4>(value);
+        return;
+    }
+
+    if (std::holds_alternative<Texture2DBinding>(value))
+    {
+        j["t"] = UniformType_Tex2D;
+        j["v"] = std::get<Texture2DBinding>(value);
+        return;
+    }
+
+    if (std::holds_alternative<TextureCubeMapBinding>(value))
+    {
+        j["t"] = UniformType_TexCube;
+        j["v"] = std::get<TextureCubeMapBinding>(value);
+        return;
+    }
+
+    j["t"] = "unknown";
+    j["v"] = nullptr;
+}
+
+inline void from_json(const json& j, UniformValue& value)
+{
+    if (!j.is_object())
+    {
+        value = 0;
+        return;
+    }
+
+    std::string t = "";
+    if (j.contains("t"))
+    {
+        t = j.at("t").get<std::string>();
+    }
+
+    if (!j.contains("v"))
+    {
+        value = 0;
+        return;
+    }
+
+    const json& v = j.at("v");
+
+    if (t == UniformType_Int)
+    {
+        value = v.get<int>();
+        return;
+    }
+
+    if (t == UniformType_Float)
+    {
+        value = v.get<float>();
+        return;
+    }
+
+    if (t == UniformType_Vec2)
+    {
+        value = v.get<Vector2>();
+        return;
+    }
+
+    if (t == UniformType_Vec3)
+    {
+        value = v.get<Vector3>();
+        return;
+    }
+
+    if (t == UniformType_Vec4)
+    {
+        value = v.get<Vector4>();
+        return;
+    }
+
+    if (t == UniformType_Mat4)
+    {
+        value = v.get<Mat4>();
+        return;
+    }
+
+    if (t == UniformType_Tex2D)
+    {
+        value = v.get<Texture2DBinding>();
+        return;
+    }
+
+    if (t == UniformType_TexCube)
+    {
+        value = v.get<TextureCubeMapBinding>();
+        return;
+    }
+
+    value = 0;
+}
+
+// -------------------------
+// unordered_map<string, UniformValue> JSON
+// Stored as object of key -> UniformValue
+// -------------------------
+
+inline void to_json(json& j, const std::unordered_map<std::string, UniformValue>& map)
+{
+    j = json::object();
+    for (const auto& kv : map)
+    {
+        j[kv.first] = kv.second;
+    }
+}
+
+inline void from_json(const json& j, std::unordered_map<std::string, UniformValue>& map)
+{
+    map.clear();
+
+    if (!j.is_object())
+    {
+        return;
+    }
+
+    for (auto it = j.begin(); it != j.end(); ++it)
+    {
+        const std::string key = it.key();
+        const json& val = it.value();
+
+        UniformValue parsed;
+        parsed = val.get<UniformValue>();
+
+        map.emplace(key, parsed);
+    }
+}
+
 /**
  * @class Material
  * @brief A resource representing material properties including shader and texture bindings.
@@ -87,6 +312,8 @@ public:
      */
     void deserialize(const json& data) override;
 
+    void onCreateLate() override;
+    
     /**
      * @brief Draws the inspector UI for editing the material.
      */
@@ -125,6 +352,11 @@ public:
     TextureCubeMapPtr GetBinding(const std::string& bindingName);
     Texture2DPtr GetTexture2DBinding(const std::string& bindingName);
 
+    std::string GetAssetSaveExtension() const override
+    {
+        return ".mat";
+    }
+    
 private:
     /**
      * @brief Updates internal uniform bindings after shader or resource changes.
@@ -133,6 +365,8 @@ private:
 
     ShaderPtr m_shader; //!< Shader used by the material.
     std::unordered_map<std::string, UniformValue> m_uniformValues; //!< Map of uniform values bound to the material.
+    
+    //SERIALIZABLE_MEMBERS(m_uniformValues, m_shader, m_path) // TODO: rework this to use this
 };
 
 REGISTER_RESOURCE(Material)

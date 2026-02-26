@@ -645,8 +645,95 @@ inline string getMSBuildPath() {
     return result;
 }
 
+static bool EndsWith(const std::string& value, const std::string& suffix)
+{
+    if (suffix.size() > value.size())
+    {
+        return false;
+    }
+    return std::equal(suffix.rbegin(), suffix.rend(), value.rbegin());
+}
 
+static std::string BuildAssetSavePath(const std::string& basePath, const std::string& ext)
+{
+    if (basePath.empty())
+    {
+        return "";
+    }
 
+    if (EndsWith(basePath, ext))
+    {
+        return basePath;
+    }
+
+    return basePath + ext;
+}
+
+static bool TryReadJsonFile(const std::string& absPath, json& outJson)
+{
+    std::ifstream file(absPath);
+    if (!file.is_open())
+    {
+        return false;
+    }
+
+    try
+    {
+        file >> outJson;
+    }
+    catch (...)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+static std::string BuildMetaPath(const std::string& absAssetPath)
+{
+    return absAssetPath + ".meta";
+}
+static std::string NormalizePathForCompare(const std::string& p)
+{
+    std::string s = p;
+    for (size_t i = 0; i < s.size(); ++i)
+    {
+        if (s[i] == '\\')
+        {
+            s[i] = '/';
+        }
+    }
+    return s;
+}
+
+static bool StartsWithPath(const std::string& value, const std::string& prefix)
+{
+    if (value.size() < prefix.size())
+    {
+        return false;
+    }
+    if (value.compare(0, prefix.size(), prefix) != 0)
+    {
+        return false;
+    }
+    return true;
+}
+
+static bool IsInAssetsFolder(const std::string& p)
+{
+    std::string normalized = NormalizePathForCompare(p);
+
+    if (StartsWithPath(normalized, "Assets/"))
+    {
+        return true;
+    }
+    if (normalized == "Assets")
+    {
+        return true;
+    }
+
+    return false;
+}
 // Helper function to clean up the class name
 inline std::string getClassName(const std::type_info& typeInfo)
 {

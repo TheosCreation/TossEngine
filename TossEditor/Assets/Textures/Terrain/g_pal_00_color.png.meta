@@ -1,0 +1,12 @@
+{
+    "m_numChannels": 4,
+    "m_path": "Assets\\Textures\\Terrain\\g_pal_00_color.png",
+    "m_textureSize": {
+        "height": 512,
+        "left": 0,
+        "top": 0,
+        "width": 512
+    },
+    "type": "Texture2D",
+    "uniqueId": "Textures/Terrain/g_pal_00_color.png"
+}

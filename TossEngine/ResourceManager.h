@@ -114,6 +114,7 @@ public:
     void SaveImportCache(const std::string& path);
     void LoadImportCache(const std::string& path);
     void SaveResources();
+    uint64_t GetRevision() const;
 
     static std::string GuessTypeFromExt(const std::string& ext);
     static std::string GetExtensionForType(const std::string& typeName);
@@ -140,7 +141,7 @@ protected:
 
     size_t m_nextAvailableId = 1; //!< Counter for generating new unique IDs.
     std::string m_currentFilePath = ""; //!< Last file path used for saving/loading resources.
-
+    uint64_t m_revision = 0; // For any changes to the resources this number is increased marking it as dirty
 private:
     /**
      * @brief Private constructor to enforce singleton usage.

@@ -146,3 +146,30 @@ public:
      */
     static Mat4 Rotate(float angleRadians, const Vector3& axis);
 };
+
+
+
+inline void to_json(json& j, const Mat4& m)
+{
+    j = json::array();
+    for (int r = 0; r < 4; ++r)
+    {
+        for (int c = 0; c < 4; ++c)
+        {
+            j.push_back(m.value[r][c]);
+        }
+    }
+}
+
+inline void from_json(const json& j, Mat4& m)
+{
+    int idx = 0;
+    for (int r = 0; r < 4; ++r)
+    {
+        for (int c = 0; c < 4; ++c)
+        {
+            m.value[r][c] = j.at(idx).get<float>();
+            idx += 1;
+        }
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "m_numChannels": 3,
+    "m_path": "Assets\\Textures\\RedEclipse\\Bottom.png",
+    "m_textureSize": {
+        "height": 1024,
+        "left": 0,
+        "top": 0,
+        "width": 1024
+    },
+    "type": "Texture2D",
+    "uniqueId": "Textures/RedEclipse/Bottom.png"
+}

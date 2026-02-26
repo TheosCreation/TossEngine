@@ -1,0 +1,8 @@
+{
+    "m_computeShaderFilePath": "",
+    "m_fragShaderFilePath": "Assets\\Shaders\\Fragment\\QuadShader.frag",
+    "m_path": "Assets\\Shaders\\Compute\\NewShader.shaderprog",
+    "m_vertexShaderFilePath": "Assets\\Shaders\\Vertex\\QuadShader.vert",
+    "type": "Shader",
+    "uniqueId": "Shaders/Compute/NewShader.shaderprog"
+}

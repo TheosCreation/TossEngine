@@ -392,6 +392,7 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
                     if (m_renameBuf[0] != 0)
                     {
                         rm.RenameResource(it.res, std::string(m_renameBuf));
+                        m_needsRebuild = true;
                     }
                     m_renameUID.clear();
                 }
@@ -452,7 +453,11 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
                         strncpy_s(m_renameBuf, it.name.c_str(), sizeof(m_renameBuf));
                         m_renameBuf[sizeof(m_renameBuf) - 1] = 0;
                     }
-                    if (ImGui::MenuItem("Delete")) rm.DeleteResource(it.uid);
+                    if (ImGui::MenuItem("Delete"))
+                    {
+                        rm.DeleteResource(it.uid);
+                        m_needsRebuild = true;
+                    }
                     if (ImGui::MenuItem("Reveal in Explorer")) {
 #ifdef _WIN32
                         std::string abs = std::string("Assets/") + it.uid;
@@ -478,7 +483,21 @@ void AssetsBrowser::Draw() {
     
     ResourceManager& rm = ResourceManager::GetInstance();
 
-    
+    uint64_t revision = rm.GetRevision();
+    if (m_needsRebuild)
+    {
+        Rebuild();
+        m_needsRebuild = false;
+        m_lastRevision = revision;
+    }
+    else
+    {
+        if (revision != m_lastRevision)
+        {
+            Rebuild();
+            m_lastRevision = revision;
+        }
+    }
     
     if (ImGui::Begin("Assets")) {
         // top bar create button
@@ -515,7 +534,8 @@ void AssetsBrowser::Draw() {
                     json payload;
                     payload["m_path"] = assetPath;
                     rm.createResource(selectedTypeName, iDBuffer, payload);
-    
+                    m_needsRebuild = true;
+                    
                     // Reset state
                     iDBuffer[0] = '\0';
                     selectedTypeName.clear();
@@ -552,8 +572,4 @@ void AssetsBrowser::Draw() {
         ImGui::EndChild();
     }
     ImGui::End();
-
-    // process deletions and keep tree in sync
-    rm.onUpdateInternal();
-    // If resources changed externally, call Rebuild(rm)
 }

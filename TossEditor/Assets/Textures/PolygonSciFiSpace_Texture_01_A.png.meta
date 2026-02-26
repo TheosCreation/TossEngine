@@ -1,0 +1,12 @@
+{
+    "m_numChannels": 3,
+    "m_path": "Assets\\Textures\\PolygonSciFiSpace_Texture_01_A.png",
+    "m_textureSize": {
+        "height": 2048,
+        "left": 0,
+        "top": 0,
+        "width": 2048
+    },
+    "type": "Texture2D",
+    "uniqueId": "Textures/PolygonSciFiSpace_Texture_01_A.png"
+}

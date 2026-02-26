@@ -1,0 +1,12 @@
+{
+    "m_numChannels": 3,
+    "m_path": "Assets\\Textures\\Corona\\Front.png",
+    "m_textureSize": {
+        "height": 1024,
+        "left": 0,
+        "top": 0,
+        "width": 1024
+    },
+    "type": "Texture2D",
+    "uniqueId": "Textures/Corona/Front.png"
+}

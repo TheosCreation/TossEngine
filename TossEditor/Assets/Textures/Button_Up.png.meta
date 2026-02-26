@@ -1,0 +1,12 @@
+{
+    "m_numChannels": 4,
+    "m_path": "Assets\\Textures\\Button_Up.png",
+    "m_textureSize": {
+        "height": 128,
+        "left": 0,
+        "top": 0,
+        "width": 256
+    },
+    "type": "Texture2D",
+    "uniqueId": "Textures/Button_Up.png"
+}

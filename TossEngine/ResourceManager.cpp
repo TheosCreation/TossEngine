@@ -72,6 +72,7 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
     m_mapResources[newId] = resource;
     m_mapResources.erase(it);
 
+    m_revision += 1;
 }
 
 void ResourceManager::DeleteResource(const std::string& uniqueId)
@@ -193,27 +194,80 @@ void ResourceManager::LoadPrefabs()
 void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
 {
     path root = path(assetsRoot);
-    if (!exists(root)) return;
+    if (!exists(root))
+    {
+        return;
+    }
 
-    for (recursive_directory_iterator it(root, directory_options::skip_permission_denied), end; it != end; ++it) {
-        if (!it->is_regular_file()) continue;
+    for (recursive_directory_iterator it(root, directory_options::skip_permission_denied), end; it != end; ++it)
+    {
+        if (!it->is_regular_file())
+        {
+            continue;
+        }
 
         path p = it->path();
-        if (p.extension() == ".meta") continue; // handled implicitly
 
-        const std::string ext = toLower(p.extension().string()); // ".png"
+        bool isMetaFile = false;
+        path assetPath = p;
+
+        if (toLower(p.extension().string()) == ".meta")
+        {
+            isMetaFile = true;
+            assetPath = p;
+            assetPath.replace_extension(); // removes ".meta" only
+            // If the real asset exists, we will process it and load this meta as a sidecar there.
+            if (std::filesystem::exists(assetPath))
+            {
+                continue;
+            }
+        }
+
+        const std::string ext = toLower(assetPath.extension().string());
         const std::string type = GuessTypeFromExt(ext);
-        if (type.empty()) continue;
+        if (type.empty())
+        {
+            continue;
+        }
 
-        // UID = path relative to Assets with slash separators
-        std::string rel = p.lexically_relative(root).generic_string(); // e.g. "Textures/ui/button.png"
+        std::string rel = assetPath.lexically_relative(root).generic_string();
 
         AssetImportRec rec{};
-        if (!ShouldImport(p.string(), type, rec)) continue;
+        if (!ShouldImport(p.string(), type, rec))
+        {
+            continue;
+        }
 
+        // ImportOne should take the file we read from:
+        // - normal file: read from assetPath (== p)
+        // - meta-only asset: read from p (the meta file), but UID matches assetPath
         ImportOne(p.string(), rel, type);
 
-        // update cache
+        ResourcePtr resource = GetResourceByUniqueID(rel);
+        if (resource)
+        {
+            // If we imported from a real asset file, apply sidecar meta.
+            // If we imported from meta-only, p is the meta already, so this would be duplicate; skip.
+            if (!isMetaFile)
+            {
+                std::string metaPath = BuildMetaPath(p.string());
+                json metaJson;
+
+                if (std::filesystem::exists(metaPath))
+                {
+                    if (TryReadJsonFile(metaPath, metaJson))
+                    {
+                        resource->deserialize(metaJson);
+                        m_resourceDataMap[rel] = metaJson;
+                    }
+                    else
+                    {
+                        Debug::LogWarning("Failed to parse meta: " + metaPath);
+                    }
+                }
+            }
+        }
+
         rec.uid = rel;
         rec.type = type;
         rec.timestamp = ToTicks(last_write_time(p));
@@ -252,13 +306,41 @@ void ResourceManager::SaveResources()
 {
     for (auto& [uid, resource] : m_mapResources)
     {
-        json payload = resource->serialize();
+        if (!resource)
+        {
+            continue;
+        }
 
+        json payload = resource->serialize();
         payload["type"] = getClassName(typeid(*resource));
         payload["uniqueId"] = uid;
 
-        // save to .meta files unless the resource is special like the shader where it needs to be saved as .shaderprog lets add functionality to resource to be able to have that avaliable to override for the shader, for everything else we use the m_path of teh resource and save .meta
+        std::string basePath = resource->getPath();
+        std::string ext = resource->GetAssetSaveExtension(); // usually .meta unless overriden
+        std::string savePath = BuildAssetSavePath(basePath, ext);
+
+        if (savePath.empty())
+        {
+            continue;
+        }
+
+        std::filesystem::create_directories(std::filesystem::path(savePath).parent_path());
+
+        std::ofstream file(savePath);
+        if (!file.is_open())
+        {
+            Debug::LogError("Failed to open file for writing: " + savePath, false);
+            continue;
+        }
+
+        file << payload.dump(4);
+        file.close();
     }
+}
+
+uint64_t ResourceManager::GetRevision() const
+{
+    return m_revision;
 }
 
 bool ResourceManager::ShouldImport(const std::string& absPath, const std::string& type, AssetImportRec& out)
@@ -274,22 +356,31 @@ bool ResourceManager::ShouldImport(const std::string& absPath, const std::string
 
 void ResourceManager::ImportOne(const std::string& absPath, const std::string& relUID, const std::string& type)
 {
-    // prefer existing resource instance, else create
     ResourcePtr res = GetResourceByUniqueID(relUID);
-    if (!res) {
+    if (!res)
+    {
         res = createResource(type, relUID);
-        if (!res) { Debug::LogError("Import failed for " + relUID, false); return; }
+        if (!res)
+        {
+            Debug::LogError("Import failed for " + relUID, false);
+            return;
+        }
     }
 
-    // Build a small JSON payload the resource understands
+    res->setPath(absPath);
+
     json payload;
     payload["m_path"] = absPath;
 
-    res->deserialize(payload);
-    // If new, onCreate/OnCreateLate already called inside createResource(...).
-    // If existing, allow runtime refresh:
-    if (auto fn = m_resourceDataMap.find(relUID); fn != m_resourceDataMap.end())
-        fn->second = payload;
+    auto fn = m_resourceDataMap.find(relUID);
+    if (fn != m_resourceDataMap.end())
+    {
+        fn->second["m_path"] = absPath;
+    }
+    else
+    {
+        m_resourceDataMap.emplace(relUID, payload);
+    }
 }
 
 std::string ResourceManager::GuessTypeFromExt(const std::string& ext)
@@ -350,11 +441,16 @@ void ResourceManager::loadResourcesFromFile(const std::string& filepath)
         // if the JSON has a file path, make sure it still exists
         if (resourceData.contains("m_path") && resourceData["m_path"].is_string())
         {
-            std::string path = resourceData["m_path"].get<std::string>();
-            if (!std::filesystem::exists(path))
+            std::string resourcePath = resourceData["m_path"].get<std::string>();
+
+            if (!resourcePath.empty())
             {
-                Debug::Log("Skipped resource, missing file: " + path);
-                continue; // skip this resource
+                if (!std::filesystem::exists(resourcePath))
+                {
+                    Debug::Log("Skipped resource, missing file: " + resourcePath);
+                    continue;
+                }
+                Debug::Log("Loaded resource: " + resourcePath);
             }
         }
 
@@ -363,7 +459,7 @@ void ResourceManager::loadResourcesFromFile(const std::string& filepath)
     }
 
     //Above is old stuff
-    const std::string assetsRoot = "Assets";                // adjust as needed
+    const std::string assetsRoot = "Assets";
     //LoadImportCache("Library/importCache.json");            // optional cache location
     LoadAssetsFromFolder(assetsRoot);
     SaveImportCache("Library/importCache.json");
@@ -422,6 +518,7 @@ ResourcePtr ResourceManager::createResource(const std::string& typeName, const s
         res->onCreate();
         if (data != nullptr) res->deserialize(data);
         res->onCreateLate();
+        m_revision += 1;
     }
     return res;
 }
@@ -445,22 +542,31 @@ void ResourceManager::saveResourcesToFile(const std::string& filepath)
 
     for (auto& [uid, resource] : m_mapResources)
     {
-        // get the payload for *this* resource
-        json payload = resource->serialize();
+        if (!resource)
+        {
+            continue;
+        }
 
-        // inject type + uniqueId
+        std::string resourcePath = resource->getPath();
+        if (IsInAssetsFolder(resourcePath))
+        {
+            continue;
+        }
+
+        json payload = resource->serialize();
         payload["type"] = getClassName(typeid(*resource));
         payload["uniqueId"] = uid;
 
         out["resources"].push_back(std::move(payload));
     }
 
-    // write to disk
     std::ofstream file(filepath);
-    if (!file.is_open()) {
+    if (!file.is_open())
+    {
         Debug::LogError("Failed to open file for writing: " + filepath, false);
         return;
     }
+
     file << out.dump(4);
     file.close();
 

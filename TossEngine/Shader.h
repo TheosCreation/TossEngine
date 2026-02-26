@@ -161,6 +161,12 @@ public:
 
     vector<UniformBinding> getBindings() const;
 
+    // Shader is special where we need to save to .shaderprog
+    std::string GetAssetSaveExtension() const override
+    {
+        return ".shaderprog";
+    }
+    
 private:
     /**
      * @brief Attaches a shader to the program.

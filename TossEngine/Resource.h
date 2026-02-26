@@ -92,6 +92,11 @@ public:
      */
     bool isLoaded = false;
 
+    /**
+     * @brief Defaults to .meta file save extension if overridden then it can be custom data type.
+     */
+    virtual std::string GetAssetSaveExtension() const { return ".meta"; }
+    
 protected:
     ResourceManager* m_resourceManager = nullptr; //!< Pointer to the resource manager owning this resource.
     std::string m_path;                           //!< File path associated with the resource.

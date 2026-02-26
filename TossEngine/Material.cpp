@@ -12,6 +12,33 @@ Material::Material(const std::string& uid, ResourceManager* mgr) : Resource(uid,
 {
 }
 
+void Material::onCreateLate()
+{
+    if (!m_path.empty())
+    {
+        json j;
+        std::ifstream file(m_path);
+        if (file.is_open())
+        {
+            try
+            {
+                file >> j;
+                deserialize(j);
+            }
+            catch (...)
+            {
+            }
+        }
+    }
+
+    if (m_shader)
+    {
+        UpdateBindings();
+    }
+
+    isLoaded = true;
+}
+
 json Material::serialize() const
 {
     json data;
@@ -327,50 +354,119 @@ Texture2DPtr Material::GetTexture2DBinding(const std::string& bindingName)
 
 void Material::UpdateBindings()
 {
-    std::unordered_map<std::string, UniformValue> old = std::move(m_uniformValues);
+    if (!m_shader)
+    {
+        return;
+    }
+
+    std::unordered_map<std::string, UniformValue> oldValues = m_uniformValues;
     m_uniformValues.clear();
 
-    GLuint prog = m_shader->getId();
+    GLuint programId = m_shader->getId();
+
     for (auto& binding : m_shader->getBindings())
     {
-        const char* name = binding.name.c_str();
-        GLint loc = glGetUniformLocation(prog, name);
-        if (loc < 0) continue;  // skip inactive uniforms
+        const std::string& uniformName = binding.name;
+
+        GLint location = glGetUniformLocation(programId, uniformName.c_str());
+        if (location < 0)
+        {
+            continue;
+        }
+
+        auto oldIt = oldValues.find(uniformName);
 
         switch (binding.type)
         {
-        case GL_FLOAT:      m_uniformValues[name] = 0.0f;              break;
-        case GL_FLOAT_VEC2: m_uniformValues[name] = Vector2{};        break;
-        case GL_FLOAT_VEC3: m_uniformValues[name] = Vector3{};        break;
-        case GL_FLOAT_VEC4: m_uniformValues[name] = Vector4{};        break;
-        case GL_FLOAT_MAT4: m_uniformValues[name] = Mat4{ 1.0f };       break;
-
-        case GL_SAMPLER_2D:
-        {
-            Texture2DBinding tb;
-            tb.slot = (uint)loc;
-            // if the user had bound a texture to this uniform before, restore it:
-            if (auto it = old.find(name);
-                it != old.end() && std::holds_alternative<Texture2DBinding>(it->second))
+            case GL_FLOAT:
             {
-                tb.texture = std::get<Texture2DBinding>(it->second).texture;
+                float value = 0.0f;
+                if (oldIt != oldValues.end() && std::holds_alternative<float>(oldIt->second))
+                {
+                    value = std::get<float>(oldIt->second);
+                }
+                m_uniformValues[uniformName] = value;
+                break;
             }
-            m_uniformValues[name] = tb;
-            break;
-        }
 
-        case GL_SAMPLER_CUBE:
-        {
-            TextureCubeMapBinding cb;
-            cb.slot = (uint)loc;
-            if (auto it = old.find(name);
-                it != old.end() && std::holds_alternative<TextureCubeMapBinding>(it->second))
+            case GL_FLOAT_VEC2:
             {
-                cb.texture = std::get<TextureCubeMapBinding>(it->second).texture;
+                Vector2 value = Vector2{};
+                if (oldIt != oldValues.end() && std::holds_alternative<Vector2>(oldIt->second))
+                {
+                    value = std::get<Vector2>(oldIt->second);
+                }
+                m_uniformValues[uniformName] = value;
+                break;
             }
-            m_uniformValues[name] = cb;
-            break;
-        }
+
+            case GL_FLOAT_VEC3:
+            {
+                Vector3 value = Vector3{};
+                if (oldIt != oldValues.end() && std::holds_alternative<Vector3>(oldIt->second))
+                {
+                    value = std::get<Vector3>(oldIt->second);
+                }
+                m_uniformValues[uniformName] = value;
+                break;
+            }
+
+            case GL_FLOAT_VEC4:
+            {
+                Vector4 value = Vector4{};
+                if (oldIt != oldValues.end() && std::holds_alternative<Vector4>(oldIt->second))
+                {
+                    value = std::get<Vector4>(oldIt->second);
+                }
+                m_uniformValues[uniformName] = value;
+                break;
+            }
+
+            case GL_FLOAT_MAT4:
+            {
+                Mat4 value = Mat4{ 1.0f };
+                if (oldIt != oldValues.end() && std::holds_alternative<Mat4>(oldIt->second))
+                {
+                    value = std::get<Mat4>(oldIt->second);
+                }
+                m_uniformValues[uniformName] = value;
+                break;
+            }
+
+            case GL_SAMPLER_2D:
+            {
+                Texture2DBinding bindingValue;
+                bindingValue.texture = nullptr;
+                bindingValue.slot = 0;
+
+                if (oldIt != oldValues.end() && std::holds_alternative<Texture2DBinding>(oldIt->second))
+                {
+                    bindingValue = std::get<Texture2DBinding>(oldIt->second);
+                }
+
+                m_uniformValues[uniformName] = bindingValue;
+                break;
+            }
+
+            case GL_SAMPLER_CUBE:
+            {
+                TextureCubeMapBinding bindingValue;
+                bindingValue.texture = nullptr;
+                bindingValue.slot = 0;
+
+                if (oldIt != oldValues.end() && std::holds_alternative<TextureCubeMapBinding>(oldIt->second))
+                {
+                    bindingValue = std::get<TextureCubeMapBinding>(oldIt->second);
+                }
+
+                m_uniformValues[uniformName] = bindingValue;
+                break;
+            }
+
+            default:
+            {
+                break;
+            }
         }
     }
 }

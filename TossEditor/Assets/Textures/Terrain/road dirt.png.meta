@@ -1,0 +1,12 @@
+{
+    "m_numChannels": 4,
+    "m_path": "Assets\\Textures\\Terrain\\road dirt.png",
+    "m_textureSize": {
+        "height": 512,
+        "left": 0,
+        "top": 0,
+        "width": 512
+    },
+    "type": "Texture2D",
+    "uniqueId": "Textures/Terrain/road dirt.png"
+}

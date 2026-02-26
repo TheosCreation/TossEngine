@@ -1,0 +1,8 @@
+{
+    "m_atlasHeight": 512,
+    "m_atlasWidth": 512,
+    "m_path": "Resources\\Fonts\\VCR_OSD_MONO.ttf",
+    "m_pixelHeight": 72.0,
+    "type": "Font",
+    "uniqueId": "VCRFont"
+}

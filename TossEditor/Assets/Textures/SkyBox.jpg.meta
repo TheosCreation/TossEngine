@@ -1,0 +1,12 @@
+{
+    "m_numChannels": 3,
+    "m_path": "Assets\\Textures\\SkyBox.jpg",
+    "m_textureSize": {
+        "height": 2048,
+        "left": 0,
+        "top": 0,
+        "width": 4096
+    },
+    "type": "Texture2D",
+    "uniqueId": "Textures/SkyBox.jpg"
+}

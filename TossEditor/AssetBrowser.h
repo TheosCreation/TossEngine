@@ -41,6 +41,8 @@ private:
     ImGuiTextFilter m_filter;
     bool m_showGrid = false;
     float m_gridSize = 96.0f;
+    uint64_t m_lastRevision = 0;
+    bool m_needsRebuild = true;
 
     void SelectResource(const ResourcePtr& r);
     void drawLeftTree(AssetNode& node);
