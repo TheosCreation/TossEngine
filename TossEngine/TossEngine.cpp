@@ -33,9 +33,104 @@ void TossEngine::Init()
 
 void TossEngine::LoadGenericResources()
 {
-   // auto& resourceManager = ResourceManager::GetInstance();
-   // resourceManager.createMeshFromFile("Resources/Meshes/sphere.obj");
-   // resourceManager.createMeshFromFile("Resources/Meshes/cube.obj");
+    auto& resourceManager = ResourceManager::GetInstance();
+
+    // Meshes
+    json meshMeta = json::object();
+    meshMeta["m_path"] = "Internal/Meshes/sphere.obj";
+    resourceManager.createInternalResource("Mesh", "Sphere", meshMeta);
+    
+
+    json cubeMeta = json::object();
+    cubeMeta["m_path"] = "Internal/Meshes/cube.obj";
+    resourceManager.createInternalResource("Mesh", "Cube", cubeMeta);
+
+    //Shaders
+    json skyBoxShaderMeta = json::object();
+    skyBoxShaderMeta["m_path"] = "Internal/Shaders/SkyboxShader.shaderprog";
+    resourceManager.createInternalResource("Shader", "SkyBoxShader", skyBoxShaderMeta);
+    
+    json geometryPassMeshShaderMeta = json::object();
+    geometryPassMeshShaderMeta["m_path"] = "Internal/Shaders/GeometryPassMeshShader.shaderprog";
+    resourceManager.createInternalResource("Shader", "GeometryPassMeshShader", geometryPassMeshShaderMeta);
+    
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/GeometryPassInstancedMeshShader.shaderprog";
+        resourceManager.createInternalResource("Shader", "GeometryPassInstancedMeshShader", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/Image.shaderprog";
+        resourceManager.createInternalResource("Shader", "Image", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/MeshShader.shaderprog";
+        resourceManager.createInternalResource("Shader", "MeshShader", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/InstancedMeshShader.shaderprog";
+        resourceManager.createInternalResource("Shader", "InstancedMeshShader", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/Text.shaderprog";
+        resourceManager.createInternalResource("Shader", "Text", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/ShadowShaderInstancedShader.shaderprog";
+        resourceManager.createInternalResource("Shader", "ShadowShaderInstancedShader", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/ShadowShader.shaderprog";
+        resourceManager.createInternalResource("Shader", "ShadowShader", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/SSQLightingShader.shaderprog";
+        resourceManager.createInternalResource("Shader", "SSQLightingShader", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/DebugShader.shaderprog";
+        resourceManager.createInternalResource("Shader", "DebugShader", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/PostProcessPlainShader.shaderprog";
+        resourceManager.createInternalResource("Shader", "PostProcessPlainShader", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/PostProcessOldFilmShader.shaderprog";
+        resourceManager.createInternalResource("Shader", "PostProcessOldFilmShader", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/PostProcessCRTShader.shaderprog";
+        resourceManager.createInternalResource("Shader", "PostProcessCRTShader", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/PostProcessInvertedShader.shaderprog";
+        resourceManager.createInternalResource("Shader", "PostProcessInvertedShader", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/PostProcessLumGreyscale.shaderprog";
+        resourceManager.createInternalResource("Shader", "PostProcessLumGreyscale", shaderMeta);
+    }
+    {
+        json shaderMeta = json::object();
+        shaderMeta["m_path"] = "Internal/Shaders/ParticleSystem.shaderprog";
+        resourceManager.createInternalResource("Shader", "ParticleSystem", shaderMeta);
+    }
+
+    //Materials
 }
 
 void TossEngine::TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName, bool maximized)

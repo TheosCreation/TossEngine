@@ -1,0 +1,8 @@
+{
+    "m_computeShaderFilePath": "",
+    "m_fragShaderFilePath": "Internal\\Shaders\\Fragment\\OldFilmRenderPass.frag",
+    "m_path": "Internal\\Shaders\\PostProcessOldFilmShader.shaderprog",
+    "m_vertexShaderFilePath": "Internal\\Shaders\\Vertex\\ScreenQuad.vert",
+    "type": "Shader",
+    "uniqueId": "PostProcessOldFilmShader"
+}

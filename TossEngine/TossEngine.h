@@ -44,7 +44,7 @@ public:
      * @brief Loads default engine resources.
      */
     void LoadGenericResources();
-
+    
     /**
      * @brief Creates a window for rendering and interaction.
      * @param owner The Resizable owner (for callbacks).

@@ -86,6 +86,7 @@ public:
     bool HasSerializedData(const std::string& uid) const { return m_resourceDataMap.find(uid) != m_resourceDataMap.end(); }
 
     ResourcePtr createResource(const std::string& typeName, const std::string& uid, const json& data = nullptr);
+    ResourcePtr createInternalResource(const std::string& typeName, const std::string& uid, const json& data = nullptr);
 
     vector<string> GetCreatableResourceTypes() const;
 
@@ -100,6 +101,8 @@ public:
 
     void RenameResource(ResourcePtr resource, const std::string& newId);
     void DeleteResource(const std::string& uniqueId);
+    void MarkResourceAsMandatory(const std::string& uniqueId);
+    bool IsResourceMandatory(const std::string& uniqueId) const;
     void Reload();
     void CleanUp();
 
@@ -124,7 +127,6 @@ protected:
     void ImportOne(const std::string& absPath, const std::string& relUID, const std::string& type);
 
     std::unordered_map<std::string, AssetImportRec> m_importCache;
-    //new ends
 
     bool hasLoadedResources = false;    //!< True if resources were loaded from disk.
     bool hasCreatedResources = false;   //!< True if any resources have been created at runtime.
@@ -137,6 +139,7 @@ protected:
     std::unordered_map<std::string, void*> m_resourceModules; //!< Loaded modules for different resource types.
 
     std::set<string> m_resourcesToDestroy; //!< Resources scheduled for delayed destruction.
+    std::set<string> m_mandatoryResources; //!< Resources that are engine-required and cannot be deleted.
     ResourcePtr m_selectedResource = nullptr; //!< Resource currently selected in the editor (for inspector).
 
     size_t m_nextAvailableId = 1; //!< Counter for generating new unique IDs.

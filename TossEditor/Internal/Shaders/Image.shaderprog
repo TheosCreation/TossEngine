@@ -1,0 +1,8 @@
+{
+    "m_computeShaderFilePath": "",
+    "m_fragShaderFilePath": "Internal\\Shaders\\Fragment\\QuadShader.frag",
+    "m_path": "Internal\\Shaders\\Image.shaderprog",
+    "m_vertexShaderFilePath": "Internal\\Shaders\\Vertex\\Image.vert",
+    "type": "Shader",
+    "uniqueId": "Image"
+}

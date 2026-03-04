@@ -38,6 +38,7 @@ TossEditor::TossEditor()
     AudioEngine::GetInstance().Init();
     Random::Init();
 
+    tossEngine.LoadGenericResources();
     ResourceManager::GetInstance().loadResourcesFromFile("Resources/Resources.json");
 
 

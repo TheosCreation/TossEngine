@@ -1,0 +1,8 @@
+{
+    "m_computeShaderFilePath": "",
+    "m_fragShaderFilePath": "Internal\\Shaders\\Fragment\\ShadowShader.frag",
+    "m_path": "Internal\\Shaders\\ShadowShader.shaderprog",
+    "m_vertexShaderFilePath": "Internal\\Shaders\\Vertex\\ShadowShader.vert",
+    "type": "Shader",
+    "uniqueId": "ShadowShader"
+}

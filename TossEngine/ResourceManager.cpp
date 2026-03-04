@@ -77,7 +77,26 @@ void ResourceManager::RenameResource(ResourcePtr resource, const std::string& ne
 
 void ResourceManager::DeleteResource(const std::string& uniqueId)
 {
+    if (IsResourceMandatory(uniqueId))
+    {
+        Debug::LogWarning("Cannot delete mandatory engine resource: " + uniqueId);
+        return;
+    }
+
     m_resourcesToDestroy.insert(uniqueId);
+}
+
+void ResourceManager::MarkResourceAsMandatory(const std::string& uniqueId)
+{
+    if (!uniqueId.empty())
+    {
+        m_mandatoryResources.insert(uniqueId);
+    }
+}
+
+bool ResourceManager::IsResourceMandatory(const std::string& uniqueId) const
+{
+    return m_mandatoryResources.find(uniqueId) != m_mandatoryResources.end();
 }
 
 void ResourceManager::Reload()
@@ -466,6 +485,8 @@ void ResourceManager::loadResourcesFromFile(const std::string& filepath)
 
     for (auto& [uid, resource] : m_mapResources)
     {
+        if (IsResourceMandatory(uid)) continue;
+        
         resource->onCreate();
         if (m_resourceDataMap.contains(uid))
         {
@@ -504,6 +525,12 @@ ResourcePtr ResourceManager::createResourceFromDataToMap(const std::string& type
     return nullptr;
 }
 
+ResourcePtr ResourceManager::createInternalResource(const std::string& typeName, const std::string& uid, const json& data)
+{
+    ResourcePtr resource = createResource(typeName, uid, data);
+    MarkResourceAsMandatory(uid);
+    return resource;
+}
 ResourcePtr ResourceManager::createResource(const std::string& typeName, const std::string& uid, const json& data)
 {
     auto it = resourceFactories.find(typeName);
@@ -542,6 +569,10 @@ void ResourceManager::saveResourcesToFile(const std::string& filepath)
 
     for (auto& [uid, resource] : m_mapResources)
     {
+        if (IsResourceMandatory(uid))
+        {
+            continue;
+        }
         if (!resource)
         {
             continue;

@@ -1,0 +1,8 @@
+{
+    "m_computeShaderFilePath": "",
+    "m_fragShaderFilePath": "Internal\\Shaders\\Fragment\\SSRLightingShader.frag",
+    "m_path": "Internal\\Shaders\\SSQLightingShader.shaderprog",
+    "m_vertexShaderFilePath": "Internal\\Shaders\\Vertex\\ScreenQuad.vert",
+    "type": "Shader",
+    "uniqueId": "SSQLightingShader"
+}

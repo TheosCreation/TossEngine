@@ -1,0 +1,8 @@
+{
+    "m_computeShaderFilePath": "",
+    "m_fragShaderFilePath": "Internal\\Shaders\\Fragment\\GeometryPass.frag",
+    "m_path": "Internal\\Shaders\\GeometryPassInstancedMeshShader.shaderprog",
+    "m_vertexShaderFilePath": "Internal\\Shaders\\Vertex\\InstancedMesh.vert",
+    "type": "Shader",
+    "uniqueId": "GeometryPassInstancedMeshShader"
+}

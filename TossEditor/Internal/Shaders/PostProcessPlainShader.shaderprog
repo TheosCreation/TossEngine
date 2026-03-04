@@ -1,0 +1,8 @@
+{
+    "m_computeShaderFilePath": "",
+    "m_fragShaderFilePath": "Internal\\Shaders\\Fragment\\QuadShader.frag",
+    "m_path": "Internal\\Shaders\\PostProcessPlainShader.shaderprog",
+    "m_vertexShaderFilePath": "Internal\\Shaders\\Vertex\\ScreenQuad.vert",
+    "type": "Shader",
+    "uniqueId": "PostProcessPlainShader"
+}

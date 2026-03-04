@@ -251,7 +251,7 @@ void Scene::onCreate()
 
     auto& resourceManager = ResourceManager::GetInstance();
 
-    // TODO: hard coded for now as i need to internalize some shaders and materials so they dont go corrupt by user
+    // TODO: make these overridable by user but gonna have to default back to the internal resource
     m_deferredSSRQMaterial = resourceManager.get<Material>("DeferredSSRQMaterial");
     m_postProcessSSRQMaterial = resourceManager.get<Material>("PostProcessSSRQMaterial");
 
@@ -267,7 +267,7 @@ void Scene::onCreate()
         //Creates default objects that are usually required for a scene
         GameObjectPtr skyboxObject = createGameObject<GameObject>("Skybox");
         Skybox* skybox = skyboxObject->addComponent<Skybox>();
-        skybox->setMesh(resourceManager.get<Mesh>("Resources/Meshes/cube.obj"));
+        skybox->setMesh(resourceManager.get<Mesh>("Cube"));
 
         GameObjectPtr directionalLightObject = createGameObject<GameObject>("Directional Light");
         directionalLightObject->m_transform.rotation = Quaternion::FromEuler(Vector3(30,40,50));

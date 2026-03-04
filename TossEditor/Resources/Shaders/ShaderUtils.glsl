@@ -1,1 +1,0 @@
-//Add useful functions for all shaders to maybe have access to
