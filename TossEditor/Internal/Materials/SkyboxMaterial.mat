@@ -1,0 +1,38 @@
+{
+    "m_path": "Internal/Materials/SkyboxMaterial.mat",
+    "m_shader": {
+        "id": "SkyBoxShader"
+    },
+    "m_uniformValues": {
+        "Texture_Skybox": {
+            "t": "texcube",
+            "v": {
+                "slot": 0,
+                "texture": null
+            }
+        },
+        "VPMatrix": {
+            "t": "mat4",
+            "v": [
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ]
+        }
+    },
+    "type": "Material",
+    "uniqueId": "SkyboxMaterial"
+}

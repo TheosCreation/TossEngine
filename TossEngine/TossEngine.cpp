@@ -131,6 +131,31 @@ void TossEngine::LoadGenericResources()
     }
 
     //Materials
+    {
+        json materialMeta = json::object();
+        materialMeta["m_path"] = "Internal/Materials/SkyboxMaterial.mat";
+        resourceManager.createInternalResource("Material", "SkyboxMaterial", materialMeta);
+    }
+    {
+        json materialMeta = json::object();
+        materialMeta["m_path"] = "Internal/Materials/ImageMaterial.mat";
+        resourceManager.createInternalResource("Material", "ImageMaterial", materialMeta);
+    }
+    {
+        json materialMeta = json::object();
+        materialMeta["m_path"] = "Internal/Materials/TextMaterial.mat";
+        resourceManager.createInternalResource("Material", "TextMaterial", materialMeta);
+    }
+    {
+        json materialMeta = json::object();
+        materialMeta["m_path"] = "Internal/Materials/PostProcessSSRQMaterial.mat";
+        resourceManager.createInternalResource("Material", "PostProcessSSRQMaterial", materialMeta);
+    }
+    {
+        json materialMeta = json::object();
+        materialMeta["m_path"] = "Internal/Materials/DeferredSSRQMaterial.mat";
+        resourceManager.createInternalResource("Material", "DeferredSSRQMaterial", materialMeta);
+    }
 }
 
 void TossEngine::TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName, bool maximized)

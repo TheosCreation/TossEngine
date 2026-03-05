@@ -325,7 +325,7 @@ void ResourceManager::SaveResources()
 {
     for (auto& [uid, resource] : m_mapResources)
     {
-        if (!resource)
+        if (!resource || IsResourceMandatory(uid)) // Dont serialize the resource if the resource is null or is internal resource
         {
             continue;
         }
@@ -335,7 +335,7 @@ void ResourceManager::SaveResources()
         payload["uniqueId"] = uid;
 
         std::string basePath = resource->getPath();
-        std::string ext = resource->GetAssetSaveExtension(); // usually .meta unless overriden
+        std::string ext = resource->GetAssetSaveExtension();
         std::string savePath = BuildAssetSavePath(basePath, ext);
 
         if (savePath.empty())

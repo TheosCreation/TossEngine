@@ -70,6 +70,8 @@ private:
 	float m_shininess = 32.0f;
 	float m_alpha = 1.0f;
 	Vector3 m_color = Color::Purple;
+
+    //TODO: rework to use new serialize system and new material system lol
 };
 
 REGISTER_COMPONENT(MeshRenderer);

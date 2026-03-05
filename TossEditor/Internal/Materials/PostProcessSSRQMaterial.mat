@@ -1,0 +1,25 @@
+{
+    "m_path": "Internal/Materials/ImageMaterial.mat",
+    "m_shader": {
+        "id": "PostProcessPlainShader"
+    },
+    "m_uniformValues": {
+        "Texture0": {
+            "t": "tex2d",
+            "v": {
+                "slot": 0,
+                "texture": null
+            }
+        },
+        "color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        }
+    },
+    "type": "Material",
+    "uniqueId": "PostProcessSSRQMaterial"
+}

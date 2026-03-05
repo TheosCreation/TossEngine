@@ -268,6 +268,7 @@ void Scene::onCreate()
         GameObjectPtr skyboxObject = createGameObject<GameObject>("Skybox");
         Skybox* skybox = skyboxObject->addComponent<Skybox>();
         skybox->setMesh(resourceManager.get<Mesh>("Cube"));
+        skybox->setTextureCubeMap(resourceManager.get<TextureCubeMap>("Eclipse"));
 
         GameObjectPtr directionalLightObject = createGameObject<GameObject>("Directional Light");
         directionalLightObject->m_transform.rotation = Quaternion::FromEuler(Vector3(30,40,50));

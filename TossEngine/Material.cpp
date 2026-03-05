@@ -93,12 +93,12 @@ void Material::OnInspectorGUI()
                 }
                 else if constexpr (std::is_same_v<T, Texture2DBinding>)
                 {
-                    ResourceDropdownField(arg.texture, uniformName + "Texture2D");
+                    ResourceDropdownField(arg.texture, uniformName + " [Texture2D]");
                     value = arg;
                 }
                 else if constexpr (std::is_same_v<T, TextureCubeMapBinding>)
                 {
-                    ResourceDropdownField(arg.texture, uniformName + "CubeMap");
+                    ResourceDropdownField(arg.texture, uniformName + " [CubeMap]");
                     value = arg;
                 }
                 // Mat4 could be editable with a matrix editor if you want to go advanced
@@ -127,6 +127,163 @@ void Material::SetShader(const ShaderPtr& shader)
 ShaderPtr Material::GetShader()
 {
 	return m_shader;
+}
+
+void Material::setBinding(const std::string& uniformName, const Texture2DPtr& texture, uint slot)
+{
+    if (uniformName.empty())
+    {
+        return;
+    }
+
+    Texture2DBinding bindingValue;
+    bindingValue.texture = texture;
+    bindingValue.slot = slot;
+
+    auto existingIt = m_uniformValues.find(uniformName);
+    if (existingIt == m_uniformValues.end())
+    {
+        m_uniformValues.emplace(uniformName, bindingValue);
+        return;
+    }
+
+    if (std::holds_alternative<Texture2DBinding>(existingIt->second))
+    {
+        existingIt->second = bindingValue;
+        return;
+    }
+
+    // If the uniform exists but is a different type, overwrite it anyway.
+    existingIt->second = bindingValue;
+}
+
+void Material::setBinding(const std::string& uniformName, const TextureCubeMapPtr& texture, uint slot)
+{
+    if (uniformName.empty())
+    {
+        return;
+    }
+
+    TextureCubeMapBinding bindingValue;
+    bindingValue.texture = texture;
+    bindingValue.slot = slot;
+
+    auto existingIt = m_uniformValues.find(uniformName);
+    if (existingIt == m_uniformValues.end())
+    {
+        m_uniformValues.emplace(uniformName, bindingValue);
+        return;
+    }
+
+    if (std::holds_alternative<TextureCubeMapBinding>(existingIt->second))
+    {
+        existingIt->second = bindingValue;
+        return;
+    }
+
+    existingIt->second = bindingValue;
+}
+
+void Material::setBinding(const std::string& uniformName, float value)
+{
+    if (uniformName.empty())
+    {
+        return;
+    }
+
+    auto existingIt = m_uniformValues.find(uniformName);
+    if (existingIt == m_uniformValues.end())
+    {
+        m_uniformValues.emplace(uniformName, value);
+        return;
+    }
+
+    existingIt->second = value;
+}
+
+void Material::setBinding(const std::string& uniformName, int value)
+{
+    if (uniformName.empty())
+    {
+        return;
+    }
+
+    auto existingIt = m_uniformValues.find(uniformName);
+    if (existingIt == m_uniformValues.end())
+    {
+        m_uniformValues.emplace(uniformName, value);
+        return;
+    }
+
+    existingIt->second = value;
+}
+
+void Material::setBinding(const std::string& uniformName, const Vector2& value)
+{
+    if (uniformName.empty())
+    {
+        return;
+    }
+
+    auto existingIt = m_uniformValues.find(uniformName);
+    if (existingIt == m_uniformValues.end())
+    {
+        m_uniformValues.emplace(uniformName, value);
+        return;
+    }
+
+    existingIt->second = value;
+}
+
+void Material::setBinding(const std::string& uniformName, const Vector3& value)
+{
+    if (uniformName.empty())
+    {
+        return;
+    }
+
+    auto existingIt = m_uniformValues.find(uniformName);
+    if (existingIt == m_uniformValues.end())
+    {
+        m_uniformValues.emplace(uniformName, value);
+        return;
+    }
+
+    existingIt->second = value;
+}
+
+void Material::setBinding(const std::string& uniformName, const Vector4& value)
+{
+    if (uniformName.empty())
+    {
+        return;
+    }
+
+    auto existingIt = m_uniformValues.find(uniformName);
+    if (existingIt == m_uniformValues.end())
+    {
+        m_uniformValues.emplace(uniformName, value);
+        return;
+    }
+
+    existingIt->second = value;
+}
+
+void Material::setBinding(const std::string& uniformName, const Mat4& value)
+{
+    if (uniformName.empty())
+    {
+        return;
+    }
+
+    auto existingIt = m_uniformValues.find(uniformName);
+    if (existingIt == m_uniformValues.end())
+    {
+        m_uniformValues.emplace(uniformName, value);
+        return;
+    }
+
+    existingIt->second = value;
 }
 
 bool Material::Bind() const

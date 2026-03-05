@@ -1,0 +1,1499 @@
+{
+    "m_path": "Internal/Materials/DeferredSSRQMaterial.mat",
+    "m_shader": {
+        "id": "SSQLightingShader"
+    },
+    "m_uniformValues": {
+        "AmbientColor": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "AmbientStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "CameraPos": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "DirLightArray[0].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "DirLightArray[0].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "DirLightArray[0].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "DirLightArray[1].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "DirLightArray[1].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "DirLightArray[1].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[0].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[0].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[0].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[0].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[0].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[0].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[0].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[10].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[10].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[10].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[10].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[10].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[10].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[10].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[11].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[11].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[11].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[11].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[11].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[11].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[11].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[12].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[12].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[12].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[12].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[12].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[12].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[12].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[13].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[13].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[13].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[13].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[13].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[13].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[13].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[14].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[14].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[14].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[14].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[14].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[14].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[14].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[15].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[15].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[15].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[15].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[15].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[15].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[15].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[16].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[16].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[16].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[16].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[16].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[16].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[16].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[17].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[17].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[17].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[17].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[17].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[17].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[17].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[18].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[18].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[18].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[18].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[18].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[18].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[18].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[19].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[19].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[19].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[19].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[19].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[19].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[19].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[1].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[1].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[1].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[1].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[1].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[1].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[1].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[20].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[20].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[20].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[20].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[20].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[20].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[20].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[21].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[21].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[21].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[21].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[21].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[21].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[21].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[22].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[22].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[22].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[22].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[22].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[22].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[22].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[23].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[23].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[23].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[23].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[23].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[23].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[23].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[24].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[24].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[24].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[24].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[24].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[24].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[24].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[2].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[2].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[2].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[2].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[2].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[2].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[2].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[3].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[3].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[3].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[3].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[3].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[3].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[3].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[4].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[4].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[4].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[4].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[4].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[4].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[4].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[5].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[5].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[5].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[5].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[5].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[5].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[5].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[6].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[6].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[6].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[6].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[6].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[6].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[6].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[7].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[7].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[7].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[7].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[7].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[7].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[7].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[8].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[8].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[8].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[8].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[8].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[8].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[8].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[9].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[9].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[9].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[9].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[9].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "PointLightArray[9].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "PointLightArray[9].Radius": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[0].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[0].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[0].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[0].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[0].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[0].CutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[0].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[0].OuterCutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[0].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[1].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[1].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[1].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[1].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[1].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[1].CutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[1].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[1].OuterCutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[1].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[2].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[2].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[2].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[2].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[2].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[2].CutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[2].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[2].OuterCutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[2].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[3].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[3].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[3].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[3].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[3].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[3].CutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[3].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[3].OuterCutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[3].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[4].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[4].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[4].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[4].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[4].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[4].CutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[4].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[4].OuterCutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[4].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[5].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[5].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[5].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[5].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[5].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[5].CutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[5].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[5].OuterCutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[5].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[6].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[6].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[6].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[6].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[6].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[6].CutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[6].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[6].OuterCutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[6].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[7].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[7].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[7].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[7].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[7].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[7].CutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[7].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[7].OuterCutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[7].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[8].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[8].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[8].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[8].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[8].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[8].CutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[8].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[8].OuterCutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[8].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[9].AttenuationConstant": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[9].AttenuationExponent": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[9].AttenuationLinear": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[9].Base.Color": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[9].Base.SpecularStrength": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[9].CutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[9].Direction": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "SpotLightArray[9].OuterCutOff": {
+            "t": "float",
+            "v": 0.0
+        },
+        "SpotLightArray[9].Position": {
+            "t": "vec3",
+            "v": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "Texture_AlbedoShininess": {
+            "t": "tex2d",
+            "v": {
+                "slot": 0,
+                "texture": null
+            }
+        },
+        "Texture_Normal": {
+            "t": "tex2d",
+            "v": {
+                "slot": 0,
+                "texture": null
+            }
+        },
+        "Texture_Position": {
+            "t": "tex2d",
+            "v": {
+                "slot": 0,
+                "texture": null
+            }
+        },
+        "Texture_ShadowMap[0]": {
+            "t": "tex2d",
+            "v": {
+                "slot": 0,
+                "texture": null
+            }
+        },
+        "VPLight[0]": {
+            "t": "mat4",
+            "v": [
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ]
+        }
+    },
+    "type": "Material",
+    "uniqueId": "DeferredSSRQMaterial"
+}

@@ -329,7 +329,16 @@ public:
      * @return Shared pointer to the shader.
      */
     ShaderPtr GetShader();
-
+    
+    void setBinding(const std::string& uniformName, const Texture2DPtr& texture, uint slot = 0);
+    void setBinding(const std::string& uniformName, const TextureCubeMapPtr& texture, uint slot = 0);
+    void setBinding(const std::string& uniformName, float value);
+    void setBinding(const std::string& uniformName, int value);
+    void setBinding(const std::string& uniformName, const Vector2& value);
+    void setBinding(const std::string& uniformName, const Vector3& value);
+    void setBinding(const std::string& uniformName, const Vector4& value);
+    void setBinding(const std::string& uniformName, const Mat4& value);
+    
     /**
      * @brief Binds the material's shader and uniforms for rendering.
      * @return True if successful, false otherwise.

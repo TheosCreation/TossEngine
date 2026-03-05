@@ -12,6 +12,7 @@ Mail : theo.morris@mds.ac.nz
 
 #pragma once
 #include "Renderer.h"
+#include "Mesh.h"
 
 /**
  * @class Skybox
@@ -20,17 +21,12 @@ Mail : theo.morris@mds.ac.nz
 class TOSSENGINE_API Skybox : public Renderer
 {
 public:
-    // Serialize the MeshRenderer to JSON
-    json serialize() const override;
-
-    // Deserialize the MeshRenderer from JSON
-    void deserialize(const json& data) override;
-
     virtual void OnInspectorGUI() override
     {
         Renderer::OnInspectorGUI();
 
         ResourceAssignableField(m_mesh, "Mesh");
+        ResourceAssignableField(m_texture, "Cubemap");
     }
 
     /**
@@ -40,10 +36,14 @@ public:
 
     void Render(UniformData data, RenderingPath renderPath) override;
 
-    void setMesh(MeshPtr mesh);
+    void setMesh(const MeshPtr& mesh);
+    void setTextureCubeMap(const shared_ptr<TextureCubeMap>& texture);
 
 private:
     MeshPtr m_mesh;
+	TextureCubeMapPtr m_texture;
+
+    SERIALIZABLE_MEMBERS(m_mesh, m_material, m_texture)
 }; 
 
 REGISTER_COMPONENT(Skybox);

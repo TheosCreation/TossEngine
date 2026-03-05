@@ -1,60 +1,32 @@
 #include "Skybox.h"
 #include "GraphicsEngine.h"
 #include "VertexArrayObject.h" 
-#include "Mesh.h"
 #include "Material.h"
 #include "TextureCubeMap.h"
 
-json Skybox::serialize() const
-{
-    json data;
-    data["type"] = getClassName(typeid(*this)); // Store the component type
-
-    // Serialize mesh
-    if (m_mesh)
-    {
-        data["mesh"] = m_mesh->getUniqueID();
-    }
-
-    if (m_material)
-    {
-        data["material"] = m_material->getUniqueID();
-    }
-
-    return data;
-}
-
-void Skybox::deserialize(const json& data)
-{
-    auto& resourceManager = ResourceManager::GetInstance();
-
-    // Deserialize mesh
-    if (data.contains("mesh"))
-    {
-        std::string meshId = data["mesh"];
-        m_mesh = resourceManager.get<Mesh>(meshId);
-    }
-    
-    // Deserialize material
-    if (data.contains("material"))
-    {
-        std::string materialName = data["material"];
-        m_material = resourceManager.get<Material>(materialName);
-    }
-}
-
 void Skybox::onCreate()
 {
-    // This method can be used for initialization tasks when the skybox GameObject is created.
+    Renderer::onCreate();
+
+    if (!m_mesh)
+    {
+        m_mesh = ResourceManager::GetInstance().get<Mesh>("Cube");
+    }
+
+    if (!m_material)
+    {
+        m_material = ResourceManager::GetInstance().get<Material>("SkyboxMaterial");
+    }
 }
 
 void Skybox::Render(UniformData data, RenderingPath renderPath)
 {
-    if (m_material == nullptr || m_mesh == nullptr) return;
+    if (!m_material || !m_mesh) return;
+    m_material->setBinding("Texture_Skybox", m_texture);
     if(!m_material->Bind()) return;
 
     ShaderPtr shader = m_material->GetShader();
-
+    
     // Get the graphics engine instance for rendering
    // graphicsEngine.setShader(shader); // Set the shader for the skybox
 
@@ -67,12 +39,6 @@ void Skybox::Render(UniformData data, RenderingPath renderPath)
     graphicsEngine.setFaceCulling(CullType::FrontFace); // Enable front face culling
     graphicsEngine.setWindingOrder(WindingOrder::CounterClockWise);
 
-    // Bind the skybox texture if available
-    //if (m_texture != nullptr)
-    //{
-    //    graphicsEngine.setTextureCubeMap(m_texture, 0, "Texture_Skybox");
-    //}
-
     // Get the mesh's vertex array object and bind it to the graphics pipeline
     auto meshVBO = m_mesh->getVertexArrayObject();
     if (!meshVBO) return;
@@ -82,7 +48,12 @@ void Skybox::Render(UniformData data, RenderingPath renderPath)
     graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, meshVBO->getNumIndices());
 }
 
-void Skybox::setMesh(MeshPtr mesh)
+void Skybox::setMesh(const MeshPtr& mesh)
 {
     m_mesh = mesh;
+}
+
+void Skybox::setTextureCubeMap(const shared_ptr<TextureCubeMap>& texture)
+{
+    m_texture = texture;
 }
