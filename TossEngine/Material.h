@@ -52,7 +52,6 @@ using UniformValue = std::variant<
     Texture2DBinding,
     TextureCubeMapBinding
 >;
-
 inline void to_json(json& j, const Texture2DBinding& b)
 {
     j = json::object();
@@ -248,34 +247,39 @@ inline void from_json(const json& j, UniformValue& value)
 // Stored as object of key -> UniformValue
 // -------------------------
 
-inline void to_json(json& j, const std::unordered_map<std::string, UniformValue>& map)
+namespace nlohmann
 {
-    j = json::object();
-    for (const auto& kv : map)
+    template <>
+    struct adl_serializer<std::unordered_map<std::string, UniformValue>>
     {
-        j[kv.first] = kv.second;
-    }
-}
+        static void to_json(json& j, const std::unordered_map<std::string, UniformValue>& map)
+        {
+            j = json::object();
+            for (const auto& kv : map)
+            {
+                j[kv.first] = kv.second;
+            }
+        }
 
-inline void from_json(const json& j, std::unordered_map<std::string, UniformValue>& map)
-{
-    map.clear();
+        static void from_json(const json& j, std::unordered_map<std::string, UniformValue>& map)
+        {
+            map.clear();
 
-    if (!j.is_object())
-    {
-        return;
-    }
+            if (!j.is_object())
+            {
+                return;
+            }
 
-    for (auto it = j.begin(); it != j.end(); ++it)
-    {
-        const std::string key = it.key();
-        const json& val = it.value();
+            for (auto it = j.begin(); it != j.end(); ++it)
+            {
+                const std::string key = it.key();
+                const json& val = it.value();
 
-        UniformValue parsed;
-        parsed = val.get<UniformValue>();
-
-        map.emplace(key, parsed);
-    }
+                UniformValue parsedValue = val.get<UniformValue>();
+                map.emplace(key, parsedValue);
+            }
+        }
+    };
 }
 
 /**
@@ -299,18 +303,6 @@ public:
      * @param mgr Pointer to the resource manager.
      */
     Material(const std::string& uid, ResourceManager* mgr);
-
-    /**
-     * @brief Serializes the material to JSON.
-     * @return JSON object representing the material.
-     */
-    json serialize() const override;
-
-    /**
-     * @brief Deserializes the material from JSON.
-     * @param data The JSON object.
-     */
-    void deserialize(const json& data) override;
 
     void onCreateLate() override;
     
@@ -366,7 +358,7 @@ private:
     ShaderPtr m_shader; //!< Shader used by the material.
     std::unordered_map<std::string, UniformValue> m_uniformValues; //!< Map of uniform values bound to the material.
     
-    //SERIALIZABLE_MEMBERS(m_uniformValues, m_shader, m_path) // TODO: rework this to use this
+    SERIALIZABLE_MEMBERS(m_shader, m_path, m_uniformValues) // TODO: rework this to use this
 };
 
 REGISTER_RESOURCE(Material)

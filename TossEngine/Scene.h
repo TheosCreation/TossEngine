@@ -252,7 +252,6 @@ protected:
     MaterialPtr m_deferredSSRQMaterial = nullptr;
     MaterialPtr m_postProcessSSRQMaterial = nullptr;
 
-    //unique_ptr<Scene> m_scene; /**< @brief Pointer to the GameObject system managing game objects. */
     FramebufferPtr m_postProcessingFramebuffer = nullptr; /**< @brief Pointer to the framebuffer for post-processing effects. */
     unique_ptr<Image> m_SSRQ = nullptr;
 
