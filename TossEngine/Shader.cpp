@@ -49,22 +49,7 @@ void Shader::onDestroy()
 
 void Shader::onCreateLate()
 {
-    if (!m_path.empty())
-    {
-        json j;
-        std::ifstream file(m_path);
-        if (file.is_open())
-        {
-            try
-            {
-                file >> j;
-                deserialize(j);
-            }
-            catch (...)
-            {
-            }
-        }
-    }
+    Resource::onCreateLate();
     
     if (!m_computeShaderFilePath.empty())
     {

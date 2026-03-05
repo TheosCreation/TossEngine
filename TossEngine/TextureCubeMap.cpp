@@ -46,12 +46,17 @@ TextureCubeMap::TextureCubeMap(const std::string& uid, ResourceManager* mgr) : R
 
 void TextureCubeMap::onCreateLate()
 {
+    Resource::onCreateLate();
+    
     bool canGenerate = true;
     for (const auto& filepath : m_filePaths)
     {
         if (filepath.empty()) canGenerate = false;
     }
-    if (canGenerate) GenerateTextureCubeMap();
+    if (canGenerate)
+    {
+        GenerateTextureCubeMap();
+    }
 }
 
 void TextureCubeMap::GenerateTextureCubeMap()
@@ -115,9 +120,9 @@ void TextureCubeMap::OnInspectorGUI()
 
     static const std::vector<std::string> labels =
     {
-        "Right (+X)", "Left (–X)",
-        "Top (+Y)",   "Bottom (–Y)",
-        "Back (+Z)", "Front (–Z)"
+        "Right (+X)", "Left (ï¿½X)",
+        "Top (+Y)",   "Bottom (ï¿½Y)",
+        "Back (+Z)", "Front (ï¿½Z)"
     };
     if (FileSelectionTableField("CubeMap", labels, m_filePaths, "*.png;*.jpg;*.tga"))
     {

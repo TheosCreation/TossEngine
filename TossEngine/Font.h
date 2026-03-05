@@ -69,7 +69,7 @@ public:
 private:
     int m_atlasHeight = 512;            //!< Height of the generated font atlas (pixels)
     int m_atlasWidth = 512;             //!< Width of the generated font atlas (pixels)
-    float m_pixelHeight = 32.0f;         //!< Default pixel height used when rasterizing glyphs
+    float m_pixelHeight = 64.0f;         //!< Default pixel height used when rasterizing glyphs
 
     uint m_textureId = 0;                //!< OpenGL texture ID of the font atlas
     std::vector<Glyph> m_charData = std::vector<Glyph>(10);    //!< Glyph data (likely resized properly at runtime)

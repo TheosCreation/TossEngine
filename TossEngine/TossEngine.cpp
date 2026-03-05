@@ -156,6 +156,20 @@ void TossEngine::LoadGenericResources()
         materialMeta["m_path"] = "Internal/Materials/DeferredSSRQMaterial.mat";
         resourceManager.createInternalResource("Material", "DeferredSSRQMaterial", materialMeta);
     }
+
+    // Cubemaps
+    {
+        json cubemapMeta = json::object();
+        cubemapMeta["m_path"] = "Internal/Cubemaps/RedEclipse/RedEclipse.cubemap";
+        resourceManager.createInternalResource("TextureCubeMap", "RedEclipse", cubemapMeta);
+    }
+
+    // Fonts
+    {
+        json fontMeta = json::object();
+        fontMeta["m_path"] = "Internal/Fonts/VCR_OSD_MONO.ttf";
+        resourceManager.createInternalResource("Font", "VCRFont", fontMeta);
+    }
 }
 
 void TossEngine::TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName, bool maximized)

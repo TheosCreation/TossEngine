@@ -14,22 +14,7 @@ Material::Material(const std::string& uid, ResourceManager* mgr) : Resource(uid,
 
 void Material::onCreateLate()
 {
-    if (!m_path.empty())
-    {
-        json j;
-        std::ifstream file(m_path);
-        if (file.is_open())
-        {
-            try
-            {
-                file >> j;
-                deserialize(j);
-            }
-            catch (...)
-            {
-            }
-        }
-    }
+    Resource::onCreateLate();
 
     if (m_shader)
     {

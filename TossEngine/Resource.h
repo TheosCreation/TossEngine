@@ -56,7 +56,7 @@ public:
     /**
      * @brief Called after all resources are created (late initialization).
      */
-    virtual void onCreateLate() {}
+    virtual void onCreateLate();
 
     /**
      * @brief Called when the resource is about to be destroyed.
