@@ -47,6 +47,11 @@ public:
      */
     void setId(uint id) { m_textureId = id; }
 
+    std::string GetAssetSaveExtension() const override
+    {
+        return ".cubemap";
+    }
+
 private:
     uint m_textureId = 0;
     TextureCubeMapDesc m_desc = {};     // Description of the 2D texture.
@@ -56,7 +61,7 @@ private:
 
     vector<void*> m_textureDatas;
 
-    SERIALIZABLE_MEMBERS(m_numChannels, m_textureSize, m_filePaths)
+    SERIALIZABLE_MEMBERS(m_path, m_numChannels, m_textureSize, m_filePaths)
 };
 REGISTER_RESOURCE(TextureCubeMap)
 

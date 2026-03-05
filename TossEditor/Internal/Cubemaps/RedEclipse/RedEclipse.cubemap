@@ -1,0 +1,20 @@
+{
+    "m_path": "Internal/Cubemaps/RedEclipse/RedEclipse.cubemap",
+    "m_filePaths": [
+        "Internal\\Cubemaps\\RedEclipse\\Right.png",
+        "Internal\\Cubemaps\\RedEclipse\\Left.png",
+        "Internal\\Cubemaps\\RedEclipse\\Top.png",
+        "Internal\\Cubemaps\\RedEclipse\\Bottom.png",
+        "Internal\\Cubemaps\\RedEclipse\\Back.png",
+        "Internal\\Cubemaps\\RedEclipse\\Front.png"
+    ],
+    "m_numChannels": 3,
+    "m_textureSize": {
+        "height": 1024,
+        "left": 0,
+        "top": 0,
+        "width": 1024
+    },
+    "type": "TextureCubeMap",
+    "uniqueId": "RedEclipse"
+}
