@@ -1,0 +1,8 @@
+{
+    "m_path": "Internal\\PhysicsMaterials\\DefaultPhysicsMaterial.physicsmaterial",
+    "m_bounciness": 0.0,
+    "m_dynamicFriction": 2.5,
+    "m_staticFriction": 2.5,
+    "type": "PhysicsMaterial",
+    "uniqueId": "DefaultPhysicsMaterial"
+}

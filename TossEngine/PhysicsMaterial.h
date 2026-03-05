@@ -59,12 +59,17 @@ public:
     float getBounciness() const { return m_bounciness; }
     void setBounciness(float bounciness) { m_bounciness = bounciness; }
 
+    std::string GetAssetSaveExtension() const override
+    {
+        return ".physicsmaterial";
+    }
+
 private:
     float m_staticFriction = 1.0f; //!< Static friction coefficient.
     float m_dynamicFriction = 1.0f; //!< Dynamic friction coefficient.
     float m_bounciness = 1.0f; //!< Bounciness (restitution).
 
-    SERIALIZABLE_MEMBERS(m_staticFriction, m_dynamicFriction, m_bounciness)
+    SERIALIZABLE_MEMBERS(m_path, m_staticFriction, m_dynamicFriction, m_bounciness)
 };
 
 REGISTER_RESOURCE(PhysicsMaterial)

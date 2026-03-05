@@ -170,6 +170,13 @@ void TossEngine::LoadGenericResources()
         fontMeta["m_path"] = "Internal/Fonts/VCR_OSD_MONO.ttf";
         resourceManager.createInternalResource("Font", "VCRFont", fontMeta);
     }
+    
+    // Physics materials
+    {
+        json fontMeta = json::object();
+        fontMeta["m_path"] = "Internal/PhysicsMaterials/DefaultPhysicsMaterial.physicsmaterial";
+        resourceManager.createInternalResource("PhysicsMaterial", "DefaultPhysicsMaterial", fontMeta);
+    }
 }
 
 void TossEngine::TryCreateWindow(Resizable* owner, Vector2 size, const string& windowName, bool maximized)
