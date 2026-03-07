@@ -8,11 +8,7 @@ public:
 	MeshRenderer() = default;
 	~MeshRenderer() = default;
 
-    // Serialize the MeshRenderer to JSON
-    json serialize() const override;
-
-    // Deserialize the MeshRenderer from JSON
-	void deserialize(const json& data) override;
+    void onCreateLate() override;
 
 	virtual void OnInspectorGUI() override
 	{
@@ -20,15 +16,6 @@ public:
 		Renderer::OnInspectorGUI();
 
         ResourceAssignableField(m_mesh, "Mesh");
-        ResourceAssignableField(m_shader, "Shader");
-        ResourceAssignableField(m_geometryShader, "Geometry Shader");
-        ResourceAssignableField(m_shadowShader, "Shadow Shader");
-        ResourceAssignableField(m_texture, "Texture");
-        ResourceAssignableField(m_reflectiveMap, "Reflective Map");
-
-		ImGui::DragFloat("Shininess", &m_shininess, 0.1f);
-		ImGui::DragFloat("Aplha", &m_alpha, 0.1f, 0.0f, 1.0f);
-		ImGui::ColorEdit3("Color", &m_color.x);
 	}
 
 	void onShadowPass(uint index);
@@ -38,40 +25,16 @@ public:
 	void SetMesh(MeshPtr mesh);
 	MeshPtr GetMesh() const;
 
-	void SetShadowShader(ShaderPtr shader);
-
-	void SetShader(ShaderPtr shader);
-
-	void SetGeometryShader(ShaderPtr shader);
-
-	void SetTexture(Texture2DPtr texture);
-
-	void SetReflectiveMapTexture(Texture2DPtr texture);
-
-	void SetShininess(float shininess);
-
-	void SetAlpha(float transparency);
-	float GetAlpha();
-
-	void SetColor(Vector3 color);
-
+    float GetAlpha() const;
     Vector3 GetExtent() override;
 
 private:
 	MeshPtr m_mesh;
 
-	ShaderPtr m_shader;
 	ShaderPtr m_geometryShader;
 	ShaderPtr m_shadowShader;
 
-	Texture2DPtr m_texture;
-    Texture2DPtr m_reflectiveMap;
-
-	float m_shininess = 32.0f;
-	float m_alpha = 1.0f;
-	Vector3 m_color = Color::Purple;
-
-    //TODO: rework to use new serialize system and new material system lol
+    SERIALIZABLE_MEMBERS(m_mesh, m_material)
 };
 
 REGISTER_COMPONENT(MeshRenderer);

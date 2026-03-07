@@ -54,6 +54,7 @@ static void EnsureFolderNode(AssetNode& rootNode, const std::string& relFolder)
         node = childPtr.get();
     }
 }
+
 static std::string JoinPath(const std::string& a, const std::string& b)
 {
     if (a.empty())
@@ -67,17 +68,64 @@ static std::string GetAssetsFolderPathFromCurrentFolder(const std::string& curre
 {
     if (currentFolder.empty())
     {
-        return "Assets";
+        return "Assets"; // Default to Assets if at root
     }
+    
+    // If currentFolder already starts with Assets or Internal, just return it
+    if (currentFolder.find("Assets") == 0 || currentFolder.find("Internal") == 0)
+    {
+        return currentFolder;
+    }
+    
+    // Otherwise assume Assets
     return JoinPath("Assets", currentFolder);
 }
 
 static std::string BuildResourceAssetPath(const std::string& currentFolder, const std::string& typeName, const std::string& resourceId)
 {
     const std::string folderPath = GetAssetsFolderPathFromCurrentFolder(currentFolder);
-    const std::string extension = ResourceManager::GetExtensionForType(typeName);
+    const std::string extension = ResourceManager::GetInstance().GetExtensionForType(typeName);
     const std::string fileName = resourceId + extension;
     return JoinPath(folderPath, fileName);
+}
+
+static std::string GetFileNameFromPath(const std::string& path)
+{
+    std::filesystem::path p(path);
+    return p.filename().string();
+}
+
+static std::string GetRelativePathFromAssets(const std::string& fullPath)
+{
+    std::filesystem::path full(fullPath);
+    
+    // Check if it's in Assets folder
+    if (fullPath.find("Assets") == 0 || fullPath.find("Assets/") == 0 || fullPath.find("Assets\\") == 0)
+    {
+        std::filesystem::path assets("Assets");
+        std::filesystem::path rel = full.lexically_relative(assets);
+        return "Assets/" + rel.generic_string();
+    }
+    
+    // Check if it's in Internal folder
+    if (fullPath.find("Internal") == 0 || fullPath.find("Internal/") == 0 || fullPath.find("Internal\\") == 0)
+    {
+        std::filesystem::path internal("Internal");
+        std::filesystem::path rel = full.lexically_relative(internal);
+        return "Internal/" + rel.generic_string();
+    }
+    
+    return fullPath;
+}
+
+static std::string GetParentFolderFromPath(const std::string& relativePath)
+{
+    std::filesystem::path p(relativePath);
+    if (p.has_parent_path())
+    {
+        return p.parent_path().generic_string();
+    }
+    return "";
 }
 
 AssetsBrowser::AssetsBrowser(TossEditor* editor)
@@ -93,27 +141,65 @@ AssetsBrowser::~AssetsBrowser()
 void AssetsBrowser::Rebuild()
 {
     m_root = std::make_unique<AssetNode>();
-    m_root->name = "Assets";
+    m_root->name = "Root";
     m_root->path = "";
 
-    const std::filesystem::path assetsRoot = std::filesystem::path("Assets");
-    if (std::filesystem::exists(assetsRoot))
+    // Build folder structure for both Assets and Internal
+    std::vector<std::string> rootFolders = {"Assets", "Internal"};
+    
+    for (const auto& rootFolderName : rootFolders)
     {
-        std::filesystem::recursive_directory_iterator endIt;
-        std::filesystem::recursive_directory_iterator it(assetsRoot, std::filesystem::directory_options::skip_permission_denied);
-
-        for (; it != endIt; ++it)
+        const std::filesystem::path folderRoot = std::filesystem::path(rootFolderName);
+        
+        // Create the root folder node (Assets or Internal)
+        std::unique_ptr<AssetNode>& rootFolderNode = m_root->children[rootFolderName];
+        if (!rootFolderNode)
         {
-            if (!it->is_directory())
+            rootFolderNode = std::make_unique<AssetNode>();
+            rootFolderNode->name = rootFolderName;
+            rootFolderNode->path = rootFolderName;
+        }
+        
+        if (std::filesystem::exists(folderRoot))
+        {
+            std::filesystem::recursive_directory_iterator endIt;
+            std::filesystem::recursive_directory_iterator it(folderRoot, std::filesystem::directory_options::skip_permission_denied);
+
+            for (; it != endIt; ++it)
             {
-                continue;
+                if (!it->is_directory())
+                {
+                    continue;
+                }
+
+                std::filesystem::path dirPath = it->path();
+                std::filesystem::path relPath = dirPath.lexically_relative(folderRoot);
+                std::string relFolder = relPath.generic_string();
+
+                // Navigate from root folder node
+                AssetNode* currentNode = rootFolderNode.get();
+                std::vector<std::string> parts = SplitPath(relFolder);
+                
+                for (const auto& part : parts)
+                {
+                    std::unique_ptr<AssetNode>& childPtr = currentNode->children[part];
+                    if (!childPtr)
+                    {
+                        std::unique_ptr<AssetNode> newNode = std::make_unique<AssetNode>();
+                        newNode->name = part;
+                        if (currentNode->path.empty())
+                        {
+                            newNode->path = part;
+                        }
+                        else
+                        {
+                            newNode->path = currentNode->path + "/" + part;
+                        }
+                        childPtr = std::move(newNode);
+                    }
+                    currentNode = childPtr.get();
+                }
             }
-
-            std::filesystem::path dirPath = it->path();
-            std::filesystem::path relPath = dirPath.lexically_relative(assetsRoot);
-            std::string relFolder = relPath.generic_string(); // "" for root child? (first level folders become "Textures", etc.)
-
-            EnsureFolderNode(*m_root, relFolder);
         }
     }
 
@@ -126,16 +212,56 @@ void AssetsBrowser::Rebuild()
         const std::string& uid = kv.first;
         const ResourcePtr& res = kv.second;
 
-        if (uid.empty())
+        if (!res)
         {
             continue;
         }
 
-        std::vector<std::string> parts = SplitPath(uid);
-        AssetNode* node = m_root.get();
+        std::string assetPath = res->getPath();
+        
+        // Skip resources without a valid path
+        if (assetPath.empty())
+        {
+            continue;
+        }
 
-        // walk/create folders for all but last token
-        for (size_t i = 0; i + 1 < parts.size(); ++i)
+        // Determine which root folder this belongs to
+        std::string rootFolder;
+        std::string relativePath;
+        
+        if (assetPath.find("Assets/") == 0 || assetPath.find("Assets\\") == 0)
+        {
+            rootFolder = "Assets";
+            std::filesystem::path full(assetPath);
+            std::filesystem::path rel = full.lexically_relative(std::filesystem::path("Assets"));
+            relativePath = rel.generic_string();
+        }
+        else if (assetPath.find("Internal/") == 0 || assetPath.find("Internal\\") == 0)
+        {
+            rootFolder = "Internal";
+            std::filesystem::path full(assetPath);
+            std::filesystem::path rel = full.lexically_relative(std::filesystem::path("Internal"));
+            relativePath = rel.generic_string();
+        }
+        else
+        {
+            // Skip resources that are not in Assets or Internal
+            continue;
+        }
+        
+        // Get the parent folder path
+        std::string parentFolder = GetParentFolderFromPath(relativePath);
+        
+        // Start from the appropriate root folder node
+        AssetNode* node = m_root->children[rootFolder].get();
+        if (!node)
+        {
+            continue;
+        }
+        
+        // Navigate to the parent folder node
+        std::vector<std::string> parts = SplitPath(parentFolder);
+        for (size_t i = 0; i < parts.size(); ++i)
         {
             const std::string& seg = parts[i];
             std::unique_ptr<AssetNode>& child = node->children[seg];
@@ -158,16 +284,10 @@ void AssetsBrowser::Rebuild()
             node = child.get();
         }
 
+        // Create the asset item
         AssetItem item;
         item.uid = uid;
-        if (parts.empty())
-        {
-            item.name = uid;
-        }
-        else
-        {
-            item.name = parts.back();
-        }
+        item.name = GetFileNameFromPath(assetPath); // Display the actual filename
         item.type = getClassName(typeid(*res));
         item.res = res;
 
@@ -235,6 +355,9 @@ void AssetsBrowser::drawLeftTree(AssetNode& node) {
     ImGuiTreeNodeFlags base =
         ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth |
         ImGuiTreeNodeFlags_NavLeftJumpsBackHere;
+    
+    ResourceManager& rm = ResourceManager::GetInstance();
+    
     for (auto& [name, childPtr] : node.children) {
         auto& child = *childPtr;
         ImGuiTreeNodeFlags flags = base;
@@ -242,9 +365,55 @@ void AssetsBrowser::drawLeftTree(AssetNode& node) {
             flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
         bool open = ImGui::TreeNodeEx((child.path + "##tree").c_str(), flags, "%s", name.c_str());
+        
         if (ImGui::IsItemClicked()) {
             m_currentFolder = child.path;
         }
+        
+        // Drop target - accept resources being moved here
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE_MOVE"))
+            {
+                const char* droppedUID = (const char*)payload->Data;
+                
+                // Move the resource to this folder
+                ResourcePtr res = rm.GetResourceByUniqueID(droppedUID);
+                if (res)
+                {
+                    std::string oldPath = res->getPath();
+                    std::filesystem::path oldFilePath(oldPath);
+                    std::string fileName = oldFilePath.filename().string();
+                    
+                    // Build new path
+                    std::filesystem::path newFilePath = std::filesystem::path(child.path) / fileName;
+                    
+                    if (std::filesystem::exists(oldPath))
+                    {
+                        try
+                        {
+                            // Create target directory if it doesn't exist
+                            std::filesystem::create_directories(newFilePath.parent_path());
+                            
+                            // Move the file
+                            std::filesystem::rename(oldPath, newFilePath.string());
+                            
+                            // Update the resource's UID to match the new path
+                            std::string newRelPath = newFilePath.generic_string();
+                            rm.RenameResource(res, newRelPath);
+                            
+                            m_needsRebuild = true;
+                        }
+                        catch (const std::exception& e)
+                        {
+                            Debug::LogError("Failed to move file: " + std::string(e.what()), false);
+                        }
+                    }
+                }
+            }
+            ImGui::EndDragDropTarget();
+        }
+        
         if (open && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
             drawLeftTree(child);
             ImGui::TreePop();
@@ -256,7 +425,7 @@ void AssetsBrowser::drawLeftTree(AssetNode& node) {
             }
             if (ImGui::MenuItem("Reveal in Explorer")) {
 #ifdef _WIN32
-                std::string abs = std::string("Assets/") + child.path;
+                std::string abs = child.path;
                 ShellExecuteA(nullptr, "open", abs.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 #endif
             }
@@ -268,11 +437,20 @@ void AssetsBrowser::drawLeftTree(AssetNode& node) {
 void AssetsBrowser::drawRightPane(AssetNode& node) {
     ResourceManager& rm = ResourceManager::GetInstance();
     // Breadcrumb
-    ImGui::TextUnformatted("Assets"); ImGui::SameLine();
-    std::string accum;
     auto parts = SplitPath(m_currentFolder);
+    
+    // Show root button
+    if (ImGui::SmallButton("Root")) m_currentFolder = "";
+    
+    if (!parts.empty()) {
+        ImGui::SameLine(); 
+        ImGui::TextUnformatted(">");
+    }
+    
+    // Show path parts
+    std::string accum;
     for (size_t i = 0; i < parts.size(); ++i) {
-        if (i) ImGui::SameLine();
+        ImGui::SameLine();
         accum = accum.empty() ? parts[i] : accum + "/" + parts[i];
         if (ImGui::SmallButton(parts[i].c_str())) m_currentFolder = accum;
         if (i + 1 < parts.size()) { ImGui::SameLine(); ImGui::TextUnformatted(">"); }
@@ -288,6 +466,58 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
 
     // Child region for scrolling
     ImGui::BeginChild("right_scroller");
+    
+    // Make the entire child window a drop target for the current folder
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE_MOVE"))
+        {
+            const char* droppedUID = (const char*)payload->Data;
+            
+            // Move the resource to the current folder
+            ResourcePtr res = rm.GetResourceByUniqueID(droppedUID);
+            if (res)
+            {
+                std::string oldPath = res->getPath();
+                std::filesystem::path oldFilePath(oldPath);
+                std::string fileName = oldFilePath.filename().string();
+                
+                // Build new path - use current folder
+                std::filesystem::path newFilePath;
+                if (m_currentFolder.empty())
+                {
+                    // Can't drop at root
+                }
+                else
+                {
+                    newFilePath = std::filesystem::path(m_currentFolder) / fileName;
+                    
+                    if (std::filesystem::exists(oldPath) && !m_currentFolder.empty())
+                    {
+                        try
+                        {
+                            // Create target directory if it doesn't exist
+                            std::filesystem::create_directories(newFilePath.parent_path());
+                            
+                            // Move the file
+                            std::filesystem::rename(oldPath, newFilePath.string());
+                            
+                            // Update the resource's UID to match the new path
+                            std::string newRelPath = newFilePath.generic_string();
+                            rm.RenameResource(res, newRelPath);
+                            
+                            m_needsRebuild = true;
+                        }
+                        catch (const std::exception& e)
+                        {
+                            Debug::LogError("Failed to move file: " + std::string(e.what()), false);
+                        }
+                    }
+                }
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
 
     // Show subfolders first
     for (auto& [fname, ch] : node.children) {
@@ -337,6 +567,51 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
     
             ImGui::BeginGroup();
             ImGui::Button(("Folder##" + childNode->path).c_str(), ImVec2(cell, cell));
+            
+            // Drop target - accept resources being moved here
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE_MOVE"))
+                {
+                    const char* droppedUID = (const char*)payload->Data;
+                    
+                    // Move the resource to this folder
+                    ResourcePtr res = rm.GetResourceByUniqueID(droppedUID);
+                    if (res)
+                    {
+                        std::string oldPath = res->getPath();
+                        std::filesystem::path oldFilePath(oldPath);
+                        std::string fileName = oldFilePath.filename().string();
+                        
+                        // Build new path
+                        std::filesystem::path newFilePath = std::filesystem::path(childNode->path) / fileName;
+                        
+                        if (std::filesystem::exists(oldPath))
+                        {
+                            try
+                            {
+                                // Create target directory if it doesn't exist
+                                std::filesystem::create_directories(newFilePath.parent_path());
+                                
+                                // Move the file
+                                std::filesystem::rename(oldPath, newFilePath.string());
+                                
+                                // Update the resource's UID to match the new path
+                                std::string newRelPath = newFilePath.generic_string();
+                                rm.RenameResource(res, newRelPath);
+                                
+                                m_needsRebuild = true;
+                            }
+                            catch (const std::exception& e)
+                            {
+                                Debug::LogError("Failed to move file: " + std::string(e.what()), false);
+                            }
+                        }
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+            
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
             {
                 m_currentFolder = childNode->path;
@@ -361,6 +636,10 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
                 {
                     pass = true;
                 }
+                if (m_filter.PassFilter(it.uid.c_str()))
+                {
+                    pass = true;
+                }
                 if (!pass)
                 {
                     continue;
@@ -370,11 +649,16 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
             ImGui::BeginGroup();
             ImGui::Button((it.type + "##btn" + it.uid).c_str(), ImVec2(cell, cell));
     
+            // Drag source - drag the resource
             if (ImGui::BeginDragDropSource())
             {
                 Resource* raw = it.res.get();
                 ImGui::SetDragDropPayload("DND_RESOURCE", &raw, sizeof(raw));
-                ImGui::Text("%s", it.uid.c_str());
+                
+                // Also store the resource UID for file moving
+                ImGui::SetDragDropPayload("DND_RESOURCE_MOVE", it.uid.c_str(), it.uid.size() + 1);
+                
+                ImGui::Text("%s", it.name.c_str());
                 ImGui::EndDragDropSource();
             }
     
@@ -386,14 +670,40 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
             if (m_renameUID == it.uid)
             {
                 ImGui::SetNextItemWidth(cell);
+                ImGui::SetKeyboardFocusHere();
                 if (ImGui::InputText(("##rename" + it.uid).c_str(), m_renameBuf, IM_ARRAYSIZE(m_renameBuf),
-                    ImGuiInputTextFlags_EnterReturnsTrue))
+                    ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
                 {
                     if (m_renameBuf[0] != 0)
                     {
-                        rm.RenameResource(it.res, std::string(m_renameBuf));
-                        m_needsRebuild = true;
+                        // Rename the file on disk
+                        std::string oldPath = it.res->getPath();
+                        std::filesystem::path oldFilePath(oldPath);
+                        std::filesystem::path newFilePath = oldFilePath.parent_path() / m_renameBuf;
+                        
+                        if (std::filesystem::exists(oldPath))
+                        {
+                            try
+                            {
+                                std::filesystem::rename(oldPath, newFilePath.string());
+                                
+                                // Update the resource's UID to match the new relative path
+                                std::string newRelPath = newFilePath.generic_string();
+                                rm.RenameResource(it.res, newRelPath);
+                                
+                                m_needsRebuild = true;
+                            }
+                            catch (const std::exception& e)
+                            {
+                                Debug::LogError("Failed to rename file: " + std::string(e.what()), false);
+                            }
+                        }
                     }
+                    m_renameUID.clear();
+                }
+                // Cancel rename on escape or lost focus
+                if (ImGui::IsKeyPressed(ImGuiKey_Escape) || (!ImGui::IsItemActive() && !ImGui::IsItemFocused()))
+                {
                     m_renameUID.clear();
                 }
             }
@@ -413,10 +723,8 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
             ImGui::TableSetupScrollFreeze(0, 1);
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_DefaultSort);
             ImGui::TableSetupColumn("Type");
-            ImGui::TableSetupColumn("UID");
+            ImGui::TableSetupColumn("Path");
             ImGui::TableHeadersRow();
-
-            // sortable: for brevity we reuse existing sorted order
 
             for (auto& it : node.items) {
                 if (m_filter.IsActive() && !m_filter.PassFilter(it.name.c_str()) && !m_filter.PassFilter(it.type.c_str()) && !m_filter.PassFilter(it.uid.c_str()))
@@ -426,22 +734,57 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
                 ImGui::TableSetColumnIndex(0);
 
                 bool selected = (it.res == rm.GetSelectedResource());
-                if (ImGui::Selectable((it.type + it.name + "##" + it.uid).c_str(), selected, ImGuiSelectableFlags_SpanAllColumns)) {
+                if (ImGui::Selectable((it.name + "##" + it.uid).c_str(), selected, ImGuiSelectableFlags_SpanAllColumns)) {
                     SelectResource(it.res);
                 }
+                
+                // Drag source
                 if (ImGui::BeginDragDropSource()) {
                     Resource* raw = it.res.get();
                     ImGui::SetDragDropPayload("DND_RESOURCE", &raw, sizeof(raw));
-                    ImGui::Text("%s", it.uid.c_str());
+                    
+                    // Also store the resource UID for file moving
+                    ImGui::SetDragDropPayload("DND_RESOURCE_MOVE", it.uid.c_str(), it.uid.size() + 1);
+                    
+                    ImGui::Text("%s", it.name.c_str());
                     ImGui::EndDragDropSource();
                 }
 
                 // inline rename
                 if (m_renameUID == it.uid) {
                     ImGui::SameLine();
+                    ImGui::SetKeyboardFocusHere();
                     if (ImGui::InputText(("##rename" + it.uid).c_str(), m_renameBuf, IM_ARRAYSIZE(m_renameBuf),
-                        ImGuiInputTextFlags_EnterReturnsTrue)) {
-                        if (m_renameBuf[0]) rm.RenameResource(it.res, std::string(m_renameBuf));
+                        ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll)) {
+                        if (m_renameBuf[0]) {
+                            // Rename the file on disk
+                            std::string oldPath = it.res->getPath();
+                            std::filesystem::path oldFilePath(oldPath);
+                            std::filesystem::path newFilePath = oldFilePath.parent_path() / m_renameBuf;
+                            
+                            if (std::filesystem::exists(oldPath))
+                            {
+                                try
+                                {
+                                    std::filesystem::rename(oldPath, newFilePath.string());
+                                    
+                                    // Update the resource's UID to match the new relative path
+                                    std::string newRelPath = newFilePath.generic_string();
+                                    rm.RenameResource(it.res, newRelPath);
+                                    
+                                    m_needsRebuild = true;
+                                }
+                                catch (const std::exception& e)
+                                {
+                                    Debug::LogError("Failed to rename file: " + std::string(e.what()), false);
+                                }
+                            }
+                        }
+                        m_renameUID.clear();
+                    }
+                    // Cancel rename on escape or lost focus
+                    if (ImGui::IsKeyPressed(ImGuiKey_Escape) || (!ImGui::IsItemActive() && !ImGui::IsItemFocused()))
+                    {
                         m_renameUID.clear();
                     }
                 }
@@ -455,12 +798,26 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
                     }
                     if (ImGui::MenuItem("Delete"))
                     {
+                        // Delete the file on disk
+                        std::string filePath = it.res->getPath();
+                        if (std::filesystem::exists(filePath))
+                        {
+                            try
+                            {
+                                std::filesystem::remove(filePath);
+                            }
+                            catch (const std::exception& e)
+                            {
+                                Debug::LogError("Failed to delete file: " + std::string(e.what()), false);
+                            }
+                        }
+                        
                         rm.DeleteResource(it.uid);
                         m_needsRebuild = true;
                     }
                     if (ImGui::MenuItem("Reveal in Explorer")) {
 #ifdef _WIN32
-                        std::string abs = std::string("Assets/") + it.uid;
+                        std::string abs = it.res->getPath();
                         ShellExecuteA(nullptr, "open", abs.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 #endif
                     }
@@ -508,10 +865,8 @@ void AssetsBrowser::Draw() {
             {
                 if (ImGui::MenuItem(t.c_str()))
                 {
-                    // open your existing "Enter Resource ID" modal
                     selectedTypeName = t;
                     createResource = true;
-                    //ImGui::OpenPopup("Enter Resource ID");
                 }
             }
             ImGui::EndPopup();
@@ -521,19 +876,23 @@ void AssetsBrowser::Draw() {
         if (ImGui::BeginPopupModal("Enter Resource ID", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
         {
             createResource = false;
-            string label = selectedTypeName + " ID";
+            string label = selectedTypeName + " Filename";
             ImGui::InputText(label.c_str(), iDBuffer, sizeof(iDBuffer));
     
             if (ImGui::Button("Create"))
             {
                 if (strlen(iDBuffer) > 0)
                 {
-                    const std::string resourceId = std::string(iDBuffer);
-                    const std::string assetPath = BuildResourceAssetPath(m_currentFolder, selectedTypeName, resourceId);
+                    const std::string fileName = std::string(iDBuffer);
+                    const std::string assetPath = BuildResourceAssetPath(m_currentFolder, selectedTypeName, fileName);
 
                     json payload;
                     payload["m_path"] = assetPath;
-                    rm.createResource(selectedTypeName, iDBuffer, payload);
+                    
+                    // The UID should be the relative path from Assets folder
+                    std::string relativeUID = GetRelativePathFromAssets(assetPath);
+                    
+                    rm.createResource(selectedTypeName, relativeUID, payload);
                     m_needsRebuild = true;
                     
                     // Reset state
@@ -544,6 +903,7 @@ void AssetsBrowser::Draw() {
                 }
             }
 
+            ImGui::SameLine();
             if (ImGui::Button("Cancel"))
             {
                 selectedTypeName.clear();

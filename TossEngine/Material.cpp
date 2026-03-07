@@ -2,6 +2,28 @@
 #include "GraphicsEngine.h"
 #include "TextureCubeMap.h"
 
+static bool IsEngineUniform(const std::string& uniformName)
+{
+    if (uniformName == "VPMatrix") return true;
+    if (uniformName == "modelMatrix") return true;
+    if (uniformName == "CameraPos") return true;
+
+    if (uniformName == "PointLightCount") return true;
+    if (uniformName == "DirectionalLightCount") return true;
+    if (uniformName == "SpotLightCount") return true;
+
+    if (uniformName == "AmbientStrength") return true;
+    if (uniformName == "AmbientColor") return true;
+
+    if (uniformName.rfind("PointLightArray", 0) == 0) return true;
+    if (uniformName.rfind("DirLightArray", 0) == 0) return true;
+    if (uniformName.rfind("SpotLightArray", 0) == 0) return true;
+    if (uniformName.rfind("Texture_ShadowMap", 0) == 0) return true;
+    if (uniformName.rfind("VPLight", 0) == 0) return true;
+
+    return false;
+}
+
 Material::Material(ShaderPtr shader, const std::string& uniqueID, ResourceManager* manager) : Resource("", uniqueID, manager)
 {
 	m_shader = shader;
@@ -41,6 +63,11 @@ void Material::OnInspectorGUI()
 
     for (auto& [uniformName, value] : m_uniformValues)
     {
+        if (IsEngineUniform(uniformName))
+        {
+            continue;
+        }
+        
         ImGui::PushID(uniformName.c_str()); // Ensure unique ID
 
         std::visit([&](auto&& arg) mutable
@@ -274,52 +301,61 @@ void Material::setBinding(const std::string& uniformName, const Mat4& value)
 bool Material::Bind() const
 {
     if (!m_shader)
+    {
         return false;
-
+    }
 
     auto& graphicsEngine = GraphicsEngine::GetInstance();
     graphicsEngine.setShader(m_shader);
     bool failed = false;
-    // Iterate over all uniform values stored in the material.
+
     for (const auto& [uniformName, value] : m_uniformValues)
     {
         std::visit([&](auto&& arg)
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, int>)
             {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, int>)
-                    m_shader->setInt(uniformName, arg);
-                else if constexpr (std::is_same_v<T, float>)
-                    m_shader->setFloat(uniformName, arg);
-                else if constexpr (std::is_same_v<T, Vector2>)
-                    m_shader->setVec2(uniformName, arg);
-                else if constexpr (std::is_same_v<T, Vector3>)
-                    m_shader->setVec3(uniformName, arg);
-                else if constexpr (std::is_same_v<T, Vector4>)
-                    m_shader->setVec4(uniformName, arg);
-                else if constexpr (std::is_same_v<T, Mat4>)
-                    m_shader->setMat4(uniformName, arg);
-                else if constexpr (std::is_same_v<T, Texture2DBinding>)
-                    if (arg.texture != nullptr)
-                    {
-                        m_shader->setTexture2D(arg.texture, arg.slot, uniformName);
-                    }
-                    else
-                    {
-                        failed = true;
-                    }
-                else if constexpr (std::is_same_v<T, TextureCubeMapBinding>)
-                    if (arg.texture != nullptr)
-                    {
-                        m_shader->setTextureCubeMap(arg.texture, arg.slot, uniformName);
-                    }
-                    else
-                    {
-                        failed = true;
-                    }
-            }, value);
+                m_shader->setInt(uniformName, arg);
+            }
+            else if constexpr (std::is_same_v<T, float>)
+            {
+                m_shader->setFloat(uniformName, arg);
+            }
+            else if constexpr (std::is_same_v<T, Vector2>)
+            {
+                m_shader->setVec2(uniformName, arg);
+            }
+            else if constexpr (std::is_same_v<T, Vector3>)
+            {
+                m_shader->setVec3(uniformName, arg);
+            }
+            else if constexpr (std::is_same_v<T, Vector4>)
+            {
+                m_shader->setVec4(uniformName, arg);
+            }
+            else if constexpr (std::is_same_v<T, Mat4>)
+            {
+                m_shader->setMat4(uniformName, arg);
+            }
+            else if constexpr (std::is_same_v<T, Texture2DBinding>)
+            {
+                if (arg.texture != nullptr)
+                {
+                    m_shader->setTexture2D(arg.texture, arg.slot, uniformName);
+                }
+            }
+            else if constexpr (std::is_same_v<T, TextureCubeMapBinding>)
+            {
+                if (arg.texture != nullptr)
+                {
+                    m_shader->setTextureCubeMap(arg.texture, arg.slot, uniformName);
+                }
+            }
+        }, value);
     }
 
-    return !failed;
+    return true;
 }
 
 TextureCubeMapPtr Material::GetBinding(const string& bindingName)
@@ -362,6 +398,22 @@ Texture2DPtr Material::GetTexture2DBinding(const std::string& bindingName)
     return texture2D;
 }
 
+float Material::GetFloatBinding(const std::string& bindingName)
+{
+    // Check if the bindingName exists in the m_uniformValues container
+    float floatBinding = 1.0f;
+    for (const auto& [uniformName, value] : m_uniformValues)
+    {
+        std::visit([&](auto&& arg)
+            {
+                using T = std::decay_t<decltype(arg)>; //making T be type of the argument
+                if constexpr (std::is_same_v<T, float>)
+                    floatBinding = arg;
+            }, value);
+    }
+    return floatBinding;
+}
+
 void Material::UpdateBindings()
 {
     if (!m_shader)
@@ -378,6 +430,11 @@ void Material::UpdateBindings()
     {
         const std::string& uniformName = binding.name;
 
+        if (IsEngineUniform(uniformName))
+        {
+            continue;
+        }
+        
         GLint location = glGetUniformLocation(programId, uniformName.c_str());
         if (location < 0)
         {

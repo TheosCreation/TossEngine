@@ -120,7 +120,7 @@ public:
     uint64_t GetRevision() const;
 
     static std::string GuessTypeFromExt(const std::string& ext);
-    static std::string GetExtensionForType(const std::string& typeName);
+    std::string GetExtensionForType(const std::string& typeName);
     
 protected:
     bool ShouldImport(const std::string& absPath, const std::string& type, AssetImportRec& out);

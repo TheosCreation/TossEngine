@@ -10,7 +10,6 @@ in vec2 FragTexcoord;
 in vec3 FragNormal;
 
 uniform sampler2D Texture0;
-uniform bool useTexture;
 uniform vec3 uColor;
 uniform float alpha = 1.0f;
 
@@ -71,7 +70,7 @@ void main()
     vec3 LightShadow = Ambient + TotalLightOutput;
 
     // Sample textures
-    vec3 Albedo = useTexture ? texture(Texture0, FragTexcoord).rgb : uColor;
+    vec3 Albedo = texture(Texture0, FragTexcoord).rgb * uColor;
     vec3 ReflectionTexture = texture(Texture_Skybox, ReflectDir).rgb;
     float Reflectivity = clamp(texture(ReflectionMap, FragTexcoord).r, 0.0, 1.0);
 

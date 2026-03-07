@@ -352,6 +352,7 @@ public:
      */
     TextureCubeMapPtr GetBinding(const std::string& bindingName);
     Texture2DPtr GetTexture2DBinding(const std::string& bindingName);
+    float GetFloatBinding(const std::string& bindingName);
 
     std::string GetAssetSaveExtension() const override
     {

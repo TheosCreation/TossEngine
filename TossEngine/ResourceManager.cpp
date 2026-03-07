@@ -416,19 +416,22 @@ std::string ResourceManager::GuessTypeFromExt(const std::string& ext)
 
 std::string ResourceManager::GetExtensionForType(const std::string& typeName)
 {
-    if (typeName == "Shader")
+    auto it = resourceFactories.find(typeName);
+    if (it == resourceFactories.end())
     {
-        return ".shaderprog";
+        return ".meta"; // Default
     }
-    if (typeName == "Texture2D")
+    
+    // Create temp instance just to get the extension
+    ResourcePtr tempResource = it->second("__temp_for_extension__", this);
+    if (tempResource)
     {
-        return ".texture2d";
+        std::string extension = tempResource->GetAssetSaveExtension();
+        tempResource->onDestroy();
+        return extension;
     }
-    if (typeName == "Material")
-    {
-        return ".material";
-    }
-    return ".asset";
+    
+    return ".meta";
 }
 
 void ResourceManager::SetSelectedResource(const ResourcePtr& selectedResource)
