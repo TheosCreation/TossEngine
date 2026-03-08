@@ -14,6 +14,7 @@ Mail : theo.morris@outlook.co.nz
 #include "GameObject.h"
 #include "Resource.h"
 
+// TODO : fix prefabs
 /**
  * @class Prefab
  * @brief A GameObject that can be saved as a reusable resource and instantiated.

@@ -121,7 +121,7 @@ void Texture2D::OnInspectorGUI()
         ImGui::TableSetColumnIndex(2);
         if (ImGui::Button("Browse##TexturePath"))
         {
-            std::string chosen = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;*.tga");
+            std::string chosen = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;*.jpeg;*.tga;*.bmp");
             if (!chosen.empty())
             {
                 std::filesystem::path root = getProjectRoot();
@@ -139,10 +139,30 @@ void Texture2D::OnInspectorGUI()
     }
 
     ImGui::Separator();
-    ImGui::TextUnformatted("Info");
+
+    const char* filterOptions[] = { "Linear", "Nearest" };
+    int previousFilterMode = m_filterMode;
+    if (ImGui::Combo("Filter Mode", &m_filterMode, filterOptions, IM_ARRAYSIZE(filterOptions)))
+    {
+        if (previousFilterMode != m_filterMode)
+        {
+            ApplySamplerSettings();
+        }
+    }
+
+    const char* wrapOptions[] = { "Repeat", "Mirrored Repeat", "Clamp To Edge" };
+    int previousWrapMode = m_wrapMode;
+    if (ImGui::Combo("Wrap Mode", &m_wrapMode, wrapOptions, IM_ARRAYSIZE(wrapOptions)))
+    {
+        if (previousWrapMode != m_wrapMode)
+        {
+            ApplySamplerSettings();
+        }
+    }
+
+    ImGui::Separator();
     ImGui::Text("Size: %d x %d", m_textureSize.width, m_textureSize.height);
     ImGui::Text("Channels: %d", m_numChannels);
-    ImGui::Text("OpenGL ID: %u", m_textureId);
 
     ImGui::Separator();
     ImGui::TextUnformatted("Preview");
@@ -166,7 +186,12 @@ void Texture2D::OnInspectorGUI()
             }
         }
 
-        ImGui::Image(m_textureId, ImVec2(previewWidth, previewHeight));
+        ImGui::Image(
+            m_textureId,
+            ImVec2(previewWidth, previewHeight),
+            ImVec2(0, 1),
+            ImVec2(1, 0)
+        );
     }
     else
     {
