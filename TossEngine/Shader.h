@@ -166,7 +166,11 @@ public:
     {
         return ".shaderprog";
     }
-    
+
+    std::vector<std::string> GetImportExtensions() const override
+    {
+        return { GetAssetSaveExtension() };
+    }
 private:
     /**
      * @brief Attaches a shader to the program.

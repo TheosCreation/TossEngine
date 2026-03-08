@@ -52,6 +52,10 @@ public:
         return ".cubemap";
     }
 
+    std::vector<std::string> GetImportExtensions() const override
+    {
+        return { GetAssetSaveExtension() };
+    }
 private:
     uint m_textureId = 0;
     TextureCubeMapDesc m_desc = {};     // Description of the 2D texture.

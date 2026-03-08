@@ -94,6 +94,16 @@ public:
      * @param data The JSON data to deserialize from.
      */
     static void recurseDeserialize(GameObject* parentGO, const json& data);
+    
+    std::string GetAssetSaveExtension() const override
+    {
+        return ".prefab";
+    }
+
+    std::vector<std::string> GetImportExtensions() const override
+    {
+        return { GetAssetSaveExtension() };
+    }
 };
 
 REGISTER_RESOURCE(Prefab)

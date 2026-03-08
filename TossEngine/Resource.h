@@ -25,7 +25,7 @@ class ResourceManager;
  * @class Resource
  * @brief Represents a generic asset or file-based resource (e.g., textures, meshes, fonts).
  */
-class TOSSENGINE_API Resource : public ISelectable, public Serializable
+class  TOSSENGINE_API Resource : public ISelectable, public Serializable
 {
 public:
     /**
@@ -97,6 +97,13 @@ public:
      */
     virtual std::string GetAssetSaveExtension() const { return ".meta"; }
     
+    /**
+     * @brief Must Override this, Used in asset import finding the import extension and loading it as this resource type 
+    */
+    virtual std::vector<std::string> GetImportExtensions() const
+    {
+        return { GetAssetSaveExtension() };
+    }
 protected:
     ResourceManager* m_resourceManager = nullptr; //!< Pointer to the resource manager owning this resource.
     std::string m_path;                           //!< File path associated with the resource.

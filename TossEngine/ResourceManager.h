@@ -70,13 +70,26 @@ public:
     {
         std::string typeName = getClassName(typeid(T));
         if (resourceFactories.contains(typeName))
-            return; // Already registered
+        {
+            return;
+        }
 
         addResourceModule(typeid(T));
 
-        resourceFactories[typeName] = [](const std::string& uid, ResourceManager* mgr) -> ResourcePtr {
+        resourceFactories[typeName] = [](const std::string& uid, ResourceManager* mgr) -> ResourcePtr
+        {
             return std::make_shared<T>(uid, mgr);
-            };
+        };
+
+        ResourcePtr tempResource = std::make_shared<T>("__extension_probe__", this);
+
+        m_typeToSaveExtension[typeName] = tempResource->GetAssetSaveExtension();
+
+        std::vector<std::string> importExtensions = tempResource->GetImportExtensions();
+        for (const std::string& extension : importExtensions)
+        {
+            m_extensionToType[toLower(extension)] = typeName;
+        }
     }
 
     void loadResourcesFromFile(const std::string& filepath);
@@ -119,7 +132,6 @@ public:
     void SaveResources();
     uint64_t GetRevision() const;
 
-    static std::string GuessTypeFromExt(const std::string& ext);
     std::string GetExtensionForType(const std::string& typeName);
     
 protected:
@@ -137,7 +149,8 @@ protected:
 
     std::unordered_map<std::string, std::function<ResourcePtr(const std::string&, ResourceManager*)>> resourceFactories; //!< Factories for creating resource instances.
     std::unordered_map<std::string, void*> m_resourceModules; //!< Loaded modules for different resource types.
-
+    std::unordered_map<std::string, std::string> m_typeToSaveExtension;
+    
     std::set<string> m_resourcesToDestroy; //!< Resources scheduled for delayed destruction.
     std::set<string> m_mandatoryResources; //!< Resources that are engine-required and cannot be deleted.
     ResourcePtr m_selectedResource = nullptr; //!< Resource currently selected in the editor (for inspector).

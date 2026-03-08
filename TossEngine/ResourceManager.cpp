@@ -225,72 +225,106 @@ void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
             continue;
         }
 
-        path p = it->path();
+        path filePath = it->path();
+        bool isMetaFile = toLower(filePath.extension().string()) == ".meta";
 
-        bool isMetaFile = false;
-        path assetPath = p;
-
-        if (toLower(p.extension().string()) == ".meta")
+        path assetPath = filePath;
+        if (isMetaFile)
         {
-            isMetaFile = true;
-            assetPath = p;
-            assetPath.replace_extension(); // removes ".meta" only
-            // If the real asset exists, we will process it and load this meta as a sidecar there.
+            assetPath.replace_extension();
             if (std::filesystem::exists(assetPath))
             {
                 continue;
             }
         }
 
-        const std::string ext = toLower(assetPath.extension().string());
-        const std::string type = GuessTypeFromExt(ext);
-        if (type.empty())
+        const std::string extension = toLower(assetPath.extension().string());
+        const std::string typeName = GetExtensionForType(extension);
+        if (typeName.empty())
         {
             continue;
         }
 
-        std::string rel = assetPath.lexically_relative(root).generic_string();
+        const std::string relativePath = assetPath.lexically_relative(root).generic_string();
 
-        AssetImportRec rec{};
-        if (!ShouldImport(p.string(), type, rec))
+        AssetImportRec cachedRecord{};
+        if (!ShouldImport(filePath.string(), typeName, cachedRecord))
         {
-            continue;
-        }
-
-        // ImportOne should take the file we read from:
-        // - normal file: read from assetPath (== p)
-        // - meta-only asset: read from p (the meta file), but UID matches assetPath
-        ImportOne(p.string(), rel, type);
-
-        ResourcePtr resource = GetResourceByUniqueID(rel);
-        if (resource)
-        {
-            // If we imported from a real asset file, apply sidecar meta.
-            // If we imported from meta-only, p is the meta already, so this would be duplicate; skip.
             if (!isMetaFile)
             {
-                std::string metaPath = BuildMetaPath(p.string());
-                json metaJson;
-
-                if (std::filesystem::exists(metaPath))
+                std::string metaPath = BuildMetaPath(filePath.string());
+                if (!std::filesystem::exists(metaPath))
                 {
-                    if (TryReadJsonFile(metaPath, metaJson))
+                    ResourcePtr existingResource = GetResourceByUniqueID(relativePath);
+                    if (existingResource)
                     {
-                        resource->deserialize(metaJson);
-                        m_resourceDataMap[rel] = metaJson;
-                    }
-                    else
-                    {
-                        Debug::LogWarning("Failed to parse meta: " + metaPath);
+                        json metaPayload = existingResource->serialize();
+                        metaPayload["type"] = getClassName(typeid(*existingResource));
+                        metaPayload["uniqueId"] = relativePath;
+                        metaPayload["m_path"] = assetPath.generic_string();
+
+                        std::ofstream metaFile(metaPath);
+                        if (metaFile.is_open())
+                        {
+                            metaFile << metaPayload.dump(4);
+                            metaFile.close();
+                        }
                     }
                 }
             }
+            continue;
         }
 
-        rec.uid = rel;
-        rec.type = type;
-        rec.timestamp = ToTicks(last_write_time(p));
-        m_importCache[p.string()] = rec;
+        ImportOne(filePath.string(), relativePath, typeName);
+
+        ResourcePtr resource = GetResourceByUniqueID(relativePath);
+        if (!resource)
+        {
+            continue;
+        }
+
+        resource->setPath(assetPath.generic_string());
+
+        if (!isMetaFile)
+        {
+            std::string metaPath = BuildMetaPath(filePath.string());
+
+            if (std::filesystem::exists(metaPath))
+            {
+                json metaJson;
+                if (TryReadJsonFile(metaPath, metaJson))
+                {
+                    resource->deserialize(metaJson);
+                    m_resourceDataMap[relativePath] = metaJson;
+                }
+                else
+                {
+                    Debug::LogWarning("Failed to parse meta: " + metaPath);
+                }
+            }
+            else
+            {
+                json metaPayload = resource->serialize();
+                metaPayload["type"] = getClassName(typeid(*resource));
+                metaPayload["uniqueId"] = relativePath;
+                metaPayload["m_path"] = assetPath.generic_string();
+
+                std::ofstream metaFile(metaPath);
+                if (metaFile.is_open())
+                {
+                    metaFile << metaPayload.dump(4);
+                    metaFile.close();
+                }
+
+                m_resourceDataMap[relativePath] = metaPayload;
+            }
+        }
+
+        AssetImportRec newRecord;
+        newRecord.uid = relativePath;
+        newRecord.type = typeName;
+        newRecord.timestamp = ToTicks(last_write_time(filePath));
+        m_importCache[filePath.string()] = newRecord;
     }
 }
 
@@ -402,37 +436,17 @@ void ResourceManager::ImportOne(const std::string& absPath, const std::string& r
     }
 }
 
-std::string ResourceManager::GuessTypeFromExt(const std::string& ext)
-{
-    if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".tga" || ext == ".bmp") { return "Texture2D"; }
-    if (ext == ".obj" || ext == ".fbx" || ext == ".gltf" || ext == ".glb")                   { return "Mesh"; }
-    if (ext == ".mat" || ext == ".material")                                                 { return "Material"; }
-    if (ext == ".prefab")                                                                    { return "Prefab"; }
-    if (ext == ".wav" || ext == ".mp3" || ext == ".ogg")                                     { return "Sound"; }
-    if (ext == ".shaderprog")                                                                { return "Shader"; }
-
-    return {};
-}
-
 std::string ResourceManager::GetExtensionForType(const std::string& typeName)
 {
-    auto it = resourceFactories.find(typeName);
-    if (it == resourceFactories.end())
+    auto it = m_typeToSaveExtension.find(typeName);
+    if (it != m_typeToSaveExtension.end())
     {
-        return ".meta"; // Default
+        return it->second;
     }
-    
-    // Create temp instance just to get the extension
-    ResourcePtr tempResource = it->second("__temp_for_extension__", this);
-    if (tempResource)
-    {
-        std::string extension = tempResource->GetAssetSaveExtension();
-        tempResource->onDestroy();
-        return extension;
-    }
-    
+
     return ".meta";
 }
+
 
 void ResourceManager::SetSelectedResource(const ResourcePtr& selectedResource)
 {

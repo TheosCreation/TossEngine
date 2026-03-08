@@ -85,6 +85,11 @@ public:
      */
     ~Texture2D();
 
+    std::vector<std::string> GetImportExtensions() const override
+    {
+        return { ".png", ".jpg", ".jpeg", ".tga", ".bmp" };
+    }
+    
 private:
     Texture2DDesc m_desc = {}; // Description of the 2D texture.
     int m_numChannels = 3;

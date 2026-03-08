@@ -359,6 +359,11 @@ public:
         return ".mat";
     }
     
+    std::vector<std::string> GetImportExtensions() const override
+    {
+        return { GetAssetSaveExtension() };
+    }
+    
 private:
     /**
      * @brief Updates internal uniform bindings after shader or resource changes.

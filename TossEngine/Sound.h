@@ -44,6 +44,11 @@ public:
     bool isLoaded() const { return m_loaded; }
     void setLoaded(bool v) { m_loaded = v; }
 
+    std::vector<std::string> GetImportExtensions() const override
+    {
+        return { ".ogg", ".mp3", ".wav" };
+    }
+    
 private:
     SoundDesc m_desc = {};       //!< Sound descriptor.
     bool m_loaded = false;

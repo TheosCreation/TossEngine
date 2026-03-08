@@ -105,6 +105,11 @@ public:
 
     Vector3 GetExtent();
 
+    std::vector<std::string> GetImportExtensions() const override
+    {
+        return { ".obj", ".fbx", ".gltf", ".glb" };
+    }
+    
 private:
     VertexArrayObjectPtr m_vao; //!< The Vertex Array Object associated with this mesh.
     std::vector<Transform> m_instanceTransforms; //!< Transformations for each mesh instance.

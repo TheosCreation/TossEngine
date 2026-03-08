@@ -66,6 +66,11 @@ public:
 
     Glyph getGlyph(char c);
 
+    std::vector<std::string> GetImportExtensions() const override
+    {
+        return { ".ttf" };
+    }
+    
 private:
     int m_atlasHeight = 512;            //!< Height of the generated font atlas (pixels)
     int m_atlasWidth = 512;             //!< Width of the generated font atlas (pixels)

@@ -64,6 +64,10 @@ public:
         return ".physicsmaterial";
     }
 
+    std::vector<std::string> GetImportExtensions() const override
+    {
+        return { GetAssetSaveExtension() };
+    }
 private:
     float m_staticFriction = 1.0f; //!< Static friction coefficient.
     float m_dynamicFriction = 1.0f; //!< Dynamic friction coefficient.

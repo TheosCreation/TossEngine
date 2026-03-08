@@ -14,6 +14,7 @@ Mail : theo.morris@mds.ac.nz
 #include "Utils.h"
 #include "Resource.h"
 
+//TODO : update this resource
 /**
  * @class HeightMap
  * @brief A representation of a HeightMap texture to be used by the graphics engine class.
