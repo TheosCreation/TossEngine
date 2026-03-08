@@ -239,7 +239,7 @@ void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
         }
 
         const std::string extension = toLower(assetPath.extension().string());
-        const std::string typeName = GetExtensionForType(extension);
+        const std::string typeName = GuessTypeFromExt(extension);
         if (typeName.empty())
         {
             continue;
@@ -359,25 +359,47 @@ void ResourceManager::SaveResources()
 {
     for (auto& [uid, resource] : m_mapResources)
     {
-        if (!resource || IsResourceMandatory(uid)) // Dont serialize the resource if the resource is null or is internal resource
+        if (!resource)
         {
             continue;
         }
 
+        if (IsResourceMandatory(uid))
+        {
+            continue;
+        }
+
+        std::string typeName = getClassName(typeid(*resource));
+
         json payload = resource->serialize();
-        payload["type"] = getClassName(typeid(*resource));
+        payload["type"] = typeName;
         payload["uniqueId"] = uid;
 
         std::string basePath = resource->getPath();
-        std::string ext = resource->GetAssetSaveExtension();
-        std::string savePath = BuildAssetSavePath(basePath, ext);
+        std::string extension = GetExtensionForType(typeName);
+        std::string savePath = basePath;
+
+        if (!extension.empty())
+        {
+            std::filesystem::path currentPath(basePath);
+            std::string currentExtension = toLower(currentPath.extension().string());
+
+            if (toLower(extension) != currentExtension)
+            {
+                savePath = BuildAssetSavePath(basePath, extension);
+            }
+        }
 
         if (savePath.empty())
         {
             continue;
         }
 
-        std::filesystem::create_directories(std::filesystem::path(savePath).parent_path());
+        std::filesystem::path saveFilePath(savePath);
+        if (saveFilePath.has_parent_path())
+        {
+            std::filesystem::create_directories(saveFilePath.parent_path());
+        }
 
         std::ofstream file(savePath);
         if (!file.is_open())
@@ -445,6 +467,17 @@ std::string ResourceManager::GetExtensionForType(const std::string& typeName)
     }
 
     return ".meta";
+}
+
+std::string ResourceManager::GuessTypeFromExt(const std::string& ext) const
+{
+    auto extensionIterator = m_extensionToType.find(toLower(ext));
+    if (extensionIterator != m_extensionToType.end())
+    {
+        return extensionIterator->second;
+    }
+
+    return {};
 }
 
 

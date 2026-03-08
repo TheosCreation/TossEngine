@@ -161,16 +161,6 @@ public:
 
     vector<UniformBinding> getBindings() const;
 
-    // Shader is special where we need to save to .shaderprog
-    std::string GetAssetSaveExtension() const override
-    {
-        return ".shaderprog";
-    }
-
-    std::vector<std::string> GetImportExtensions() const override
-    {
-        return { GetAssetSaveExtension() };
-    }
 private:
     /**
      * @brief Attaches a shader to the program.
@@ -208,7 +198,7 @@ private:
 
     SERIALIZABLE_MEMBERS(m_vertexShaderFilePath, m_fragShaderFilePath, m_computeShaderFilePath, m_path) // TODO: rework this to just serialize the m_path
 };
-REGISTER_RESOURCE(Shader)
+REGISTER_RESOURCE(Shader, ".shaderprog", ".shaderprog")
 
 inline void to_json(json& j, ShaderPtr const& shader) {
     if (shader)

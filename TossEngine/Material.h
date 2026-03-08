@@ -353,16 +353,6 @@ public:
     TextureCubeMapPtr GetBinding(const std::string& bindingName);
     Texture2DPtr GetTexture2DBinding(const std::string& bindingName);
     float GetFloatBinding(const std::string& bindingName);
-
-    std::string GetAssetSaveExtension() const override
-    {
-        return ".mat";
-    }
-    
-    std::vector<std::string> GetImportExtensions() const override
-    {
-        return { GetAssetSaveExtension() };
-    }
     
 private:
     /**
@@ -376,7 +366,7 @@ private:
     SERIALIZABLE_MEMBERS(m_shader, m_path, m_uniformValues) // TODO: rework this to use this
 };
 
-REGISTER_RESOURCE(Material)
+REGISTER_RESOURCE(Material, ".mat", ".mat")
 
 // --- JSON Serialization ---
 

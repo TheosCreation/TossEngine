@@ -104,11 +104,6 @@ public:
     void clearInstances();
 
     Vector3 GetExtent();
-
-    std::vector<std::string> GetImportExtensions() const override
-    {
-        return { ".obj", ".fbx", ".gltf", ".glb" };
-    }
     
 private:
     VertexArrayObjectPtr m_vao; //!< The Vertex Array Object associated with this mesh.
@@ -121,7 +116,7 @@ private:
     SERIALIZABLE_MEMBERS(m_path, m_scale, m_instanceTransforms)
 };
 
-REGISTER_RESOURCE(Mesh)
+REGISTER_RESOURCE(Mesh, ".meta", ".obj", ".fbx", ".gltf", ",glb")
 
 // --- JSON Serialization ---
 

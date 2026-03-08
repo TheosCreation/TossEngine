@@ -46,16 +46,7 @@ public:
      * @param id The new ID for the texture.
      */
     void setId(uint id) { m_textureId = id; }
-
-    std::string GetAssetSaveExtension() const override
-    {
-        return ".cubemap";
-    }
-
-    std::vector<std::string> GetImportExtensions() const override
-    {
-        return { GetAssetSaveExtension() };
-    }
+    
 private:
     uint m_textureId = 0;
     TextureCubeMapDesc m_desc = {};     // Description of the 2D texture.
@@ -67,7 +58,8 @@ private:
 
     SERIALIZABLE_MEMBERS(m_path, m_numChannels, m_textureSize, m_filePaths)
 };
-REGISTER_RESOURCE(TextureCubeMap)
+
+REGISTER_RESOURCE(TextureCubeMap, ".cubemap", ".cubemap")
 
 inline void to_json(json& j, TextureCubeMapPtr const& cubemap) {
     if (cubemap)

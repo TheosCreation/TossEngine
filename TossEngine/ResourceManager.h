@@ -66,7 +66,7 @@ public:
      * @tparam T The resource class type.
      */
     template<typename T>
-    void registerResource()
+    void registerResource(const std::string& saveExtension, const std::vector<std::string>& importExtensions = {})
     {
         std::string typeName = getClassName(typeid(T));
         if (resourceFactories.contains(typeName))
@@ -81,14 +81,27 @@ public:
             return std::make_shared<T>(uid, mgr);
         };
 
-        ResourcePtr tempResource = std::make_shared<T>("__extension_probe__", this);
-
-        m_typeToSaveExtension[typeName] = tempResource->GetAssetSaveExtension();
-
-        std::vector<std::string> importExtensions = tempResource->GetImportExtensions();
-        for (const std::string& extension : importExtensions)
+        if (!saveExtension.empty())
         {
-            m_extensionToType[toLower(extension)] = typeName;
+            m_typeToSaveExtension[typeName] = toLower(saveExtension);
+        }
+
+        if (importExtensions.empty())
+        {
+            if (!saveExtension.empty())
+            {
+                m_extensionToType[toLower(saveExtension)] = typeName;
+            }
+        }
+        else
+        {
+            for (const std::string& extension : importExtensions)
+            {
+                if (!extension.empty())
+                {
+                    m_extensionToType[toLower(extension)] = typeName;
+                }
+            }
         }
     }
 
@@ -133,6 +146,7 @@ public:
     uint64_t GetRevision() const;
 
     std::string GetExtensionForType(const std::string& typeName);
+    std::string GuessTypeFromExt(const std::string& ext) const;
     
 protected:
     bool ShouldImport(const std::string& absPath, const std::string& type, AssetImportRec& out);
@@ -150,6 +164,7 @@ protected:
     std::unordered_map<std::string, std::function<ResourcePtr(const std::string&, ResourceManager*)>> resourceFactories; //!< Factories for creating resource instances.
     std::unordered_map<std::string, void*> m_resourceModules; //!< Loaded modules for different resource types.
     std::unordered_map<std::string, std::string> m_typeToSaveExtension;
+    std::unordered_map<std::string, std::string> m_extensionToType;
     
     std::set<string> m_resourcesToDestroy; //!< Resources scheduled for delayed destruction.
     std::set<string> m_mandatoryResources; //!< Resources that are engine-required and cannot be deleted.
@@ -171,8 +186,8 @@ private:
 /**
  * @brief Macro to automatically register a resource type during static initialization.
  */
-#define REGISTER_RESOURCE(T) \
+#define REGISTER_RESOURCE(T, SAVE_EXT, ...) \
     static bool _registered_##T = []() { \
-        ResourceManager::GetInstance().registerResource<T>(); \
+        ResourceManager::GetInstance().registerResource<T>(SAVE_EXT, std::vector<std::string>{ __VA_ARGS__ }); \
         return true; \
     }();

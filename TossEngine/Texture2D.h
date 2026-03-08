@@ -84,11 +84,6 @@ public:
      * Cleans up resources associated with the texture.
      */
     ~Texture2D();
-
-    std::vector<std::string> GetImportExtensions() const override
-    {
-        return { ".png", ".jpg", ".jpeg", ".tga", ".bmp" };
-    }
     
 private:
     Texture2DDesc m_desc = {}; // Description of the 2D texture.
@@ -100,7 +95,8 @@ private:
 
     SERIALIZABLE_MEMBERS(m_numChannels, m_textureSize, m_path)
 };
-REGISTER_RESOURCE(Texture2D)
+
+REGISTER_RESOURCE(Texture2D, ".meta", ".png", ".jpg", ".jpeg", ".tga", ".bmp");
 
 inline void to_json(json& j, Texture2DPtr const& texture) {
     if (texture)

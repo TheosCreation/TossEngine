@@ -43,11 +43,6 @@ public:
     const std::string& getPath() const { return m_path; }
     bool isLoaded() const { return m_loaded; }
     void setLoaded(bool v) { m_loaded = v; }
-
-    std::vector<std::string> GetImportExtensions() const override
-    {
-        return { ".ogg", ".mp3", ".wav" };
-    }
     
 private:
     SoundDesc m_desc = {};       //!< Sound descriptor.
@@ -56,7 +51,7 @@ private:
     SERIALIZABLE_MEMBERS(m_path)
 };
 
-REGISTER_RESOURCE(Sound)
+REGISTER_RESOURCE(Sound, ".meta", ".wav", ".mp3", ".ogg")
 
 // JSON Serialization Helpers
 inline void to_json(json& j, SoundPtr const& sound) {

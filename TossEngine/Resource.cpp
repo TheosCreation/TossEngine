@@ -23,21 +23,39 @@ Resource::Resource(const std::string& uid, ResourceManager* mgr) : m_uniqueID(ui
 void Resource::onCreateLate()
 {
     // if we have overriden the path and made it custom then we load that file and deserialize properly
-    if (!m_path.empty() && GetAssetSaveExtension() != ".meta")
+    
+    if (m_path.empty())
     {
-        json j;
-        std::ifstream file(m_path);
-        if (file.is_open())
-        {
-            try
-            {
-                file >> j;
-                deserialize(j);
-            }
-            catch (...)
-            {
-            }
-        }
+        return;
+    }
+
+    if (!m_resourceManager)
+    {
+        return;
+    }
+
+    std::string typeName = getClassName(typeid(*this));
+    std::string saveExtension = m_resourceManager->GetExtensionForType(typeName);
+
+    if (saveExtension == ".meta")
+    {
+        return;
+    }
+
+    json jsonData;
+    std::ifstream file(m_path);
+    if (!file.is_open())
+    {
+        return;
+    }
+
+    try
+    {
+        file >> jsonData;
+        deserialize(jsonData);
+    }
+    catch (...)
+    {
     }
 }
 
