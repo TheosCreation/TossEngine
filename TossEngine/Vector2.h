@@ -1,14 +1,13 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2026 DeviousDevs
 File Name : Vector2.h
 Description : Represents a 2D float-based vector with basic arithmetic and serialization support.
               Wraps glm::vec2 for math operations and engine compatibility.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 ***/
 
 #pragma once

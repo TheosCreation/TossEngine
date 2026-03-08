@@ -1,13 +1,12 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2026 DeviousDevs
 File Name : Shader.h
 Description : Shader class is a wrapper class for handling shaders in OpenGL
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 ***/
 
 #pragma once

@@ -1,13 +1,12 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2026 DeviousDevs
 File Name : Mesh.h
 Description : A class representing a mesh resource, supporting instanced rendering.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 ***/
 
 #pragma once

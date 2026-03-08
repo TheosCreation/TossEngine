@@ -1,13 +1,12 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2026 DeviousDevs
 File Name : GameObject.cpp
 Description : GameObject class that represents an object for OpenGl with its own update and onCreate functions.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 **/
 
 #include "GameObject.h"

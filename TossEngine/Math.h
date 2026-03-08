@@ -1,14 +1,13 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2026 DeviousDevs
 File Name : Math.h
 Description : Central math utility header that exposes GLM and provides TossEngine-specific math tools,
               random generation, clamping, and JSON aliasing.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 ***/
 
 #pragma once

@@ -1,14 +1,13 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2026 DeviousDevs
 File Name : Rect.h
 Description : A rectangle container class that stores position and size using integer coordinates.
               Useful for scissor rects, viewport regions, or UI element bounds.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 ***/
 
 #pragma once

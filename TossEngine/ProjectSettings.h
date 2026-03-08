@@ -1,13 +1,12 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2025 Media Design School
+(c) 2026 DeviousDevs
 File Name : ProjectSettings.h
 Description : Defines the project settings configuration structure for TossEngine.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 ***/
 
 #pragma once
@@ -31,7 +30,7 @@ struct TOSSENGINE_API ProjectSettings
         std::ifstream file(filename);
         if (!file)
         {
-            Debug::LogWarning("Could not find project settings at: " + filename + " — using default settings.");
+            Debug::LogWarning("Could not find project settings at: " + filename + " ï¿½ using default settings.");
             return;
         }
 

@@ -1,13 +1,12 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2026 DeviousDevs
 File Name : Skybox.h
 Description : Skybox class represents a skybox in the 3D scene, handling its creation, updating, and shader uniform data.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 **/
 
 #pragma once

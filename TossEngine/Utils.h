@@ -1,13 +1,12 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2026 DeviousDevs
 File Name : Utils.h
 Description : header file that represents a utility header to structure this project to make it more readable
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 **/
 
 #pragma once
@@ -348,6 +347,19 @@ enum class TextureType
 {
     Default,    // Standard texture used for general purposes
     Heightmap   // Special texture type used for height mapping in terrain generation
+};
+
+enum class TextureFilterMode
+{
+    Linear = 0,
+    Nearest = 1
+};
+
+enum class TextureWrapMode
+{
+    Repeat = 0,
+    MirroredRepeat = 1,
+    ClampToEdge = 2
 };
 
 // Enum representing depth test functions

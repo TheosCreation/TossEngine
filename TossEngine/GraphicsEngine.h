@@ -1,14 +1,13 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2025 Media Design School
+(c) 2026 DeviousDevs
 File Name : GraphicsEngine.h
 Description : Singleton wrapper for OpenGL functionality, including state management, VAO, shader, texture binding,
               and integration with ImGui. Used by the engine to abstract rendering details.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 ***/
 
 #pragma once

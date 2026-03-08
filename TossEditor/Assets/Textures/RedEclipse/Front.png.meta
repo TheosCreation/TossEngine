@@ -1,4 +1,5 @@
 {
+    "m_filterMode": 0,
     "m_numChannels": 3,
     "m_path": "Assets\\Textures\\RedEclipse\\Front.png",
     "m_textureSize": {
@@ -7,6 +8,7 @@
         "top": 0,
         "width": 1024
     },
+    "m_wrapMode": 0,
     "type": "Texture2D",
     "uniqueId": "Textures/RedEclipse/Front.png"
 }

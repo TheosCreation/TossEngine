@@ -1,9 +1,8 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2025 Media Design School
+(c) 2026 DeviousDevs
 File Name : Sound.h
 Description : Sound class representing a sound resource (2D or 3D) in TossEngine.
 Author : Theo Morris

@@ -1,14 +1,13 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2025 Media Design School
+(c) 2026 DeviousDevs
 File Name : LayerManager.h
 Description : Provides a dynamic layer management system using bit flags for filtering, collision masks, etc.
               Automatically allocates and reuses available layer bits. Supports JSON serialization.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 ***/
 
 #pragma once

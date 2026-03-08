@@ -1,14 +1,13 @@
 ﻿/***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2025 Media Design School
+(c) 2026 DeviousDevs
 File Name : GameObject.h
 Description : Represents a game entity with transform, components, lifecycle events,
               and serialization support. Forms the base unit of the TossEngine scene graph.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 ***/
 
 #pragma once

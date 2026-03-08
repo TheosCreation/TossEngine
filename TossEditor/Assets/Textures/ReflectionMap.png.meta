@@ -1,4 +1,5 @@
 {
+    "m_filterMode": 0,
     "m_numChannels": 4,
     "m_path": "Assets\\Textures\\ReflectionMap.png",
     "m_textureSize": {
@@ -7,6 +8,7 @@
         "top": 0,
         "width": 2048
     },
+    "m_wrapMode": 0,
     "type": "Texture2D",
     "uniqueId": "Textures/ReflectionMap.png"
 }

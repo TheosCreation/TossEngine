@@ -1,14 +1,13 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2025 Media Design School
+(c) 2026 DeviousDevs
 File Name : Transform.h
 Description : Component that defines position, rotation, and scale in world and local space.
               Supports hierarchical parenting and matrix generation for rendering and physics.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 ***/
 
 #pragma once
@@ -174,7 +173,7 @@ struct TOSSENGINE_API Transform
     }
 
 protected:
-    uint32_t worldVersion = 0;                 // this node’s world state version
+    uint32_t worldVersion = 0;                 // this nodeï¿½s world state version
     uint32_t lastAppliedParentVersion = 0;     // last parent version we baked in
 
 private:

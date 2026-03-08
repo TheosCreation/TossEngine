@@ -1,14 +1,13 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2025 Media Design School
+(c) 2026 DeviousDevs
 File Name : ScriptLoader.h
 Description : Handles dynamic loading, unloading, and compilation of the script DLL (e.g., GameComponents.dll).
               Supports hot-reloading workflow during editor runtime.
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 ***/
 
 #pragma once

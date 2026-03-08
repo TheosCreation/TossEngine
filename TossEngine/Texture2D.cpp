@@ -1,13 +1,12 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2026 DeviousDevs
 File Name : Texture2D.cpp
 Description : Texture2D class is a representation of a 2D texture to be used by the graphics engine class
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 **/
 
 #include "Texture2D.h"
@@ -44,7 +43,7 @@ Texture2D::Texture2D(const Texture2DDesc& desc, const string& filePath, const st
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // Store the texture description.
-    m_desc = desc;
+    //m_desc = desc;
 }
 
 Texture2D::Texture2D(const std::string& uid, ResourceManager* mgr) : Resource(uid, mgr)
@@ -60,8 +59,9 @@ void Texture2D::GenerateTexture()
 {
     stbi_set_flip_vertically_on_load(false);
 
-    // Load the image data using stb_image.
-    int width, height, nrChannels;
+    int width = 0;
+    int height = 0;
+    int nrChannels = 0;
     unsigned char* data = stbi_load(m_path.c_str(), &width, &height, &nrChannels, 0);
     if (!data)
     {
@@ -73,32 +73,28 @@ void Texture2D::GenerateTexture()
     m_textureSize = { width, height };
     m_numChannels = nrChannels;
 
+    if (m_textureId != 0)
+    {
+        glDeleteTextures(1, &m_textureId);
+        m_textureId = 0;
+    }
 
-    // Generate a texture ID and bind it as a 2D texture.
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
 
-    // Set texture wrapping parameters.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Repeat texture horizontally.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Repeat texture vertically.
+    GLenum glChannels = GL_RGB;
+    if (m_numChannels == 4)
+    {
+        glChannels = GL_RGBA;
+    }
 
-    // Set texture filtering parameters.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // Use linear filtering and generate mipmaps.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // Use linear filtering for magnification.
-
-    // Determine the number of color channels in the texture data.
-    auto glChannels = GL_RGB;
-    if (m_numChannels == 3) glChannels = GL_RGB; // 3 channels (RGB).
-    else if (m_numChannels == 4) glChannels = GL_RGBA; // 4 channels (RGBA).
-
-    // Specify the 2D texture image.
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_textureSize.width, m_textureSize.height, 0, glChannels, GL_UNSIGNED_BYTE, m_textureData);
-
-    // Generate mipmaps for the texture.
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    // Free the image data.
+    ApplySamplerSettings();
+
     stbi_image_free(data);
+    m_textureData = nullptr;
 }
 
 void Texture2D::OnInspectorGUI()
@@ -106,61 +102,76 @@ void Texture2D::OnInspectorGUI()
     ImGui::Text(("Texture2D Inspector - ID: " + m_uniqueID).c_str());
     ImGui::Separator();
 
-    if (ImGui::BeginTable("TexturePath", 3,
-        ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg))
+    if (ImGui::BeginTable("TexturePath", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg))
     {
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::TextUnformatted("Filepath:");
+
         ImGui::TableSetColumnIndex(1);
-        if (m_path.empty()) {
+        if (m_path.empty())
+        {
             ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Assigned");
         }
-        else {
+        else
+        {
             ImGui::TextUnformatted(m_path.c_str());
         }
+
         ImGui::TableSetColumnIndex(2);
-        if (ImGui::Button("Browse##TexturePath")) {
-            auto chosen = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;*.tga");
-            if (!chosen.empty()) {
-                auto root = getProjectRoot();
-                auto relPath = std::filesystem::relative(chosen, root);
-                m_path = relPath.string();
-                if (!m_path.empty()) GenerateTexture();
+        if (ImGui::Button("Browse##TexturePath"))
+        {
+            std::string chosen = TossEngine::GetInstance().openFileDialog("*.png;*.jpg;*.tga");
+            if (!chosen.empty())
+            {
+                std::filesystem::path root = getProjectRoot();
+                std::filesystem::path relativePath = std::filesystem::relative(chosen, root);
+                m_path = relativePath.string();
+
+                if (!m_path.empty())
+                {
+                    GenerateTexture();
+                }
             }
         }
 
         ImGui::EndTable();
     }
 
-    //static const char* filterOptions[] = { "Linear", "Nearest" };
-    //static int minFilterIndex = 0;
-    //static int magFilterIndex = 0;
-    //
-    //if (ImGui::Combo("Min Filter", &minFilterIndex, filterOptions, IM_ARRAYSIZE(filterOptions)))
-    //{
-    //    GLenum filter = (minFilterIndex == 0) ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
-    //    glTextureParameteri(m_textureId, GL_TEXTURE_MIN_FILTER, filter);
-    //}
-    //
-    //if (ImGui::Combo("Mag Filter", &magFilterIndex, filterOptions, IM_ARRAYSIZE(filterOptions)))
-    //{
-    //    GLenum filter = (magFilterIndex == 0) ? GL_LINEAR : GL_NEAREST;
-    //    glTextureParameteri(m_textureId, GL_TEXTURE_MAG_FILTER, filter);
-    //}
-    //
-    //static const char* wrapModes[] = { "Repeat", "Mirrored", "Clamp to Edge" };
-    //static int wrapIndex = 0;
-    //
-    //if (ImGui::Combo("Wrap Mode", &wrapIndex, wrapModes, IM_ARRAYSIZE(wrapModes)))
-    //{
-    //    GLenum wrapMode = GL_REPEAT;
-    //    if (wrapIndex == 1) wrapMode = GL_MIRRORED_REPEAT;
-    //    else if (wrapIndex == 2) wrapMode = GL_CLAMP_TO_EDGE;
-    //
-    //    glTextureParameteri(m_textureId, GL_TEXTURE_WRAP_S, wrapMode);
-    //    glTextureParameteri(m_textureId, GL_TEXTURE_WRAP_T, wrapMode);
-    //}
+    ImGui::Separator();
+    ImGui::TextUnformatted("Info");
+    ImGui::Text("Size: %d x %d", m_textureSize.width, m_textureSize.height);
+    ImGui::Text("Channels: %d", m_numChannels);
+    ImGui::Text("OpenGL ID: %u", m_textureId);
+
+    ImGui::Separator();
+    ImGui::TextUnformatted("Preview");
+
+    if (m_textureId != 0)
+    {
+        float availableWidth = ImGui::GetContentRegionAvail().x;
+        float previewWidth = availableWidth;
+        float previewHeight = previewWidth;
+
+        if (m_textureSize.width > 0 && m_textureSize.height > 0)
+        {
+            float aspectRatio = static_cast<float>(m_textureSize.width) / static_cast<float>(m_textureSize.height);
+            previewHeight = previewWidth / aspectRatio;
+
+            const float maxPreviewHeight = 256.0f;
+            if (previewHeight > maxPreviewHeight)
+            {
+                previewHeight = maxPreviewHeight;
+                previewWidth = previewHeight * aspectRatio;
+            }
+        }
+
+        ImGui::Image(m_textureId, ImVec2(previewWidth, previewHeight));
+    }
+    else
+    {
+        ImGui::TextColored(ImVec4(1, 0, 0, 1), "No texture loaded");
+    }
 }
 
 
@@ -169,68 +180,55 @@ bool Texture2D::Delete(bool deleteSelf)
     return false;
 }
 
-int Texture2D::getHeight()
+int Texture2D::getHeight() const
 {
-    return m_desc.textureSize.height;
+    return m_textureSize.height;
 }
 
-int Texture2D::getWidth()
+int Texture2D::getWidth() const
 {
-    return m_desc.textureSize.width;
+    return m_textureSize.width;
 }
 
 unsigned char* Texture2D::getData() const
 {
-    if (!m_desc.textureData)
+    if (!m_textureData)
     {
         Debug::LogError("Texture data is null", false);
     }
-    return m_desc.textureData;
+    return m_textureData;
 }
 
-// Sets the texture wrapping mode to mirrored repeat.
 void Texture2D::setMirrored()
 {
-    // Set the wrapping mode for the S (horizontal) and T (vertical) coordinates to mirrored repeat.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    m_wrapMode = static_cast<int>(TextureWrapMode::MirroredRepeat);
+    ApplySamplerSettings();
 }
 
-// Sets the texture wrapping mode to clamp to edge.
 void Texture2D::setClampToEdge()
 {
-    // Set the wrapping mode for the S (horizontal) and T (vertical) coordinates to clamp to edge.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    m_wrapMode = static_cast<int>(TextureWrapMode::ClampToEdge);
+    ApplySamplerSettings();
 }
 
 void Texture2D::resize(Rect newTextureSize)
 {
-    m_desc.textureSize = newTextureSize;
+    m_textureSize = newTextureSize;
 
-    // Determine number of color channels
-    GLenum glChannels = (m_desc.numChannels == 4) ? GL_RGBA : GL_RGB;
+    GLenum glChannels = (m_numChannels == 4) ? GL_RGBA : GL_RGB;
 
-    // Delete old texture to prevent memory leaks
     if (m_textureId != 0)
     {
         glDeleteTextures(1, &m_textureId);
     }
 
-    // Generate and bind new texture
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
 
-    // Set texture parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    ApplySamplerSettings();
 
-    // Upload new texture data (or NULL if resizing without data)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_desc.textureSize.width, m_desc.textureSize.height, 0, glChannels, GL_UNSIGNED_BYTE, m_desc.textureData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_textureSize.width, m_textureSize.height, 0, glChannels, GL_UNSIGNED_BYTE, m_textureData);
 
-    // Unbind texture
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -238,4 +236,58 @@ void Texture2D::resize(Rect newTextureSize)
 Texture2D::~Texture2D()
 {
     glDeleteTextures(1, &m_textureId);
+}
+
+void Texture2D::ApplySamplerSettings() const
+{
+    if (m_textureId == 0)
+    {
+        return;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, m_textureId);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilterModeToMinFilter(m_filterMode));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, FilterModeToMagFilter(m_filterMode));
+
+    GLint wrapMode = WrapModeToGL(m_wrapMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+GLint Texture2D::FilterModeToMinFilter(int filterMode)
+{
+    if (filterMode == static_cast<int>(TextureFilterMode::Nearest))
+    {
+        return GL_NEAREST_MIPMAP_NEAREST;
+    }
+
+    return GL_LINEAR_MIPMAP_LINEAR;
+}
+
+GLint Texture2D::FilterModeToMagFilter(int filterMode)
+{
+    if (filterMode == static_cast<int>(TextureFilterMode::Nearest))
+    {
+        return GL_NEAREST;
+    }
+
+    return GL_LINEAR;
+}
+
+GLint Texture2D::WrapModeToGL(int wrapMode)
+{
+    if (wrapMode == static_cast<int>(TextureWrapMode::MirroredRepeat))
+    {
+        return GL_MIRRORED_REPEAT;
+    }
+
+    if (wrapMode == static_cast<int>(TextureWrapMode::ClampToEdge))
+    {
+        return GL_CLAMP_TO_EDGE;
+    }
+
+    return GL_REPEAT;
 }

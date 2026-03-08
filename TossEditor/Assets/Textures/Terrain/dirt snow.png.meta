@@ -1,4 +1,5 @@
 {
+    "m_filterMode": 0,
     "m_numChannels": 4,
     "m_path": "Assets\\Textures\\Terrain\\dirt snow.png",
     "m_textureSize": {
@@ -7,6 +8,7 @@
         "top": 0,
         "width": 512
     },
+    "m_wrapMode": 0,
     "type": "Texture2D",
     "uniqueId": "Textures/Terrain/dirt snow.png"
 }

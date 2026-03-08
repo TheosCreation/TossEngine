@@ -1,13 +1,12 @@
 /***
-Bachelor of Software Engineering
-Media Design School
+DeviousDevs
 Auckland
 New Zealand
-(c) 2024 Media Design School
+(c) 2026 DeviousDevs
 File Name : Texture2D.h
 Description : Texture2D class is a representation of a 2D texture to be used by the graphics engine class
 Author : Theo Morris
-Mail : theo.morris@mds.ac.nz
+Mail : theo.morris@outlook.co.nz
 **/
 
 #pragma once
@@ -39,13 +38,13 @@ public:
      * @brief Gets the height of the texture.
      * @return Height of the texture in pixels.
      */
-    int getHeight();
+    int getHeight() const;
 
     /**
      * @brief Gets the width of the texture.
      * @return Width of the texture in pixels.
      */
-    int getWidth();
+    int getWidth() const;
 
     /**
      * @brief Retrieves the raw pixel data of the texture.
@@ -84,16 +83,26 @@ public:
      * Cleans up resources associated with the texture.
      */
     ~Texture2D();
-    
+
 private:
-    Texture2DDesc m_desc = {}; // Description of the 2D texture.
+    void ApplySamplerSettings() const;
+
+    // TODO : stupid place for these probably move them
+    static GLint FilterModeToMinFilter(int filterMode);
+    static GLint FilterModeToMagFilter(int filterMode);
+    static GLint WrapModeToGL(int wrapMode);
+private:
+    //Texture2DDesc m_desc = {}; // Description of the 2D texture.
     int m_numChannels = 3;
     Rect m_textureSize = {};
 
+    int m_filterMode = static_cast<int>(TextureFilterMode::Linear);
+    int m_wrapMode = static_cast<int>(TextureWrapMode::Repeat);
+    
     uint m_textureId = 0;
     unsigned char* m_textureData = nullptr;
 
-    SERIALIZABLE_MEMBERS(m_numChannels, m_textureSize, m_path)
+    SERIALIZABLE_MEMBERS(m_numChannels, m_textureSize, m_filterMode, m_wrapMode, m_path)
 };
 
 REGISTER_RESOURCE(Texture2D, ".meta", ".png", ".jpg", ".jpeg", ".tga", ".bmp");
