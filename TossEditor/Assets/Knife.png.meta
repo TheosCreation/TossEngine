@@ -1,14 +1,14 @@
 {
-    "m_filterMode": 0,
+    "m_filterMode": 1,
     "m_numChannels": 4,
-    "m_path": "Resources\\Textures\\crosshair.png",
+    "m_path": "Assets\\Knife.png",
     "m_textureSize": {
-        "height": 200,
+        "height": 100,
         "left": 0,
         "top": 0,
         "width": 200
     },
     "m_wrapMode": 0,
     "type": "Texture2D",
-    "uniqueId": "Crosshair"
+    "uniqueId": "Knife.png"
 }

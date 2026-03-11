@@ -39,7 +39,7 @@ TossEditor::TossEditor()
     Random::Init();
 
     tossEngine.LoadGenericResources();
-    ResourceManager::GetInstance().loadResourcesFromFile("Resources/Resources.json");
+    ResourceManager::GetInstance().LoadAssetsFromFolder("Assets");
 
 
     m_playerSettings = std::make_unique<TossPlayerSettings>();
@@ -1084,7 +1084,7 @@ void TossEditor::onQuit()
         scene->onQuit();
     }
     ResourceManager& resourceManager = ResourceManager::GetInstance();
-    resourceManager.saveResourcesToFile("Resources/Resources.json");
+    //resourceManager.saveResourcesToFile("Resources/Resources.json");
     resourceManager.SaveResources();
     resourceManager.CleanUp();
     DebugDraw::GetInstance().CleanUp();
@@ -1191,7 +1191,7 @@ void TossEditor::PerformSafeBuild()
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     auto scene = TossEngine::GetInstance().getCurrentScene();
     m_playerSettings->SaveToFile("PlayerSettings.json");
-    resourceManager.saveResourcesToFile("Resources/Resources.json"); // save resources just in case of crash and to save prefabs
+    //resourceManager.saveResourcesToFile("Resources/Resources.json"); // save resources just in case of crash and to save prefabs
     resourceManager.SaveResources();
     selectedSelectable = nullptr;
     canUpdateInternal = false;
@@ -1250,7 +1250,7 @@ void TossEditor::PerformSafeDllReload()
     ResourceManager& resourceManager = ResourceManager::GetInstance();
     //Save();
     auto scene = TossEngine::GetInstance().getCurrentScene();
-    resourceManager.saveResourcesToFile("Resources/Resources.json"); // save resources just in case of crash and to save prefabs
+    //resourceManager.saveResourcesToFile("Resources/Resources.json"); // save resources just in case of crash and to save prefabs
     resourceManager.SaveResources();
     selectedSelectable = nullptr; //because we are reloading the scene we can have to pointing to a old object
     canUpdateInternal = false;

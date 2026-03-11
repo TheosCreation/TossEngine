@@ -27,39 +27,40 @@ json Prefab::serialize() const
 {
     json rootJ;
     recurseSerialize(this, rootJ);
+    rootJ["m_path"] = m_path;
     return rootJ;
 }
 
 void Prefab::recurseDeserialize(GameObject* parentGO, const json& data)
 {
-    //children dont work yet for prefabs
-    // for each declared child:
-    if (data.contains("children"))
+    if (!data.contains("children"))
     {
-        for (auto& childJson : data["children"])
-        {
-            GameObject* childGO = new GameObject();
+        return;
+    }
 
-            // populate its own fields & components:
-            childGO->deserialize(childJson);
-            childGO->onCreate();
-            childGO->onCreateLate();
+    for (const json& childJson : data["children"])
+    {
+        GameObject* childGameObject = new GameObject();
 
-            // hook up transform parent ? child
-            childGO->m_transform.SetParent(&parentGO->m_transform, false);
+        childGameObject->deserialize(childJson);
+        childGameObject->onCreate();
+        childGameObject->onCreateLate();
 
-            // recurse any deeper grandchildren
-            recurseDeserialize(childGO, childJson);
-        }
+        childGameObject->m_transform.SetParent(&parentGO->m_transform, false);
+
+        recurseDeserialize(childGameObject, childJson);
     }
 }
 
 void Prefab::deserialize(const nlohmann::json& data)
 {
-    // 1) rebuild root node
     GameObject::deserialize(data);
 
-    // 2) then rebuild all children under that root
+    if (data.contains("m_path") && data["m_path"].is_string())
+    {
+        m_path = data["m_path"].get<std::string>();
+    }
+
     recurseDeserialize(this, data);
 }
 

@@ -104,9 +104,6 @@ public:
         }
     }
 
-    void loadResourcesFromFile(const std::string& filepath);
-    void saveResourcesToFile(const std::string& filepath);
-
     const json& GetSerializedData(const std::string& uid) const { return m_resourceDataMap.at(uid); }
     bool HasSerializedData(const std::string& uid) const { return m_resourceDataMap.find(uid) != m_resourceDataMap.end(); }
 

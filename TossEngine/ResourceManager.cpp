@@ -107,7 +107,8 @@ void ResourceManager::Reload()
         resource->onDestroy();
     }
     m_mapResources.clear();
-    loadResourcesFromFile(m_currentFilePath);
+    LoadAssetsFromFolder("Assets");
+    //loadResourcesFromFile(m_currentFilePath);
 }
 
 void ResourceManager::CleanUp()
@@ -325,6 +326,20 @@ void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
         newRecord.timestamp = ToTicks(last_write_time(filePath));
         m_importCache[filePath.string()] = newRecord;
     }
+    
+    for (auto& [uid, resource] : m_mapResources)
+    {
+        if (IsResourceMandatory(uid)) continue;
+        
+        resource->onCreate();
+        if (m_resourceDataMap.contains(uid))
+        {
+            resource->deserialize(m_resourceDataMap[uid]);
+        }
+        resource->onCreateLate();
+    }
+
+    hasLoadedResources = true;
 }
 
 void ResourceManager::SaveImportCache(const std::string& pathJson)
@@ -485,70 +500,6 @@ void ResourceManager::SetSelectedResource(const ResourcePtr& selectedResource)
     m_selectedResource = selectedResource;
 }
 
-void ResourceManager::loadResourcesFromFile(const std::string& filepath)
-{
-    if (hasLoadedResources) return;
-
-    m_currentFilePath = filepath;
-    std::ifstream file(filepath);
-    if (!file.is_open())
-    {
-        Debug::LogError("Failed to open file for reading: " + filepath, false);
-        return;
-    }
-
-    json data;
-    file >> data;
-    file.close();
-
-    for (const auto& resourceData : data["resources"])
-    {
-        if (!resourceData.contains("type"))
-            continue;
-
-        // if the JSON has a file path, make sure it still exists
-        if (resourceData.contains("m_path") && resourceData["m_path"].is_string())
-        {
-            std::string resourcePath = resourceData["m_path"].get<std::string>();
-
-            if (!resourcePath.empty())
-            {
-                if (!std::filesystem::exists(resourcePath))
-                {
-                    Debug::Log("Skipped resource, missing file: " + resourcePath);
-                    continue;
-                }
-                Debug::Log("Loaded resource: " + resourcePath);
-            }
-        }
-
-        std::string typeName = resourceData["type"];
-        createResourceFromDataToMap(typeName, resourceData);
-    }
-
-    //Above is old stuff
-    const std::string assetsRoot = "Assets";
-    //LoadImportCache("Library/importCache.json");            // optional cache location
-    LoadAssetsFromFolder(assetsRoot);
-    SaveImportCache("Library/importCache.json");
-
-    for (auto& [uid, resource] : m_mapResources)
-    {
-        if (IsResourceMandatory(uid)) continue;
-        
-        resource->onCreate();
-        if (m_resourceDataMap.contains(uid))
-        {
-            resource->deserialize(m_resourceDataMap[uid]);
-        }
-        resource->onCreateLate();
-    }
-
-
-    hasLoadedResources = true;
-}
-
-
 ResourcePtr ResourceManager::createResourceFromDataToMap(const std::string& typeName, const json& data)
 {
     auto it = resourceFactories.find(typeName);
@@ -609,50 +560,6 @@ vector<string> ResourceManager::GetCreatableResourceTypes() const
     std::sort(types.begin(), types.end());
     return types;
 }
-
-
-void ResourceManager::saveResourcesToFile(const std::string& filepath)
-{
-    json out;
-    out["resources"] = nlohmann::json::array();
-
-    for (auto& [uid, resource] : m_mapResources)
-    {
-        if (IsResourceMandatory(uid))
-        {
-            continue;
-        }
-        if (!resource)
-        {
-            continue;
-        }
-
-        std::string resourcePath = resource->getPath();
-        if (IsInAssetsFolder(resourcePath))
-        {
-            continue;
-        }
-
-        json payload = resource->serialize();
-        payload["type"] = getClassName(typeid(*resource));
-        payload["uniqueId"] = uid;
-
-        out["resources"].push_back(std::move(payload));
-    }
-
-    std::ofstream file(filepath);
-    if (!file.is_open())
-    {
-        Debug::LogError("Failed to open file for writing: " + filepath, false);
-        return;
-    }
-
-    file << out.dump(4);
-    file.close();
-
-    Debug::Log("Saved Resources to filepath: " + filepath);
-}
-
 
 void ResourceManager::onUpdateInternal()
 {
