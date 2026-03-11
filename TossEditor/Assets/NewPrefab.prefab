@@ -1,10 +1,19 @@
 {
-    "components": [],
+    "components": [
+        {
+            "m_clip": null,
+            "m_is3D": true,
+            "m_loop": false,
+            "m_playOnStart": false,
+            "m_volume": 1.0,
+            "type": "AudioSource"
+        }
+    ],
     "id": 0,
     "isActive": true,
     "layer": "Default",
     "m_path": "Assets/NewPrefab.prefab",
-    "name": "GameObject",
+    "name": "NewPrefab.prefab",
     "tag": "",
     "transform": {
         "localPosition": [

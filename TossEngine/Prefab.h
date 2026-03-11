@@ -67,6 +67,7 @@ public:
      */
     void onDestroy() override;
 
+    void setUniqueID(const std::string& id) override;
     /**
      * @brief Instantiates a copy of this Prefab as a new GameObject.
      * @return A new GameObject instance cloned from this Prefab.

@@ -4,6 +4,8 @@
 
 #include "ResourceManager.h"
 #include "Resource.h"
+#include "GameObject.h"
+#include "Prefab.h"
 #include <cstring>
 
 #include "TossEditor.h"
@@ -373,44 +375,58 @@ void AssetsBrowser::drawLeftTree(AssetNode& node) {
         // Drop target - accept resources being moved here
         if (ImGui::BeginDragDropTarget())
         {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE_MOVE"))
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE"))
             {
-                const char* droppedUID = (const char*)payload->Data;
-                
-                // Move the resource to this folder
-                ResourcePtr res = rm.GetResourceByUniqueID(droppedUID);
-                if (res)
+                Resource* droppedResource = *static_cast<Resource**>(payload->Data);
+                if (droppedResource != nullptr)
                 {
-                    std::string oldPath = res->getPath();
-                    std::filesystem::path oldFilePath(oldPath);
-                    std::string fileName = oldFilePath.filename().string();
-                    
-                    // Build new path
-                    std::filesystem::path newFilePath = std::filesystem::path(child.path) / fileName;
-                    
-                    if (std::filesystem::exists(oldPath))
+                    ResourcePtr resourcePtr = rm.GetResourceByUniqueID(droppedResource->getUniqueID());
+                    if (resourcePtr)
                     {
-                        try
+                        std::string oldPath = resourcePtr->getPath();
+                        std::filesystem::path oldFilePath(oldPath);
+                        std::string fileName = oldFilePath.filename().string();
+                        std::filesystem::path newFilePath = std::filesystem::path(child.path) / fileName;
+
+                        if (std::filesystem::exists(oldPath))
                         {
-                            // Create target directory if it doesn't exist
-                            std::filesystem::create_directories(newFilePath.parent_path());
-                            
-                            // Move the file
-                            std::filesystem::rename(oldPath, newFilePath.string());
-                            
-                            // Update the resource's UID to match the new path
-                            std::string newRelPath = newFilePath.generic_string();
-                            rm.RenameResource(res, newRelPath);
-                            
-                            m_needsRebuild = true;
-                        }
-                        catch (const std::exception& e)
-                        {
-                            Debug::LogError("Failed to move file: " + std::string(e.what()), false);
+                            try
+                            {
+                                std::filesystem::create_directories(newFilePath.parent_path());
+                                std::filesystem::rename(oldPath, newFilePath.string());
+
+                                std::string newRelativePath = newFilePath.generic_string();
+                                rm.RenameResource(resourcePtr, newRelativePath);
+
+                                m_needsRebuild = true;
+                            }
+                            catch (const std::exception& e)
+                            {
+                                Debug::LogError("Failed to move file: " + std::string(e.what()), false);
+                            }
                         }
                     }
                 }
             }
+
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
+            {
+                GameObject* droppedGameObject = *static_cast<GameObject**>(payload->Data);
+                if (droppedGameObject != nullptr)
+                {
+                    std::string prefabPath = child.path + "/" + droppedGameObject->name + ".prefab";
+
+                    json prefabJson;
+                    Prefab::recurseSerialize(droppedGameObject, prefabJson);
+                    prefabJson["m_path"] = prefabPath;
+                    prefabJson["type"] = "Prefab";
+                    prefabJson["uniqueId"] = prefabPath;
+
+                    rm.createResource("Prefab", prefabPath, prefabJson);
+                    m_needsRebuild = true;
+                }
+            }
+
             ImGui::EndDragDropTarget();
         }
         
@@ -434,78 +450,103 @@ void AssetsBrowser::drawLeftTree(AssetNode& node) {
     }
 }
 
-void AssetsBrowser::drawRightPane(AssetNode& node) {
-    ResourceManager& rm = ResourceManager::GetInstance();
-    // Breadcrumb
-    auto parts = SplitPath(m_currentFolder);
-    
-    // Show root button
-    if (ImGui::SmallButton("Root")) m_currentFolder = "";
-    
-    if (!parts.empty()) {
-        ImGui::SameLine(); 
-        ImGui::TextUnformatted(">");
-    }
-    
-    // Show path parts
-    std::string accum;
-    for (size_t i = 0; i < parts.size(); ++i) {
-        ImGui::SameLine();
-        accum = accum.empty() ? parts[i] : accum + "/" + parts[i];
-        if (ImGui::SmallButton(parts[i].c_str())) m_currentFolder = accum;
-        if (i + 1 < parts.size()) { ImGui::SameLine(); ImGui::TextUnformatted(">"); }
+void AssetsBrowser::drawRightPane(AssetNode& node)
+{
+    ResourceManager& resourceManager = ResourceManager::GetInstance();
+
+    std::vector<std::string> parts = SplitPath(m_currentFolder);
+
+    if (ImGui::SmallButton("Root"))
+    {
+        m_currentFolder = "";
     }
 
-    // Toolbar
+    if (!parts.empty())
+    {
+        ImGui::SameLine();
+        ImGui::TextUnformatted(">");
+    }
+
+    std::string accumulatedPath;
+    for (size_t i = 0; i < parts.size(); ++i)
+    {
+        ImGui::SameLine();
+        accumulatedPath = accumulatedPath.empty() ? parts[i] : accumulatedPath + "/" + parts[i];
+        if (ImGui::SmallButton(parts[i].c_str()))
+        {
+            m_currentFolder = accumulatedPath;
+        }
+
+        if (i + 1 < parts.size())
+        {
+            ImGui::SameLine();
+            ImGui::TextUnformatted(">");
+        }
+    }
+
     ImGui::Separator();
     m_filter.Draw("Search", 200);
     ImGui::SameLine();
     ImGui::Checkbox("Grid", &m_showGrid);
-    if (m_showGrid) { ImGui::SameLine(); ImGui::SliderFloat("Size", &m_gridSize, 48, 160, "%.0f"); }
+    if (m_showGrid)
+    {
+        ImGui::SameLine();
+        ImGui::SliderFloat("Size", &m_gridSize, 48.0f, 160.0f, "%.0f");
+    }
     ImGui::Separator();
 
-    // Child region for scrolling
     ImGui::BeginChild("right_scroller");
-    
-    // Make the entire child window a drop target for the current folder
+
     if (ImGui::BeginDragDropTarget())
     {
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE_MOVE"))
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
         {
-            const char* droppedUID = (const char*)payload->Data;
-            
-            // Move the resource to the current folder
-            ResourcePtr res = rm.GetResourceByUniqueID(droppedUID);
-            if (res)
+            GameObject* droppedGameObject = *static_cast<GameObject**>(payload->Data);
+            if (droppedGameObject != nullptr)
             {
-                std::string oldPath = res->getPath();
-                std::filesystem::path oldFilePath(oldPath);
-                std::string fileName = oldFilePath.filename().string();
-                
-                // Build new path - use current folder
-                std::filesystem::path newFilePath;
-                if (m_currentFolder.empty())
+                std::string targetFolder = m_currentFolder;
+                if (targetFolder.empty())
                 {
-                    // Can't drop at root
+                    targetFolder = "Assets";
                 }
-                else
+
+                std::string prefabFileName = droppedGameObject->name + ".prefab";
+                std::string assetPath = JoinPath(targetFolder, prefabFileName);
+
+                json prefabJson;
+                Prefab::recurseSerialize(droppedGameObject, prefabJson);
+                prefabJson["m_path"] = assetPath;
+                prefabJson["type"] = "Prefab";
+                prefabJson["uniqueId"] = assetPath;
+
+                resourceManager.createResource("Prefab", assetPath, prefabJson);
+                m_needsRebuild = true;
+            }
+        }
+
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE"))
+        {
+            Resource* droppedResource = *static_cast<Resource**>(payload->Data);
+            if (droppedResource != nullptr && !m_currentFolder.empty())
+            {
+                ResourcePtr resourcePtr = resourceManager.GetResourceByUniqueID(droppedResource->getUniqueID());
+                if (resourcePtr)
                 {
-                    newFilePath = std::filesystem::path(m_currentFolder) / fileName;
-                    
-                    if (std::filesystem::exists(oldPath) && !m_currentFolder.empty())
+                    std::string oldPath = resourcePtr->getPath();
+                    std::filesystem::path oldFilePath(oldPath);
+                    std::string fileName = oldFilePath.filename().string();
+                    std::filesystem::path newFilePath = std::filesystem::path(m_currentFolder) / fileName;
+
+                    if (oldFilePath.generic_string() != newFilePath.generic_string() && std::filesystem::exists(oldPath))
                     {
                         try
                         {
-                            // Create target directory if it doesn't exist
                             std::filesystem::create_directories(newFilePath.parent_path());
-                            
-                            // Move the file
                             std::filesystem::rename(oldPath, newFilePath.string());
-                            
-                            // Update the resource's UID to match the new path
-                            std::string newRelPath = newFilePath.generic_string();
-                            rm.RenameResource(res, newRelPath);
-                            
+
+                            std::string newRelativePath = newFilePath.generic_string();
+                            resourceManager.RenameResource(resourcePtr, newRelativePath);
+
                             m_needsRebuild = true;
                         }
                         catch (const std::exception& e)
@@ -516,32 +557,40 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
                 }
             }
         }
+
         ImGui::EndDragDropTarget();
     }
 
-    // Show subfolders first
-    for (auto& [fname, ch] : node.children) {
-        if (m_filter.IsActive() && !m_filter.PassFilter(fname.c_str())) continue;
-        if (ImGui::Selectable(("Folder " + fname).c_str(), false, ImGuiSelectableFlags_AllowDoubleClick)) {
-            if (ImGui::IsMouseDoubleClicked(0)) m_currentFolder = ch->path;
+    for (auto& [folderName, childNodePtr] : node.children)
+    {
+        if (m_filter.IsActive() && !m_filter.PassFilter(folderName.c_str()))
+        {
+            continue;
+        }
+
+        if (ImGui::Selectable(("Folder " + folderName).c_str(), false, ImGuiSelectableFlags_AllowDoubleClick))
+        {
+            if (ImGui::IsMouseDoubleClicked(0))
+            {
+                m_currentFolder = childNodePtr->path;
+            }
         }
     }
 
-    // Files
     if (m_showGrid)
     {
-        float avail = ImGui::GetContentRegionAvail().x;
-        float cell = m_gridSize;
+        float availableWidth = ImGui::GetContentRegionAvail().x;
+        float cellSize = m_gridSize;
         float spacing = ImGui::GetStyle().ItemSpacing.x + 16.0f;
-        int cols = max(1, (int)((avail + spacing) / (cell + spacing)));
-        int col = 0;
-    
-        auto AdvanceCell = [&]()
+        int columns = max(1, static_cast<int>((availableWidth + spacing) / (cellSize + spacing)));
+        int currentColumn = 0;
+
+        auto advanceCell = [&]()
         {
-            col += 1;
-            if (col >= cols)
+            currentColumn += 1;
+            if (currentColumn >= columns)
             {
-                col = 0;
+                currentColumn = 0;
             }
             else
             {
@@ -550,147 +599,150 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
                 ImGui::SameLine();
             }
         };
-    
-        // Folders
-        for (auto& kv : node.children)
+
+        for (auto& [folderName, childNodePtr] : node.children)
         {
-            const std::string& fname = kv.first;
-            AssetNode* childNode = kv.second.get();
-    
-            if (m_filter.IsActive())
+            if (m_filter.IsActive() && !m_filter.PassFilter(folderName.c_str()))
             {
-                if (!m_filter.PassFilter(fname.c_str()))
-                {
-                    continue;
-                }
+                continue;
             }
-    
+
+            AssetNode* childNode = childNodePtr.get();
+
             ImGui::BeginGroup();
-            ImGui::Button(("Folder##" + childNode->path).c_str(), ImVec2(cell, cell));
-            
-            // Drop target - accept resources being moved here
+            ImGui::Button(("Folder##" + childNode->path).c_str(), ImVec2(cellSize, cellSize));
+
             if (ImGui::BeginDragDropTarget())
             {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE_MOVE"))
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE"))
                 {
-                    const char* droppedUID = (const char*)payload->Data;
-                    
-                    // Move the resource to this folder
-                    ResourcePtr res = rm.GetResourceByUniqueID(droppedUID);
-                    if (res)
+                    Resource* droppedResource = *static_cast<Resource**>(payload->Data);
+                    if (droppedResource != nullptr)
                     {
-                        std::string oldPath = res->getPath();
-                        std::filesystem::path oldFilePath(oldPath);
-                        std::string fileName = oldFilePath.filename().string();
-                        
-                        // Build new path
-                        std::filesystem::path newFilePath = std::filesystem::path(childNode->path) / fileName;
-                        
-                        if (std::filesystem::exists(oldPath))
+                        ResourcePtr resourcePtr = resourceManager.GetResourceByUniqueID(droppedResource->getUniqueID());
+                        if (resourcePtr)
                         {
-                            try
+                            std::string oldPath = resourcePtr->getPath();
+                            std::filesystem::path oldFilePath(oldPath);
+                            std::string fileName = oldFilePath.filename().string();
+                            std::filesystem::path newFilePath = std::filesystem::path(childNode->path) / fileName;
+
+                            if (oldFilePath.generic_string() != newFilePath.generic_string() && std::filesystem::exists(oldPath))
                             {
-                                // Create target directory if it doesn't exist
-                                std::filesystem::create_directories(newFilePath.parent_path());
-                                
-                                // Move the file
-                                std::filesystem::rename(oldPath, newFilePath.string());
-                                
-                                // Update the resource's UID to match the new path
-                                std::string newRelPath = newFilePath.generic_string();
-                                rm.RenameResource(res, newRelPath);
-                                
-                                m_needsRebuild = true;
-                            }
-                            catch (const std::exception& e)
-                            {
-                                Debug::LogError("Failed to move file: " + std::string(e.what()), false);
+                                try
+                                {
+                                    std::filesystem::create_directories(newFilePath.parent_path());
+                                    std::filesystem::rename(oldPath, newFilePath.string());
+
+                                    std::string newRelativePath = newFilePath.generic_string();
+                                    resourceManager.RenameResource(resourcePtr, newRelativePath);
+
+                                    m_needsRebuild = true;
+                                }
+                                catch (const std::exception& e)
+                                {
+                                    Debug::LogError("Failed to move file: " + std::string(e.what()), false);
+                                }
                             }
                         }
                     }
                 }
+
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
+                {
+                    GameObject* droppedGameObject = *static_cast<GameObject**>(payload->Data);
+                    if (droppedGameObject != nullptr)
+                    {
+                        std::string prefabFileName = droppedGameObject->name + ".prefab";
+                        std::string assetPath = JoinPath(childNode->path, prefabFileName);
+
+                        json prefabJson;
+                        Prefab::recurseSerialize(droppedGameObject, prefabJson);
+                        prefabJson["m_path"] = assetPath;
+                        prefabJson["type"] = "Prefab";
+                        prefabJson["uniqueId"] = assetPath;
+
+                        resourceManager.createResource("Prefab", assetPath, prefabJson);
+                        m_needsRebuild = true;
+                    }
+                }
+
                 ImGui::EndDragDropTarget();
             }
-            
+
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
             {
                 m_currentFolder = childNode->path;
             }
-            ImGui::TextWrapped("%s", fname.c_str());
+
+            ImGui::TextWrapped("%s", folderName.c_str());
             ImGui::EndGroup();
-    
-            AdvanceCell();
+
+            advanceCell();
         }
-    
-        // Assets
-        for (auto& it : node.items)
+
+        for (auto& item : node.items)
         {
             if (m_filter.IsActive())
             {
-                bool pass = false;
-                if (m_filter.PassFilter(it.name.c_str()))
+                bool passesFilter = false;
+                if (m_filter.PassFilter(item.name.c_str()))
                 {
-                    pass = true;
+                    passesFilter = true;
                 }
-                if (m_filter.PassFilter(it.type.c_str()))
+                if (m_filter.PassFilter(item.type.c_str()))
                 {
-                    pass = true;
+                    passesFilter = true;
                 }
-                if (m_filter.PassFilter(it.uid.c_str()))
+                if (m_filter.PassFilter(item.uid.c_str()))
                 {
-                    pass = true;
+                    passesFilter = true;
                 }
-                if (!pass)
+
+                if (!passesFilter)
                 {
                     continue;
                 }
             }
-    
+
             ImGui::BeginGroup();
-            ImGui::Button((it.type + "##btn" + it.uid).c_str(), ImVec2(cell, cell));
-    
-            // Drag source - drag the resource
+            ImGui::Button((item.type + "##btn" + item.uid).c_str(), ImVec2(cellSize, cellSize));
+
             if (ImGui::BeginDragDropSource())
             {
-                Resource* raw = it.res.get();
-                ImGui::SetDragDropPayload("DND_RESOURCE", &raw, sizeof(raw));
-                
-                // Also store the resource UID for file moving
-                ImGui::SetDragDropPayload("DND_RESOURCE_MOVE", it.uid.c_str(), it.uid.size() + 1);
-                
-                ImGui::Text("%s", it.name.c_str());
+                Resource* rawResource = item.res.get();
+                ImGui::SetDragDropPayload("DND_RESOURCE", &rawResource, sizeof(Resource*));
+                ImGui::Text("%s", item.name.c_str());
                 ImGui::EndDragDropSource();
             }
-    
+
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
             {
-                SelectResource(it.res);
+                SelectResource(item.res);
             }
-    
-            if (m_renameUID == it.uid)
+
+            if (m_renameUID == item.uid)
             {
-                ImGui::SetNextItemWidth(cell);
+                ImGui::SetNextItemWidth(cellSize);
                 ImGui::SetKeyboardFocusHere();
-                if (ImGui::InputText(("##rename" + it.uid).c_str(), m_renameBuf, IM_ARRAYSIZE(m_renameBuf),
+                if (ImGui::InputText(("##rename" + item.uid).c_str(), m_renameBuf, IM_ARRAYSIZE(m_renameBuf),
                     ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
                 {
                     if (m_renameBuf[0] != 0)
                     {
-                        // Rename the file on disk
-                        std::string oldPath = it.res->getPath();
+                        std::string oldPath = item.res->getPath();
                         std::filesystem::path oldFilePath(oldPath);
                         std::filesystem::path newFilePath = oldFilePath.parent_path() / m_renameBuf;
-                        
+
                         if (std::filesystem::exists(oldPath))
                         {
                             try
                             {
                                 std::filesystem::rename(oldPath, newFilePath.string());
-                                
-                                // Update the resource's UID to match the new relative path
-                                std::string newRelPath = newFilePath.generic_string();
-                                rm.RenameResource(it.res, newRelPath);
-                                
+
+                                std::string newRelativePath = newFilePath.generic_string();
+                                resourceManager.RenameResource(item.res, newRelativePath);
+
                                 m_needsRebuild = true;
                             }
                             catch (const std::exception& e)
@@ -699,9 +751,10 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
                             }
                         }
                     }
+
                     m_renameUID.clear();
                 }
-                // Cancel rename on escape or lost focus
+
                 if (ImGui::IsKeyPressed(ImGuiKey_Escape) || (!ImGui::IsItemActive() && !ImGui::IsItemFocused()))
                 {
                     m_renameUID.clear();
@@ -709,69 +762,73 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
             }
             else
             {
-                ImGui::TextWrapped("%s", it.name.c_str());
+                ImGui::TextWrapped("%s", item.name.c_str());
             }
-    
+
             ImGui::EndGroup();
-    
-            AdvanceCell();
+
+            advanceCell();
         }
     }
-    else {
-        // list view with table
-        if (ImGui::BeginTable("assets_table", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_Sortable | ImGuiTableFlags_ScrollY)) {
+    else
+    {
+        if (ImGui::BeginTable("assets_table", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_Sortable | ImGuiTableFlags_ScrollY))
+        {
             ImGui::TableSetupScrollFreeze(0, 1);
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_DefaultSort);
             ImGui::TableSetupColumn("Type");
             ImGui::TableSetupColumn("Path");
             ImGui::TableHeadersRow();
 
-            for (auto& it : node.items) {
-                if (m_filter.IsActive() && !m_filter.PassFilter(it.name.c_str()) && !m_filter.PassFilter(it.type.c_str()) && !m_filter.PassFilter(it.uid.c_str()))
+            for (auto& item : node.items)
+            {
+                if (m_filter.IsActive() &&
+                    !m_filter.PassFilter(item.name.c_str()) &&
+                    !m_filter.PassFilter(item.type.c_str()) &&
+                    !m_filter.PassFilter(item.uid.c_str()))
+                {
                     continue;
+                }
 
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0);
 
-                bool selected = (it.res == rm.GetSelectedResource());
-                if (ImGui::Selectable((it.name + "##" + it.uid).c_str(), selected, ImGuiSelectableFlags_SpanAllColumns)) {
-                    SelectResource(it.res);
+                bool isSelected = (item.res == resourceManager.GetSelectedResource());
+                if (ImGui::Selectable((item.name + "##" + item.uid).c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns))
+                {
+                    SelectResource(item.res);
                 }
-                
-                // Drag source
-                if (ImGui::BeginDragDropSource()) {
-                    Resource* raw = it.res.get();
-                    ImGui::SetDragDropPayload("DND_RESOURCE", &raw, sizeof(raw));
-                    
-                    // Also store the resource UID for file moving
-                    ImGui::SetDragDropPayload("DND_RESOURCE_MOVE", it.uid.c_str(), it.uid.size() + 1);
-                    
-                    ImGui::Text("%s", it.name.c_str());
+
+                if (ImGui::BeginDragDropSource())
+                {
+                    Resource* rawResource = item.res.get();
+                    ImGui::SetDragDropPayload("DND_RESOURCE", &rawResource, sizeof(Resource*));
+                    ImGui::Text("%s", item.name.c_str());
                     ImGui::EndDragDropSource();
                 }
 
-                // inline rename
-                if (m_renameUID == it.uid) {
+                if (m_renameUID == item.uid)
+                {
                     ImGui::SameLine();
                     ImGui::SetKeyboardFocusHere();
-                    if (ImGui::InputText(("##rename" + it.uid).c_str(), m_renameBuf, IM_ARRAYSIZE(m_renameBuf),
-                        ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll)) {
-                        if (m_renameBuf[0]) {
-                            // Rename the file on disk
-                            std::string oldPath = it.res->getPath();
+                    if (ImGui::InputText(("##rename" + item.uid).c_str(), m_renameBuf, IM_ARRAYSIZE(m_renameBuf),
+                        ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+                    {
+                        if (m_renameBuf[0] != 0)
+                        {
+                            std::string oldPath = item.res->getPath();
                             std::filesystem::path oldFilePath(oldPath);
                             std::filesystem::path newFilePath = oldFilePath.parent_path() / m_renameBuf;
-                            
+
                             if (std::filesystem::exists(oldPath))
                             {
                                 try
                                 {
                                     std::filesystem::rename(oldPath, newFilePath.string());
-                                    
-                                    // Update the resource's UID to match the new relative path
-                                    std::string newRelPath = newFilePath.generic_string();
-                                    rm.RenameResource(it.res, newRelPath);
-                                    
+
+                                    std::string newRelativePath = newFilePath.generic_string();
+                                    resourceManager.RenameResource(item.res, newRelativePath);
+
                                     m_needsRebuild = true;
                                 }
                                 catch (const std::exception& e)
@@ -780,26 +837,28 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
                                 }
                             }
                         }
+
                         m_renameUID.clear();
                     }
-                    // Cancel rename on escape or lost focus
+
                     if (ImGui::IsKeyPressed(ImGuiKey_Escape) || (!ImGui::IsItemActive() && !ImGui::IsItemFocused()))
                     {
                         m_renameUID.clear();
                     }
                 }
 
-                // context
-                if (ImGui::BeginPopupContextItem((it.uid + "##ctx").c_str())) {
-                    if (ImGui::MenuItem("Rename")) {
-                        m_renameUID = it.uid;
-                        strncpy_s(m_renameBuf, it.name.c_str(), sizeof(m_renameBuf));
+                if (ImGui::BeginPopupContextItem((item.uid + "##ctx").c_str()))
+                {
+                    if (ImGui::MenuItem("Rename"))
+                    {
+                        m_renameUID = item.uid;
+                        strncpy_s(m_renameBuf, item.name.c_str(), sizeof(m_renameBuf));
                         m_renameBuf[sizeof(m_renameBuf) - 1] = 0;
                     }
+
                     if (ImGui::MenuItem("Delete"))
                     {
-                        // Delete the file on disk
-                        std::string filePath = it.res->getPath();
+                        std::string filePath = item.res->getPath();
                         if (std::filesystem::exists(filePath))
                         {
                             try
@@ -811,22 +870,29 @@ void AssetsBrowser::drawRightPane(AssetNode& node) {
                                 Debug::LogError("Failed to delete file: " + std::string(e.what()), false);
                             }
                         }
-                        
-                        rm.DeleteResource(it.uid);
+
+                        resourceManager.DeleteResource(item.uid);
                         m_needsRebuild = true;
                     }
-                    if (ImGui::MenuItem("Reveal in Explorer")) {
+
+                    if (ImGui::MenuItem("Reveal in Explorer"))
+                    {
 #ifdef _WIN32
-                        std::string abs = it.res->getPath();
-                        ShellExecuteA(nullptr, "open", abs.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+                        std::string absolutePath = item.res->getPath();
+                        ShellExecuteA(nullptr, "open", absolutePath.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 #endif
                     }
+
                     ImGui::EndPopup();
                 }
 
-                ImGui::TableSetColumnIndex(1); ImGui::TextUnformatted(it.type.c_str());
-                ImGui::TableSetColumnIndex(2); ImGui::TextUnformatted(it.uid.c_str());
+                ImGui::TableSetColumnIndex(1);
+                ImGui::TextUnformatted(item.type.c_str());
+
+                ImGui::TableSetColumnIndex(2);
+                ImGui::TextUnformatted(item.uid.c_str());
             }
+
             ImGui::EndTable();
         }
     }

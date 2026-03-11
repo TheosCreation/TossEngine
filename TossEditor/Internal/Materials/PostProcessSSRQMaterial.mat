@@ -1,5 +1,5 @@
 {
-    "m_path": "Internal/Materials/ImageMaterial.mat",
+    "m_path": "Internal/Materials/PostProcessSSRQMaterial.mat",
     "m_shader": {
         "id": "PostProcessPlainShader"
     },

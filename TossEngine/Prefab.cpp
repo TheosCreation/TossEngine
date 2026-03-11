@@ -84,10 +84,17 @@ void Prefab::onCreateLate()
 {
     GameObject::onCreateLate();
     Resource::onCreateLate();
+    name = m_uniqueID;
 }
 
 void Prefab::onDestroy()
 {
     GameObject::onDestroy();
     Resource::onDestroy();
+}
+
+void Prefab::setUniqueID(const std::string& id)
+{
+    Resource::setUniqueID(id);
+    name = m_uniqueID;
 }

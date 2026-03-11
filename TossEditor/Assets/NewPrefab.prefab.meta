@@ -3,8 +3,8 @@
     "id": 0,
     "isActive": true,
     "layer": "Default",
-    "m_path": "Assets/NewPrefab.prefab",
-    "name": "GameObject",
+    "m_path": "Assets/Heightmaps/NewPrefab.prefab",
+    "name": "Heightmaps/NewPrefab.prefab",
     "tag": "",
     "transform": {
         "localPosition": [
@@ -42,5 +42,5 @@
         ]
     },
     "type": "Prefab",
-    "uniqueId": "NewPrefab.prefab"
+    "uniqueId": "Heightmaps/NewPrefab.prefab"
 }

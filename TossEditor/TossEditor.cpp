@@ -710,7 +710,8 @@ void TossEditor::onRenderInternal()
     }
     ImGui::End();
 
-    if (ImGui::Begin("Hierarchy")) {
+    if (ImGui::Begin("Hierarchy"))
+    {
         auto scene = TossEngine::GetInstance().getCurrentScene();
         if (ImGui::Button("Add Empty GameObject") && scene) {
             selectedSelectable = scene->createGameObject<GameObject>();
@@ -731,21 +732,25 @@ void TossEditor::onRenderInternal()
         // Add a drop target over the entire hierarchy window.
         ImVec2 windowSize = ImGui::GetContentRegionAvail();
         ImGui::InvisibleButton("HierarchyDropArea", windowSize);
-        if (ImGui::BeginDragDropTarget()) {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE")) {
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_RESOURCE"))
+            {
                 // Retrieve the raw pointer from the payload
-                Resource* droppedResource = nullptr;
-                memcpy(&droppedResource, payload->Data, payload->DataSize);
-
-                if (droppedResource != nullptr) {
-                    if (ResourcePtr resourcePtr = resourceManager.GetResourceByUniqueID(droppedResource->getUniqueID())) {
+                Resource* droppedResource = *static_cast<Resource**>(payload->Data);
+                if (droppedResource != nullptr)
+                {
+                    if (ResourcePtr resourcePtr = resourceManager.GetResourceByUniqueID(droppedResource->getUniqueID()))
+                    {
                         // Try to dynamically cast it to a Prefab
-                        if (PrefabPtr prefab = std::dynamic_pointer_cast<Prefab>(resourcePtr)) {
+                        if (PrefabPtr prefab = std::dynamic_pointer_cast<Prefab>(resourcePtr))
+                        {
                             // Create a new GameObject from the prefab data.
                             scene->Instantiate(prefab, nullptr, Vector3(0.0f), Quaternion(), false);
                             Debug::Log("Created GameObject from prefab: " + prefab->getUniqueID());
                         }
-                        else {
+                        else
+                        {
                             Debug::LogWarning("Dropped resource is not a prefab.");
                         }
                     }

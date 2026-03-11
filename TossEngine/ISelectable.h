@@ -68,63 +68,69 @@ public:
     bool ResourceAssignableField(std::shared_ptr<T>& resourcePtr, const std::string& fieldName)
     {
         static_assert(std::is_base_of<Resource, T>::value, "T must derive from Resource");
-
-        ResourceManager& rm = ResourceManager::GetInstance();
+    
+        ResourceManager& resourceManager = ResourceManager::GetInstance();
         bool changed = false;
+    
         std::string label = resourcePtr
             ? fieldName + ": " + resourcePtr->getUniqueID()
             : fieldName + ": None";
-
+    
         if (ImGui::BeginTable((fieldName + "Table").c_str(), 2, ImGuiTableFlags_SizingStretchProp))
         {
             ImGui::TableNextRow();
+    
             ImGui::TableSetColumnIndex(0);
-            if (ImGui::Selectable(label.c_str()))
+            ImGui::Selectable(label.c_str());
+    
+            if (ImGui::IsItemClicked())
             {
-                rm.SetSelectedResource(resourcePtr);
+                resourceManager.SetSelectedResource(resourcePtr);
             }
-
+    
             ImGui::TableSetColumnIndex(1);
             if (ImGui::SmallButton("+"))
+            {
                 ImGui::OpenPopup((fieldName + "Dropdown").c_str());
-
+            }
+    
             if (ImGui::BeginPopup((fieldName + "Dropdown").c_str()))
             {
-                // "None" option
                 if (ImGui::Selectable("None", resourcePtr == nullptr))
                 {
                     if (resourcePtr)
                     {
                         resourcePtr.reset();
-                        rm.SetSelectedResource(nullptr);
+                        resourceManager.SetSelectedResource(nullptr);
                         changed = true;
                     }
                 }
-
-                // List all available resources of type T
-                auto& all = rm.GetAllResources();
-                for (auto& [id, res] : all)
+    
+                auto& allResources = resourceManager.GetAllResources();
+                for (auto& [id, resource] : allResources)
                 {
-                    if (auto casted = std::dynamic_pointer_cast<T>(res))
+                    std::shared_ptr<T> castedResource = std::dynamic_pointer_cast<T>(resource);
+                    if (castedResource)
                     {
-                        bool isSel = (resourcePtr && resourcePtr->getUniqueID() == id);
-                        if (ImGui::Selectable(id.c_str(), isSel))
+                        bool isSelected = (resourcePtr && resourcePtr->getUniqueID() == id);
+                        if (ImGui::Selectable(id.c_str(), isSelected))
                         {
-                            if (!isSel)
+                            if (!isSelected)
                             {
-                                resourcePtr = casted;
-                                rm.SetSelectedResource(resourcePtr);
+                                resourcePtr = castedResource;
+                                resourceManager.SetSelectedResource(resourcePtr);
                                 changed = true;
                             }
                         }
                     }
                 }
+    
                 ImGui::EndPopup();
             }
-
+    
             ImGui::EndTable();
         }
-
+    
         return changed;
     }
 
@@ -293,5 +299,5 @@ inline bool DrawVectorElementField(const std::string& label, std::shared_ptr<T>&
 }
 
 inline bool DrawVectorElementField(const std::string& label, GameObjectPtr& val) {
-    return ISelectable::GameObjectAssignableField(val, label);;
+    return ISelectable::GameObjectAssignableField(val, label);
 }

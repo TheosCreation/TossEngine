@@ -84,7 +84,7 @@ public:
      * @brief Sets the unique identifier for this resource.
      * @param id The new unique ID.
      */
-    void setUniqueID(const std::string& id);
+    virtual void setUniqueID(const std::string& id);
 
     /**
      * @brief Indicates whether the resource has been loaded successfully.

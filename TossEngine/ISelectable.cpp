@@ -11,7 +11,21 @@ bool ISelectable::GameObjectAssignableField(GameObjectPtr& _gameObject, const st
     string label = (_gameObject)
         ? (fieldName + ": " + _gameObject->name)
         : (fieldName + ": None");
-
+    
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
+        {
+            GameObject* droppedGameObject = *static_cast<GameObject**>(payload->Data);
+            if (droppedGameObject != nullptr)
+            {
+                _gameObject = TossEngine::GetInstance().getCurrentScene()->getGameObject(droppedGameObject->getId());
+                changed = true;
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+    
     if (ImGui::BeginTable((fieldName + "Table").c_str(), 2, ImGuiTableFlags_SizingStretchProp))
     {
         ImGui::TableNextRow();
@@ -111,7 +125,7 @@ bool ISelectable::FileSelectionTableField(
 
     ImGui::EndTable();
 
-    //check “just assigned & all filled”
+    //check ?just assigned & all filled?
     bool allFilled = std::all_of(filePaths.begin(), filePaths.end(),
         [](auto& p) { return !p.empty(); });
 
