@@ -936,40 +936,6 @@ void TossEditor::onRenderInternal()
     //ImGui::End();
     m_assetBrowser->Draw();
 
-    if (resourceBeingRenamed != nullptr)
-    {
-        ImGui::OpenPopup("Rename Resource");
-    }
-    if (ImGui::BeginPopupModal("Rename Resource", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        ImGui::InputText("New ID", renameBuffer, sizeof(renameBuffer));
-
-        if (ImGui::Button("OK"))
-        {
-            if (resourceBeingRenamed && strlen(renameBuffer) > 0)
-            {
-                std::string oldID = resourceBeingRenamed->getUniqueID();
-                std::string newID = renameBuffer;
-
-                // Rename the resource
-                resourceManager.RenameResource(resourceBeingRenamed, newID);
-            }
-
-            resourceBeingRenamed = nullptr;
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Cancel"))
-        {
-            resourceBeingRenamed = nullptr;
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::EndPopup();
-    }
-
     if (m_openSceneNamePopup)
     {
         ImGui::OpenPopup("Enter Scene Name");

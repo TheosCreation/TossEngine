@@ -49,29 +49,114 @@ ResourcePtr ResourceManager::GetResourceByUniqueID(const std::string& id)
     return nullptr;
 }
 
-void ResourceManager::RenameResource(ResourcePtr resource, const std::string& newId)
+bool ResourceManager::RenameResource(const ResourcePtr& resource, const std::string& newName)
 {
-    std::string oldId = resource->getUniqueID();
-
-    // Make sure the old ID exists
-    auto it = m_mapResources.find(oldId);
-    if (it == m_mapResources.end()) {
-        Debug::LogError("RenameResource failed: old ID not found: " + oldId, false);
-        return;
+    if (!resource)
+    {
+        Debug::LogError("RenameResource failed: resource is null", false);
+        return false;
     }
 
-    // Prevent overwriting an existing resource
-    if (m_mapResources.find(newId) != m_mapResources.end()) {
-        Debug::LogError("RenameResource failed: new ID already exists: " + newId, false);
-        return;
+    if (newName.empty())
+    {
+        Debug::LogError("RenameResource failed: new file name is empty", false);
+        return false;
     }
 
-    // Update the resource ID
-    resource->setUniqueID(newId);
-    m_mapResources[newId] = resource;
-    m_mapResources.erase(it);
+    std::string oldUniqueId = resource->getUniqueID();
+    auto resourceIterator = m_mapResources.find(oldUniqueId);
+    if (resourceIterator == m_mapResources.end())
+    {
+        Debug::LogError("RenameResource failed: old ID not found: " + oldUniqueId, false);
+        return false;
+    }
+
+    std::filesystem::path oldPath = resource->getPath();
+    if (oldPath.empty())
+    {
+        Debug::LogError("RenameResource failed: resource path is empty", false);
+        return false;
+    }
+
+    std::filesystem::path parentPath = oldPath.parent_path();
+    std::filesystem::path oldExtension = oldPath.extension();
+
+    std::filesystem::path requestedName(newName);
+    std::string requestedExtension = toLower(requestedName.extension().string());
+    std::string currentExtension = toLower(oldExtension.string());
+
+    std::filesystem::path finalFileName;
+    if (requestedExtension.empty())
+    {
+        finalFileName = requestedName.string() + oldExtension.string();
+    }
+    else
+    {
+        finalFileName = requestedName.filename();
+    }
+
+    std::filesystem::path newPath = parentPath / finalFileName;
+    std::string newUniqueId = newPath.generic_string();
+
+    if (newUniqueId == oldUniqueId)
+    {
+        return true;
+    }
+
+    if (m_mapResources.find(newUniqueId) != m_mapResources.end())
+    {
+        Debug::LogError("RenameResource failed: new ID already exists: " + newUniqueId, false);
+        return false;
+    }
+
+    try
+    {
+        if (std::filesystem::exists(oldPath))
+        {
+            std::filesystem::rename(oldPath, newPath);
+        }
+
+        std::filesystem::path oldMetaPath = oldPath;
+        oldMetaPath += ".meta";
+
+        std::filesystem::path newMetaPath = newPath;
+        newMetaPath += ".meta";
+
+        if (std::filesystem::exists(oldMetaPath))
+        {
+            std::filesystem::rename(oldMetaPath, newMetaPath);
+        }
+    }
+    catch (const std::exception& exception)
+    {
+        Debug::LogError("RenameResource failed: " + std::string(exception.what()), false);
+        return false;
+    }
+
+    resource->setUniqueID(newUniqueId);
+    resource->setPath(newUniqueId);
+
+    m_mapResources[newUniqueId] = resource;
+    m_mapResources.erase(resourceIterator);
+
+    auto dataIterator = m_resourceDataMap.find(oldUniqueId);
+    if (dataIterator != m_resourceDataMap.end())
+    {
+        json resourceData = dataIterator->second;
+        m_resourceDataMap.erase(dataIterator);
+
+        resourceData["uniqueId"] = newUniqueId;
+        resourceData["m_path"] = newUniqueId;
+        m_resourceDataMap[newUniqueId] = resourceData;
+    }
 
     m_revision += 1;
+    return true;
+}
+
+bool ResourceManager::MoveResource(const ResourcePtr& resource, const std::string& newFolderPath)
+{
+    return true;
 }
 
 void ResourceManager::DeleteResource(const std::string& uniqueId)

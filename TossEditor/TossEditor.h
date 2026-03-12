@@ -185,12 +185,7 @@ private:
     std::shared_ptr<ISelectable> selectedSelectable = nullptr; //!< Selected resource, GameObject, or component.
     GameObject* renamingGameObject = nullptr;           //!< GameObject currently being renamed.
     char renameBuffer[256] = "";                        //!< Rename input buffer.
-    ResourcePtr resourceBeingRenamed = nullptr;         //!< Resource currently being renamed.
 
-    // --- Resource/UI creation state ---
-    char iDBuffer[256] = "";                            //!< Temporary input buffer for IDs.
-    std::string selectedTypeName = "";                  //!< Selected resource type name.
-    bool createResource = false;                        //!< True if resource creation is requested.
 
     // --- Editor shader ---
     ShaderPtr shader;                                   //!< Editor-specific ImGui/viewport shader.

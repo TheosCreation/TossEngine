@@ -121,7 +121,8 @@ public:
     ResourcePtr GetSelectedResource();
     ResourcePtr GetResourceByUniqueID(const std::string& id);
 
-    void RenameResource(ResourcePtr resource, const std::string& newId);
+    bool RenameResource(const ResourcePtr& resource, const std::string& newName);
+    bool MoveResource(const ResourcePtr& resource, const std::string& newFolderPath);
     void DeleteResource(const std::string& uniqueId);
     void MarkResourceAsMandatory(const std::string& uniqueId);
     bool IsResourceMandatory(const std::string& uniqueId) const;

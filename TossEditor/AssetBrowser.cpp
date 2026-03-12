@@ -383,27 +383,9 @@ void AssetsBrowser::drawLeftTree(AssetNode& node) {
                     ResourcePtr resourcePtr = rm.GetResourceByUniqueID(droppedResource->getUniqueID());
                     if (resourcePtr)
                     {
-                        std::string oldPath = resourcePtr->getPath();
-                        std::filesystem::path oldFilePath(oldPath);
-                        std::string fileName = oldFilePath.filename().string();
-                        std::filesystem::path newFilePath = std::filesystem::path(child.path) / fileName;
-
-                        if (std::filesystem::exists(oldPath))
+                        if (rm.MoveResource(resourcePtr, child.path))
                         {
-                            try
-                            {
-                                std::filesystem::create_directories(newFilePath.parent_path());
-                                std::filesystem::rename(oldPath, newFilePath.string());
-
-                                std::string newRelativePath = newFilePath.generic_string();
-                                rm.RenameResource(resourcePtr, newRelativePath);
-
-                                m_needsRebuild = true;
-                            }
-                            catch (const std::exception& e)
-                            {
-                                Debug::LogError("Failed to move file: " + std::string(e.what()), false);
-                            }
+                            m_needsRebuild = true;
                         }
                     }
                 }
@@ -532,27 +514,9 @@ void AssetsBrowser::drawRightPane(AssetNode& node)
                 ResourcePtr resourcePtr = resourceManager.GetResourceByUniqueID(droppedResource->getUniqueID());
                 if (resourcePtr)
                 {
-                    std::string oldPath = resourcePtr->getPath();
-                    std::filesystem::path oldFilePath(oldPath);
-                    std::string fileName = oldFilePath.filename().string();
-                    std::filesystem::path newFilePath = std::filesystem::path(m_currentFolder) / fileName;
-
-                    if (oldFilePath.generic_string() != newFilePath.generic_string() && std::filesystem::exists(oldPath))
+                    if (resourceManager.MoveResource(resourcePtr, m_currentFolder))
                     {
-                        try
-                        {
-                            std::filesystem::create_directories(newFilePath.parent_path());
-                            std::filesystem::rename(oldPath, newFilePath.string());
-
-                            std::string newRelativePath = newFilePath.generic_string();
-                            resourceManager.RenameResource(resourcePtr, newRelativePath);
-
-                            m_needsRebuild = true;
-                        }
-                        catch (const std::exception& e)
-                        {
-                            Debug::LogError("Failed to move file: " + std::string(e.what()), false);
-                        }
+                        m_needsRebuild = true;
                     }
                 }
             }
@@ -622,27 +586,9 @@ void AssetsBrowser::drawRightPane(AssetNode& node)
                         ResourcePtr resourcePtr = resourceManager.GetResourceByUniqueID(droppedResource->getUniqueID());
                         if (resourcePtr)
                         {
-                            std::string oldPath = resourcePtr->getPath();
-                            std::filesystem::path oldFilePath(oldPath);
-                            std::string fileName = oldFilePath.filename().string();
-                            std::filesystem::path newFilePath = std::filesystem::path(childNode->path) / fileName;
-
-                            if (oldFilePath.generic_string() != newFilePath.generic_string() && std::filesystem::exists(oldPath))
+                            if (resourceManager.MoveResource(resourcePtr, childNode->path))
                             {
-                                try
-                                {
-                                    std::filesystem::create_directories(newFilePath.parent_path());
-                                    std::filesystem::rename(oldPath, newFilePath.string());
-
-                                    std::string newRelativePath = newFilePath.generic_string();
-                                    resourceManager.RenameResource(resourcePtr, newRelativePath);
-
-                                    m_needsRebuild = true;
-                                }
-                                catch (const std::exception& e)
-                                {
-                                    Debug::LogError("Failed to move file: " + std::string(e.what()), false);
-                                }
+                                m_needsRebuild = true;
                             }
                         }
                     }
@@ -730,25 +676,9 @@ void AssetsBrowser::drawRightPane(AssetNode& node)
                 {
                     if (m_renameBuf[0] != 0)
                     {
-                        std::string oldPath = item.res->getPath();
-                        std::filesystem::path oldFilePath(oldPath);
-                        std::filesystem::path newFilePath = oldFilePath.parent_path() / m_renameBuf;
-
-                        if (std::filesystem::exists(oldPath))
+                        if (resourceManager.RenameResource(item.res, m_renameBuf))
                         {
-                            try
-                            {
-                                std::filesystem::rename(oldPath, newFilePath.string());
-
-                                std::string newRelativePath = newFilePath.generic_string();
-                                resourceManager.RenameResource(item.res, newRelativePath);
-
-                                m_needsRebuild = true;
-                            }
-                            catch (const std::exception& e)
-                            {
-                                Debug::LogError("Failed to rename file: " + std::string(e.what()), false);
-                            }
+                            m_needsRebuild = true;
                         }
                     }
 
@@ -816,25 +746,9 @@ void AssetsBrowser::drawRightPane(AssetNode& node)
                     {
                         if (m_renameBuf[0] != 0)
                         {
-                            std::string oldPath = item.res->getPath();
-                            std::filesystem::path oldFilePath(oldPath);
-                            std::filesystem::path newFilePath = oldFilePath.parent_path() / m_renameBuf;
-
-                            if (std::filesystem::exists(oldPath))
+                            if (resourceManager.RenameResource(item.res, m_renameBuf))
                             {
-                                try
-                                {
-                                    std::filesystem::rename(oldPath, newFilePath.string());
-
-                                    std::string newRelativePath = newFilePath.generic_string();
-                                    resourceManager.RenameResource(item.res, newRelativePath);
-
-                                    m_needsRebuild = true;
-                                }
-                                catch (const std::exception& e)
-                                {
-                                    Debug::LogError("Failed to rename file: " + std::string(e.what()), false);
-                                }
+                                m_needsRebuild = true;
                             }
                         }
 
