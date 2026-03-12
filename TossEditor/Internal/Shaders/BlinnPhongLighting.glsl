@@ -1,5 +1,6 @@
 // Structure representing a generic light source with color and specular strength.
 struct Light {
+    float Intensity;
     vec3 Color;                 // The color of the light.
     float SpecularStrength;     // The strength of the specular reflection from the light.
 };
@@ -14,9 +15,6 @@ struct DirectionalLight {
 struct PointLight {
     Light Base;                 // Base properties of the light.
     vec3 Position;              // Position of the point light in world space.
-    float AttenuationConstant;  // Constant term for attenuation.
-    float AttenuationLinear;    // Linear term for distance-based attenuation.
-    float AttenuationExponent;  // Quadratic term for distance-based attenuation.
     float Radius;               // Radius for the max distance to cutoff the lighting calculations
 };
 
@@ -49,18 +47,16 @@ struct SpotLight {
  */
 vec3 CalculateLight(Light baseLight, vec3 lightDir, vec3 viewDir, vec3 normal, float attenuation, float objectShininess)
 {
-    // Diffuse shading: calculates the contribution from the diffuse reflection.
-    float DiffuseStrength = max(dot(normal, -lightDir), 0.0);
-    vec3 Diffuse = DiffuseStrength * baseLight.Color;
+    float diffuseStrength = max(dot(normal, lightDir), 0.0);
+    vec3 diffuse = diffuseStrength * baseLight.Color * baseLight.Intensity;
 
-    // Specular shading: calculates the contribution from the specular reflection.
-    vec3 HalfwayDir = normalize(-lightDir - viewDir); // Halfway vector between light and view direction.
-    float SpecularReflection = pow(max(dot(normal, HalfwayDir), 0.0), objectShininess); // Blinn-Phong specular reflection.
-    vec3 Specular = baseLight.SpecularStrength * SpecularReflection * baseLight.Color;
+    float clampedShininess = max(objectShininess, 1.0);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float specularReflection = pow(max(dot(normal, halfwayDir), 0.0), clampedShininess);
+    vec3 specular = baseLight.SpecularStrength * specularReflection * baseLight.Color * baseLight.Intensity;
 
-    // Combine diffuse and specular results, applying attenuation.
-    vec3 result = (Diffuse + Specular) / attenuation;
-    return result; // Return the final lighting result.
+    vec3 result = (diffuse + specular) / attenuation;
+    return result;
 }
 
 /**
@@ -77,8 +73,8 @@ vec3 CalculateLight(Light baseLight, vec3 lightDir, vec3 viewDir, vec3 normal, f
  */
 vec3 CalculateDirectionalLight(DirectionalLight light, vec3 viewDir, float objectShininess, vec3 fragNormal)
 {
-    vec3 LightDir = normalize(light.Direction); // Normalize the directional light vector.
-    return CalculateLight(light.Base, LightDir, viewDir, fragNormal, 1.0, objectShininess); // Call CalculateLight with a fixed attenuation of 1.0.
+    vec3 LightDir = normalize(-light.Direction);
+    return CalculateLight(light.Base, LightDir, viewDir, fragNormal, 1.0, objectShininess);
 }
 
 /**
@@ -97,17 +93,18 @@ vec3 CalculateDirectionalLight(DirectionalLight light, vec3 viewDir, float objec
  */
 vec3 CalculatePointLight(PointLight light, vec3 viewDir, float objectShininess, vec3 fragNormal, vec3 fragPos)
 {
-    vec3 LightDir = normalize(fragPos - light.Position); // Calculate direction to the point light.
-    float Distance = length(light.Position - fragPos); // Calculate distance to the light.
+    vec3 LightDir = normalize(light.Position - fragPos);
+    float Distance = length(light.Position - fragPos);
 
-    if(Distance < light.Radius)
+    if (Distance >= light.Radius)
     {
-        // Calculate attenuation based on the distance.
-        float Attenuation = light.AttenuationConstant + (light.AttenuationLinear * Distance) + (light.AttenuationExponent * Distance * Distance);
-        return CalculateLight(light.Base, LightDir, viewDir, fragNormal, Attenuation, objectShininess); // Call CalculateLight with calculated attenuation.
+        return vec3(0.0, 0.0, 0.0);
     }
 
-    return vec3(0,0,0);
+    float linearFalloff = 1.0 - (Distance / light.Radius);
+    linearFalloff = clamp(linearFalloff, 0.0, 1.0);
+
+    return CalculateLight(light.Base, LightDir, viewDir, fragNormal, 1.0, objectShininess) * linearFalloff;
 }
 
 /**
@@ -126,8 +123,8 @@ vec3 CalculatePointLight(PointLight light, vec3 viewDir, float objectShininess, 
  */
 vec3 CalculateSpotLight(SpotLight light, vec3 viewDir, float objectShininess, vec3 fragNormal, vec3 fragPos)
 {
-    vec3 LightDir = normalize(fragPos - light.Position); // Calculate direction to the spotlight.
-    float theta = dot(LightDir, normalize(light.Direction)); // Calculate the angle between the light direction and the fragment.
+	vec3 LightDir = normalize(light.Position - fragPos);
+	float theta = dot(normalize(-LightDir), normalize(light.Direction));
     float epsilon = light.CutOff - light.OuterCutOff; // Calculate the range of cutoff angles.
     // Calculate intensity based on the angle and clamp it to [0, 1].
     float intensity = clamp((theta - light.OuterCutOff) / epsilon, 0.0, 1.0);  

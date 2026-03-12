@@ -43,8 +43,8 @@ void main()
 {
     // Normalize the normal and calculate view and reflection directions
     vec3 Normal = normalize(FragNormal);
-    vec3 ViewDir = normalize(FragPos - CameraPos);
-    vec3 ReflectDir = reflect(ViewDir, Normal);
+	vec3 ViewDir = normalize(CameraPos - FragPos);
+	vec3 ReflectDir = reflect(-ViewDir, Normal);
 
     // Ambient Component
     vec3 Ambient = AmbientStrength * AmbientColor;
@@ -72,7 +72,8 @@ void main()
     // Sample textures
     vec3 Albedo = texture(Texture0, FragTexcoord).rgb * uColor;
     vec3 ReflectionTexture = texture(Texture_Skybox, ReflectDir).rgb;
-    float Reflectivity = clamp(texture(ReflectionMap, FragTexcoord).r, 0.0, 1.0);
+	float shininessFactor = clamp(ObjectShininess / 128.0, 0.0, 1.0);
+	float Reflectivity = clamp(texture(ReflectionMap, FragTexcoord).r, 0.0, 1.0) * shininessFactor;
 
     // Mix object texture and reflection texture based on reflectivity
     vec3 MixedTexture = mix(Albedo, ReflectionTexture, Reflectivity);

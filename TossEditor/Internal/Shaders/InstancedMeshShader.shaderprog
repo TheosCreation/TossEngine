@@ -1,4 +1,4 @@
-{
+T{
     "m_computeShaderFilePath": "",
     "m_fragShaderFilePath": "Internal\\Shaders\\Fragment\\MeshShader.frag",
     "m_path": "Internal\\Shaders\\InstancedMeshShader.shaderprog",

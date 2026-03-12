@@ -4,5 +4,5 @@
     "m_path": "Assets/Shaders/Compute/NewShader.shaderprog",
     "m_vertexShaderFilePath": "",
     "type": "Shader",
-    "uniqueId": "Shaders/Compute/NewShader.shaderprog"
+    "uniqueId": "NewShader"
 }

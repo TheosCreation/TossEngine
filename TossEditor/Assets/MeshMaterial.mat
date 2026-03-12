@@ -6,7 +6,7 @@
     "m_uniformValues": {
         "ObjectShininess": {
             "t": "float",
-            "v": 32.0
+            "v": 1.0
         },
         "ReflectionMap": {
             "t": "tex2d",
@@ -20,7 +20,7 @@
             "v": {
                 "slot": 0,
                 "texture": {
-                    "id": "Textures/dirt.jpg"
+                    "id": "dirt"
                 }
             }
         },
@@ -47,5 +47,5 @@
         }
     },
     "type": "Material",
-    "uniqueId": "Assets/MeshMaterial.mat"
+    "uniqueId": "MeshMaterial"
 }

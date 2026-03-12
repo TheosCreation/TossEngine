@@ -4,5 +4,5 @@
     "m_path": "Assets/Shaders/Compute/coolshader.shaderprog",
     "m_vertexShaderFilePath": "",
     "type": "Shader",
-    "uniqueId": "Shaders/Compute/coolshader.shaderprog"
+    "uniqueId": "coolshader"
 }

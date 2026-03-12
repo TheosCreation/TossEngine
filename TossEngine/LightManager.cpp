@@ -44,7 +44,7 @@ void LightManager::updatePointLightIntencity(uint lightId, const float& newInten
         return;
     }
 
-    m_pointLights[lightId].SpecularStrength = newIntencity;
+    m_pointLights[lightId].Intensity = newIntencity;
 }
 
 void LightManager::updatePointLightPosition(uint lightId, const Vector3& position)
@@ -114,7 +114,7 @@ void LightManager::updateDirectionalLightIntencity(uint lightId, const float& ne
         return;
     }
 
-    m_directionalLights[lightId].SpecularStrength = newIntencity;
+    m_directionalLights[lightId].Intensity = newIntencity;
 }
 
 void LightManager::updateDirectionalLightColor(uint lightId, const Vector3& newColor)
@@ -151,7 +151,7 @@ void LightManager::updateSpotLightIntencity(uint lightId, const float& newIntenc
         return;
     }
 
-    m_spotLights[lightId].SpecularStrength = newIntencity;
+    m_spotLights[lightId].Intensity = newIntencity;
 }
 
 void LightManager::updateSpotLightPosition(uint lightId, const Vector3& position)
@@ -220,12 +220,13 @@ void LightManager::applyLighting(ShaderPtr shader) const
         {
             std::string index = std::to_string(i);
             shader->setVec3("PointLightArray[" + index + "].Base.Color", m_pointLights[i].Color);
+            shader->setVec3("PointLightArray[" + index + "].Base.Intensity", m_pointLights[i].Intensity);
             shader->setFloat("PointLightArray[" + index + "].Base.SpecularStrength", m_pointLights[i].SpecularStrength);
 
             shader->setVec3("PointLightArray[" + index + "].Position", m_pointLights[i].Position);
-            shader->setFloat("PointLightArray[" + index + "].AttenuationConstant", m_pointLights[i].AttenuationConstant);
-            shader->setFloat("PointLightArray[" + index + "].AttenuationLinear", m_pointLights[i].AttenuationLinear);
-            shader->setFloat("PointLightArray[" + index + "].AttenuationExponent", m_pointLights[i].AttenuationExponent);
+            //shader->setFloat("PointLightArray[" + index + "].AttenuationConstant", m_pointLights[i].AttenuationConstant); useful for 
+            //shader->setFloat("PointLightArray[" + index + "].AttenuationLinear", m_pointLights[i].AttenuationLinear);
+            //shader->setFloat("PointLightArray[" + index + "].AttenuationExponent", m_pointLights[i].AttenuationExponent);
             shader->setFloat("PointLightArray[" + index + "].Radius", m_pointLights[i].Radius);
         }
 
@@ -242,6 +243,7 @@ void LightManager::applyLighting(ShaderPtr shader) const
         {
             std::string index = std::to_string(i);
             shader->setVec3("DirLightArray[" + index + "].Base.Color", m_directionalLights[i].Color);
+            shader->setFloat("DirLightArray[" + index + "].Base.Intensity", m_directionalLights[i].Intensity);
             shader->setFloat("DirLightArray[" + index + "].Base.SpecularStrength", m_directionalLights[i].SpecularStrength);
 
             shader->setVec3("DirLightArray[" + index + "].Direction", m_directionalLights[i].Direction);
@@ -262,6 +264,7 @@ void LightManager::applyLighting(ShaderPtr shader) const
         {
             std::string index = std::to_string(i);
             shader->setVec3("SpotLightArray[" + index + "].Base.Color", m_spotLights[i].Color);
+            shader->setFloat("SpotLightArray[" + index + "].Base.Intensity", m_spotLights[i].Intensity);
             shader->setFloat("SpotLightArray[" + index + "].Base.SpecularStrength", m_spotLights[i].SpecularStrength);
 
             shader->setVec3("SpotLightArray[" + index + "].Position", m_spotLights[i].Position);

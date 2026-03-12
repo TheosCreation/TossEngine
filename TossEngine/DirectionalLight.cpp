@@ -53,6 +53,7 @@ void DirectionalLight::onCreate()
     DirectionalLightData directionalLight1;
     directionalLight1.Direction = m_owner->m_transform.GetForward();
     directionalLight1.Color = m_color;
+    directionalLight1.Intensity = 1.0f;
     directionalLight1.SpecularStrength = 0.1f;
     m_lightId = m_owner->getLightManager()->createDirectionalLight(directionalLight1);
 }

@@ -13,7 +13,7 @@
     "isActive": true,
     "layer": "Default",
     "m_path": "Assets/NewPrefab.prefab",
-    "name": "NewPrefab.prefab",
+    "name": "NewPrefab",
     "tag": "",
     "transform": {
         "localPosition": [
@@ -51,5 +51,5 @@
         ]
     },
     "type": "Prefab",
-    "uniqueId": "NewPrefab.prefab"
+    "uniqueId": "NewPrefab"
 }

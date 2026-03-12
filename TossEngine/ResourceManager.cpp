@@ -80,19 +80,16 @@ bool ResourceManager::RenameResource(const ResourcePtr& resource, const std::str
 
     std::filesystem::path parentPath = oldPath.parent_path();
     std::filesystem::path oldExtension = oldPath.extension();
-
     std::filesystem::path requestedName(newName);
-    std::string requestedExtension = toLower(requestedName.extension().string());
-    std::string currentExtension = toLower(oldExtension.string());
 
     std::filesystem::path finalFileName;
-    if (requestedExtension.empty())
+    if (requestedName.has_extension())
     {
-        finalFileName = requestedName.string() + oldExtension.string();
+        finalFileName = requestedName.filename();
     }
     else
     {
-        finalFileName = requestedName.filename();
+        finalFileName = requestedName.string() + oldExtension.string();
     }
 
     std::filesystem::path newPath = parentPath / finalFileName;
@@ -150,12 +147,116 @@ bool ResourceManager::RenameResource(const ResourcePtr& resource, const std::str
         m_resourceDataMap[newUniqueId] = resourceData;
     }
 
+    for (auto& [absolutePath, importRecord] : m_importCache)
+    {
+        if (importRecord.uid == oldUniqueId)
+        {
+            importRecord.uid = newUniqueId;
+            break;
+        }
+    }
+
     m_revision += 1;
     return true;
 }
 
 bool ResourceManager::MoveResource(const ResourcePtr& resource, const std::string& newFolderPath)
 {
+    if (!resource)
+    {
+        Debug::LogError("MoveResource failed: resource is null", false);
+        return false;
+    }
+
+    if (newFolderPath.empty())
+    {
+        Debug::LogError("MoveResource failed: destination folder is empty", false);
+        return false;
+    }
+
+    std::string oldUniqueId = resource->getUniqueID();
+    auto resourceIterator = m_mapResources.find(oldUniqueId);
+    if (resourceIterator == m_mapResources.end())
+    {
+        Debug::LogError("MoveResource failed: old ID not found: " + oldUniqueId, false);
+        return false;
+    }
+
+    std::filesystem::path oldPath = resource->getPath();
+    if (oldPath.empty())
+    {
+        Debug::LogError("MoveResource failed: resource path is empty", false);
+        return false;
+    }
+
+    std::filesystem::path destinationFolder(newFolderPath);
+    std::filesystem::path newPath = destinationFolder / oldPath.filename();
+    std::string newUniqueId = newPath.generic_string();
+
+    if (newUniqueId == oldUniqueId)
+    {
+        return true;
+    }
+
+    if (m_mapResources.find(newUniqueId) != m_mapResources.end())
+    {
+        Debug::LogError("MoveResource failed: destination already contains resource: " + newUniqueId, false);
+        return false;
+    }
+
+    try
+    {
+        std::filesystem::create_directories(destinationFolder);
+
+        if (std::filesystem::exists(oldPath))
+        {
+            std::filesystem::rename(oldPath, newPath);
+        }
+
+        std::filesystem::path oldMetaPath = oldPath;
+        oldMetaPath += ".meta";
+
+        std::filesystem::path newMetaPath = newPath;
+        newMetaPath += ".meta";
+
+        if (std::filesystem::exists(oldMetaPath))
+        {
+            std::filesystem::rename(oldMetaPath, newMetaPath);
+        }
+    }
+    catch (const std::exception& exception)
+    {
+        Debug::LogError("MoveResource failed: " + std::string(exception.what()), false);
+        return false;
+    }
+
+    resource->setUniqueID(newUniqueId);
+    resource->setPath(newUniqueId);
+
+    m_mapResources[newUniqueId] = resource;
+    m_mapResources.erase(resourceIterator);
+
+    auto dataIterator = m_resourceDataMap.find(oldUniqueId);
+    if (dataIterator != m_resourceDataMap.end())
+    {
+        json resourceData = dataIterator->second;
+        m_resourceDataMap.erase(dataIterator);
+
+        resourceData["uniqueId"] = newUniqueId;
+        resourceData["m_path"] = newUniqueId;
+        m_resourceDataMap[newUniqueId] = resourceData;
+    }
+
+    for (auto& [absolutePath, importRecord] : m_importCache)
+    {
+        if (importRecord.uid == oldUniqueId)
+        {
+            importRecord.uid = newUniqueId;
+            break;
+        }
+    }
+
+    m_revision += 1;
     return true;
 }
 
@@ -330,29 +431,34 @@ void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
             typeName = "TextFile";
         }
 
-        const std::string relativePath = assetPath.lexically_relative(root).generic_string();
+        //TODO: make unique id generated and make resources have a name that we use the file name so filtering can be by type and name and not be restricted when finding resource by uid
+        const std::string uniqueId = assetPath.stem().string(); //here we use the file name as the unique id
 
         AssetImportRec cachedRecord{};
         if (!ShouldImport(filePath.string(), typeName, cachedRecord))
         {
-            if (!isMetaFile)
+            if (!isMetaFile && typeName != "TextFile")
             {
-                std::string metaPath = BuildMetaPath(filePath.string());
-                if (!std::filesystem::exists(metaPath))
+                std::string saveExtension = GetExtensionForType(typeName);
+                if (saveExtension == ".meta")
                 {
-                    ResourcePtr existingResource = GetResourceByUniqueID(relativePath);
-                    if (existingResource)
+                    std::string metaPath = BuildMetaPath(filePath.string());
+                    if (!std::filesystem::exists(metaPath))
                     {
-                        json metaPayload = existingResource->serialize();
-                        metaPayload["type"] = getClassName(typeid(*existingResource));
-                        metaPayload["uniqueId"] = relativePath;
-                        metaPayload["m_path"] = assetPath.generic_string();
-
-                        std::ofstream metaFile(metaPath);
-                        if (metaFile.is_open())
+                        ResourcePtr existingResource = GetResourceByUniqueID(uniqueId);
+                        if (existingResource)
                         {
-                            metaFile << metaPayload.dump(4);
-                            metaFile.close();
+                            json metaPayload = existingResource->serialize();
+                            metaPayload["type"] = getClassName(typeid(*existingResource));
+                            metaPayload["uniqueId"] = uniqueId;
+                            metaPayload["m_path"] = assetPath.generic_string();
+
+                            std::ofstream metaFile(metaPath);
+                            if (metaFile.is_open())
+                            {
+                                metaFile << metaPayload.dump(4);
+                                metaFile.close();
+                            }
                         }
                     }
                 }
@@ -360,9 +466,9 @@ void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
             continue;
         }
 
-        ImportOne(filePath.string(), relativePath, typeName);
+        ImportOne(filePath.string(), uniqueId, typeName);
 
-        ResourcePtr resource = GetResourceByUniqueID(relativePath);
+        ResourcePtr resource = GetResourceByUniqueID(uniqueId);
         if (!resource)
         {
             continue;
@@ -372,41 +478,46 @@ void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
 
         if (!isMetaFile && typeName != "TextFile")
         {
-            std::string metaPath = BuildMetaPath(filePath.string());
+            std::string saveExtension = GetExtensionForType(typeName);
 
-            if (std::filesystem::exists(metaPath))
+            if (saveExtension == ".meta")
             {
-                json metaJson;
-                if (TryReadJsonFile(metaPath, metaJson))
+                std::string metaPath = BuildMetaPath(filePath.string());
+
+                if (std::filesystem::exists(metaPath))
                 {
-                    resource->deserialize(metaJson);
-                    m_resourceDataMap[relativePath] = metaJson;
+                    json metaJson;
+                    if (TryReadJsonFile(metaPath, metaJson))
+                    {
+                        resource->deserialize(metaJson);
+                        m_resourceDataMap[uniqueId] = metaJson;
+                    }
+                    else
+                    {
+                        Debug::LogWarning("Failed to parse meta: " + metaPath);
+                    }
                 }
                 else
                 {
-                    Debug::LogWarning("Failed to parse meta: " + metaPath);
-                }
-            }
-            else
-            {
-                json metaPayload = resource->serialize();
-                metaPayload["type"] = getClassName(typeid(*resource));
-                metaPayload["uniqueId"] = relativePath;
-                metaPayload["m_path"] = assetPath.generic_string();
+                    json metaPayload = resource->serialize();
+                    metaPayload["type"] = getClassName(typeid(*resource));
+                    metaPayload["uniqueId"] = uniqueId;
+                    metaPayload["m_path"] = assetPath.generic_string();
 
-                std::ofstream metaFile(metaPath);
-                if (metaFile.is_open())
-                {
-                    metaFile << metaPayload.dump(4);
-                    metaFile.close();
-                }
+                    std::ofstream metaFile(metaPath);
+                    if (metaFile.is_open())
+                    {
+                        metaFile << metaPayload.dump(4);
+                        metaFile.close();
+                    }
 
-                m_resourceDataMap[relativePath] = metaPayload;
+                    m_resourceDataMap[uniqueId] = metaPayload;
+                }
             }
         }
 
         AssetImportRec newRecord;
-        newRecord.uid = relativePath;
+        newRecord.uid = uniqueId;
         newRecord.type = typeName;
         newRecord.timestamp = ToTicks(last_write_time(filePath));
         m_importCache[filePath.string()] = newRecord;
@@ -474,29 +585,27 @@ void ResourceManager::SaveResources()
         }
 
         std::string typeName = getClassName(typeid(*resource));
-
         if (typeName == "TextFile")
         {
             continue;
         }
 
+        std::string assetPath = resource->getPath();
+        std::string extension = GetExtensionForType(typeName);
+
         json payload = resource->serialize();
         payload["type"] = typeName;
         payload["uniqueId"] = uid;
+        payload["m_path"] = assetPath;
 
-        std::string basePath = resource->getPath();
-        std::string extension = GetExtensionForType(typeName);
-        std::string savePath = basePath;
-
-        if (!extension.empty())
+        std::string savePath;
+        if (extension == ".meta")
         {
-            std::filesystem::path currentPath(basePath);
-            std::string currentExtension = toLower(currentPath.extension().string());
-
-            if (toLower(extension) != currentExtension)
-            {
-                savePath = BuildAssetSavePath(basePath, extension);
-            }
+            savePath = BuildMetaPath(assetPath);
+        }
+        else
+        {
+            savePath = assetPath;
         }
 
         if (savePath.empty())

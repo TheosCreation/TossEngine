@@ -73,6 +73,7 @@ void Spotlight::onCreate()
     spotLight.Position = m_owner->m_transform.position;
     spotLight.Direction = m_owner->m_transform.GetForward();
     spotLight.Color = Color::White;
+    spotLight.Intensity = 1.0f;
     spotLight.SpecularStrength = 1.0f;
     spotLight.AttenuationConstant = 1.0f;
     spotLight.AttenuationLinear = 0.014f;

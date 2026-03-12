@@ -497,6 +497,7 @@ struct DirectionalLightData
 {
     Vector3 Direction;
     Vector3 Color;
+    float Intensity;
     float SpecularStrength;
 };
 
@@ -505,11 +506,12 @@ struct PointLightData
 {
     Vector3 Position;
     Vector3 Color;
+    float Intensity;
     float SpecularStrength;
 
-    float AttenuationConstant;
-    float AttenuationLinear;
-    float AttenuationExponent;
+    //float AttenuationConstant;
+    //float AttenuationLinear;
+    //float AttenuationExponent;
 
     float Radius;
 };
@@ -520,6 +522,7 @@ struct SpotLightData
     Vector3 Position;
     Vector3 Direction;
     Vector3 Color;
+    float Intensity;
     float SpecularStrength;
     float CutOff;
     float OuterCutOff;
