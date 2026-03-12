@@ -1,7 +1,7 @@
 {
     "m_filterMode": 0,
     "m_numChannels": 3,
-    "m_path": "Assets/Heightmaps/Knife.png",
+    "m_path": "Assets\\Knife.png.meta",
     "m_textureSize": {
         "height": 0,
         "left": 0,
@@ -10,5 +10,5 @@
     },
     "m_wrapMode": 0,
     "type": "Texture2D",
-    "uniqueId": "Heightmaps/Knife.png"
+    "uniqueId": "Knife.png"
 }

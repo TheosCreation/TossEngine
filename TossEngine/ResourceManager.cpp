@@ -239,10 +239,10 @@ void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
         }
 
         const std::string extension = toLower(assetPath.extension().string());
-        const std::string typeName = GuessTypeFromExt(extension);
+        std::string typeName = GuessTypeFromExt(extension);
         if (typeName.empty())
         {
-            continue;
+            typeName = "TextFile";
         }
 
         const std::string relativePath = assetPath.lexically_relative(root).generic_string();
@@ -285,7 +285,7 @@ void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
 
         resource->setPath(assetPath.generic_string());
 
-        if (!isMetaFile)
+        if (!isMetaFile && typeName != "TextFile")
         {
             std::string metaPath = BuildMetaPath(filePath.string());
 
@@ -329,13 +329,18 @@ void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
     
     for (auto& [uid, resource] : m_mapResources)
     {
-        if (IsResourceMandatory(uid)) continue;
-        
+        if (IsResourceMandatory(uid))
+        {
+            continue;
+        }
+
         resource->onCreate();
-        if (m_resourceDataMap.contains(uid))
+
+        if (m_resourceDataMap.contains(uid) && getClassName(typeid(*resource)) != "TextFile")
         {
             resource->deserialize(m_resourceDataMap[uid]);
         }
+
         resource->onCreateLate();
     }
 
@@ -384,6 +389,11 @@ void ResourceManager::SaveResources()
         }
 
         std::string typeName = getClassName(typeid(*resource));
+
+        if (typeName == "TextFile")
+        {
+            continue;
+        }
 
         json payload = resource->serialize();
         payload["type"] = typeName;

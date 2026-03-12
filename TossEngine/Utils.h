@@ -72,6 +72,7 @@ class Scene;
 class GameObject;
 class PhysicsMaterial;
 class Prefab;
+class TextFile;
 struct TossPlayerSettings;
 
 // Type definitions for common engine variables
@@ -80,6 +81,7 @@ typedef unsigned int uint;
 // Type definitions for shared pointers
 typedef std::shared_ptr<VertexArrayObject> VertexArrayObjectPtr;
 typedef std::shared_ptr<Shader> ShaderPtr;
+typedef std::shared_ptr<TextFile> TextFilePtr;
 typedef std::shared_ptr<Resource> ResourcePtr;
 typedef std::shared_ptr<Texture> TexturePtr;
 typedef std::shared_ptr<Texture2D> Texture2DPtr;
