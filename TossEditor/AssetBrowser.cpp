@@ -874,10 +874,7 @@ void AssetsBrowser::Draw() {
                     json payload;
                     payload["m_path"] = assetPath;
                     
-                    // The UID should be the relative path from Assets folder
-                    std::string relativeUID = GetRelativePathFromAssets(assetPath);
-                    
-                    rm.createResource(selectedTypeName, relativeUID, payload);
+                    rm.createResource(selectedTypeName, fileName, payload);
                     m_needsRebuild = true;
                     
                     // Reset state

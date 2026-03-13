@@ -197,6 +197,7 @@ void Image::Render(UniformData data, RenderingPath renderPath)
     graphicsEngine.setWindingOrder(WindingOrder::ClockWise); // Set winding order
     graphicsEngine.setVertexArrayObject(m_vao); // Bind the vertex array object for the mesh
     graphicsEngine.drawIndexedTriangles(TriangleType::TriangleList, m_vao->getNumIndices()); // Draw the indexed triangles
+    shader->setTexture2D(nullptr, 0, "Texture0");
 }
 
 

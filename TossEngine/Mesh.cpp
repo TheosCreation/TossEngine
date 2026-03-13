@@ -15,9 +15,6 @@ Mail : theo.morris@outlook.co.nz
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
-
 #include <filesystem>
 #include "VertexMesh.h"
 #include "GraphicsEngine.h"

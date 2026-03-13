@@ -1,0 +1,14 @@
+{
+    "m_filterMode": 1,
+    "m_numChannels": 3,
+    "m_path": "Assets/Textures/PistolDiffuse.png",
+    "m_textureSize": {
+        "height": 128,
+        "left": 0,
+        "top": 0,
+        "width": 128
+    },
+    "m_wrapMode": 0,
+    "type": "Texture2D",
+    "uniqueId": "PistolDiffuse"
+}

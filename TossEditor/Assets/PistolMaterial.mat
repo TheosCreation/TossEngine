@@ -1,0 +1,51 @@
+{
+    "m_path": "Assets/PistolMaterial.mat",
+    "m_shader": {
+        "id": "MeshShader"
+    },
+    "m_uniformValues": {
+        "ObjectShininess": {
+            "t": "float",
+            "v": 0.0
+        },
+        "ReflectionMap": {
+            "t": "tex2d",
+            "v": {
+                "slot": 0,
+                "texture": null
+            }
+        },
+        "Texture0": {
+            "t": "tex2d",
+            "v": {
+                "slot": 0,
+                "texture": {
+                    "id": "PistolDiffuse"
+                }
+            }
+        },
+        "Texture_Skybox": {
+            "t": "texcube",
+            "v": {
+                "slot": 0,
+                "texture": {
+                    "id": "RedEclipse"
+                }
+            }
+        },
+        "alpha": {
+            "t": "float",
+            "v": 1.0
+        },
+        "uColor": {
+            "t": "vec3",
+            "v": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        }
+    },
+    "type": "Material",
+    "uniqueId": "PistolMaterial"
+}

@@ -1,0 +1,14 @@
+{
+    "m_filterMode": 1,
+    "m_numChannels": 3,
+    "m_path": "Assets/Textures/Arm_Diffuse.png",
+    "m_textureSize": {
+        "height": 256,
+        "left": 0,
+        "top": 0,
+        "width": 256
+    },
+    "m_wrapMode": 0,
+    "type": "Texture2D",
+    "uniqueId": "Arm_Diffuse"
+}

@@ -73,12 +73,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>..\..\Dependencies\GLFW\Lib;..\..\Dependencies\GLEW;..\..\Dependencies\FMOD\Lib;..\..\Dependencies\TOSSENGINE;..\..\Dependencies/REACTPHYSICS3D/Lib;$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/tinyobjloader;..\..\Dependencies/GLFW/Include;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\TossEngine/</ExternalIncludePath>
+    <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/GLFW/Include;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\TossEngine/</ExternalIncludePath>
     <OutDir>..\..\TossEditor\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>..\..\Dependencies\GLFW\Lib;..\..\Dependencies\GLEW;..\..\Dependencies\FMOD\Lib;..\..\Dependencies\TOSSENGINE;..\..\Dependencies/REACTPHYSICS3D/Lib;$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/tinyobjloader;..\..\Dependencies/GLFW/Include;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\TossEngine/</ExternalIncludePath>
+    <ExternalIncludePath>..\..\Dependencies/STB;..\..\Dependencies/GLFW/Include;..\..\Dependencies/GLEW;..\..\Dependencies/JSON;..\..\Dependencies/GLM;..\..\Dependencies/IMGUIZMO;..\..\Dependencies/IMGUI;..\..\Dependencies/FMOD/Include;..\..\Dependencies/REACTPHYSICS3D;..\..\Dependencies/tinyfiledialogs;..\..\TossEngine/</ExternalIncludePath>
     <OutDir>..\..\TossEditor\</OutDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
