@@ -71,6 +71,11 @@ void DirectionalLight::onUpdateInternal()
     m_owner->getLightManager()->updateDirectionalLightDirection(m_lightId, m_owner->m_transform.GetForward());
 }
 
+void DirectionalLight::onDestroy()
+{
+    m_owner->getLightManager()->deleteDirectionalLight(m_lightId);
+}
+
 void DirectionalLight::SetIntencity(float intencity)
 {
     m_intencity = intencity;

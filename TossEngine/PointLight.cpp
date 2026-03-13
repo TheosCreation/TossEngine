@@ -2,33 +2,6 @@
 #include "GameObject.h"
 #include "LightManager.h"
 
-json PointLight::serialize() const
-{
-    json data;
-    data["type"] = getClassName(typeid(*this)); // Store the component type
-    data["color"] = { m_color.x, m_color.y, m_color.z };
-    data["radius"] = m_radius;
-    return data;
-}
-
-void PointLight::deserialize(const json& data)
-{
-    if (data.contains("color") && data["color"].is_array() && data["color"].size() == 3)
-    {
-        m_color.x = data["color"][0];
-        m_color.y = data["color"][1];
-        m_color.z = data["color"][2];
-    }
-
-    if (data.contains("radius") && data["radius"].is_number_float())
-    {
-        m_radius = data["radius"];
-    }
-
-    m_owner->getLightManager()->updatePointLightColor(m_lightId, m_color);
-    m_owner->getLightManager()->updatePointLightRadius(m_lightId, m_radius);
-}
-
 void PointLight::OnInspectorGUI()
 {
     ImGui::Text("Point Light Inspector - ID: %p", this);
@@ -53,13 +26,13 @@ void PointLight::OnInspectorGUI()
     }
 }
 
-void PointLight::onCreate()
+void PointLight::onCreateLate()
 {
     // Configure point light properties
     PointLightData pointLight;
     pointLight.Position = m_owner->m_transform.position;
     pointLight.Color = m_color;
-    pointLight.Intensity = 1.0f;
+    pointLight.Intensity = m_intencity;
     pointLight.SpecularStrength = 0.1f;
     //pointLight.AttenuationConstant = 1.0f;
     //pointLight.AttenuationLinear = 0.022f;
@@ -81,8 +54,12 @@ void PointLight::onUpdate()
 
 void PointLight::onUpdateInternal()
 {
-
     m_owner->getLightManager()->updatePointLightPosition(m_lightId, m_owner->m_transform.position);
+}
+
+void PointLight::onDestroy()
+{
+    m_owner->getLightManager()->deletePointLight(m_lightId);
 }
 
 void PointLight::SetIntencity(float intencity)

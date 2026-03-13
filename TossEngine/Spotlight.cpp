@@ -96,7 +96,12 @@ void Spotlight::onUpdateInternal()
 {
 
     m_owner->getLightManager()->updateSpotLightPosition(m_lightId, m_owner->m_transform.position);
-    m_owner->getLightManager()->updateDirectionalLightDirection(m_lightId, m_owner->m_transform.GetForward());
+    m_owner->getLightManager()->updateSpotLightDirection(m_lightId, m_owner->m_transform.GetForward());
+}
+
+void Spotlight::onDestroy()
+{
+    m_owner->getLightManager()->deleteSpotLight(m_lightId);
 }
 
 void Spotlight::SetColor(Vector3 color)

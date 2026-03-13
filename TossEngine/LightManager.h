@@ -28,22 +28,21 @@ public:
     ~LightManager() = default;
 
     // --- Point Lights ---
-
     uint createPointLight(const PointLightData& newPointLight);
     void updatePointLightIntencity(uint lightId, const float& newIntencity);
     void updatePointLightPosition(uint lightId, const Vector3& position);
     void updatePointLightColor(uint lightId, const Vector3& newColor);
     void updatePointLightRadius(uint lightId, float newRadius);
+    void deletePointLight(uint lightId);
 
     // --- Directional Lights ---
-
     uint createDirectionalLight(const DirectionalLightData& newDirectionalLight);
     void updateDirectionalLightDirection(uint lightId, const Vector3& direction);
     void updateDirectionalLightIntencity(uint lightId, const float& newIntencity);
     void updateDirectionalLightColor(uint lightId, const Vector3& newColor);
-
+    void deleteDirectionalLight(uint lightId);
+    
     // --- Spotlights ---
-
     uint createSpotLight(const SpotLightData& newSpotLight);
     void updateSpotLightIntencity(uint lightId, const float& newIntencity);
     void updateSpotLightPosition(uint lightId, const Vector3& position);
@@ -51,14 +50,13 @@ public:
     void updateSpotLightColor(uint lightId, const Vector3& newColor);
     void updateSpotLightCutOff(uint lightId, const float& newCutoff);
     void updateSpotLightOuterCutOff(uint lightId, const float& newCutoff);
+    void deleteSpotLight(uint lightId);
 
     // --- Shader Integration ---
-
     void applyLighting(ShaderPtr shader) const;
     void applyShadows(ShaderPtr shader);
 
     // --- Shadow Map Controls ---
-
     void BindShadowMap(int index);
     void UnBindShadowMap(int index);
     void setShadowMapTexture(ShadowMapPtr shadowMap, int index);
@@ -66,7 +64,6 @@ public:
     uint getDirectionalLightCount() const;
 
     // --- Spotlight Control ---
-
     void setSpotlightStatus(bool status);
     bool getSpotlightStatus() const;
     void setSpotlightPosition(Vector3 position);

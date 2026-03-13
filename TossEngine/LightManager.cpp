@@ -80,6 +80,26 @@ void LightManager::updatePointLightRadius(uint lightId, float newRadius)
     m_pointLights[lightId].Radius = newRadius;
 }
 
+void LightManager::deletePointLight(uint lightId)
+{
+    if (lightId >= m_pointLightCount)
+    {
+        Debug::LogWarning("Invalid PointLight ID: " + ToString(lightId));
+        return;
+    }
+
+    for (uint i = lightId; i + 1 < m_pointLightCount; i++)
+    {
+        m_pointLights[i] = m_pointLights[i + 1];
+    }
+
+    if (m_pointLightCount > 0)
+    {
+        m_pointLightCount--;
+        m_pointLights[m_pointLightCount] = PointLightData();
+    }
+}
+
 uint LightManager::createDirectionalLight(const DirectionalLightData& newDirectionalLight)
 {
     if (m_directionalLightCount >= MAX_DIRECTIONAL_LIGHTS)
@@ -126,6 +146,28 @@ void LightManager::updateDirectionalLightColor(uint lightId, const Vector3& newC
     }
 
     m_directionalLights[lightId].Color = newColor;
+}
+
+void LightManager::deleteDirectionalLight(uint lightId)
+{
+    if (lightId >= m_directionalLightCount)
+    {
+        Debug::LogWarning("Invalid Directional Light ID: " + ToString(lightId));
+        return;
+    }
+
+    for (uint i = lightId; i + 1 < m_directionalLightCount; i++)
+    {
+        m_directionalLights[i] = m_directionalLights[i + 1];
+        m_shadowMapTexture[i] = m_shadowMapTexture[i + 1];
+    }
+
+    if (m_directionalLightCount > 0)
+    {
+        m_directionalLightCount--;
+        m_directionalLights[m_directionalLightCount] = DirectionalLightData();
+        m_shadowMapTexture[m_directionalLightCount] = std::make_shared<ShadowMap>(Vector2(4096.0f));
+    }
 }
 
 uint LightManager::createSpotLight(const SpotLightData& newSpotLight)
@@ -207,6 +249,26 @@ void LightManager::updateSpotLightOuterCutOff(uint lightId, const float& newCuto
     }
 
     m_spotLights[lightId].OuterCutOff = newCutoff;
+}
+
+void LightManager::deleteSpotLight(uint lightId)
+{
+    if (lightId >= m_spotLightCount)
+    {
+        Debug::LogWarning("Invalid Spot Light ID: " + ToString(lightId));
+        return;
+    }
+
+    for (uint i = lightId; i + 1 < m_spotLightCount; i++)
+    {
+        m_spotLights[i] = m_spotLights[i + 1];
+    }
+
+    if (m_spotLightCount > 0)
+    {
+        m_spotLightCount--;
+        m_spotLights[m_spotLightCount] = SpotLightData();
+    }
 }
 
 void LightManager::applyLighting(ShaderPtr shader) const

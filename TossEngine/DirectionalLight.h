@@ -18,6 +18,7 @@ public:
     virtual void onCreate() override;
     virtual void onUpdate() override;
     virtual void onUpdateInternal() override;
+    void onDestroy() override;
 
     void SetIntencity(float intencity);
     void SetColor(Vector3 color);
