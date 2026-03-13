@@ -1,7 +1,12 @@
 #include "AssetBrowser.h"
 
-#include <ObjectArray.h>
+#ifdef _WIN32
+#include <windows.h>
+#include <shellapi.h>
+#pragma comment(lib, "Shell32.lib")
+#endif
 
+#include <ObjectArray.h>
 #include "ResourceManager.h"
 #include "Resource.h"
 #include "GameObject.h"

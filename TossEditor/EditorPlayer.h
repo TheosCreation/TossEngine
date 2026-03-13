@@ -25,6 +25,7 @@ public:
      * @param deltaTime The time elapsed since the last update.
      */
     void Update(float deltaTime);
+    void SyncLookAnglesFromTransform();
 
     Camera* getCamera() const;
 

@@ -108,7 +108,7 @@ void EditTransform(const Camera& camera, matrix_t& matrix)
 #include "imconfig.h"
 #endif
 #ifndef IMGUI_API
-#define IMGUI_API
+#define IMGUI_API TOSSENGINE_API
 #endif
 
 #ifndef IMGUIZMO_NAMESPACE
@@ -303,4 +303,30 @@ namespace IMGUIZMO_NAMESPACE
    };
 
    IMGUI_API Style& GetStyle();
+    
+    struct PointLightDraw
+    {
+        float Position[3];
+        float Radius;
+    };
+
+    struct SpotLightDraw
+    {
+        float Position[3];
+        float Direction[3];
+        float Range;
+        float InnerCutoffRadians;
+        float OuterCutoffRadians;
+    };
+
+    struct DirectionalLightDraw
+    {
+        float Direction[3];
+        float Origin[3];
+        float Length;
+    };
+
+    IMGUI_API void DrawPointLight(const float* view, const float* projection, const PointLightDraw& light);
+    IMGUI_API void DrawSpotLight(const float* view, const float* projection, const SpotLightDraw& light);
+    IMGUI_API void DrawDirectionalLight(const float* view, const float* projection, const DirectionalLightDraw& light);
 }

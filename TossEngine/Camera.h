@@ -99,6 +99,8 @@ public:
      */
     Vector3 screenToWorldPoint(Vector3 pixelZ);
     Vector3 screenToWorldPoint(Vector2 pixel);
+    void setViewMatrix(const Mat4& viewMatrix);
+    void setViewRotation(Mat4 viewMatrix) const;
 
 private:
     /**

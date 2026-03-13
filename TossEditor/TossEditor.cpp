@@ -193,9 +193,13 @@ void TossEditor::DuplicateSelected()
 
 void TossEditor::SetSelectedSelectable(std::shared_ptr<ISelectable> selectable)
 {
-    if (selectedSelectable) selectedSelectable->OnDeSelect();
+    if (ImGuizmo::IsViewManipulateHovered())
+    {
+        return;
+    }
+    if (selectedSelectable) selectedSelectable->DeSelect();
     selectedSelectable = selectable;
-    if (selectedSelectable) selectedSelectable->OnSelect();
+    if (selectedSelectable) selectedSelectable->Select();
 }
 
 void TossEditor::onUpdateInternal()
@@ -408,6 +412,7 @@ void TossEditor::onRenderInternal()
 
         if (auto scene = TossEngine::GetInstance().getCurrentScene())
         {
+            
             Vector2 newSize(availSize.x, availSize.y);
             Vector2 newPostion(windowPos.x, windowPos.y);
             Camera* camera = m_player->getCamera();
@@ -430,11 +435,17 @@ void TossEditor::onRenderInternal()
             ImVec2 imageMax = ImGui::GetItemRectMax();
             ImVec2 imgSize = ImGui::GetItemRectSize();
 
-            // 2) pick an offset inside the image where your toolbar should sit
+            ImGuizmo::BeginFrame();
+            ImGuizmo::SetOrthographic(false);
+            ImGuizmo::AllowAxisFlip(false);
+            ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
+            ImGuizmo::SetRect(imgMin.x, imgMin.y, imgSize.x, imgSize.y);
+
+            scene->onDrawGizmos();
+            
             const float margin = 8.0f;
             ImGui::SetCursorScreenPos({ imgMin.x + margin, imgMin.y + margin });
 
-            // 3) optionally push a transparent background so your buttons show up
             ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
             ImGui::BeginGroup();     // keep them all together
 
@@ -449,31 +460,64 @@ void TossEditor::onRenderInternal()
 
             ImGui::EndGroup();
             ImGui::PopStyleColor();
+            
+            Mat4 cameraView;
+            m_player->getCamera()->getViewMatrix(cameraView);
 
+            Mat4 projectionMat;
+            m_player->getCamera()->getProjectionMatrix(projectionMat);
 
+            Mat4 identityMatrix;
+
+            const float viewCubeSize = 128.0f;
+            const float viewCubePadding = 12.0f;
+
+            ImVec2 viewCubePosition(
+                imageMax.x - viewCubeSize - viewCubePadding,
+                imgMin.y + viewCubePadding
+            );
+
+            ImVec2 viewCubeDimensions(viewCubeSize, viewCubeSize);
+            ImU32 viewCubeBackgroundColor = IM_COL32(32, 32, 32, 180);
+
+            ImGui::PushClipRect(imgMin, imageMax, true);
+
+            ImGuizmo::ViewManipulate(
+                cameraView.data(),
+                projectionMat.data(),
+                ImGuizmo::ROTATE,
+                ImGuizmo::WORLD,
+                identityMatrix.data(),
+                10.0f,
+                viewCubePosition,
+                viewCubeDimensions,
+                viewCubeBackgroundColor
+            );
+
+            if (ImGuizmo::IsUsingViewManipulate())
+            {
+                m_player->getCamera()->setViewRotation(cameraView);
+            }
+
+            ImGui::PopClipRect();
+            
+            
             if (selectedSelectable)
             {
                 if (auto gameObject = std::dynamic_pointer_cast<GameObject>(selectedSelectable))
                 {
-                    ImGuizmo::BeginFrame();
-                    ImGuizmo::SetOrthographic(false);
-                    ImGuizmo::AllowAxisFlip(false);
-                    ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
-                    ImGuizmo::SetRect(imgMin.x, imgMin.y, imgSize.x, imgSize.y);
-
                     Mat4 transformMat = gameObject->m_transform.GetMatrix();
 
                     ImGui::PushClipRect(imgMin, imageMax, true);
 
-                    Mat4 cameraView;
-                    m_player->getCamera()->getViewMatrix(cameraView);
-
-                    Mat4 projectionMat;
-                    m_player->getCamera()->getProjectionMatrix(projectionMat);
-
-
-                    ImGuizmo::Manipulate(glm::value_ptr(cameraView.value), glm::value_ptr(projectionMat.value), m_currentManipulateOperation, ImGuizmo::WORLD, glm::value_ptr(transformMat.value));
-
+                    ImGuizmo::Manipulate(
+                        cameraView.data(),
+                        projectionMat.data(),
+                        m_currentManipulateOperation,
+                        ImGuizmo::WORLD,
+                        transformMat.data()
+                    );
+                    
                     if (ImGuizmo::IsUsing())
                     {
                         gameObject->m_transform.SetMatrix(transformMat);

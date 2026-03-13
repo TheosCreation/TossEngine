@@ -3,6 +3,23 @@
 #include "Material.h"
 #include "TossEngine.h"
 
+void ISelectable::Select()
+{
+    m_selected = true;
+    OnSelect();
+}
+
+void ISelectable::DeSelect()
+{
+    m_selected = false;
+    OnDeSelect();
+}
+
+bool ISelectable::IsSelected() const
+{
+    return m_selected;
+}
+
 bool ISelectable::GameObjectAssignableField(GameObjectPtr& _gameObject, const string& fieldName)
 {
     ScenePtr scene = TossEngine::GetInstance().getCurrentScene();

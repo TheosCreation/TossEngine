@@ -824,6 +824,100 @@ namespace IMGUIZMO_NAMESPACE
       return ImVec2(trans.x, trans.y);
    }
 
+    static vec_t MakePoint(const float* value)
+   {
+      return makeVect(value[0], value[1], value[2], 1.0f);
+   }
+
+   static vec_t MakeDirection(const float* value)
+   {
+      vec_t direction = makeVect(value[0], value[1], value[2], 0.0f);
+      direction.Normalize();
+      return direction;
+   }
+
+   static vec_t BuildPerpendicular(const vec_t& axis)
+   {
+      vec_t perpendicular;
+
+      if (fabsf(axis.y) < 0.99f)
+      {
+         perpendicular = Cross(axis, makeVect(0.0f, 1.0f, 0.0f, 0.0f));
+      }
+      else
+      {
+         perpendicular = Cross(axis, makeVect(1.0f, 0.0f, 0.0f, 0.0f));
+      }
+
+      perpendicular.Normalize();
+      return perpendicular;
+   }
+
+   static void DrawCircle3D(const vec_t& center, const vec_t& normal, float radius, ImU32 color, float thickness = 1.5f, int segmentCount = 64)
+   {
+      vec_t tangent = BuildPerpendicular(normal);
+      vec_t bitangent = Cross(normal, tangent);
+      bitangent.Normalize();
+
+      ImVec2* points = (ImVec2*)alloca(sizeof(ImVec2) * (segmentCount + 1));
+
+      for (int i = 0; i <= segmentCount; i++)
+      {
+         float angle = 2.0f * ZPI * ((float)i / (float)segmentCount);
+         vec_t offset = tangent * cosf(angle) + bitangent * sinf(angle);
+         vec_t point = center + offset * radius;
+         points[i] = worldToPos(point, gContext.mViewProjection);
+      }
+
+      gContext.mDrawList->AddPolyline(points, segmentCount + 1, color, true, thickness);
+   }
+
+   static void DrawLine3D(const vec_t& start, const vec_t& end, ImU32 color, float thickness = 1.5f)
+   {
+      gContext.mDrawList->AddLine(
+         worldToPos(start, gContext.mViewProjection),
+         worldToPos(end, gContext.mViewProjection),
+         color,
+         thickness
+      );
+   }
+
+   static void DrawArrow3D(const vec_t& start, const vec_t& end, ImU32 color, float thickness = 1.5f, float arrowSize = 10.0f)
+   {
+      ImVec2 startScreen = worldToPos(start, gContext.mViewProjection);
+      ImVec2 endScreen = worldToPos(end, gContext.mViewProjection);
+
+      gContext.mDrawList->AddLine(startScreen, endScreen, color, thickness);
+
+      ImVec2 direction = startScreen - endScreen;
+      float directionLength = sqrtf(ImLengthSqr(direction));
+
+      if (directionLength <= FLT_EPSILON)
+      {
+         return;
+      }
+
+      direction /= directionLength;
+      direction *= arrowSize;
+
+      ImVec2 orthogonal(direction.y, -direction.x);
+      ImVec2 arrowBase = endScreen + direction;
+
+      gContext.mDrawList->AddTriangleFilled(
+         endScreen,
+         arrowBase + orthogonal * 0.5f,
+         arrowBase - orthogonal * 0.5f,
+         color
+      );
+   }
+
+   static void DrawSphereRings(const vec_t& center, float radius, ImU32 color, float thickness = 1.5f)
+   {
+      DrawCircle3D(center, makeVect(1.0f, 0.0f, 0.0f, 0.0f), radius, color, thickness);
+      DrawCircle3D(center, makeVect(0.0f, 1.0f, 0.0f, 0.0f), radius, color, thickness);
+      DrawCircle3D(center, makeVect(0.0f, 0.0f, 1.0f, 0.0f), radius, color, thickness);
+   }
+    
    static void ComputeCameraRay(vec_t& rayOrigin, vec_t& rayDir, ImVec2 position = ImVec2(gContext.mX, gContext.mY), ImVec2 size = ImVec2(gContext.mWidth, gContext.mHeight))
    {
       ImGuiIO& io = ImGui::GetIO();
@@ -960,7 +1054,7 @@ namespace IMGUIZMO_NAMESPACE
       gContext.mWidth = width;
       gContext.mHeight = height;
       gContext.mXMax = gContext.mX + gContext.mWidth;
-      gContext.mYMax = gContext.mY + gContext.mXMax;
+       gContext.mYMax = gContext.mY + gContext.mHeight;
       gContext.mDisplayRatio = width / height;
    }
 
@@ -1119,7 +1213,41 @@ namespace IMGUIZMO_NAMESPACE
 
       ComputeCameraRay(gContext.mRayOrigin, gContext.mRayVector);
    }
+    
+    static void ComputeDrawContext(const float* view, const float* projection)
+   {
+       gContext.mViewMat = *(matrix_t*)view;
+       gContext.mProjectionMat = *(matrix_t*)projection;
+       gContext.mbMouseOver = false;
 
+       matrix_t identity;
+       identity.SetToIdentity();
+
+       gContext.mModel = identity;
+       gContext.mModelLocal = identity;
+       gContext.mModelSource = identity;
+       gContext.mModelInverse.Inverse(identity);
+       gContext.mModelSourceInverse.Inverse(identity);
+
+       gContext.mViewProjection = gContext.mViewMat * gContext.mProjectionMat;
+       gContext.mMVP = gContext.mModel * gContext.mViewProjection;
+       gContext.mMVPLocal = gContext.mModelLocal * gContext.mViewProjection;
+
+       matrix_t viewInverse;
+       viewInverse.Inverse(gContext.mViewMat);
+       gContext.mCameraDir = viewInverse.v.dir;
+       gContext.mCameraEye = viewInverse.v.position;
+       gContext.mCameraRight = viewInverse.v.right;
+       gContext.mCameraUp = viewInverse.v.up;
+
+       vec_t nearPos;
+       vec_t farPos;
+       nearPos.Transform(makeVect(0, 0, 1.f, 1.f), gContext.mProjectionMat);
+       farPos.Transform(makeVect(0, 0, 2.f, 1.f), gContext.mProjectionMat);
+
+       gContext.mReversed = (nearPos.z / nearPos.w) > (farPos.z / farPos.w);
+   }
+    
    static void ComputeColors(ImU32* colors, int type, OPERATION operation)
    {
       if (gContext.mbEnable)
@@ -2911,6 +3039,93 @@ namespace IMGUIZMO_NAMESPACE
       }
    }
 
+
+    void DrawPointLight(const float* view, const float* projection, const PointLightDraw& light)
+   {
+       ComputeDrawContext(view, projection);
+
+       vec_t position = MakePoint(light.Position);
+
+       ImU32 mainColor = IM_COL32(255, 220, 120, 255);
+       ImU32 radiusColor = IM_COL32(255, 220, 120, 100);
+
+       DrawSphereRings(position, light.Radius, radiusColor, 1.5f);
+
+       gContext.mDrawList->AddCircleFilled(
+          worldToPos(position, gContext.mViewProjection),
+          5.0f,
+          mainColor,
+          16
+       );
+   }
+
+    void DrawSpotLight(const float* view, const float* projection, const SpotLightDraw& light)
+   {
+       matrix_t identity;
+       identity.SetToIdentity();
+
+       ComputeContext(view, projection, identity.m16, LOCAL);
+
+       vec_t position = MakePoint(light.Position);
+       vec_t direction = MakeDirection(light.Direction);
+
+       vec_t coneEndCenter = position + direction * light.Range;
+
+       float outerRadius = tanf(light.OuterCutoffRadians) * light.Range;
+       float innerRadius = tanf(light.InnerCutoffRadians) * light.Range;
+
+       ImU32 mainColor = IM_COL32(140, 200, 255, 255);
+       ImU32 outerColor = IM_COL32(140, 200, 255, 100);
+       ImU32 innerColor = IM_COL32(200, 240, 255, 140);
+
+       DrawArrow3D(position, coneEndCenter, mainColor, 2.0f, 10.0f);
+
+       DrawCircle3D(coneEndCenter, direction, outerRadius, outerColor, 1.5f);
+       DrawCircle3D(coneEndCenter, direction, innerRadius, innerColor, 1.5f);
+
+       vec_t tangent = BuildPerpendicular(direction);
+       vec_t bitangent = Cross(direction, tangent);
+       bitangent.Normalize();
+
+       vec_t outerA = coneEndCenter + tangent * outerRadius;
+       vec_t outerB = coneEndCenter - tangent * outerRadius;
+       vec_t outerC = coneEndCenter + bitangent * outerRadius;
+       vec_t outerD = coneEndCenter - bitangent * outerRadius;
+
+       DrawLine3D(position, outerA, outerColor, 1.0f);
+       DrawLine3D(position, outerB, outerColor, 1.0f);
+       DrawLine3D(position, outerC, outerColor, 1.0f);
+       DrawLine3D(position, outerD, outerColor, 1.0f);
+
+       gContext.mDrawList->AddCircleFilled(
+          worldToPos(position, gContext.mViewProjection),
+          5.0f,
+          mainColor,
+          16
+       );
+   }
+
+    void DrawDirectionalLight(const float* view, const float* projection, const DirectionalLightDraw& light)
+   {
+       matrix_t identity;
+       identity.SetToIdentity();
+
+       ComputeContext(view, projection, identity.m16, LOCAL);
+
+       vec_t origin = MakePoint(light.Origin);
+       vec_t direction = MakeDirection(light.Direction);
+       vec_t end = origin + direction * light.Length;
+
+       ImU32 mainColor = IM_COL32(255, 245, 140, 255);
+
+       DrawArrow3D(origin, end, mainColor, 2.0f, 12.0f);
+
+       vec_t side = BuildPerpendicular(direction);
+       vec_t sideOffset = side * (light.Length * 0.08f);
+
+       DrawLine3D(origin - sideOffset, origin + sideOffset, mainColor, 1.0f);
+   }
+    
    void ViewManipulate(float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor)
    {
       // Scale is always local or matrix will be skewed when applying world scale or oriented matrix
@@ -3028,7 +3243,7 @@ namespace IMGUIZMO_NAMESPACE
                bool insidePanel = localx > panelCorners[0].x && localx < panelCorners[1].x && localy > panelCorners[0].y && localy < panelCorners[1].y;
                int boxCoordInt = int(boxCoord.x * 9.f + boxCoord.y * 3.f + boxCoord.z);
                IM_ASSERT(boxCoordInt < 27);
-               boxes[boxCoordInt] |= insidePanel && (!isDraging) && gContext.mbMouseOver;
+                boxes[boxCoordInt] |= insidePanel && (!isDraging) && ImRect(position, position + size).Contains(io.MousePos);
 
                // draw face with lighter color
                if (iPass)
@@ -3063,7 +3278,7 @@ namespace IMGUIZMO_NAMESPACE
          vec_t newEye = camTarget + newDir * length;
          LookAt(&newEye.x, &camTarget.x, &newUp.x, view);
       }
-      gContext.mIsViewManipulatorHovered = gContext.mbMouseOver && ImRect(position, position + size).Contains(io.MousePos);
+       gContext.mIsViewManipulatorHovered = ImRect(position, position + size).Contains(io.MousePos);
 
       if (io.MouseDown[0] && (fabsf(io.MouseDelta[0]) || fabsf(io.MouseDelta[1])) && isClicking)
       {

@@ -34,13 +34,16 @@ public:
     /**
      * @brief Called when the object is selected.
      */
+    void Select();
     virtual void OnSelect() {}
 
     /**
      * @brief Called when the object is deselected.
-     */
+    */
+    void DeSelect();
     virtual void OnDeSelect() {}
-
+    
+    bool IsSelected() const;
     /**
      * @brief Called when the object should be deleted.
      * @param deleteSelf If true, the object should delete itself.
@@ -279,6 +282,10 @@ public:
 
     template<typename Enum>
     static bool EnumDropdownField(const std::string& name, Enum& currentValue);
+    
+protected:
+    bool m_selected = false;
+    
 };
 // just hard coded this so we route it to the right place
 inline bool DrawVectorElementField(const std::string& label, int& val) {

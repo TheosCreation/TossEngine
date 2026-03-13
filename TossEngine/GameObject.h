@@ -67,6 +67,7 @@ public:
 
     // --- Inspector ---
     virtual void OnInspectorGUI() override;
+    void OnDrawGizmos(UniformData data) const;
     virtual void OnSelect() override;
     virtual void OnDeSelect() override;
     void drawComponentInspector(Component* comp, const std::string& displayName);

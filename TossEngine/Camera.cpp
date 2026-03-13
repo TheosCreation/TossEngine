@@ -201,6 +201,26 @@ Vector3 Camera::screenToWorldPoint(Vector2 pixel)
     return screenToWorldPoint(Vector3(pixel.x, pixel.y, m_nearPlane));
 }
 
+void Camera::setViewMatrix(const Mat4& viewMatrix)
+{
+    m_view = viewMatrix;
+    m_owner->m_transform.SetMatrix(m_view);
+}
+
+void Camera::setViewRotation(Mat4 viewMatrix) const
+{
+    Mat4 worldMatrix = viewMatrix.Inverse();
+
+    glm::mat3 rotationMatrix;
+    rotationMatrix[0] = glm::normalize(glm::vec3(worldMatrix.value[0]));
+    rotationMatrix[1] = glm::normalize(glm::vec3(worldMatrix.value[1]));
+    rotationMatrix[2] = glm::normalize(glm::vec3(worldMatrix.value[2]));
+
+    glm::quat rotation = glm::quat_cast(rotationMatrix);
+
+    m_owner->m_transform.rotation = Quaternion(rotation);
+}
+
 void Camera::computeProjectionMatrix()
 {
 	if (m_type == CameraType::Perspective)

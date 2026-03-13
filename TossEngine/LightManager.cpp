@@ -47,6 +47,17 @@ void LightManager::updatePointLightIntencity(uint lightId, const float& newInten
     m_pointLights[lightId].Intensity = newIntencity;
 }
 
+void LightManager::updatePointLightSpecularStrength(uint lightId, const float& specularStrength)
+{
+    if (lightId >= m_pointLightCount)
+    {
+        Debug::LogWarning("Invalid PointLight ID: " + lightId);
+        return;
+    }
+
+    m_pointLights[lightId].SpecularStrength = specularStrength;
+}
+
 void LightManager::updatePointLightPosition(uint lightId, const Vector3& position)
 {
     if (lightId >= m_pointLightCount)

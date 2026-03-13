@@ -13,8 +13,8 @@ public:
     void deserialize(const json& data) override;
 
     void OnInspectorGUI() override;
-    void OnGameObjectSelected() override;
-    void OnGameObjectDeSelected() override;
+    void OnSelect() override;
+    void OnDeSelect() override;
 
     void onCreate() override;
     void onCreateLate() override;

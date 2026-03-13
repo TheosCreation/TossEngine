@@ -101,8 +101,15 @@ void EditorPlayer::Update(float deltaTime)
         return;
 
 
-    if (inputManager.isMouseDown(MouseButtonRight, false) && insideSceneView)
+    bool isRightMouseDown = inputManager.isMouseDown(MouseButtonRight, false);
+
+    if (isRightMouseDown && insideSceneView)
     {
+        if (!inputManager.isPlayModeEnabled())
+        {
+            SyncLookAnglesFromTransform();
+        }
+
         inputManager.enablePlayMode(true, false);
     }
     else
@@ -116,8 +123,8 @@ void EditorPlayer::Update(float deltaTime)
     m_pitch -= inputManager.getMouseYAxis(false) * sensitivity;
 
     // Clamp the pitch value to prevent flipping the camera
-    m_pitch = std::min(m_pitch, 89.0f);
-    m_pitch = std::max(m_pitch, -89.0f);
+    //m_pitch = std::min(m_pitch, 89.0f);
+    //m_pitch = std::max(m_pitch, -89.0f);
 
     // Create quaternions for yaw (around the y-axis) and pitch (around the x-axis)
     glm::quat yawRotation = glm::angleAxis(glm::radians(m_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -174,6 +181,14 @@ void EditorPlayer::Update(float deltaTime)
         m_transform.position += up * m_movementSpeed * deltaTime;
 
     m_transform.UpdateWorldTransform();
+}
+
+void EditorPlayer::SyncLookAnglesFromTransform()
+{
+    Vector3 eulerDegrees = m_transform.rotation.ToEulerAngles().ToDegrees();
+
+    m_pitch = eulerDegrees.x;
+    m_yaw = eulerDegrees.y;
 }
 
 Camera* EditorPlayer::getCamera() const

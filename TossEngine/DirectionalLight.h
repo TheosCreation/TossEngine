@@ -6,19 +6,14 @@ class TOSSENGINE_API DirectionalLight : public Component
 public:
     DirectionalLight() = default;
     ~DirectionalLight() = default;
+    
+    void OnInspectorGUI() override;
 
-    // Serialize 
-    virtual json serialize() const override;
-
-    // Deserialize
-    virtual void deserialize(const json& data) override;
-
-    virtual void OnInspectorGUI() override;
-
-    virtual void onCreate() override;
-    virtual void onUpdate() override;
-    virtual void onUpdateInternal() override;
+    void onCreateLate() override;
+    void onUpdate() override;
+    void onUpdateInternal() override;
     void onDestroy() override;
+    void OnDrawGizmosSelected(UniformData data) override;
 
     void SetIntencity(float intencity);
     void SetColor(Vector3 color);
@@ -27,6 +22,8 @@ private:
     Vector3 m_color = Color::White;
 
     uint m_lightId = 0;
+
+    SERIALIZABLE_MEMBERS(m_intencity, m_color)
 };
 
 REGISTER_COMPONENT(DirectionalLight)

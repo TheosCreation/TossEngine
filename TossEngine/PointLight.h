@@ -12,10 +12,11 @@ public:
 	virtual void onCreateLate() override;
 	virtual void onUpdate() override;
     virtual void onUpdateInternal() override;
+    void OnDrawGizmosSelected(UniformData data) override;
     void onDestroy() override;
 
     void SetIntencity(float intencity);
-    void SetSpecularStrength(float intencity);
+    void SetSpecularStrength(float specularStrength);
 	void SetColor(Vector3 color);
 	void SetRadius(float radius);
 private:

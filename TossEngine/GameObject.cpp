@@ -219,6 +219,18 @@ void GameObject::OnInspectorGUI()
     }
 }
 
+void GameObject::OnDrawGizmos(UniformData data) const
+{
+    for (auto& pair : m_components)
+    {
+        pair.second->OnDrawGizmos(data);
+        if (pair.second->IsSelected())
+        {
+            pair.second->OnDrawGizmosSelected(data);
+        }
+    }
+}
+
 void GameObject::drawComponentInspector(Component* comp, const std::string& displayName)
 {
     ImGui::Separator();
@@ -258,12 +270,12 @@ void GameObject::OnSelect()
 {
     for (auto& pair : m_components)
     {
-        pair.second->OnGameObjectSelected();
+        pair.second->Select();
     }
 
     if (m_transform.parent)
     {
-        m_transform.parent->gameObject->OnSelect();
+        m_transform.parent->gameObject->Select();
     }
 }
 
@@ -272,13 +284,13 @@ void GameObject::OnDeSelect()
 {
     for (auto& pair : m_components)
     {
-        pair.second->OnGameObjectDeSelected();
+        pair.second->DeSelect();
     }
 
 
     if (m_transform.parent)
     {
-        m_transform.parent->gameObject->OnDeSelect();
+        m_transform.parent->gameObject->DeSelect();
     }
 }
 

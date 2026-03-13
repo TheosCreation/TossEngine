@@ -17,6 +17,8 @@ Mail : theo.morris@outlook.co.nz
 #include "ShadowMap.h"
 #include <vector>
 
+#include "PointLight.h"
+
 /**
  * @class LightManager
  * @brief Manages all light types (point, spot, directional) and their interaction with shaders and shadow maps.
@@ -30,6 +32,7 @@ public:
     // --- Point Lights ---
     uint createPointLight(const PointLightData& newPointLight);
     void updatePointLightIntencity(uint lightId, const float& newIntencity);
+    void updatePointLightSpecularStrength(uint lightId, const float& specularStrength);
     void updatePointLightPosition(uint lightId, const Vector3& position);
     void updatePointLightColor(uint lightId, const Vector3& newColor);
     void updatePointLightRadius(uint lightId, float newRadius);

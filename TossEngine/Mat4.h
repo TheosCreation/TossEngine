@@ -91,7 +91,25 @@ public:
         oss << "\n]";
         return oss.str();
     }
+    
+    /**
+         * @brief Returns a mutable pointer to the underlying matrix data.
+         * @return Pointer to 16 contiguous floats.
+         */
+    float* data()
+    {
+        return glm::value_ptr(value);
+    }
 
+    /**
+     * @brief Returns a read-only pointer to the underlying matrix data.
+     * @return Pointer to 16 contiguous floats.
+     */
+    const float* data() const
+    {
+        return glm::value_ptr(value);
+    }
+    
     /**
      * @brief Implicit conversion to glm::mat4 for interoperability.
      */

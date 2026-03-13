@@ -10,6 +10,7 @@ class GameObject;
 class Collider;
 struct Collision;
 
+//TODO: internalize functions more such as onUpdateInternal should call a virtual function that can be overriden and stuff like that
 class TOSSENGINE_API Component : public Serializable, public ISelectable
 {
 public:
@@ -62,9 +63,10 @@ public:
         ImGui::Text(inspectorName.c_str(), this);
         ImGui::Separator();
     }
-    virtual void OnGameObjectSelected(){}
-    virtual void OnGameObjectDeSelected() {}
+    virtual void OnDrawGizmos(UniformData data) {}
+    virtual void OnDrawGizmosSelected(UniformData data){}
 
+    // TODO : rename functions like this lol
     virtual void onCollisionEnter(Collision& collision) {}
     virtual void onCollisionStay(Collision& collision) {}
     virtual void onCollisionExit(Collision& collision) {}

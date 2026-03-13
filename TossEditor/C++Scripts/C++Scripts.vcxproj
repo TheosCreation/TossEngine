@@ -170,19 +170,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Dependencies\IMGUIZMO\GraphEditor.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImCurveEdit.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImGradient.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImGuizmo.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUIZMO\ImSequencer.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUI\imgui.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_demo.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_draw.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_stdlib.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_tables.cpp" />
-    <ClCompile Include="..\..\Dependencies\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="GroundCheck.cpp" />

@@ -106,6 +106,7 @@ public:
      * Default rendering mode is deferred rendering.
      */
     virtual void onGraphicsUpdate(Camera* cameraToRenderOverride = nullptr, FramebufferPtr writeToFrameBuffer = nullptr);
+    void onDrawGizmos();
     void onShadowPass(int index) const;
     void onGeometryPass(UniformData _data) const;
     void onTransparencyPass(UniformData _data) const;

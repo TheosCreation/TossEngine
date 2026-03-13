@@ -416,8 +416,6 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         cameraToRenderOverride->getViewMatrix(uniformData.viewMatrix);
         cameraToRenderOverride->getProjectionMatrix(uniformData.projectionMatrix);
         uniformData.cameraPosition = cameraToRenderOverride->getPosition();
-        m_lightManager->setSpotlightPosition(uniformData.cameraPosition);
-        m_lightManager->setSpotlightDirection(cameraToRenderOverride->getFacingDirection());
     }
     else
     {
@@ -431,12 +429,9 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
         {
             if (camera->getCameraType() == CameraType::Perspective)
             {
-
                 camera->getViewMatrix(uniformData.viewMatrix);
                 camera->getProjectionMatrix(uniformData.projectionMatrix);
                 uniformData.cameraPosition = camera->getPosition();
-                m_lightManager->setSpotlightPosition(uniformData.cameraPosition);
-                m_lightManager->setSpotlightDirection(camera->getFacingDirection());
                 drawUi = camera->GetDrawUi();
             }
         }
@@ -559,7 +554,16 @@ void Scene::onGraphicsUpdate(Camera* cameraToRenderOverride, FramebufferPtr writ
     {
         writeToFrameBuffer->UnBind();
     }
+}
 
+void Scene::onDrawGizmos()
+{
+    for (const auto& pair : m_gameObjects)
+    {
+        if (!pair.second) continue;
+    
+        pair.second->OnDrawGizmos(uniformData);
+    }
 }
 
 void Scene::onShadowPass(int index) const

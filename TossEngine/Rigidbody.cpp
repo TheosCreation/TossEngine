@@ -80,13 +80,15 @@ void Rigidbody::OnInspectorGUI()
     }
 }
 
-void Rigidbody::OnGameObjectSelected()
+void Rigidbody::OnSelect()
 {
+    Component::OnSelect();
     SetIsDebugEnabled(true);
 }
 
-void Rigidbody::OnGameObjectDeSelected()
+void Rigidbody::OnDeSelect()
 {
+    Component::OnDeSelect();
     SetIsDebugEnabled(false);
 }
 
@@ -219,6 +221,7 @@ void Rigidbody::onUpdate()
 
 void Rigidbody::onUpdateInternal()
 {
+    Component::onUpdateInternal();
     if (Time::TimeScale == 0.0f)
     {
         UpdateBodyTransform();
