@@ -100,6 +100,7 @@ struct TOSSENGINE_API Transform
      */
     Transform* LookupParentTransform(size_t parentID) const;
 
+    Vector3 InverseTransformDirection(const Vector3& direction) const;
     // --- Getters and Setters ---
 
     Vector3 ToEulerAngles() const { return rotation.ToEulerAngles(); }
@@ -113,7 +114,7 @@ struct TOSSENGINE_API Transform
     std::function<void()> OnLocalPositionChanged;
 
     // --- Transformation Operations ---
-
+    
     void Translate(const Vector3& translation) { position += translation; }
 
     void Rotate(const Quaternion& deltaRotation)

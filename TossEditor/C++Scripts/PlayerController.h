@@ -14,6 +14,9 @@ public:
     void onUpdate() override;
     void onFixedUpdate() override;
     void TakeDamage(int damage);
+    Camera* GetCamera();
+    Vector3 GetLinearVelocity();
+    bool IsWalking();
 
 private:
     int m_health = 100;
@@ -35,6 +38,7 @@ private:
 
     Camera* m_cam = nullptr; // Pointer to the main camera
     Rigidbody* m_rigidBody = nullptr; // Pointer to the rigidbody
+    bool m_isWalking = false;
     GroundCheck* m_groundCheck = nullptr; // Pointer to the groundCheck
     Texture2DPtr m_texture = nullptr;
     TextureCubeMapPtr m_cubeMapTexture = nullptr;

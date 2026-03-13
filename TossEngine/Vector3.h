@@ -53,7 +53,8 @@ public:
 
     static Vector3 Cross(const Vector3& a, const Vector3& b);
     static float Distance(const Vector3& a, const Vector3& b);
-
+    static Vector3 MoveTowards(const Vector3& current, const Vector3& target, float maxDistanceDelta);
+    static Vector3 ClampMagnitude(const Vector3& vector, float maxLength);
     static Vector3 ExtractTranslation(const Mat4& m);
     static Vector3 ExtractScale(const Mat4& m);
 

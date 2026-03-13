@@ -208,3 +208,9 @@ Transform* Transform::LookupParentTransform(size_t parentID) const
     // Parent not found in either location.
     return nullptr;
 }
+
+Vector3 Transform::InverseTransformDirection(const Vector3& direction) const
+{
+    Quaternion inverseRotation = rotation.Inverse();
+    return inverseRotation * direction;
+}

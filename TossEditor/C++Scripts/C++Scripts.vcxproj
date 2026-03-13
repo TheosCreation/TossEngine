@@ -186,6 +186,7 @@
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="RainbowLight.cpp" />
     <ClCompile Include="UiManager.cpp" />
+    <ClCompile Include="WeaponAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Dependencies\IMGUIZMO\GraphEditor.h" />
@@ -220,6 +221,7 @@
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="RainbowLight.h" />
     <ClInclude Include="UiManager.h" />
+    <ClInclude Include="WeaponAnimation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

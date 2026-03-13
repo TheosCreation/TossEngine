@@ -87,7 +87,7 @@ Vector3 Quaternion::ToEulerAngles() const {
     return Vector3(glm::eulerAngles(static_cast<glm::quat>(*this)));
 }
 
-Quaternion Quaternion::Inverse()
+Quaternion Quaternion::Inverse() const
 {
     return glm::inverse(static_cast<glm::quat>(*this));
 }

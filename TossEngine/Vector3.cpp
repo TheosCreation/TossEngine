@@ -36,6 +36,32 @@ float Vector3::Distance(const Vector3& a, const Vector3& b) {
     return glm::distance(glm::vec3(a), glm::vec3(b));
 }
 
+Vector3 Vector3::MoveTowards(const Vector3& current, const Vector3& target, float maxDistanceDelta)
+{
+    Vector3 delta = target - current;
+    float distance = delta.Length();
+
+    if (distance <= maxDistanceDelta || distance <= 0.000001f)
+    {
+        return target;
+    }
+
+    return current + (delta / Vector3(distance, distance, distance)) * maxDistanceDelta;
+}
+
+Vector3 Vector3::ClampMagnitude(const Vector3& vector, float maxLength)
+{
+    float length = vector.Length();
+
+    if (length <= maxLength || length <= 0.000001f)
+    {
+        return vector;
+    }
+
+    float scale = maxLength / length;
+    return vector * scale;
+}
+
 Vector3 Vector3::ExtractTranslation(const Mat4& m) {
     return Vector3(m.value[3][0], m.value[3][1], m.value[3][2]);
 }

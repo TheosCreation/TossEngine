@@ -152,6 +152,7 @@ void PlayerController::onFixedUpdate()
         // If on the ground, set the linear velocity directly
         if (m_groundCheck->isGrounded)
         {
+            m_isWalking = true;
             // Limit acceleration
             Vector3 accelerationStep = velocityChange.Normalized() * m_acceleration * Time::FixedDeltaTime;
 
@@ -164,6 +165,7 @@ void PlayerController::onFixedUpdate()
         }
         else
         {
+            m_isWalking = false;
             Vector3 desiredMaxVelocity = Vector3(moveDirection.x * m_movementSpeed, 0, moveDirection.z * m_movementSpeed);
             if ((desiredMaxVelocity.x > 0.0f && velocity.x > m_movementSpeed) || (desiredMaxVelocity.x < 0.0f && velocity.x < -m_movementSpeed))
             {
@@ -178,6 +180,10 @@ void PlayerController::onFixedUpdate()
             m_rigidBody->AddForce(force);
         }
     }
+    else
+    {
+        m_isWalking = false;
+    }
 }
 
 
@@ -190,4 +196,19 @@ void PlayerController::TakeDamage(int damage)
         PauseManager::Get()->SetPaused(true, false);
         UiManager::Get()->SetGameLoss(true);
     }
+}
+
+Camera* PlayerController::GetCamera()
+{
+    return m_cam;
+}
+
+Vector3 PlayerController::GetLinearVelocity()
+{
+    return m_rigidBody->GetLinearVelocity();
+}
+
+bool PlayerController::IsWalking()
+{
+    return m_isWalking;
 }
