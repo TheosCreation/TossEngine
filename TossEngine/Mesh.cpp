@@ -11,6 +11,10 @@ Mail : theo.morris@outlook.co.nz
 
 #include "Mesh.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
@@ -19,121 +23,116 @@ Mail : theo.morris@outlook.co.nz
 #include "GraphicsEngine.h"
 #include "TossEngine.h"
 
-Mesh::Mesh(const MeshDesc& desc, const string& uniqueId, ResourceManager* manager) : Resource(desc.filePath, uniqueId, manager)
+static void ProcessAssimpMesh(
+    aiMesh* mesh,
+    const aiMatrix4x4& worldTransform,
+    std::vector<VertexMesh>& outVertices,
+    std::vector<uint>& outIndices,
+    Vector3& minBounds,
+    Vector3& maxBounds,
+    float scale)
 {
-    tinyobj::attrib_t attribs;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials; //unused but my gun model imports materials lets try to see if that works
     
-    std::string warn;
-    std::string err;
-    
-    auto inputfile = std::filesystem::path(desc.filePath).string();
-    
-    bool res = tinyobj::LoadObj(&attribs, &shapes, &materials, &warn, &err, inputfile.c_str(), nullptr);
+    uint baseVertex = static_cast<uint>(outVertices.size());
 
-    // Log any warnings if they exist
-    if (!warn.empty()) {
-        Debug::LogWarning("Mesh | Warning(s): " + warn);
-    }
+    aiMatrix3x3 normalMatrix = aiMatrix3x3(worldTransform);
+    normalMatrix.Inverse();
+    normalMatrix.Transpose();
 
-    // Log any errors if they exist
-    if (!err.empty()) {
-        Debug::LogError("Mesh | Creation failed with the following error(s): " + err, false);
-    }
-
-    // Check if the result was unsuccessful and log an additional message if needed
-    if (!res) {
-        Debug::LogError("Mesh | not created successfully.", false);
-    }
-    
-    std::vector<VertexMesh> list_vertices;
-    std::vector<uint> list_indices;
-    
-    size_t vertex_buffer_size = 0;
-    
-    for (size_t s = 0; s < shapes.size(); s++)
+    for (uint vertexIndex = 0; vertexIndex < mesh->mNumVertices; vertexIndex++)
     {
-        vertex_buffer_size += shapes[s].mesh.indices.size();
-    }
-    
-    list_vertices.reserve(vertex_buffer_size);
-    list_indices.reserve(vertex_buffer_size);
-    
-    size_t index_global_offset = 0;
-    
-    if (shapes.size() == 0 || shapes.size() > 1) Debug::LogError("Mesh not created successfully", false);
-    
-    for (size_t s = 0; s < shapes.size(); s++)
-    {
-        size_t index_offset = 0;
-    
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+        aiVector3D position = mesh->mVertices[vertexIndex];
+        position *= scale;
+        position = worldTransform * position;
+
+        Vector2 texCoord(0.0f, 0.0f);
+        if (mesh->HasTextureCoords(0))
         {
-            uint num_face_verts = shapes[s].mesh.num_face_vertices[f];
-    
-            for (uint v = 0; v < num_face_verts; v++)
-            {
-                tinyobj::index_t index = shapes[s].mesh.indices[index_offset + v];
-    
-                //adding vertex positions
-                tinyobj::real_t vx = attribs.vertices[(int)(index.vertex_index * 3 + 0)];
-                tinyobj::real_t vy = attribs.vertices[(int)(index.vertex_index * 3 + 1)];
-                tinyobj::real_t vz = attribs.vertices[(int)(index.vertex_index * 3 + 2)];
-    
-                //adding texcoords
-                tinyobj::real_t tx = 0;
-                tinyobj::real_t ty = 0;
-                if (attribs.texcoords.size())
-                {
-                    tx = attribs.texcoords[(int)(index.texcoord_index * 2 + 0)];
-                    ty = 1.0f - attribs.texcoords[(int)(index.texcoord_index * 2 + 1)];
-                }
+            texCoord.x = mesh->mTextureCoords[0][vertexIndex].x;
+            texCoord.y = mesh->mTextureCoords[0][vertexIndex].y;
+        }
 
-                //adding normal
-                Vector3 normal(0.0f);
-                if (attribs.normals.size())
-                {
-                    normal.x = attribs.normals[(int)(index.normal_index * 3 + 0)];
-                    normal.y = attribs.normals[(int)(index.normal_index * 3 + 1)];
-                    normal.z = attribs.normals[(int)(index.normal_index * 3 + 2)];
-                }
+        Vector3 normal(0.0f);
+        if (mesh->HasNormals())
+        {
+            aiVector3D assimpNormal = normalMatrix * mesh->mNormals[vertexIndex];
+            assimpNormal.Normalize();
 
-                VertexMesh vertex(Vector3(vx, vy, vz), Vector2(tx, ty), normal);
-                list_vertices.push_back(vertex);
-    
-                list_indices.push_back((unsigned int)index_global_offset + v);
-            }
-    
-            index_offset += num_face_verts;
-            index_global_offset += num_face_verts;
+            normal.x = assimpNormal.x;
+            normal.y = assimpNormal.y;
+            normal.z = assimpNormal.z;
+        }
+
+        Vector3 finalPosition(position.x, position.y, position.z);
+        VertexMesh vertex(finalPosition, texCoord, normal);
+        outVertices.push_back(vertex);
+
+        minBounds.x = std::min(minBounds.x, finalPosition.x);
+        minBounds.y = std::min(minBounds.y, finalPosition.y);
+        minBounds.z = std::min(minBounds.z, finalPosition.z);
+
+        maxBounds.x = std::max(maxBounds.x, finalPosition.x);
+        maxBounds.y = std::max(maxBounds.y, finalPosition.y);
+        maxBounds.z = std::max(maxBounds.z, finalPosition.z);
+    }
+
+    for (uint faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++)
+    {
+        const aiFace& face = mesh->mFaces[faceIndex];
+
+        if (face.mNumIndices != 3)
+        {
+            continue;
+        }
+
+        outIndices.push_back(baseVertex + face.mIndices[0]);
+        outIndices.push_back(baseVertex + face.mIndices[1]);
+        outIndices.push_back(baseVertex + face.mIndices[2]);
+    }
+}
+
+static void ProcessAssimpNode(
+    aiNode* node,
+    const aiScene* scene,
+    const aiMatrix4x4& parentTransform,
+    std::vector<VertexMesh>& outVertices,
+    std::vector<uint>& outIndices,
+    Vector3& minBounds,
+    Vector3& maxBounds,
+    float scale)
+{
+    aiMatrix4x4 worldTransform = parentTransform * node->mTransformation;
+
+    for (uint meshIndex = 0; meshIndex < node->mNumMeshes; meshIndex++)
+    {
+        aiMesh* mesh = scene->mMeshes[node->mMeshes[meshIndex]];
+        if (mesh != nullptr)
+        {
+            ProcessAssimpMesh(
+                mesh,
+                worldTransform,
+                outVertices,
+                outIndices,
+                minBounds,
+                maxBounds,
+                scale
+            );
         }
     }
-    
-    const VertexAttribute attribsList[] = {
-        { 3 }, // numElements position attribute
-        { 2 }, // numElements texture coordinates attribute
-        { 3 }  // numElements normal attribute
-    };
-    
-    m_vao = GraphicsEngine::GetInstance().createVertexArrayObject(
-        // vertex buffer
-        {
-            (void*)&list_vertices[0],
-            sizeof(VertexMesh),
-            (uint)list_vertices.size(),
-            (VertexAttribute*)attribsList,
-            3
-        },
-        // index buffer
-        {
-            (void*)&list_indices[0],
-            (uint)list_indices.size()
-        }
+
+    for (uint childIndex = 0; childIndex < node->mNumChildren; childIndex++)
+    {
+        ProcessAssimpNode(
+            node->mChildren[childIndex],
+            scene,
+            worldTransform,
+            outVertices,
+            outIndices,
+            minBounds,
+            maxBounds,
+            scale
         );
-
-    m_instanceTransforms = desc.instanceTransforms; 
-    initInstanceBuffer();
+    }
 }
 
 Mesh::Mesh(const std::string& uid, ResourceManager* mgr) : Resource(uid, mgr)
@@ -148,141 +147,84 @@ void Mesh::onCreateLate()
 
 void Mesh::LoadMeshFromFilePath()
 {
-    tinyobj::attrib_t attribs;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials; //unused but my gun model imports materials lets try to see if that works
-
-    std::string warn;
-    std::string err;
-
-    auto inputfile = std::filesystem::path(m_path).string();
-
-    bool res = tinyobj::LoadObj(&attribs, &shapes, &materials, &warn, &err, inputfile.c_str(), nullptr);
-
-    // Log any warnings if they exist
-    if (!warn.empty()) {
-        Debug::LogWarning("Mesh | Warning(s): " + warn);
+    if (m_path.empty())
+    {
+        return;
     }
 
-    // Log any errors if they exist
-    if (!err.empty()) {
-        Debug::LogError("Mesh | Creation failed with the following error(s): " + err, false);
-    }
+    Assimp::Importer importer;
 
-    // Check if the result was unsuccessful and log an additional message if needed
-    if (!res) {
-        Debug::LogError("Mesh | not created successfully.", false);
+    const aiScene* scene = importer.ReadFile(
+        m_path,
+        aiProcess_Triangulate |
+        aiProcess_GenSmoothNormals |
+        aiProcess_JoinIdenticalVertices |
+        aiProcess_ImproveCacheLocality |
+        aiProcess_CalcTangentSpace |
+        aiProcess_FlipUVs |
+        aiProcess_SortByPType
+    );
+
+    if (scene == nullptr || scene->mRootNode == nullptr)
+    {
+        Debug::LogError("Mesh | Failed to load: " + m_path + " | " + importer.GetErrorString(), false);
+        isLoaded = false;
+        return;
     }
 
     std::vector<VertexMesh> list_vertices;
     std::vector<uint> list_indices;
 
-    //Bounds
-    float minX = FLT_MAX, minY = FLT_MAX, minZ = FLT_MAX;
-    float maxX = -FLT_MAX, maxY = -FLT_MAX, maxZ = -FLT_MAX;
+    Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
+    Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
-    size_t vertex_buffer_size = 0;
+    aiMatrix4x4 identityTransform;
+    ProcessAssimpNode(
+        scene->mRootNode,
+        scene,
+        identityTransform,
+        list_vertices,
+        list_indices,
+        minBounds,
+        maxBounds,
+        m_scale
+    );
 
-    for (size_t s = 0; s < shapes.size(); s++)
+    if (list_vertices.empty() || list_indices.empty())
     {
-        vertex_buffer_size += shapes[s].mesh.indices.size();
-    }
-
-    list_vertices.reserve(vertex_buffer_size);
-    list_indices.reserve(vertex_buffer_size);
-
-    size_t index_global_offset = 0;
-
-    if (shapes.size() == 0 || shapes.size() > 1) Debug::LogError("Mesh not created successfully", false);
-
-    for (size_t s = 0; s < shapes.size(); s++)
-    {
-        size_t index_offset = 0;
-
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
-        {
-            uint num_face_verts = shapes[s].mesh.num_face_vertices[f];
-
-            for (uint v = 0; v < num_face_verts; v++)
-            {
-                tinyobj::index_t index = shapes[s].mesh.indices[index_offset + v];
-
-                //adding vertex positions
-                tinyobj::real_t vx = attribs.vertices[(int)(index.vertex_index * 3 + 0)];
-                tinyobj::real_t vy = attribs.vertices[(int)(index.vertex_index * 3 + 1)];
-                tinyobj::real_t vz = attribs.vertices[(int)(index.vertex_index * 3 + 2)];
-
-                Vector3 pos(vx, vy, vz);
-                pos *= m_scale;
-
-                //adding texcoords
-                tinyobj::real_t tx = 0;
-                tinyobj::real_t ty = 0;
-                if (attribs.texcoords.size())
-                {
-                    tx = attribs.texcoords[(int)(index.texcoord_index * 2 + 0)];
-                    ty = 1.0f - attribs.texcoords[(int)(index.texcoord_index * 2 + 1)];
-                }
-
-                //adding normal
-                Vector3 normal(0.0f);
-                if (attribs.normals.size())
-                {
-                    normal.x = attribs.normals[(int)(index.normal_index * 3 + 0)];
-                    normal.y = attribs.normals[(int)(index.normal_index * 3 + 1)];
-                    normal.z = attribs.normals[(int)(index.normal_index * 3 + 2)];
-                }
-
-                VertexMesh vertex(pos, Vector2(tx, ty), normal);
-                list_vertices.push_back(vertex);
-
-                // update bounds
-                minX = std::min(minX, pos.x); maxX = std::max(maxX, pos.x);
-                minY = std::min(minY, pos.y); maxY = std::max(maxY, pos.y);
-                minZ = std::min(minZ, pos.z); maxZ = std::max(maxZ, pos.z);
-
-                list_indices.push_back((unsigned int)index_global_offset + v);
-            }
-
-            index_offset += num_face_verts;
-            index_global_offset += num_face_verts;
-        }
+        Debug::LogError("Mesh | No valid geometry found in: " + m_path, false);
+        isLoaded = false;
+        return;
     }
 
     const VertexAttribute attribsList[] = {
-        { 3 }, // numElements position attribute
-        { 2 }, // numElements texture coordinates attribute
-        { 3 }  // numElements normal attribute
+        { 3 },
+        { 2 },
+        { 3 }
     };
 
     m_vao = GraphicsEngine::GetInstance().createVertexArrayObject(
-        // vertex buffer
         {
-            (void*)&list_vertices[0],
+            static_cast<void*>(list_vertices.data()),
             sizeof(VertexMesh),
-            (uint)list_vertices.size(),
-            (VertexAttribute*)attribsList,
+            static_cast<uint>(list_vertices.size()),
+            const_cast<VertexAttribute*>(attribsList),
             3
         },
-        // index buffer
         {
-            (void*)&list_indices[0],
-            (uint)list_indices.size()
+            static_cast<void*>(list_indices.data()),
+            static_cast<uint>(list_indices.size())
         }
     );
 
-    if (!list_vertices.empty()) {
-        extent = Vector3{ (maxX - minX) * 0.5f,
-                          (maxY - minY) * 0.5f,
-                          (maxZ - minZ) * 0.5f };
-        //Debug::Log("Imported a good extent");
-    }
-    else {
-        extent = Vector3(0.5f); // sane default
-    }
+    extent = Vector3(
+        (maxBounds.x - minBounds.x) * 0.5f,
+        (maxBounds.y - minBounds.y) * 0.5f,
+        (maxBounds.z - minBounds.z) * 0.5f
+    );
 
     initInstanceBuffer();
-    m_scaleTemp = m_scale;   // UI mirrors applied value
+    m_scaleTemp = m_scale;
     isLoaded = true;
 }
 
@@ -371,17 +313,10 @@ void Mesh::OnInspectorGUI()
                 if (ImGui::TreeNode(("Instance " + std::to_string(index)).c_str()))
                 {
                     if (ImGui::DragFloat3("Position", transform.localPosition.Data(), 0.1f))
-                        m_instanceBufferDirty = true;
-                    // Convert from radians to degrees for display
-
-                    if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
                     {
-                        // Convert the edited angles back to radians and update the quaternion
-                        transform.localRotation = Quaternion(eulerAngles.ToRadians());
                         m_instanceBufferDirty = true;
                     }
-
-
+                    
                     if (ImGui::DragFloat3("Rotation", eulerAngles.Data(), 0.1f))
                     {
                         transform.localRotation = Quaternion(eulerAngles.ToRadians());
@@ -390,7 +325,6 @@ void Mesh::OnInspectorGUI()
                     else
                     {
                         eulerAngles = transform.localRotation.Normalized().ToEulerAngles().ToDegrees();
-
                     }
 
                     if (ImGui::DragFloat3("Scale", transform.localScale.Data(), 0.1f))

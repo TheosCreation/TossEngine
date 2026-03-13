@@ -25,14 +25,6 @@ class TOSSENGINE_API Mesh : public Resource
 {
 public:
     /**
-     * @brief Constructor for creating a mesh resource from a description.
-     * @param desc The mesh description (path, vertices, indices, etc.).
-     * @param uniqueId The unique resource ID.
-     * @param manager Pointer to the resource manager.
-     */
-    Mesh(const MeshDesc& desc, const std::string& uniqueId, ResourceManager* manager);
-
-    /**
      * @brief Constructor for loading an existing mesh resource.
      * @param uid The unique resource ID.
      * @param mgr Pointer to the resource manager.
@@ -115,7 +107,7 @@ private:
     SERIALIZABLE_MEMBERS(m_path, m_scale, m_instanceTransforms)
 };
 
-REGISTER_RESOURCE(Mesh, ".meta", ".obj", ".fbx", ".gltf", ",glb")
+REGISTER_RESOURCE(Mesh, ".meta", ".obj", ".fbx", ".gltf", ".glb")
 
 // --- JSON Serialization ---
 
