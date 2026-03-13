@@ -18,6 +18,7 @@ Mail : theo.morris@outlook.co.nz
 #include <vector>
 
 #include "PointLight.h"
+#include "Spotlight.h"
 
 /**
  * @class LightManager
@@ -53,6 +54,7 @@ public:
     void updateSpotLightColor(uint lightId, const Vector3& newColor);
     void updateSpotLightCutOff(uint lightId, const float& newCutoff);
     void updateSpotLightOuterCutOff(uint lightId, const float& newCutoff);
+    void updateSpotLightRange(uint lightId, const float& range);
     void deleteSpotLight(uint lightId);
 
     // --- Shader Integration ---

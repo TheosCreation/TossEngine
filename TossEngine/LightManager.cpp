@@ -262,6 +262,17 @@ void LightManager::updateSpotLightOuterCutOff(uint lightId, const float& newCuto
     m_spotLights[lightId].OuterCutOff = newCutoff;
 }
 
+void LightManager::updateSpotLightRange(uint lightId, const float& range)
+{
+    if (lightId >= m_spotLightCount)
+    {
+        Debug::LogWarning("Invalid Spot Light ID: " + lightId);
+        return;
+    }
+
+    m_spotLights[lightId].Range = range;
+}
+
 void LightManager::deleteSpotLight(uint lightId)
 {
     if (lightId >= m_spotLightCount)
@@ -292,8 +303,8 @@ void LightManager::applyLighting(ShaderPtr shader) const
         for (unsigned int i = 0; i < m_pointLightCount; i++)
         {
             std::string index = std::to_string(i);
-            shader->setVec3("PointLightArray[" + index + "].Base.Color", m_pointLights[i].Color);
             shader->setVec3("PointLightArray[" + index + "].Base.Intensity", m_pointLights[i].Intensity);
+            shader->setVec3("PointLightArray[" + index + "].Base.Color", m_pointLights[i].Color);
             shader->setFloat("PointLightArray[" + index + "].Base.SpecularStrength", m_pointLights[i].SpecularStrength);
 
             shader->setVec3("PointLightArray[" + index + "].Position", m_pointLights[i].Position);
@@ -315,8 +326,8 @@ void LightManager::applyLighting(ShaderPtr shader) const
         for (unsigned int i = 0; i < m_directionalLightCount; i++)
         {
             std::string index = std::to_string(i);
-            shader->setVec3("DirLightArray[" + index + "].Base.Color", m_directionalLights[i].Color);
             shader->setFloat("DirLightArray[" + index + "].Base.Intensity", m_directionalLights[i].Intensity);
+            shader->setVec3("DirLightArray[" + index + "].Base.Color", m_directionalLights[i].Color);
             shader->setFloat("DirLightArray[" + index + "].Base.SpecularStrength", m_directionalLights[i].SpecularStrength);
 
             shader->setVec3("DirLightArray[" + index + "].Direction", m_directionalLights[i].Direction);
@@ -336,14 +347,16 @@ void LightManager::applyLighting(ShaderPtr shader) const
         for (unsigned int i = 0; i < m_spotLightCount; i++)
         {
             std::string index = std::to_string(i);
-            shader->setVec3("SpotLightArray[" + index + "].Base.Color", m_spotLights[i].Color);
             shader->setFloat("SpotLightArray[" + index + "].Base.Intensity", m_spotLights[i].Intensity);
+            shader->setVec3("SpotLightArray[" + index + "].Base.Color", m_spotLights[i].Color);
             shader->setFloat("SpotLightArray[" + index + "].Base.SpecularStrength", m_spotLights[i].SpecularStrength);
 
             shader->setVec3("SpotLightArray[" + index + "].Position", m_spotLights[i].Position);
             shader->setVec3("SpotLightArray[" + index + "].Direction", m_spotLights[i].Direction);
+            shader->setVec3("SpotLightArray[" + index + "].Range", m_spotLights[i].Range);
             shader->setFloat("SpotLightArray[" + index + "].CutOff", m_spotLights[i].CutOff);
-            shader->setFloat("SpotLightArray[" + index + "].CutOff", m_spotLights[i].OuterCutOff);
+            shader->setFloat("SpotLightArray[" + index + "].OuterCutOff", m_spotLights[i].OuterCutOff);
+            shader->setFloat("SpotLightArray[" + index + "].Range", m_spotLights[i].Range);
             shader->setFloat("SpotLightArray[" + index + "].AttenuationConstant", m_spotLights[i].AttenuationConstant);
             shader->setFloat("SpotLightArray[" + index + "].AttenuationLinear", m_spotLights[i].AttenuationLinear);
             shader->setFloat("SpotLightArray[" + index + "].AttenuationExponent", m_spotLights[i].AttenuationExponent);

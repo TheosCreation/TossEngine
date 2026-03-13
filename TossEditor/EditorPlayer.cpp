@@ -189,6 +189,23 @@ void EditorPlayer::SyncLookAnglesFromTransform()
 
     m_pitch = eulerDegrees.x;
     m_yaw = eulerDegrees.y;
+    if (m_pitch > 89.0f)
+    {
+        m_pitch = 89.0f;
+    }
+    if (m_pitch < -89.0f)
+    {
+        m_pitch = -89.0f;
+    }
+
+    while (m_yaw > 180.0f)
+    {
+        m_yaw -= 360.0f;
+    }
+    while (m_yaw < -180.0f)
+    {
+        m_yaw += 360.0f;
+    }
 }
 
 Camera* EditorPlayer::getCamera() const

@@ -25,6 +25,7 @@ struct SpotLight {
     vec3 Direction;             // Direction vector of the spotlight, typically normalized.
     float CutOff;               // Inner cutoff angle for the spotlight.
     float OuterCutOff;          // Outer cutoff angle for the spotlight.
+    float Range;          		// Range of the spotlight.
     float AttenuationConstant;  // Constant term for attenuation.
     float AttenuationLinear;    // Linear term for distance-based attenuation.
     float AttenuationExponent;  // Quadratic term for distance-based attenuation.
@@ -93,18 +94,19 @@ vec3 CalculateDirectionalLight(DirectionalLight light, vec3 viewDir, float objec
  */
 vec3 CalculatePointLight(PointLight light, vec3 viewDir, float objectShininess, vec3 fragNormal, vec3 fragPos)
 {
-    vec3 LightDir = normalize(light.Position - fragPos);
-    float Distance = length(light.Position - fragPos);
+    vec3 lightOffset = light.Position - fragPos;
+    float distance = length(lightOffset);
 
-    if (Distance >= light.Radius)
+    if (distance >= light.Radius)
     {
         return vec3(0.0, 0.0, 0.0);
     }
 
-    float linearFalloff = 1.0 - (Distance / light.Radius);
-    linearFalloff = clamp(linearFalloff, 0.0, 1.0);
+    vec3 lightDir = normalize(lightOffset);
 
-    return CalculateLight(light.Base, LightDir, viewDir, fragNormal, 1.0, objectShininess) * linearFalloff;
+    float attenuation = max(distance * distance, 0.0001);
+
+    return CalculateLight(light.Base, lightDir, viewDir, fragNormal, attenuation, objectShininess);
 }
 
 /**
@@ -123,13 +125,23 @@ vec3 CalculatePointLight(PointLight light, vec3 viewDir, float objectShininess, 
  */
 vec3 CalculateSpotLight(SpotLight light, vec3 viewDir, float objectShininess, vec3 fragNormal, vec3 fragPos)
 {
-	vec3 LightDir = normalize(light.Position - fragPos);
-	float theta = dot(normalize(-LightDir), normalize(light.Direction));
-    float epsilon = light.CutOff - light.OuterCutOff; // Calculate the range of cutoff angles.
-    // Calculate intensity based on the angle and clamp it to [0, 1].
-    float intensity = clamp((theta - light.OuterCutOff) / epsilon, 0.0, 1.0);  
-    float Distance = length(light.Position - fragPos); // Calculate distance to the light.
-    // Calculate attenuation based on the distance.
-    float Attenuation = light.AttenuationConstant + (light.AttenuationLinear * Distance) + (light.AttenuationExponent * Distance * Distance);
-    return CalculateLight(light.Base, LightDir, viewDir, fragNormal, Attenuation, objectShininess) * intensity; // Call CalculateLight and scale by intensity.
+    vec3 lightOffset = light.Position - fragPos;
+    float distance = length(lightOffset);
+
+    if (distance >= light.Range)
+    {
+        return vec3(0.0, 0.0, 0.0);
+    }
+
+    vec3 lightDir = normalize(lightOffset);
+
+    float theta = dot(normalize(-lightDir), normalize(light.Direction));
+    float epsilon = light.CutOff - light.OuterCutOff;
+    float intensity = clamp((theta - light.OuterCutOff) / epsilon, 0.0, 1.0);
+
+    float attenuation = light.AttenuationConstant +
+                        (light.AttenuationLinear * distance) +
+                        (light.AttenuationExponent * distance * distance);
+
+    return CalculateLight(light.Base, lightDir, viewDir, fragNormal, attenuation, objectShininess) * intensity;
 }

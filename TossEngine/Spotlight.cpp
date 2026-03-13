@@ -50,6 +50,7 @@ void Spotlight::onCreateLate()
     spotLight.AttenuationConstant = 1.0f;
     spotLight.AttenuationLinear = 0.014f;
     spotLight.AttenuationExponent = 0.0007f;
+    spotLight.Range = m_range;
     spotLight.CutOff = glm::cos(glm::radians(m_cutoff));
     spotLight.OuterCutOff = glm::cos(glm::radians(m_outerCutoff));
     m_lightId = m_owner->getLightManager()->createSpotLight(spotLight);
@@ -82,8 +83,8 @@ void Spotlight::OnDrawGizmosSelected(UniformData data)
     spotlight.Direction[1] = forward.y;
     spotlight.Direction[2] = forward.z;
     spotlight.Range = m_range;
-    spotlight.OuterCutoffRadians = glm::cos(glm::radians(m_outerCutoff));
-    spotlight.InnerCutoffRadians = glm::cos(glm::radians(m_cutoff));
+    spotlight.OuterCutoffRadians = glm::radians(m_outerCutoff);
+    spotlight.InnerCutoffRadians = glm::radians(m_cutoff);
     
     ImGuizmo::DrawSpotLight(data.viewMatrix.data(), data.projectionMatrix.data(), spotlight);
 }
@@ -114,7 +115,7 @@ void Spotlight::SetOuterCutoff(float newOuterCutoff)
 void Spotlight::SetRange(float range)
 {
     m_range = range;
-    //m_owner->getLightManager()->updateSpotLightRange(m_lightId, m_range);
+    m_owner->getLightManager()->updateSpotLightRange(m_lightId, m_range);
 }
 
 void Spotlight::SetIntencity(float intencity)

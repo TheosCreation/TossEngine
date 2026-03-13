@@ -526,6 +526,7 @@ struct SpotLightData
     float SpecularStrength;
     float CutOff;
     float OuterCutOff;
+    float Range;
 
     float AttenuationConstant;
     float AttenuationLinear;

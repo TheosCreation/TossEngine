@@ -22,7 +22,7 @@ void PointLight::OnInspectorGUI()
     // Color input
     if (ImGui::ColorEdit3("Color", &m_color.x))
     {
-        m_owner->getLightManager()->updatePointLightColor(m_lightId, m_color);
+        SetColor(m_color);
     }
 
     // Radius input
@@ -60,7 +60,6 @@ void PointLight::onUpdate()
 
 void PointLight::onUpdateInternal()
 {
-    Component::onUpdateInternal();
     m_owner->getLightManager()->updatePointLightPosition(m_lightId, m_owner->m_transform.position);
 }
 
