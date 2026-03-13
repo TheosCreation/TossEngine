@@ -504,6 +504,7 @@ struct DirectionalLightData
 // Struct representing a point light
 struct PointLightData
 {
+    bool Active;
     Vector3 Position;
     Vector3 Color;
     float Intensity;

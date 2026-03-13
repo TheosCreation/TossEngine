@@ -23,17 +23,18 @@ LightManager::LightManager()
 
 uint LightManager::createPointLight(const PointLightData& newPointLight)
 {
-    if (m_pointLightCount >= MAX_POINT_LIGHTS)
+    for (uint i = 0; i < MAX_POINT_LIGHTS; i++)
     {
-        Debug::LogWarning("Maximum number of point lights reached!");
-        return -1; // Indicate failure
+        if (!m_pointLights[i].Active)
+        {
+            m_pointLights[i] = newPointLight;
+            m_pointLightCount++;
+            return i;
+        }
     }
 
-    uint lightId = m_pointLightCount; // Assign ID based on count
-    m_pointLights[lightId] = newPointLight;
-    m_pointLightCount++;
-
-    return lightId; // Return valid ID
+    Debug::LogWarning("Maximum number of point lights reached!");
+    return UINT_MAX;
 }
 
 void LightManager::updatePointLightIntencity(uint lightId, const float& newIntencity)
@@ -93,22 +94,14 @@ void LightManager::updatePointLightRadius(uint lightId, float newRadius)
 
 void LightManager::deletePointLight(uint lightId)
 {
-    if (lightId >= m_pointLightCount)
+    if (lightId >= MAX_POINT_LIGHTS || !m_pointLights[lightId].Active)
     {
         Debug::LogWarning("Invalid PointLight ID: " + ToString(lightId));
         return;
     }
 
-    for (uint i = lightId; i + 1 < m_pointLightCount; i++)
-    {
-        m_pointLights[i] = m_pointLights[i + 1];
-    }
-
-    if (m_pointLightCount > 0)
-    {
-        m_pointLightCount--;
-        m_pointLights[m_pointLightCount] = PointLightData();
-    }
+    m_pointLights[lightId] = PointLightData();
+    m_pointLightCount--;
 }
 
 uint LightManager::createDirectionalLight(const DirectionalLightData& newDirectionalLight)
@@ -300,21 +293,26 @@ void LightManager::applyLighting(ShaderPtr shader) const
 
     if (PointLightsStatus)
     {
-        for (unsigned int i = 0; i < m_pointLightCount; i++)
+        uint activePointLightCount = 0;
+        for (uint i = 0; i < MAX_POINT_LIGHTS; i++)
         {
-            std::string index = std::to_string(i);
-            shader->setVec3("PointLightArray[" + index + "].Base.Intensity", m_pointLights[i].Intensity);
+            if (!m_pointLights[i].Active)
+            {
+                continue;
+            }
+
+            std::string index = std::to_string(activePointLightCount);
+
+            shader->setFloat("PointLightArray[" + index + "].Base.Intensity", m_pointLights[i].Intensity);
             shader->setVec3("PointLightArray[" + index + "].Base.Color", m_pointLights[i].Color);
             shader->setFloat("PointLightArray[" + index + "].Base.SpecularStrength", m_pointLights[i].SpecularStrength);
-
             shader->setVec3("PointLightArray[" + index + "].Position", m_pointLights[i].Position);
-            //shader->setFloat("PointLightArray[" + index + "].AttenuationConstant", m_pointLights[i].AttenuationConstant); useful for 
-            //shader->setFloat("PointLightArray[" + index + "].AttenuationLinear", m_pointLights[i].AttenuationLinear);
-            //shader->setFloat("PointLightArray[" + index + "].AttenuationExponent", m_pointLights[i].AttenuationExponent);
             shader->setFloat("PointLightArray[" + index + "].Radius", m_pointLights[i].Radius);
+
+            activePointLightCount++;
         }
 
-        shader->setUint("PointLightCount", m_pointLightCount);
+        shader->setUint("PointLightCount", activePointLightCount);
     }
     else
     {
@@ -353,13 +351,9 @@ void LightManager::applyLighting(ShaderPtr shader) const
 
             shader->setVec3("SpotLightArray[" + index + "].Position", m_spotLights[i].Position);
             shader->setVec3("SpotLightArray[" + index + "].Direction", m_spotLights[i].Direction);
-            shader->setVec3("SpotLightArray[" + index + "].Range", m_spotLights[i].Range);
             shader->setFloat("SpotLightArray[" + index + "].CutOff", m_spotLights[i].CutOff);
             shader->setFloat("SpotLightArray[" + index + "].OuterCutOff", m_spotLights[i].OuterCutOff);
             shader->setFloat("SpotLightArray[" + index + "].Range", m_spotLights[i].Range);
-            shader->setFloat("SpotLightArray[" + index + "].AttenuationConstant", m_spotLights[i].AttenuationConstant);
-            shader->setFloat("SpotLightArray[" + index + "].AttenuationLinear", m_spotLights[i].AttenuationLinear);
-            shader->setFloat("SpotLightArray[" + index + "].AttenuationExponent", m_spotLights[i].AttenuationExponent);
         }
 
         shader->setUint("SpotLightCount", m_spotLightCount);

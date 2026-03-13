@@ -26,26 +26,8 @@ struct SpotLight {
     float CutOff;               // Inner cutoff angle for the spotlight.
     float OuterCutOff;          // Outer cutoff angle for the spotlight.
     float Range;          		// Range of the spotlight.
-    float AttenuationConstant;  // Constant term for attenuation.
-    float AttenuationLinear;    // Linear term for distance-based attenuation.
-    float AttenuationExponent;  // Quadratic term for distance-based attenuation.
 };
 
-/**
- * @brief Calculates the combined lighting effect from a light source.
- * 
- * This function computes the diffuse and specular components of lighting
- * based on the light's properties, the direction to the light, the view direction,
- * the normal vector of the surface, the attenuation, and the object's shininess.
- * 
- * @param baseLight The base properties of the light.
- * @param lightDir The direction vector from the surface point to the light source.
- * @param viewDir The direction vector from the surface point to the camera.
- * @param normal The normal vector at the surface point.
- * @param attenuation The attenuation factor based on distance.
- * @param objectShininess The shininess factor of the surface, affecting specular highlight size.
- * @return The resulting color contribution from the light.
- */
 vec3 CalculateLight(Light baseLight, vec3 lightDir, vec3 viewDir, vec3 normal, float attenuation, float objectShininess)
 {
     float diffuseStrength = max(dot(normal, lightDir), 0.0);
@@ -56,42 +38,15 @@ vec3 CalculateLight(Light baseLight, vec3 lightDir, vec3 viewDir, vec3 normal, f
     float specularReflection = pow(max(dot(normal, halfwayDir), 0.0), clampedShininess);
     vec3 specular = baseLight.SpecularStrength * specularReflection * baseLight.Color * baseLight.Intensity;
 
-    vec3 result = (diffuse + specular) / attenuation;
-    return result;
+    return (diffuse + specular) * attenuation;
 }
 
-/**
- * @brief Calculates the lighting contribution from a directional light.
- * 
- * This function computes the lighting effect from a directional light source
- * by normalizing its direction and calling the CalculateLight function.
- * 
- * @param light The directional light source.
- * @param viewDir The direction vector from the fragment to the camera.
- * @param objectShininess The shininess factor of the surface.
- * @param fragNormal The normal vector at the fragment's position.
- * @return The resulting color contribution from the directional light.
- */
 vec3 CalculateDirectionalLight(DirectionalLight light, vec3 viewDir, float objectShininess, vec3 fragNormal)
 {
-    vec3 LightDir = normalize(-light.Direction);
-    return CalculateLight(light.Base, LightDir, viewDir, fragNormal, 1.0, objectShininess);
+    vec3 lightDir = normalize(-light.Direction);
+    return CalculateLight(light.Base, lightDir, viewDir, fragNormal, 1.0, objectShininess);
 }
 
-/**
- * @brief Calculates the lighting contribution from a point light.
- * 
- * This function computes the lighting effect from a point light source
- * based on its position and distance from the fragment. It calculates the
- * attenuation based on distance and calls the CalculateLight function.
- * 
- * @param light The point light source.
- * @param viewDir The direction vector from the fragment to the camera.
- * @param objectShininess The shininess factor of the surface.
- * @param fragNormal The normal vector at the fragment's position.
- * @param fragPos The world position of the fragment.
- * @return The resulting color contribution from the point light.
- */
 vec3 CalculatePointLight(PointLight light, vec3 viewDir, float objectShininess, vec3 fragNormal, vec3 fragPos)
 {
     vec3 lightOffset = light.Position - fragPos;
@@ -99,30 +54,21 @@ vec3 CalculatePointLight(PointLight light, vec3 viewDir, float objectShininess, 
 
     if (distance >= light.Radius)
     {
-        return vec3(0.0, 0.0, 0.0);
+        return vec3(0.0);
     }
 
     vec3 lightDir = normalize(lightOffset);
 
-    float attenuation = max(distance * distance, 0.0001);
+    // Normalized distance in [0,1]
+    float normalizedDistance = distance / light.Radius;
+
+    // Unity-like smooth range fade
+    float attenuation = 1.0 - normalizedDistance * normalizedDistance;
+    attenuation = attenuation * attenuation;
 
     return CalculateLight(light.Base, lightDir, viewDir, fragNormal, attenuation, objectShininess);
 }
 
-/**
- * @brief Calculates the lighting contribution from a spotlight.
- * 
- * This function computes the lighting effect from a spotlight by considering
- * the direction and cutoff angles. It calculates attenuation based on distance
- * and calls the CalculateLight function, scaling the result by the spotlight's intensity.
- * 
- * @param light The spotlight source.
- * @param viewDir The direction vector from the fragment to the camera.
- * @param objectShininess The shininess factor of the surface.
- * @param fragNormal The normal vector at the fragment's position.
- * @param fragPos The world position of the fragment.
- * @return The resulting color contribution from the spotlight.
- */
 vec3 CalculateSpotLight(SpotLight light, vec3 viewDir, float objectShininess, vec3 fragNormal, vec3 fragPos)
 {
     vec3 lightOffset = light.Position - fragPos;
@@ -130,18 +76,21 @@ vec3 CalculateSpotLight(SpotLight light, vec3 viewDir, float objectShininess, ve
 
     if (distance >= light.Range)
     {
-        return vec3(0.0, 0.0, 0.0);
+        return vec3(0.0);
     }
 
     vec3 lightDir = normalize(lightOffset);
 
+    float normalizedDistance = distance / light.Range;
+    float distanceAttenuation = 1.0 - normalizedDistance * normalizedDistance;
+    distanceAttenuation = distanceAttenuation * distanceAttenuation;
+
     float theta = dot(normalize(-lightDir), normalize(light.Direction));
-    float epsilon = light.CutOff - light.OuterCutOff;
-    float intensity = clamp((theta - light.OuterCutOff) / epsilon, 0.0, 1.0);
+    float epsilon = max(light.CutOff - light.OuterCutOff, 0.0001);
+    float angularAttenuation = clamp((theta - light.OuterCutOff) / epsilon, 0.0, 1.0);
+    angularAttenuation = angularAttenuation * angularAttenuation;
 
-    float attenuation = light.AttenuationConstant +
-                        (light.AttenuationLinear * distance) +
-                        (light.AttenuationExponent * distance * distance);
+    float attenuation = distanceAttenuation * angularAttenuation;
 
-    return CalculateLight(light.Base, lightDir, viewDir, fragNormal, attenuation, objectShininess) * intensity;
+    return CalculateLight(light.Base, lightDir, viewDir, fragNormal, attenuation, objectShininess);
 }
