@@ -41,6 +41,7 @@ Mail : theo.morris@outlook.co.nz
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
+#include "Vector4Int.h"
 #include "Quaternion.h"
 #include "Mat4.h"
 #include "Mat3.h"
@@ -121,9 +122,101 @@ struct Vertex
     Vector3 normal;     // The normal vector at the vertex used for lighting calculations (x, y, z)
 };
 
+struct VertexSkinned
+{
+    Vector3 position;
+    Vector2 texCoords;
+    Vector3 normal;
+    Vector4Int boneIndices;
+    Vector4 boneWeights;
+};
+
+// Animation
+struct PositionKey
+{
+    float time = 0.0f;
+    Vector3 value = Vector3(0.0f);
+};
+
+struct RotationKey
+{
+    float time = 0.0f;
+    Quaternion value = Quaternion();
+};
+
+struct ScaleKey
+{
+    float time = 0.0f;
+    Vector3 value = Vector3(1.0f);
+};
+
+struct BoneTrack
+{
+    std::string boneName;
+    std::vector<PositionKey> positions;
+    std::vector<RotationKey> rotations;
+    std::vector<ScaleKey> scales;
+};
+
 struct TextMeshData {
     vector<Vertex>    verts;
     vector<uint32_t>  idxs;
+};
+
+enum class MeshType
+{
+    Static,
+    Skinned
+};
+
+struct BoneInfo
+{
+    std::string name;
+    int index = -1;
+    Mat4 inverseBindMatrix;
+};
+
+struct SkeletonBone
+{
+    std::string name;
+    int parentIndex = -1;
+    Mat4 localBindTransform;
+};
+
+struct Skeleton
+{
+    std::vector<SkeletonBone> bones;
+
+    int FindBoneIndex(const std::string& boneName) const
+    {
+        for (int boneIndex = 0; boneIndex < static_cast<int>(bones.size()); boneIndex++)
+        {
+            if (bones[boneIndex].name == boneName)
+            {
+                return boneIndex;
+            }
+        }
+
+        return -1;
+    }
+
+    bool IsValid() const
+    {
+        return !bones.empty();
+    }
+
+    void Clear()
+    {
+        bones.clear();
+    }
+};
+
+struct AnimationClipData
+{
+    std::string name;
+    float duration = 0.0f;
+    float ticksPerSecond = 25.0f;
+    std::vector<BoneTrack> tracks;
 };
 
 typedef struct

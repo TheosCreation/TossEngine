@@ -22,6 +22,7 @@ class TOSSENGINE_API TextFile : public Resource
 public:
     TextFile(const std::string& uid, ResourceManager* mgr);
 
+    void deserialize(const json& data) override;
     void onCreateLate() override;
     void OnInspectorGUI() override;
 

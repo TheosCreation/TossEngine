@@ -17,6 +17,8 @@ Mail : theo.morris@outlook.co.nz
 #include "Resource.h"
 #include "ResourceManager.h"
 
+struct aiScene;
+
 /**
  * @class Mesh
  * @brief A class representing a mesh resource containing geometry data and supporting instancing.
@@ -96,8 +98,24 @@ public:
 
     Vector3 GetExtent();
     
+    bool IsSkinned() const;
+    bool IsStatic() const;
+
+    const Skeleton& GetSkeleton() const;
+    const std::vector<BoneInfo>& GetBones() const;
+    
+private:
+    void LoadStaticMesh(const aiScene* scene);
+    void LoadSkinnedMesh(const aiScene* scene);
+    
 private:
     VertexArrayObjectPtr m_vao; //!< The Vertex Array Object associated with this mesh.
+    MeshType m_meshType = MeshType::Static;
+    
+    Skeleton m_skeleton;
+    std::vector<BoneInfo> m_bones;
+    std::vector<AnimationClipData> m_animationClips;
+    
     std::vector<Transform> m_instanceTransforms; //!< Transformations for each mesh instance.
     Vector3 eulerAngles; //!< Euler rotation angles used internally.
     Vector3 extent = Vector3(0.0f); //!< Extent of mesh calculated on import

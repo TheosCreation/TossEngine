@@ -169,60 +169,36 @@ void Mesh::LoadMeshFromFilePath()
         return;
     }
 
-    std::vector<VertexMesh> list_vertices;
-    std::vector<uint> list_indices;
+    m_vao = nullptr;
+    m_bones.clear();
+    m_animationClips.clear();
+    m_skeleton.bones.clear();
+    extent = Vector3(0.0f);
 
-    Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
-    Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+    bool containsBones = false;
 
-    aiMatrix4x4 identityTransform;
-    ProcessAssimpNode(
-        scene->mRootNode,
-        scene,
-        identityTransform,
-        list_vertices,
-        list_indices,
-        minBounds,
-        maxBounds,
-        m_scale
-    );
-
-    if (list_vertices.empty() || list_indices.empty())
+    for (uint meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++)
     {
-        Debug::LogError("Mesh | No valid geometry found in: " + m_path, false);
-        isLoaded = false;
-        return;
+        aiMesh* assimpMesh = scene->mMeshes[meshIndex];
+        if (assimpMesh != nullptr && assimpMesh->HasBones())
+        {
+            containsBones = true;
+            break;
+        }
     }
 
-    const VertexAttribute attribsList[] = {
-        { 3 },
-        { 2 },
-        { 3 }
-    };
+    if (containsBones)
+    {
+        m_meshType = MeshType::Skinned;
+        LoadSkinnedMesh(scene);
+    }
+    else
+    {
+        m_meshType = MeshType::Static;
+        LoadStaticMesh(scene);
+    }
 
-    m_vao = GraphicsEngine::GetInstance().createVertexArrayObject(
-        {
-            static_cast<void*>(list_vertices.data()),
-            sizeof(VertexMesh),
-            static_cast<uint>(list_vertices.size()),
-            const_cast<VertexAttribute*>(attribsList),
-            3
-        },
-        {
-            static_cast<void*>(list_indices.data()),
-            static_cast<uint>(list_indices.size())
-        }
-    );
-
-    extent = Vector3(
-        (maxBounds.x - minBounds.x) * 0.5f,
-        (maxBounds.y - minBounds.y) * 0.5f,
-        (maxBounds.z - minBounds.z) * 0.5f
-    );
-
-    initInstanceBuffer();
     m_scaleTemp = m_scale;
-    isLoaded = true;
 }
 
 Mesh::~Mesh()
@@ -249,7 +225,7 @@ void Mesh::OnInspectorGUI()
         }
         ImGui::TableSetColumnIndex(2);
         if (ImGui::Button("Browse##MeshFilePath")) {
-            auto chosen = TossEngine::GetInstance().openFileDialog("*.obj");
+            auto chosen = TossEngine::GetInstance().openFileDialog("*.obj;*.fbx;*.gltf;*.glb");
             if (!chosen.empty()) {
                 auto root = getProjectRoot();
                 auto relPath = std::filesystem::relative(chosen, root);
@@ -276,9 +252,21 @@ void Mesh::OnInspectorGUI()
         }
         if (sliderActive) ImGui::EndDisabled();
     }
+    
+    if (IsSkinned())
+    {
+        ImGui::Separator();
+        ImGui::TextUnformatted("Mesh Type: Skinned");
+        ImGui::Text("Bone Count: %d", static_cast<int>(m_bones.size()));
+        ImGui::Text("Animation Clip Count: %d", static_cast<int>(m_animationClips.size()));
+    }
+    else
+    {
+        ImGui::Separator();
+        ImGui::TextUnformatted("Mesh Type: Static");
+    }
 
-
-    if (ImGui::CollapsingHeader("Mesh Instances", ImGuiTreeNodeFlags_DefaultOpen))
+    if (IsStatic() && ImGui::CollapsingHeader("Mesh Instances", ImGuiTreeNodeFlags_DefaultOpen))
     {
         // Display instance count
         ImGui::Text("Instance Count: %d", getInstanceCount());
@@ -395,4 +383,141 @@ void Mesh::clearInstances()
 Vector3 Mesh::GetExtent()
 {
     return extent;
+}
+
+bool Mesh::IsSkinned() const
+{
+    return m_meshType == MeshType::Skinned;
+}
+
+bool Mesh::IsStatic() const
+{
+    return m_meshType == MeshType::Static;
+}
+
+const Skeleton& Mesh::GetSkeleton() const
+{
+    return m_skeleton;
+}
+
+const std::vector<BoneInfo>& Mesh::GetBones() const
+{
+    return m_bones;
+}
+
+void Mesh::LoadStaticMesh(const aiScene* scene)
+{
+    std::vector<VertexMesh> vertices;
+    std::vector<uint> indices;
+
+    Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
+    Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+    aiMatrix4x4 identityTransform;
+    ProcessAssimpNode(
+        scene->mRootNode,
+        scene,
+        identityTransform,
+        vertices,
+        indices,
+        minBounds,
+        maxBounds,
+        m_scale
+    );
+
+    if (vertices.empty() || indices.empty())
+    {
+        Debug::LogError("Mesh | No valid static geometry found in: " + m_path, false);
+        isLoaded = false;
+        return;
+    }
+
+    const VertexAttribute attribsList[] =
+    {
+        { 3 },
+        { 2 },
+        { 3 }
+    };
+
+    m_vao = GraphicsEngine::GetInstance().createVertexArrayObject(
+        {
+            static_cast<void*>(vertices.data()),
+            sizeof(VertexMesh),
+            static_cast<uint>(vertices.size()),
+            const_cast<VertexAttribute*>(attribsList),
+            3
+        },
+        {
+            static_cast<void*>(indices.data()),
+            static_cast<uint>(indices.size())
+        }
+    );
+
+    extent = Vector3(
+        (maxBounds.x - minBounds.x) * 0.5f,
+        (maxBounds.y - minBounds.y) * 0.5f,
+        (maxBounds.z - minBounds.z) * 0.5f
+    );
+
+    initInstanceBuffer();
+    isLoaded = true;
+}
+
+void Mesh::LoadSkinnedMesh(const aiScene* scene)
+{
+    Debug::Log("Mesh | Detected skinned mesh: " + m_path);
+
+    Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
+    Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+    std::vector<VertexMesh> previewVertices;
+    std::vector<uint> previewIndices;
+
+    aiMatrix4x4 identityTransform;
+    ProcessAssimpNode(
+        scene->mRootNode,
+        scene,
+        identityTransform,
+        previewVertices,
+        previewIndices,
+        minBounds,
+        maxBounds,
+        m_scale
+    );
+
+    if (previewVertices.empty() || previewIndices.empty())
+    {
+        Debug::LogError("Mesh | No preview geometry found in skinned mesh: " + m_path, false);
+        isLoaded = false;
+        return;
+    }
+
+    const VertexAttribute attribsList[] =
+    {
+        { 3 },
+        { 2 },
+        { 3 }
+    };
+
+    m_vao = GraphicsEngine::GetInstance().createVertexArrayObject(
+        {
+            static_cast<void*>(previewVertices.data()),
+            sizeof(VertexMesh),
+            static_cast<uint>(previewVertices.size()),
+            const_cast<VertexAttribute*>(attribsList),
+            3
+        },
+        {
+            static_cast<void*>(previewIndices.data()),
+            static_cast<uint>(previewIndices.size())
+        }
+    );
+
+    extent = Vector3(
+        (maxBounds.x - minBounds.x) * 0.5f,
+        (maxBounds.y - minBounds.y) * 0.5f,
+        (maxBounds.z - minBounds.z) * 0.5f
+    );
+
+    isLoaded = true;
 }

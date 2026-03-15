@@ -532,7 +532,7 @@ void ResourceManager::LoadAssetsFromFolder(const std::string& assetsRoot)
 
         resource->onCreate();
 
-        if (m_resourceDataMap.contains(uid) && getClassName(typeid(*resource)) != "TextFile")
+        if (m_resourceDataMap.contains(uid))
         {
             resource->deserialize(m_resourceDataMap[uid]);
         }

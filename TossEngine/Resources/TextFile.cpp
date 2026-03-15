@@ -10,6 +10,14 @@ TextFile::TextFile(const std::string& uid, ResourceManager* mgr)
 {
 }
 
+void TextFile::deserialize(const json& data)
+{
+    if (data.contains("m_path"))
+    {
+        m_path = data["m_path"];
+    }
+}
+
 void TextFile::onCreateLate()
 {
     m_content.clear();
@@ -17,7 +25,8 @@ void TextFile::onCreateLate()
     std::ifstream file(getPath(), std::ios::in);
     if (!file.is_open())
     {
-        Debug::LogWarning("Failed to open text file: " + getPath());
+        // randomly getting a bunch from this
+        //Debug::LogWarning("Failed to open text file: " + getPath());
         return;
     }
 
