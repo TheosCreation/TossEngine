@@ -26,6 +26,8 @@ private:
     float m_jumpForce = 2000.0f;
     float m_jumpCooldown = 0.5f;
     float m_currentLevelTime = 60.0f;
+    float m_groundFriction = 12.0f;
+    float m_airFriction = 1.5f;
 
     float jumpTimer = 0.0f;
     bool m_win = false;
@@ -43,7 +45,7 @@ private:
     Texture2DPtr m_texture = nullptr;
     TextureCubeMapPtr m_cubeMapTexture = nullptr;
 
-    SERIALIZABLE_MEMBERS(m_health, m_movementSpeed, m_acceleration, m_airAcceleration, m_jumpForce, m_jumpCooldown, m_layerNames, m_texture, m_cubeMapTexture, m_currentLevelTime)
+    SERIALIZABLE_MEMBERS(m_health, m_movementSpeed, m_acceleration, m_airAcceleration, m_groundFriction, m_airFriction, m_jumpForce, m_jumpCooldown, m_layerNames, m_texture, m_cubeMapTexture, m_currentLevelTime)
 };
 
 REGISTER_COMPONENT(PlayerController);

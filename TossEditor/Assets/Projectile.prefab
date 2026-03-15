@@ -1,0 +1,82 @@
+{
+    "components": [
+        {
+            "colliderType": 2,
+            "isTrigger": true,
+            "layerNames": [
+                "Default"
+            ],
+            "physicsMaterial": "DefaultPhysicsMaterial",
+            "size": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "type": "Collider"
+        },
+        {
+            "m_damage": 20,
+            "m_projectileSpeed": 20.0,
+            "type": "Projectile"
+        },
+        {
+            "bodyType": 0,
+            "mass": 1.0,
+            "positionConstraints": [
+                false,
+                false,
+                false
+            ],
+            "rotationConstraints": [
+                false,
+                false,
+                false
+            ],
+            "type": "Rigidbody",
+            "useGravity": true
+        }
+    ],
+    "id": 0,
+    "isActive": true,
+    "layer": "Default",
+    "m_path": "Assets/Projectile.prefab",
+    "name": "Projectile",
+    "tag": "",
+    "transform": {
+        "localPosition": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "localRotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+        ],
+        "localScale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "parent": 0,
+        "position": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+        ],
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ]
+    },
+    "type": "Prefab",
+    "uniqueId": "Projectile"
+}

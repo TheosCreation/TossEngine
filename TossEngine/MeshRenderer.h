@@ -20,14 +20,16 @@ public:
 
 	void onShadowPass(uint index);
 
-	void Render(UniformData data, RenderingPath renderPath) override;
+    void Render(UniformData data, RenderingPath renderPath) override;
 
 	void SetMesh(MeshPtr mesh);
 	MeshPtr GetMesh() const;
 
     float GetAlpha() const;
     Vector3 GetExtent() override;
-
+private:
+    void UploadSkinningMatrices(const ShaderPtr& shader) const;
+    
 private:
 	MeshPtr m_mesh;
 

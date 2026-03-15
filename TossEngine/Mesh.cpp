@@ -467,6 +467,52 @@ const std::vector<BoneInfo>& Mesh::GetBones() const
     return m_bones;
 }
 
+void Mesh::BuildBindPoseMatrices(vector<Mat4>& outFinalBoneMatrices) const
+{
+    outFinalBoneMatrices.clear();
+
+    if (!IsSkinned())
+    {
+        return;
+    }
+
+    if (m_skeleton.bones.empty() || m_bones.empty())
+    {
+        return;
+    }
+
+    std::vector<Mat4> globalTransforms;
+    globalTransforms.resize(m_skeleton.bones.size(), Mat4());
+
+    for (int boneIndex = 0; boneIndex < static_cast<int>(m_skeleton.bones.size()); boneIndex++)
+    {
+        const SkeletonBone& skeletonBone = m_skeleton.bones[boneIndex];
+        const Mat4& localTransform = skeletonBone.localBindTransform;
+
+        if (skeletonBone.parentIndex >= 0)
+        {
+            globalTransforms[boneIndex] = globalTransforms[skeletonBone.parentIndex] * localTransform;
+        }
+        else
+        {
+            globalTransforms[boneIndex] = localTransform;
+        }
+    }
+
+    outFinalBoneMatrices.resize(m_bones.size(), Mat4());
+
+    for (const BoneInfo& boneInfo : m_bones)
+    {
+        int skeletonIndex = m_skeleton.FindBoneIndex(boneInfo.name);
+        if (skeletonIndex < 0)
+        {
+            continue;
+        }
+
+        outFinalBoneMatrices[boneInfo.index] = globalTransforms[skeletonIndex] * boneInfo.inverseBindMatrix;
+    }
+}
+
 void Mesh::LoadStaticMesh(const aiScene* scene)
 {
     std::vector<VertexMesh> vertices;

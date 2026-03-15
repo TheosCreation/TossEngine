@@ -103,7 +103,8 @@ public:
 
     const Skeleton& GetSkeleton() const;
     const std::vector<BoneInfo>& GetBones() const;
-    
+    void BuildBindPoseMatrices(vector<Mat4>& outFinalBoneMatrices) const;
+
 private:
     void LoadStaticMesh(const aiScene* scene);
     void LoadSkinnedMesh(const aiScene* scene);

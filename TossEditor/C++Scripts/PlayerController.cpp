@@ -15,6 +15,8 @@ void PlayerController::OnInspectorGUI()
     FloatSliderField("Jump Force", m_jumpForce, 1.0f);
     FloatSliderField("Jump Cooldown", m_jumpCooldown, 0.1f, 0.1f, 2.0f);
     FloatSliderField("Level Time", m_currentLevelTime);
+    FloatSliderField("Ground Friction", m_groundFriction, 0.1f);
+    FloatSliderField("Air Friction", m_airFriction, 0.1f);
     ResourceAssignableField(m_texture, "Texture");
 
     vector<std::string> layers = m_layerNames;
@@ -125,8 +127,6 @@ void PlayerController::onUpdate()
 
 void PlayerController::onFixedUpdate()
 {
-
-
     auto& inputManager = InputManager::GetInstance();
     Vector3 forward = m_owner->m_transform.GetForward();
     Vector3 right = m_owner->m_transform.GetRight();
@@ -166,23 +166,53 @@ void PlayerController::onFixedUpdate()
         else
         {
             m_isWalking = false;
-            Vector3 desiredMaxVelocity = Vector3(moveDirection.x * m_movementSpeed, 0, moveDirection.z * m_movementSpeed);
-            if ((desiredMaxVelocity.x > 0.0f && velocity.x > m_movementSpeed) || (desiredMaxVelocity.x < 0.0f && velocity.x < -m_movementSpeed))
+            
+            Vector3 finalMovementDirection = Vector3(
+                moveDirection.x * m_movementSpeed,
+                velocity.y,
+                moveDirection.z * m_movementSpeed
+            );
+
+            Vector3 airDirection;
+            if ((finalMovementDirection.x > 0.0f && velocity.x < finalMovementDirection.x) || (finalMovementDirection.x < 0.0f && velocity.x > finalMovementDirection.x))
             {
-                desiredMaxVelocity.x = 0;
+                airDirection.x = finalMovementDirection.x;
             }
-            if ((desiredMaxVelocity.z > 0.0f && velocity.z > m_movementSpeed) || (desiredMaxVelocity.z < 0.0f && velocity.z < -m_movementSpeed))
+            else
             {
-                desiredMaxVelocity.z = 0;
+                airDirection.x = 0.0f;
+            }
+            if ((finalMovementDirection.z > 0.0f && velocity.z < finalMovementDirection.z) || (finalMovementDirection.z < 0.0f && velocity.z > finalMovementDirection.z))
+            {
+                airDirection.z = finalMovementDirection.z;
+            }
+            else
+            {
+                airDirection.z = 0.0f;
             }
             // Limit acceleration
-            Vector3 force = desiredMaxVelocity * m_airAcceleration * Time::FixedDeltaTime;
+            Vector3 force = airDirection.Normalized() * m_airAcceleration * Time::FixedDeltaTime;
             m_rigidBody->AddForce(force);
         }
     }
     else
     {
         m_isWalking = false;
+
+        Vector3 horizontalVelocity(velocity.x, 0.0f, velocity.z);
+        float horizontalSpeed = horizontalVelocity.Length();
+
+        if (horizontalSpeed > 0.0f)
+        {
+            float friction = m_groundCheck->isGrounded ? m_groundFriction : m_airFriction;
+            float speedReduction = friction * Time::FixedDeltaTime;
+            float newSpeed = horizontalSpeed - speedReduction;
+
+            newSpeed = std::max(newSpeed, 0.0f);
+
+            Vector3 newHorizontalVelocity = horizontalVelocity.Normalized() * newSpeed;
+            m_rigidBody->SetLinearVelocity(Vector3(newHorizontalVelocity.x, velocity.y, newHorizontalVelocity.z));
+        }
     }
 }
 

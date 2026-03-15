@@ -1,7 +1,78 @@
 {
-    "m_instanceTransforms": [],
+    "m_instanceTransforms": [
+        {
+            "localPosition": [
+                0.0,
+                7.800000190734863,
+                4.900000095367432
+            ],
+            "localRotation": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "localScale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "parent": 0,
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        {
+            "localPosition": [
+                6.300000190734863,
+                0.0,
+                0.0
+            ],
+            "localRotation": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "localScale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "parent": 0,
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        }
+    ],
     "m_path": "Assets\\Meshes\\SM_Env_Tree_Palm_01.obj",
-    "m_scale": 1.0,
+    "m_scale": 0.09300000220537186,
     "type": "Mesh",
     "uniqueId": "SM_Env_Tree_Palm_01"
 }
