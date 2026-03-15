@@ -335,7 +335,7 @@ void ResourceManager::CleanUpModule(void* moduleHandle)
         if (it->second == moduleHandle)
         {
             std::string typeName = it->first;
-            Debug::Log("Unregistering component: " + typeName);
+            //Debug::Log("Unregistering component: " + typeName);
 
             resourceFactories.erase(typeName);
             it = m_resourceModules.erase(it); // remove from modules and move iterator forward

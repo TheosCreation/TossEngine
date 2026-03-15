@@ -115,6 +115,7 @@ private:
     Skeleton m_skeleton;
     std::vector<BoneInfo> m_bones;
     std::vector<AnimationClipData> m_animationClips;
+    std::vector<Mat4> m_bindPoseFinalMatrices;
     
     std::vector<Transform> m_instanceTransforms; //!< Transformations for each mesh instance.
     Vector3 eulerAngles; //!< Euler rotation angles used internally.

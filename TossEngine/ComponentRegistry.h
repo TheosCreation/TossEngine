@@ -43,15 +43,15 @@ public:
 
         if (it != m_componentTypes.end()) {
             if (it->second == currentType) {
-                // Already registered, identical — skip
+                // Already registered, identical ï¿½ skip
                 return;
             }
             else {
-                Debug::Log("Updating component type: " + typeName);
+                //Debug::Log("Updating component type: " + typeName);
             }
         }
         else {
-            Debug::Log("Registering new component type: " + typeName);
+            //Debug::Log("Registering new component type: " + typeName);
             addComponentModule(typeid(T));
         }
 

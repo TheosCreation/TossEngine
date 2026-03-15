@@ -250,7 +250,7 @@ void Shader::Attach(const std::string& filePath, const ShaderType& type)
     glAttachShader(m_programId, shaderId);
     m_attachedShaders[static_cast<uint>(type)] = shaderId;
 
-    Debug::Log("Shader | " + filePath + " compiled successfully");
+    //Debug::Log("Shader | " + filePath + " compiled successfully");
 }
 
 // Function to read shader code from a file

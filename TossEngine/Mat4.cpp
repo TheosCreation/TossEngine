@@ -3,6 +3,30 @@
 #include "Mat3.h"
 #include "Vector4.h"
 #include "Quaternion.h"
+#include <assimp/matrix4x4.h>
+
+Mat4::Mat4(const aiMatrix4x4& m)
+{
+    value[0][0] = m.a1;
+    value[1][0] = m.a2;
+    value[2][0] = m.a3;
+    value[3][0] = m.a4;
+
+    value[0][1] = m.b1;
+    value[1][1] = m.b2;
+    value[2][1] = m.b3;
+    value[3][1] = m.b4;
+
+    value[0][2] = m.c1;
+    value[1][2] = m.c2;
+    value[2][2] = m.c3;
+    value[3][2] = m.c4;
+
+    value[0][3] = m.d1;
+    value[1][3] = m.d2;
+    value[2][3] = m.d3;
+    value[3][3] = m.d4;
+}
 
 Mat4::Mat4(const Mat3& mat)
 {

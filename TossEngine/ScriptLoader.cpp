@@ -23,7 +23,7 @@ void ScriptLoader::loadDLL()
     scriptsDll = LoadLibraryA(dllName.c_str());
     if (scriptsDll)
     {
-        Debug::Log("Scripts DLL loaded.");
+        //Debug::Log("Scripts DLL loaded.");
 
         SetImGuiContextFunc setImGuiContext = reinterpret_cast<SetImGuiContextFunc>(
             GetProcAddress(scriptsDll, "SetImGuiContext")
@@ -33,7 +33,7 @@ void ScriptLoader::loadDLL()
             // Pass the host application's current ImGui context
             ImGuiContext* mainContext = ImGui::GetCurrentContext();
             setImGuiContext(mainContext);
-            Debug::Log("ImGui context set in DLL.");
+            //Debug::Log("ImGui context set in DLL.");
         }
         else
         {

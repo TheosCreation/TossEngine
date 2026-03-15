@@ -28,7 +28,7 @@ void ComponentRegistry::CleanUpModule(void* moduleHandle)
         if (it->second == moduleHandle)
         {
             std::string typeName = it->first;
-            Debug::Log("Unregistering component: " + typeName);
+            //Debug::Log("Unregistering component: " + typeName);
 
             m_componentCreators.erase(typeName);
             m_componentTypes.erase(typeName);

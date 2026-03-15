@@ -211,6 +211,27 @@ struct Skeleton
     }
 };
 
+struct SkeletonPose
+{
+    std::vector<Mat4> localTransforms;
+    std::vector<Mat4> globalTransforms;
+    std::vector<Mat4> finalBoneMatrices;
+
+    void Resize(int boneCount)
+    {
+        localTransforms.resize(boneCount);
+        globalTransforms.resize(boneCount);
+        finalBoneMatrices.resize(boneCount);
+    }
+
+    void Clear()
+    {
+        localTransforms.clear();
+        globalTransforms.clear();
+        finalBoneMatrices.clear();
+    }
+};
+
 struct AnimationClipData
 {
     std::string name;
@@ -233,9 +254,16 @@ struct DebugVertex
 };
 
 // Struct representing a vertex attribute
+enum class VertexAttributeType
+{
+    Float,
+    Int
+};
+
 struct VertexAttribute
 {
-    uint numElements = 0; // Number of elements in the vertex attribute
+    uint numElements = 0;
+    VertexAttributeType type = VertexAttributeType::Float;
 };
 
 // Struct representing a vertex buffer description

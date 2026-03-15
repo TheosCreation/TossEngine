@@ -132,6 +132,68 @@ static void ProcessAssimpNode(
     }
 }
 
+static void AddBoneInfluence(VertexSkinned& vertex, int boneIndex, float boneWeight)
+{
+    if (vertex.boneWeights.x == 0.0f)
+    {
+        vertex.boneIndices.x = boneIndex;
+        vertex.boneWeights.x = boneWeight;
+        return;
+    }
+
+    if (vertex.boneWeights.y == 0.0f)
+    {
+        vertex.boneIndices.y = boneIndex;
+        vertex.boneWeights.y = boneWeight;
+        return;
+    }
+
+    if (vertex.boneWeights.z == 0.0f)
+    {
+        vertex.boneIndices.z = boneIndex;
+        vertex.boneWeights.z = boneWeight;
+        return;
+    }
+
+    if (vertex.boneWeights.w == 0.0f)
+    {
+        vertex.boneIndices.w = boneIndex;
+        vertex.boneWeights.w = boneWeight;
+        return;
+    }
+}
+
+static void NormalizeWeights(VertexSkinned& vertex)
+{
+    float totalWeight = vertex.boneWeights.x + vertex.boneWeights.y + vertex.boneWeights.z + vertex.boneWeights.w;
+    if (totalWeight <= 0.0f)
+    {
+        return;
+    }
+
+    float invTotalWeight = 1.0f / totalWeight;
+    vertex.boneWeights.x *= invTotalWeight;
+    vertex.boneWeights.y *= invTotalWeight;
+    vertex.boneWeights.z *= invTotalWeight;
+    vertex.boneWeights.w *= invTotalWeight;
+}
+
+static void BuildSkeletonRecursive(aiNode* node, int parentIndex, Skeleton& skeleton)
+{
+    SkeletonBone bone;
+    bone.name = node->mName.C_Str();
+    bone.parentIndex = parentIndex;
+    bone.localBindTransform = Mat4(node->mTransformation);
+
+    int thisIndex = static_cast<int>(skeleton.bones.size());
+    skeleton.bones.push_back(bone);
+
+    for (uint childIndex = 0; childIndex < node->mNumChildren; childIndex++)
+    {
+        BuildSkeletonRecursive(node->mChildren[childIndex], thisIndex, skeleton);
+    }
+}
+
 Mesh::Mesh(const std::string& uid, ResourceManager* mgr) : Resource(uid, mgr)
 {
 }
@@ -465,29 +527,121 @@ void Mesh::LoadStaticMesh(const aiScene* scene)
 
 void Mesh::LoadSkinnedMesh(const aiScene* scene)
 {
-    Debug::Log("Mesh | Detected skinned mesh: " + m_path);
+    std::vector<VertexSkinned> vertices;
+    std::vector<uint> indices;
 
     Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
     Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
-    std::vector<VertexMesh> previewVertices;
-    std::vector<uint> previewIndices;
+    m_bones.clear();
+    m_skeleton.Clear();
 
-    aiMatrix4x4 identityTransform;
-    ProcessAssimpNode(
-        scene->mRootNode,
-        scene,
-        identityTransform,
-        previewVertices,
-        previewIndices,
-        minBounds,
-        maxBounds,
-        m_scale
-    );
+    BuildSkeletonRecursive(scene->mRootNode, -1, m_skeleton);
 
-    if (previewVertices.empty() || previewIndices.empty())
+    std::unordered_map<std::string, int> boneNameToIndex;
+
+    for (uint meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++)
     {
-        Debug::LogError("Mesh | No preview geometry found in skinned mesh: " + m_path, false);
+        aiMesh* assimpMesh = scene->mMeshes[meshIndex];
+        if (assimpMesh == nullptr)
+        {
+            continue;
+        }
+
+        uint baseVertex = static_cast<uint>(vertices.size());
+
+        for (uint vertexIndex = 0; vertexIndex < assimpMesh->mNumVertices; vertexIndex++)
+        {
+            aiVector3D position = assimpMesh->mVertices[vertexIndex];
+            position *= m_scale;
+
+            Vector2 texCoord(0.0f, 0.0f);
+            if (assimpMesh->HasTextureCoords(0))
+            {
+                texCoord.x = assimpMesh->mTextureCoords[0][vertexIndex].x;
+                texCoord.y = assimpMesh->mTextureCoords[0][vertexIndex].y;
+            }
+
+            Vector3 normal(0.0f);
+            if (assimpMesh->HasNormals())
+            {
+                normal.x = assimpMesh->mNormals[vertexIndex].x;
+                normal.y = assimpMesh->mNormals[vertexIndex].y;
+                normal.z = assimpMesh->mNormals[vertexIndex].z;
+            }
+
+            Vector3 finalPosition(position.x, position.y, position.z);
+            VertexSkinned vertex(finalPosition, texCoord, normal);
+            vertices.push_back(vertex);
+
+            minBounds.x = std::min(minBounds.x, finalPosition.x);
+            minBounds.y = std::min(minBounds.y, finalPosition.y);
+            minBounds.z = std::min(minBounds.z, finalPosition.z);
+
+            maxBounds.x = std::max(maxBounds.x, finalPosition.x);
+            maxBounds.y = std::max(maxBounds.y, finalPosition.y);
+            maxBounds.z = std::max(maxBounds.z, finalPosition.z);
+        }
+
+        for (uint boneIndex = 0; boneIndex < assimpMesh->mNumBones; boneIndex++)
+        {
+            aiBone* assimpBone = assimpMesh->mBones[boneIndex];
+            if (assimpBone == nullptr)
+            {
+                continue;
+            }
+
+            std::string boneName = assimpBone->mName.C_Str();
+
+            int finalBoneIndex = -1;
+
+            auto boneIterator = boneNameToIndex.find(boneName);
+            if (boneIterator == boneNameToIndex.end())
+            {
+                BoneInfo boneInfo;
+                boneInfo.name = boneName;
+                boneInfo.index = static_cast<int>(m_bones.size());
+                boneInfo.inverseBindMatrix = Mat4(assimpBone->mOffsetMatrix);
+
+                finalBoneIndex = boneInfo.index;
+                m_bones.push_back(boneInfo);
+                boneNameToIndex.emplace(boneName, finalBoneIndex);
+            }
+            else
+            {
+                finalBoneIndex = boneIterator->second;
+            }
+
+            for (uint weightIndex = 0; weightIndex < assimpBone->mNumWeights; weightIndex++)
+            {
+                const aiVertexWeight& weight = assimpBone->mWeights[weightIndex];
+                uint finalVertexIndex = baseVertex + weight.mVertexId;
+                AddBoneInfluence(vertices[finalVertexIndex], finalBoneIndex, weight.mWeight);
+            }
+        }
+
+        for (uint faceIndex = 0; faceIndex < assimpMesh->mNumFaces; faceIndex++)
+        {
+            const aiFace& face = assimpMesh->mFaces[faceIndex];
+            if (face.mNumIndices != 3)
+            {
+                continue;
+            }
+
+            indices.push_back(baseVertex + face.mIndices[0]);
+            indices.push_back(baseVertex + face.mIndices[1]);
+            indices.push_back(baseVertex + face.mIndices[2]);
+        }
+    }
+
+    for (VertexSkinned& vertex : vertices)
+    {
+        NormalizeWeights(vertex);
+    }
+
+    if (vertices.empty() || indices.empty())
+    {
+        Debug::LogError("Mesh | No valid skinned geometry found in: " + m_path, false);
         isLoaded = false;
         return;
     }
@@ -496,20 +650,22 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
     {
         { 3 },
         { 2 },
-        { 3 }
+        { 3 },
+        { 4, VertexAttributeType::Int },
+        { 4 }
     };
 
     m_vao = GraphicsEngine::GetInstance().createVertexArrayObject(
         {
-            static_cast<void*>(previewVertices.data()),
-            sizeof(VertexMesh),
-            static_cast<uint>(previewVertices.size()),
+            static_cast<void*>(vertices.data()),
+            sizeof(VertexSkinned),
+            static_cast<uint>(vertices.size()),
             const_cast<VertexAttribute*>(attribsList),
-            3
+            5
         },
         {
-            static_cast<void*>(previewIndices.data()),
-            static_cast<uint>(previewIndices.size())
+            static_cast<void*>(indices.data()),
+            static_cast<uint>(indices.size())
         }
     );
 

@@ -20,6 +20,10 @@ class Vector3;
 class Mat3;
 class Quaternion;
 
+template<typename TReal>
+class aiMatrix4x4t;
+typedef aiMatrix4x4t<float> aiMatrix4x4;
+
 /**
  * @class Mat4
  * @brief Wrapper around glm::mat4 to represent a 4x4 transformation matrix.
@@ -45,6 +49,12 @@ public:
      * @param m Source glm matrix.
      */
     Mat4(const glm::mat4& m) : value(m) {}
+    
+    /**
+     * @brief Constructs a Mat4 from an existing aiMatrix4x4.
+     * @param m Source assimp matrix.
+     */
+    Mat4(const aiMatrix4x4& m);
 
     /**
      * @brief Constructs a 4x4 matrix from a 3x3 matrix, embedding into the upper-left.

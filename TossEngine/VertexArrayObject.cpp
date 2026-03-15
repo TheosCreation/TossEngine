@@ -40,22 +40,48 @@ VertexArrayObject::VertexArrayObject(const VertexBufferDesc& _data)
     );
 
 	// Set up vertex attributes based on the attributes list in the vertex buffer descriptor
-	size_t offset = 0; // Initialize offset for attribute pointers
-	for (uint i = 0; i < _data.attributesListSize; i++)
-	{
-		offset += ((i == 0) ? 0 : _data.attributesList[i - 1].numElements * sizeof(float));
+    size_t offset = 0;
+    for (uint attributeIndex = 0; attributeIndex < _data.attributesListSize; attributeIndex++)
+    {
+        if (attributeIndex > 0)
+        {
+            const VertexAttribute& previousAttribute = _data.attributesList[attributeIndex - 1];
 
-		// Specify the layout of the vertex data
-		glVertexAttribPointer(
-			i,
-			_data.attributesList[i].numElements,
-			GL_FLOAT,
-			GL_FALSE,
-			_data.vertexSize,
-			(void*)offset // Offset in the vertex data
-		);
-		glEnableVertexAttribArray(i); // Enable the vertex attribute array
-	}
+            size_t previousElementSize = sizeof(float);
+            if (previousAttribute.type == VertexAttributeType::Int)
+            {
+                previousElementSize = sizeof(int);
+            }
+
+            offset += previousAttribute.numElements * previousElementSize;
+        }
+
+        const VertexAttribute& attribute = _data.attributesList[attributeIndex];
+
+        if (attribute.type == VertexAttributeType::Int)
+        {
+            glVertexAttribIPointer(
+                attributeIndex,
+                attribute.numElements,
+                GL_INT,
+                _data.vertexSize,
+                reinterpret_cast<void*>(offset)
+            );
+        }
+        else
+        {
+            glVertexAttribPointer(
+                attributeIndex,
+                attribute.numElements,
+                GL_FLOAT,
+                GL_FALSE,
+                _data.vertexSize,
+                reinterpret_cast<void*>(offset)
+            );
+        }
+
+        glEnableVertexAttribArray(attributeIndex);
+    }
 
 	glBindVertexArray(0); // Unbind the vertex array object
 
@@ -125,7 +151,7 @@ uint VertexArrayObject::getId()
 // Returns the size of the vertex buffer
 uint VertexArrayObject::getVertexBufferSize()
 {
-	return sizeof(m_vertexBufferData.vertexSize); // Return the size of the vertex buffer
+    return m_vertexBufferData.vertexSize * m_vertexBufferData.listSize;
 }
 
 // Returns the number of indices in the index buffer
