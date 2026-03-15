@@ -191,7 +191,7 @@ void PlayerController::onFixedUpdate()
                 airDirection.z = 0.0f;
             }
             // Limit acceleration
-            Vector3 force = airDirection.Normalized() * m_airAcceleration * Time::FixedDeltaTime;
+            Vector3 force = airDirection.Normalized() * m_airAcceleration * 60 * Time::FixedDeltaTime;
             m_rigidBody->AddForce(force);
         }
     }
