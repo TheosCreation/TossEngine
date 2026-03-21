@@ -87,11 +87,11 @@ Example custom component:
 * Stop Button	Stop playing and return to edit mode
 
 # Future Work
-* ~~Full undo/Redo system~~
+* Full undo/Redo system
 * Allowing Children to save to prefabs
 * Window for prefab editing
 * More ui and ux features
 * Allow serialization references to components
 * Animations
-* Materials
-* Beter asset importing and automatic asset detection with .meta files
+* ~~Materials~~
+* ~~Beter asset importing and automatic asset detection with .meta files~~
