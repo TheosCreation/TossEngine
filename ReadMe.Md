@@ -87,7 +87,7 @@ Example custom component:
 * Stop Button	Stop playing and return to edit mode
 
 # Future Work
-* Full undo/Redo system
+* ~~Full undo/Redo system~~
 * Allowing Children to save to prefabs
 * Window for prefab editing
 * More ui and ux features
