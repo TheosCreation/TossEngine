@@ -428,6 +428,44 @@ void Mesh::OnInspectorGUI()
         ImGui::TextUnformatted("Mesh Type: Skinned");
         ImGui::Text("Bone Count: %d", static_cast<int>(m_bones.size()));
         ImGui::Text("Animation Clip Count: %d", static_cast<int>(m_animationClips.size()));
+
+        if (!m_animationClips.empty() && ImGui::TreeNode("Animation Clips"))
+        {
+            for (int clipIndex = 0; clipIndex < static_cast<int>(m_animationClips.size()); clipIndex++)
+            {
+                const AnimationClipData& clip = m_animationClips[clipIndex];
+
+                if (ImGui::TreeNode((clip.name + "##Clip_" + std::to_string(clipIndex)).c_str()))
+                {
+                    ImGui::Text("Name: %s", clip.name.c_str());
+                    ImGui::Text("Duration: %.3f", clip.duration);
+                    ImGui::Text("Ticks Per Second: %.3f", clip.ticksPerSecond);
+                    ImGui::Text("Track Count: %d", static_cast<int>(clip.tracks.size()));
+
+                    if (!clip.tracks.empty() && ImGui::TreeNode("Tracks"))
+                    {
+                        for (int trackIndex = 0; trackIndex < static_cast<int>(clip.tracks.size()); trackIndex++)
+                        {
+                            const BoneTrack& track = clip.tracks[trackIndex];
+
+                            ImGui::BulletText(
+                                "%s  |  P:%d R:%d S:%d",
+                                track.boneName.c_str(),
+                                static_cast<int>(track.positions.size()),
+                                static_cast<int>(track.rotations.size()),
+                                static_cast<int>(track.scales.size())
+                            );
+                        }
+
+                        ImGui::TreePop();
+                    }
+
+                    ImGui::TreePop();
+                }
+            }
+
+            ImGui::TreePop();
+        }
     }
     else
     {

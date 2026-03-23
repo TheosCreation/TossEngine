@@ -326,21 +326,15 @@ void MeshRenderer::CreateBoneObjects()
         return;
     }
 
-    DestroyBoneObjects();
-
     if (m_boneRootObject == nullptr)
     {
         m_boneRootObject = m_owner->getScene()->createGameObject<GameObject>(m_owner->name + "_Bones");
+        m_boneRootObject->m_transform.SetParent(&m_owner->m_transform);
     }
 
-    m_boneRootObject->m_transform.SetParent(&m_owner->m_transform);
+    m_boneObjects.clear();
+    m_boneObjects.resize(nodeTransforms.size(), nullptr);
 
-    if (m_boneObjects.size() != nodeTransforms.size())
-    {
-        m_boneObjects.resize(nodeTransforms.size(), nullptr);
-    }
-
-    
     for (int nodeIndex = 0; nodeIndex < static_cast<int>(nodeTransforms.size()); nodeIndex++)
     {
         const NodeTransformInfo& nodeInfo = nodeTransforms[nodeIndex];

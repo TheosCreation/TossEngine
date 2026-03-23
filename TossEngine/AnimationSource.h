@@ -6,6 +6,7 @@ class AnimationSource : public Component
 {
 public:
     void onCreate() override;
+    void onStart() override;
     void onUpdate() override;
     void OnInspectorGUI() override;
 
@@ -20,10 +21,11 @@ private:
     AnimationPtr m_animation;
     std::string m_clipName;
     float m_currentTime = 0.0f;
-    bool m_isPlaying = true;
+    bool m_isPlaying = false;
     bool m_loop = true;
+    bool m_playOnStart = false;
 
-    SERIALIZABLE_MEMBERS(m_animation, m_clipName, m_currentTime, m_isPlaying, m_loop)
+    SERIALIZABLE_MEMBERS(m_animation, m_clipName, m_currentTime, m_playOnStart, m_loop)
 };
 
 REGISTER_COMPONENT(AnimationSource);

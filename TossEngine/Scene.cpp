@@ -101,7 +101,7 @@ GameObjectPtr Scene::Instantiate(const PrefabPtr& prefab, Vector3 position, Quat
 
 void Scene::deleteGameObject(const GameObject* gameObject, float _delay)
 {
-    if (gameObject && !gameObject->isDestroyed && !m_objectsToDestroy.contains(gameObject->getId()))
+    if (gameObject && !gameObject->isDestroyed && gameObject->getId() != 0 && !m_objectsToDestroy.contains(gameObject->getId()))
     {
         m_objectsToDestroy[gameObject->getId()] = _delay;
     }

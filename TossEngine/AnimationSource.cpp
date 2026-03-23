@@ -147,6 +147,11 @@ void AnimationSource::onCreate()
     Component::onCreate();
 }
 
+void AnimationSource::onStart()
+{
+    if (m_playOnStart) Play(m_clipName, m_loop);
+}
+
 void AnimationSource::OnInspectorGUI()
 {
     Component::OnInspectorGUI();
@@ -163,6 +168,7 @@ void AnimationSource::OnInspectorGUI()
     }
 
     ImGui::Checkbox("Playing", &m_isPlaying);
+    ImGui::Checkbox("PlayOnStart", &m_playOnStart);
     ImGui::Checkbox("Loop", &m_loop);
     ImGui::DragFloat("Current Time", &m_currentTime, 0.01f, 0.0f);
 }
