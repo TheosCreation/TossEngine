@@ -125,6 +125,7 @@ private:
     
     std::vector<NodeTransformInfo> m_nodeTransforms;
     std::unordered_map<std::string, int> m_nodeNameToIndex;
+    Mat4 m_globalInverseRootTransform;
     
     std::vector<Transform> m_instanceTransforms; //!< Transformations for each mesh instance.
     Vector3 eulerAngles; //!< Euler rotation angles used internally.

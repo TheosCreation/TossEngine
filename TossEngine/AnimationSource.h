@@ -2,7 +2,7 @@
 #include "Component.h"
 #include "Resources/Animation.h"
 
-class AnimationSource : public Component
+class TOSSENGINE_API AnimationSource : public Component
 {
 public:
     void onCreate() override;

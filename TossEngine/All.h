@@ -45,6 +45,7 @@ Mail : theo.morris@outlook.co.nz
 #include "HeightMap.h"
 #include "Prefab.h"
 #include "Font.h"
+#include "Resources/Animation.h"
 
 //Components
 #include "ComponentRegistry.h"
@@ -61,3 +62,4 @@ Mail : theo.morris@outlook.co.nz
 #include "Text.h"
 #include "Button.h"
 #include "AudioSource.h"
+#include "AnimationSource.h"

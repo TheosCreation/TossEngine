@@ -275,7 +275,17 @@ static void LoadAnimationClipsFromScene(
 
                 RotationKey rotationKey;
                 rotationKey.time = static_cast<float>(key.mTime);
-                rotationKey.value = Quaternion(key.mValue.x, key.mValue.y, key.mValue.z, key.mValue.w);
+
+                Quaternion importedRotation(
+                    key.mValue.w,
+                    key.mValue.x,
+                    key.mValue.y,
+                    key.mValue.z
+                );
+
+                importedRotation.Normalize();
+
+                rotationKey.value = importedRotation;
                 track.rotations.push_back(rotationKey);
             }
 
@@ -614,15 +624,8 @@ const std::vector<BoneInfo>& Mesh::GetBones() const
 
 void Mesh::BuildBindPoseMatrices(std::vector<Mat4>& outFinalBoneMatrices) const
 {
-    
     outFinalBoneMatrices.clear();
-
-    if (!IsSkinned())
-    {
-        return;
-    }
-
-    outFinalBoneMatrices.resize(m_bones.size(), Mat4());
+    outFinalBoneMatrices.resize(m_bones.size(), Mat4(1.0f));
 
     for (const BoneInfo& boneInfo : m_bones)
     {
@@ -635,6 +638,7 @@ void Mesh::BuildBindPoseMatrices(std::vector<Mat4>& outFinalBoneMatrices) const
         const NodeTransformInfo& nodeInfo = m_nodeTransforms[nodeIterator->second];
 
         outFinalBoneMatrices[boneInfo.index] =
+            m_globalInverseRootTransform *
             nodeInfo.globalTransform *
             boneInfo.offsetMatrix;
     }
@@ -734,6 +738,13 @@ void Mesh::LoadStaticMesh(const aiScene* scene)
 
 void Mesh::LoadSkinnedMesh(const aiScene* scene)
 {
+    if (scene == nullptr || scene->mRootNode == nullptr)
+    {
+        Debug::LogError("Mesh | Invalid skinned scene in: " + m_path, false);
+        isLoaded = false;
+        return;
+    }
+
     std::vector<VertexSkinned> vertices;
     std::vector<uint> indices;
 
@@ -742,6 +753,12 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
 
     m_bones.clear();
     m_skeleton.Clear();
+    m_nodeTransforms.clear();
+    m_nodeNameToIndex.clear();
+    m_animationClips.clear();
+
+    m_globalInverseRootTransform = Mat4(scene->mRootNode->mTransformation);
+    m_globalInverseRootTransform = m_globalInverseRootTransform.Inverse();
 
     BuildSkeletonRecursive(scene->mRootNode, -1, m_skeleton);
 
@@ -759,7 +776,10 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
 
         for (uint vertexIndex = 0; vertexIndex < assimpMesh->mNumVertices; vertexIndex++)
         {
-            aiVector3D position = assimpMesh->mVertices[vertexIndex];
+            aiVector3D assimpPosition = assimpMesh->mVertices[vertexIndex];
+            assimpPosition *= m_scale;
+
+            Vector3 finalPosition(assimpPosition.x, assimpPosition.y, assimpPosition.z);
 
             Vector2 texCoord(0.0f, 0.0f);
             if (assimpMesh->HasTextureCoords(0))
@@ -776,7 +796,6 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
                 normal.z = assimpMesh->mNormals[vertexIndex].z;
             }
 
-            Vector3 finalPosition(position.x, position.y, position.z);
             VertexSkinned vertex(finalPosition, texCoord, normal);
             vertices.push_back(vertex);
 
@@ -798,7 +817,6 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
             }
 
             std::string boneName = assimpBone->mName.C_Str();
-
             int finalBoneIndex = -1;
 
             auto boneIterator = boneNameToIndex.find(boneName);
@@ -822,6 +840,12 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
             {
                 const aiVertexWeight& weight = assimpBone->mWeights[weightIndex];
                 uint finalVertexIndex = baseVertex + weight.mVertexId;
+
+                if (finalVertexIndex >= vertices.size())
+                {
+                    continue;
+                }
+
                 AddBoneInfluence(vertices[finalVertexIndex], finalBoneIndex, weight.mWeight);
             }
         }
@@ -851,9 +875,7 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
         isLoaded = false;
         return;
     }
-    
-    m_nodeTransforms.clear();
-    m_nodeNameToIndex.clear();
+
     BuildNodeTransformMap(scene->mRootNode, -1, Mat4(), m_nodeTransforms, m_nodeNameToIndex);
 
     const VertexAttribute attribsList[] =
@@ -884,8 +906,8 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
         (maxBounds.y - minBounds.y) * 0.5f,
         (maxBounds.z - minBounds.z) * 0.5f
     );
-    
+
     LoadAnimationClipsFromScene(scene, m_animationClips);
-    
+
     isLoaded = true;
 }

@@ -91,6 +91,21 @@ bool MeshRenderer::SkeletonChanged(MeshPtr oldMesh, MeshPtr newMesh) const
     return false;
 }
 
+void MeshRenderer::OnInspectorGUI()
+{
+    // Display the material from the base Renderer component.
+    Renderer::OnInspectorGUI();
+
+    ResourceAssignableField(m_mesh, "Mesh");
+    if (m_mesh && m_mesh->IsSkinned())
+    {
+        if(ImGui::Button("Reset to default pose"))
+        {
+            ResetBonesToBindPose();
+        }
+    }
+}
+
 void MeshRenderer::onShadowPass(uint index)
 {
     if (m_shadowShader == nullptr || m_mesh == nullptr) return;

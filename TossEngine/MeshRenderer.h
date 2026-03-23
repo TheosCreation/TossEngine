@@ -14,13 +14,7 @@ public:
     void onUpdateInternal() override;
     bool SkeletonChanged(MeshPtr oldMesh, MeshPtr newMesh) const;
 
-    virtual void OnInspectorGUI() override
-	{
-		// Display the material from the base Renderer component.
-		Renderer::OnInspectorGUI();
-
-        ResourceAssignableField(m_mesh, "Mesh");
-	}
+    virtual void OnInspectorGUI() override;
 
 	void onShadowPass(uint index);
 

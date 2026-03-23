@@ -17,7 +17,7 @@ Mail : theo.morris@outlook.co.nz
  * @class Animation
  * @brief Resource wrapper for animations.
  */
-class Animation : public Resource
+class TOSSENGINE_API Animation : public Resource
 {
 public:
     Animation(const std::string& uid, ResourceManager* mgr);
