@@ -222,6 +222,85 @@ static void BuildSkeletonRecursive(aiNode* node, int parentIndex, Skeleton& skel
     }
 }
 
+static void LoadAnimationClipsFromScene(
+    const aiScene* scene,
+    std::vector<AnimationClipData>& outAnimationClips)
+{
+    outAnimationClips.clear();
+
+    if (scene == nullptr || !scene->HasAnimations())
+    {
+        return;
+    }
+
+    for (uint animationIndex = 0; animationIndex < scene->mNumAnimations; animationIndex++)
+    {
+        aiAnimation* assimpAnimation = scene->mAnimations[animationIndex];
+        if (assimpAnimation == nullptr)
+        {
+            continue;
+        }
+
+        AnimationClipData clipData;
+        clipData.name = assimpAnimation->mName.C_Str();
+        clipData.duration = static_cast<float>(assimpAnimation->mDuration);
+        clipData.ticksPerSecond = assimpAnimation->mTicksPerSecond != 0.0
+            ? static_cast<float>(assimpAnimation->mTicksPerSecond)
+            : 25.0f;
+
+        for (uint channelIndex = 0; channelIndex < assimpAnimation->mNumChannels; channelIndex++)
+        {
+            aiNodeAnim* assimpChannel = assimpAnimation->mChannels[channelIndex];
+            if (assimpChannel == nullptr)
+            {
+                continue;
+            }
+
+            BoneTrack track;
+            track.boneName = assimpChannel->mNodeName.C_Str();
+
+            for (uint positionIndex = 0; positionIndex < assimpChannel->mNumPositionKeys; positionIndex++)
+            {
+                const aiVectorKey& key = assimpChannel->mPositionKeys[positionIndex];
+
+                PositionKey positionKey;
+                positionKey.time = static_cast<float>(key.mTime);
+                positionKey.value = Vector3(key.mValue.x, key.mValue.y, key.mValue.z);
+                track.positions.push_back(positionKey);
+            }
+
+            for (uint rotationIndex = 0; rotationIndex < assimpChannel->mNumRotationKeys; rotationIndex++)
+            {
+                const aiQuatKey& key = assimpChannel->mRotationKeys[rotationIndex];
+
+                RotationKey rotationKey;
+                rotationKey.time = static_cast<float>(key.mTime);
+                rotationKey.value = Quaternion(key.mValue.x, key.mValue.y, key.mValue.z, key.mValue.w);
+                track.rotations.push_back(rotationKey);
+            }
+
+            for (uint scaleIndex = 0; scaleIndex < assimpChannel->mNumScalingKeys; scaleIndex++)
+            {
+                const aiVectorKey& key = assimpChannel->mScalingKeys[scaleIndex];
+
+                ScaleKey scaleKey;
+                scaleKey.time = static_cast<float>(key.mTime);
+                scaleKey.value = Vector3(key.mValue.x, key.mValue.y, key.mValue.z);
+                track.scales.push_back(scaleKey);
+            }
+
+            clipData.tracks.push_back(track);
+        }
+
+        if (clipData.name.empty())
+        {
+            clipData.name = "Animation_" + std::to_string(animationIndex);
+        }
+
+        outAnimationClips.push_back(clipData);
+    }
+}
+
 Mesh::Mesh(const std::string& uid, ResourceManager* mgr) : Resource(uid, mgr)
 {
 }
@@ -539,6 +618,24 @@ int Mesh::GetNodeIndexFromName(const string& name)
     return nodeIterator->second;
 }
 
+const std::vector<AnimationClipData>& Mesh::GetAnimationClips() const
+{
+    return m_animationClips;
+}
+
+const AnimationClipData* Mesh::GetAnimationClip(const std::string& clipName) const
+{
+    for (const AnimationClipData& clip : m_animationClips)
+    {
+        if (clip.name == clipName)
+        {
+            return &clip;
+        }
+    }
+
+    return nullptr;
+}
+
 void Mesh::LoadStaticMesh(const aiScene* scene)
 {
     std::vector<VertexMesh> vertices;
@@ -749,6 +846,8 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
         (maxBounds.y - minBounds.y) * 0.5f,
         (maxBounds.z - minBounds.z) * 0.5f
     );
-
+    
+    LoadAnimationClipsFromScene(scene, m_animationClips);
+    
     isLoaded = true;
 }

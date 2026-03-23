@@ -11,8 +11,6 @@ Mail : theo.morris@outlook.co.nz
 
 #pragma once
 
-#include <map>
-#include <string>
 #include "Utils.h"
 #include "ISelectable.h"
 #include "Serializable.h"

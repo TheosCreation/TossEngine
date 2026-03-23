@@ -28,10 +28,11 @@ public:
 
 	void SetMesh(MeshPtr mesh);
     void CreateBoneObjects();
+    void ResetBonesToBindPose();
     bool HasValidBoneObjectsForMesh() const;
     void DestroyBoneObjects();
     MeshPtr GetMesh() const;
-
+    GameObjectPtr GetBoneObjectByName(const std::string& boneName) const;
     float GetAlpha() const;
     Vector3 GetExtent() override;
 private:

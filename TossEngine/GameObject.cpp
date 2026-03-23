@@ -176,10 +176,45 @@ void GameObject::OnInspectorGUI()
 
     ImGui::Text("Transform:");
     ImGui::DragFloat3("Position", pos->Data(), 0.1f);
-    if (ImGui::DragFloat3("Rotation", editorEuler.Data(), 0.1f)) {
+
+    if (ImGui::DragFloat3("Rotation", editorEuler.Data(), 0.1f))
+    {
         *rot = Quaternion(editorEuler.ToRadians());
     }
-    ImGui::DragFloat3("Scale", scl->Data(), 0.1f);
+
+    float scaleValues[3] =
+    {
+        scl->x,
+        scl->y,
+        scl->z
+    };
+
+    const float minScale = 0.0001f;
+    bool scaleChanged = false;
+
+    scaleChanged |= ImGui::DragFloat3("Scale", scaleValues, 0.01f);
+
+    if (scaleChanged)
+    {
+        if (fabsf(scaleValues[0]) < minScale)
+        {
+            scaleValues[0] = scaleValues[0] < 0.0f ? -minScale : minScale;
+        }
+
+        if (fabsf(scaleValues[1]) < minScale)
+        {
+            scaleValues[1] = scaleValues[1] < 0.0f ? -minScale : minScale;
+        }
+
+        if (fabsf(scaleValues[2]) < minScale)
+        {
+            scaleValues[2] = scaleValues[2] < 0.0f ? -minScale : minScale;
+        }
+
+        scl->x = scaleValues[0];
+        scl->y = scaleValues[1];
+        scl->z = scaleValues[2];
+    }
 
     for (auto& [type, comp] : m_components)
     {

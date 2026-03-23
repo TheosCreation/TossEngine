@@ -262,6 +262,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/Toss
     <ClCompile Include="Rect.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Resizable.cpp" />
+    <ClCompile Include="Resources\Animation.cpp" />
     <ClCompile Include="Resources\TextFile.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -342,6 +343,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/Toss
     <ClInclude Include="Prefab.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Random.h" />
+    <ClInclude Include="Resources\Animation.h" />
     <ClInclude Include="Resources\TextFile.h" />
     <ClInclude Include="SerializationUtils.h" />
     <ClInclude Include="SerializationMacros.h" />

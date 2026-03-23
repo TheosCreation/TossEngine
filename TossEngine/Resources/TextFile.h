@@ -11,7 +11,6 @@ Mail : theo.morris@outlook.co.nz
 
 #pragma once
 #include "../Resource.h"
-#include <string>
 
 /**
  * @class TextFile

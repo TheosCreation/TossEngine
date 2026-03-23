@@ -363,6 +363,32 @@ void MeshRenderer::CreateBoneObjects()
     m_bonesCreated = true;
 }
 
+void MeshRenderer::ResetBonesToBindPose()
+{
+    if (m_mesh == nullptr)
+    {
+        return;
+    }
+
+    std::vector<NodeTransformInfo>& nodeTransforms = m_mesh->GetNodeTransforms();
+
+    for (int nodeIndex = 0; nodeIndex < static_cast<int>(nodeTransforms.size()); nodeIndex++)
+    {
+        if (nodeIndex < 0 || nodeIndex >= static_cast<int>(m_boneObjects.size()))
+        {
+            continue;
+        }
+
+        GameObjectPtr boneObject = m_boneObjects[nodeIndex];
+        if (boneObject == nullptr)
+        {
+            continue;
+        }
+
+        boneObject->m_transform.SetLocalMatrix(nodeTransforms[nodeIndex].localTransform);
+    }
+}
+
 bool MeshRenderer::HasValidBoneObjectsForMesh() const
 {
     if (m_mesh == nullptr || !m_mesh->IsSkinned())
@@ -431,6 +457,22 @@ void MeshRenderer::DestroyBoneObjects()
 MeshPtr MeshRenderer::GetMesh() const
 {
     return m_mesh;
+}
+
+GameObjectPtr MeshRenderer::GetBoneObjectByName(const std::string& boneName) const
+{
+    if (m_mesh == nullptr)
+    {
+        return nullptr;
+    }
+
+    int nodeIndex = m_mesh->GetNodeIndexFromName(boneName);
+    if (nodeIndex < 0 || nodeIndex >= static_cast<int>(m_boneObjects.size()))
+    {
+        return nullptr;
+    }
+
+    return m_boneObjects[nodeIndex];
 }
 
 float MeshRenderer::GetAlpha() const
