@@ -519,13 +519,24 @@ void Mesh::BuildBindPoseMatrices(std::vector<Mat4>& outFinalBoneMatrices) const
 
         outFinalBoneMatrices[boneInfo.index] =
             nodeInfo.globalTransform *
-            boneInfo.inverseBindMatrix;
+            boneInfo.offsetMatrix;
     }
 }
 
 std::vector<NodeTransformInfo>& Mesh::GetNodeTransforms()
 {
     return m_nodeTransforms;
+}
+
+int Mesh::GetNodeIndexFromName(const string& name)
+{
+    std::unordered_map<std::string, int>::const_iterator nodeIterator = m_nodeNameToIndex.find(name);
+    if (nodeIterator == m_nodeNameToIndex.end())
+    {
+        return -1;
+    }
+
+    return nodeIterator->second;
 }
 
 void Mesh::LoadStaticMesh(const aiScene* scene)
@@ -661,7 +672,7 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
                 BoneInfo boneInfo;
                 boneInfo.name = boneName;
                 boneInfo.index = static_cast<int>(m_bones.size());
-                boneInfo.inverseBindMatrix = Mat4(assimpBone->mOffsetMatrix);
+                boneInfo.offsetMatrix = Mat4(assimpBone->mOffsetMatrix);
 
                 finalBoneIndex = boneInfo.index;
                 m_bones.push_back(boneInfo);
@@ -705,6 +716,10 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
         isLoaded = false;
         return;
     }
+    
+    m_nodeTransforms.clear();
+    m_nodeNameToIndex.clear();
+    BuildNodeTransformMap(scene->mRootNode, -1, Mat4(), m_nodeTransforms, m_nodeNameToIndex);
 
     const VertexAttribute attribsList[] =
     {

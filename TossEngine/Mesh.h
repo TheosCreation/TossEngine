@@ -105,6 +105,7 @@ public:
     const std::vector<BoneInfo>& GetBones() const;
     void BuildBindPoseMatrices(vector<Mat4>& outFinalBoneMatrices) const;
     std::vector<NodeTransformInfo>& GetNodeTransforms();
+    int GetNodeIndexFromName(const string& name);
 
 private:
     void LoadStaticMesh(const aiScene* scene);

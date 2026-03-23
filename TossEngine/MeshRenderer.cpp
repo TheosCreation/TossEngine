@@ -19,7 +19,18 @@ void MeshRenderer::onCreateLate()
 
 void MeshRenderer::onUpdate()
 {
-    if (m_mesh != nullptr && m_mesh->IsSkinned() && !HasValidBoneObjectsForMesh())
+    if (m_mesh == nullptr || !m_mesh->IsSkinned())
+    {
+        return;
+    }
+
+    const std::vector<NodeTransformInfo>& nodeTransforms = m_mesh->GetNodeTransforms();
+    if (nodeTransforms.empty())
+    {
+        return;
+    }
+
+    if (!HasValidBoneObjectsForMesh())
     {
         CreateBoneObjects();
     }
@@ -27,7 +38,18 @@ void MeshRenderer::onUpdate()
 
 void MeshRenderer::onUpdateInternal()
 {
-    if (m_mesh != nullptr && m_mesh->IsSkinned() && !HasValidBoneObjectsForMesh())
+    if (m_mesh == nullptr || !m_mesh->IsSkinned())
+    {
+        return;
+    }
+
+    const std::vector<NodeTransformInfo>& nodeTransforms = m_mesh->GetNodeTransforms();
+    if (nodeTransforms.empty())
+    {
+        return;
+    }
+
+    if (!HasValidBoneObjectsForMesh())
     {
         CreateBoneObjects();
     }
@@ -114,18 +136,45 @@ void MeshRenderer::onShadowPass(uint index)
 
 void MeshRenderer::UploadSkinningMatrices(const ShaderPtr& shader) const
 {
-    if (shader == nullptr || m_mesh == nullptr || !m_mesh->IsSkinned())
+    if (m_mesh == nullptr || !m_mesh->IsSkinned())
     {
         return;
     }
 
-    std::vector<Mat4> finalBoneMatrices;
-    m_mesh->BuildBindPoseMatrices(finalBoneMatrices);
-
-    for (int boneIndex = 0; boneIndex < static_cast<int>(finalBoneMatrices.size()); boneIndex++)
+    const std::vector<BoneInfo>& bones = m_mesh->GetBones();
+    if (bones.empty())
     {
-        shader->setMat4("u_BoneMatrices[" + std::to_string(boneIndex) + "]", finalBoneMatrices[boneIndex]);
+        return;
     }
+
+    std::vector<Mat4> skinningMatrices;
+    skinningMatrices.resize(bones.size(), Mat4());
+
+    Mat4 inverseMeshWorld = m_owner->m_transform.GetMatrix().Inverse();
+
+    for (int boneIndex = 0; boneIndex < static_cast<int>(bones.size()); boneIndex++)
+    {
+        const BoneInfo& boneInfo = bones[boneIndex];
+        int nodeIndex = m_mesh->GetNodeIndexFromName(boneInfo.name);
+
+        if (nodeIndex < 0 || nodeIndex >= static_cast<int>(m_boneObjects.size()))
+        {
+            continue;
+        }
+
+        GameObjectPtr boneObject = m_boneObjects[nodeIndex];
+        if (boneObject == nullptr)
+        {
+            continue;
+        }
+
+        Mat4 boneWorldMatrix = boneObject->m_transform.GetMatrix();
+        Mat4 boneMeshSpaceMatrix = inverseMeshWorld * boneWorldMatrix;
+
+        skinningMatrices[boneIndex] = boneMeshSpaceMatrix * boneInfo.offsetMatrix;
+    }
+
+    shader->setMat4Array("u_BoneMatrices", skinningMatrices.data(), static_cast<int>(skinningMatrices.size()));
 }
 
 void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
@@ -219,6 +268,7 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
 
 void MeshRenderer::SetMesh(MeshPtr mesh)
 {
+    
     if (m_mesh == mesh)
     {
         return;
@@ -244,6 +294,17 @@ void MeshRenderer::SetMesh(MeshPtr mesh)
 
     if (m_mesh != nullptr && m_mesh->IsSkinned())
     {
+        const std::vector<NodeTransformInfo>& nodeTransforms = m_mesh->GetNodeTransforms();
+
+        if (nodeTransforms.empty())
+        {
+            Debug::LogWarning(
+                "MeshRenderer: skinned mesh '" + m_owner->name +
+                "' has no node transforms. Bone objects will not be created."
+            );
+            return;
+        }
+
         CreateBoneObjects();
     }
     else
@@ -260,11 +321,12 @@ void MeshRenderer::CreateBoneObjects()
     }
 
     const std::vector<NodeTransformInfo>& nodeTransforms = m_mesh->GetNodeTransforms();
-
     if (nodeTransforms.empty())
     {
         return;
     }
+
+    DestroyBoneObjects();
 
     if (m_boneRootObject == nullptr)
     {
@@ -278,35 +340,17 @@ void MeshRenderer::CreateBoneObjects()
         m_boneObjects.resize(nodeTransforms.size(), nullptr);
     }
 
+    
     for (int nodeIndex = 0; nodeIndex < static_cast<int>(nodeTransforms.size()); nodeIndex++)
     {
         const NodeTransformInfo& nodeInfo = nodeTransforms[nodeIndex];
 
-        if (m_boneObjects[nodeIndex] == nullptr)
-        {
-            m_boneObjects[nodeIndex] = m_owner->getScene()->createGameObject<GameObject>(nodeInfo.name);
-        }
-    }
-
-    for (int nodeIndex = 0; nodeIndex < static_cast<int>(nodeTransforms.size()); nodeIndex++)
-    {
-        const NodeTransformInfo& nodeInfo = nodeTransforms[nodeIndex];
-        GameObjectPtr boneObject = m_boneObjects[nodeIndex];
-
-        if (boneObject == nullptr)
-        {
-            continue;
-        }
-
-        boneObject->name = nodeInfo.name;
+        GameObjectPtr boneObject = m_owner->getScene()->createGameObject<GameObject>(nodeInfo.name);
+        m_boneObjects[nodeIndex] = boneObject;
 
         if (nodeInfo.parentIndex >= 0)
         {
-            GameObjectPtr parentBoneObject = m_boneObjects[nodeInfo.parentIndex];
-            if (parentBoneObject != nullptr)
-            {
-                boneObject->m_transform.SetParent(&parentBoneObject->m_transform);
-            }
+            boneObject->m_transform.SetParent(&m_boneObjects[nodeInfo.parentIndex]->m_transform);
         }
         else
         {
@@ -327,6 +371,11 @@ bool MeshRenderer::HasValidBoneObjectsForMesh() const
     }
 
     const std::vector<NodeTransformInfo>& nodeTransforms = m_mesh->GetNodeTransforms();
+
+    if (nodeTransforms.empty())
+    {
+        return false;
+    }
 
     if (m_boneObjects.size() != nodeTransforms.size())
     {

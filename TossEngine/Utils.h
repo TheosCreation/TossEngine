@@ -173,7 +173,7 @@ struct BoneInfo
 {
     std::string name;
     int index = -1;
-    Mat4 inverseBindMatrix;
+    Mat4 offsetMatrix;
 };
 
 struct NodeTransformInfo
