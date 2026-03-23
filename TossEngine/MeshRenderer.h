@@ -1,6 +1,7 @@
 #pragma once
 #include "Renderer.h"
 #include "Mesh.h"
+#include "SerializationUtils.h"
 
 class TOSSENGINE_API MeshRenderer : public Renderer
 {
@@ -9,8 +10,11 @@ public:
 	~MeshRenderer() = default;
 
     void onCreateLate() override;
+    void onUpdate() override;
+    void onUpdateInternal() override;
+    bool SkeletonChanged(MeshPtr oldMesh, MeshPtr newMesh) const;
 
-	virtual void OnInspectorGUI() override
+    virtual void OnInspectorGUI() override
 	{
 		// Display the material from the base Renderer component.
 		Renderer::OnInspectorGUI();
@@ -23,7 +27,10 @@ public:
     void Render(UniformData data, RenderingPath renderPath) override;
 
 	void SetMesh(MeshPtr mesh);
-	MeshPtr GetMesh() const;
+    void CreateBoneObjects();
+    bool HasValidBoneObjectsForMesh() const;
+    void DestroyBoneObjects();
+    MeshPtr GetMesh() const;
 
     float GetAlpha() const;
     Vector3 GetExtent() override;
@@ -35,8 +42,12 @@ private:
 
 	ShaderPtr m_geometryShader;
 	ShaderPtr m_shadowShader;
-
-    SERIALIZABLE_MEMBERS(m_mesh, m_material)
+    
+    std::vector<GameObjectPtr> m_boneObjects;
+    GameObjectPtr m_boneRootObject;
+    bool m_bonesCreated = false;
+    
+    SERIALIZABLE_MEMBERS(m_boneObjects, m_boneRootObject, m_mesh, m_material)
 };
 
 REGISTER_COMPONENT(MeshRenderer);

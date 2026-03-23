@@ -267,6 +267,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/Toss
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ScriptLoader.cpp" />
     <ClCompile Include="Serializable.cpp" />
+    <ClCompile Include="SerializationUtils.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="SingletonComponent.cpp" />
@@ -342,6 +343,7 @@ xcopy /y "$(SolutionDir)Dependencies/TOSSENGINE" "$(SolutionDir)/TossEditor/Toss
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Resources\TextFile.h" />
+    <ClInclude Include="SerializationUtils.h" />
     <ClInclude Include="SerializationMacros.h" />
     <ClInclude Include="SingletonComponent.h" />
     <ClInclude Include="stb_truetype.h" />

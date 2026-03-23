@@ -20,6 +20,8 @@ Mail : theo.morris@outlook.co.nz
 #include "Debug.h"
 #include <nlohmann/json.hpp>
 
+#include "Utils.h"
+
 class GameObject;
 
 /**
@@ -74,6 +76,7 @@ struct TOSSENGINE_API Transform
      * @param matrix The matrix to decompose.
      */
     void SetMatrix(const Mat4& matrix);
+    void SetLocalMatrix(const Mat4& matrix);
 
     static void DecomposeMatrix(const glm::mat4& m, Vector3& pos, Quaternion& rot, Vector3& scl);
     /**

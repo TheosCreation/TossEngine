@@ -104,6 +104,7 @@ public:
     const Skeleton& GetSkeleton() const;
     const std::vector<BoneInfo>& GetBones() const;
     void BuildBindPoseMatrices(vector<Mat4>& outFinalBoneMatrices) const;
+    std::vector<NodeTransformInfo>& GetNodeTransforms();
 
 private:
     void LoadStaticMesh(const aiScene* scene);
@@ -117,6 +118,9 @@ private:
     std::vector<BoneInfo> m_bones;
     std::vector<AnimationClipData> m_animationClips;
     std::vector<Mat4> m_bindPoseFinalMatrices;
+    
+    std::vector<NodeTransformInfo> m_nodeTransforms;
+    std::unordered_map<std::string, int> m_nodeNameToIndex;
     
     std::vector<Transform> m_instanceTransforms; //!< Transformations for each mesh instance.
     Vector3 eulerAngles; //!< Euler rotation angles used internally.

@@ -62,6 +62,23 @@ void Transform::SetMatrix(const Mat4& matrix)
     }
 }
 
+void Transform::SetLocalMatrix(const Mat4& matrix)
+{
+    DecomposeMatrix(matrix.value, localPosition, localRotation, localScale);
+
+    if (parent != nullptr)
+    {
+        Mat4 worldMatrix = parent->GetMatrix() * GetLocalMatrix();
+        DecomposeMatrix(worldMatrix.value, position, rotation, scale);
+    }
+    else
+    {
+        position = localPosition;
+        rotation = localRotation;
+        scale = localScale;
+    }
+}
+
 void Transform::DecomposeMatrix(const glm::mat4& m, Vector3& pos, Quaternion& rot, Vector3& scl)
 {
     pos = Vector3(m[3]);

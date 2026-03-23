@@ -176,6 +176,14 @@ struct BoneInfo
     Mat4 inverseBindMatrix;
 };
 
+struct NodeTransformInfo
+{
+    std::string name;
+    int parentIndex;
+    Mat4 localTransform;
+    Mat4 globalTransform;
+};
+
 struct SkeletonBone
 {
     std::string name;
@@ -293,11 +301,11 @@ struct ShaderDesc
 };
 
 // Struct representing a mesh description
-struct MeshDesc
-{
-    string filePath;    // Filename of the obj file(will be more import types in future)
-    vector<Transform> instanceTransforms;  // transforms of instances added if any
-};
+//struct MeshDesc
+//{
+//    string filePath;    // Filename of the obj file(will be more import types in future)
+//    vector<Transform> instanceTransforms;  // transforms of instances added if any
+//};
 
 // Struct representing a uniform buffer description
 struct UniformBufferDesc

@@ -80,6 +80,7 @@ public:
      * @param gameObject Pointer to the GameObject to remove.
      */
     void deleteGameObject(const GameObject* gameObject, float _delay = 0.0f);
+    void deleteGameObject(const GameObjectPtr gameObject, float _delay = 0.0f);
 
     // --- Serialization ---
 

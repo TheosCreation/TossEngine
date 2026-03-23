@@ -258,6 +258,7 @@ void TossEngine::CoroutineRunner()
     }
 }
 
+
 Window* TossEngine::GetWindow() const
 {
     return m_window.get();

@@ -107,6 +107,11 @@ void Scene::deleteGameObject(const GameObject* gameObject, float _delay)
     }
 }
 
+void Scene::deleteGameObject(const GameObjectPtr gameObject, float _delay)
+{
+    deleteGameObject(gameObject.get(), _delay);
+}
+
 void Scene::loadGameObjects(const json& data)
 {
     if (!data.contains("gameobjects") || !data["gameobjects"].is_array())

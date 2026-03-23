@@ -132,6 +132,34 @@ static void ProcessAssimpNode(
     }
 }
 
+static void BuildNodeTransformMap(
+    aiNode* node,
+    int parentIndex,
+    const Mat4& parentGlobalTransform,
+    std::vector<NodeTransformInfo>& outNodes,
+    std::unordered_map<std::string, int>& outNodeNameToIndex)
+{
+    NodeTransformInfo info;
+    info.name = node->mName.C_Str();
+    info.parentIndex = parentIndex;
+    info.localTransform = Mat4(node->mTransformation);
+    info.globalTransform = parentGlobalTransform * info.localTransform;
+
+    int thisIndex = static_cast<int>(outNodes.size());
+    outNodes.push_back(info);
+    outNodeNameToIndex[info.name] = thisIndex;
+
+    for (uint childIndex = 0; childIndex < node->mNumChildren; childIndex++)
+    {
+        BuildNodeTransformMap(
+            node->mChildren[childIndex],
+            thisIndex,
+            info.globalTransform,
+            outNodes,
+            outNodeNameToIndex);
+    }
+}
+
 static void AddBoneInfluence(VertexSkinned& vertex, int boneIndex, float boneWeight)
 {
     if (vertex.boneWeights.x == 0.0f)
@@ -467,8 +495,9 @@ const std::vector<BoneInfo>& Mesh::GetBones() const
     return m_bones;
 }
 
-void Mesh::BuildBindPoseMatrices(vector<Mat4>& outFinalBoneMatrices) const
+void Mesh::BuildBindPoseMatrices(std::vector<Mat4>& outFinalBoneMatrices) const
 {
+    
     outFinalBoneMatrices.clear();
 
     if (!IsSkinned())
@@ -476,41 +505,27 @@ void Mesh::BuildBindPoseMatrices(vector<Mat4>& outFinalBoneMatrices) const
         return;
     }
 
-    if (m_skeleton.bones.empty() || m_bones.empty())
-    {
-        return;
-    }
-
-    std::vector<Mat4> globalTransforms;
-    globalTransforms.resize(m_skeleton.bones.size(), Mat4());
-
-    for (int boneIndex = 0; boneIndex < static_cast<int>(m_skeleton.bones.size()); boneIndex++)
-    {
-        const SkeletonBone& skeletonBone = m_skeleton.bones[boneIndex];
-        const Mat4& localTransform = skeletonBone.localBindTransform;
-
-        if (skeletonBone.parentIndex >= 0)
-        {
-            globalTransforms[boneIndex] = globalTransforms[skeletonBone.parentIndex] * localTransform;
-        }
-        else
-        {
-            globalTransforms[boneIndex] = localTransform;
-        }
-    }
-
     outFinalBoneMatrices.resize(m_bones.size(), Mat4());
 
     for (const BoneInfo& boneInfo : m_bones)
     {
-        int skeletonIndex = m_skeleton.FindBoneIndex(boneInfo.name);
-        if (skeletonIndex < 0)
+        auto nodeIterator = m_nodeNameToIndex.find(boneInfo.name);
+        if (nodeIterator == m_nodeNameToIndex.end())
         {
             continue;
         }
 
-        outFinalBoneMatrices[boneInfo.index] = globalTransforms[skeletonIndex] * boneInfo.inverseBindMatrix;
+        const NodeTransformInfo& nodeInfo = m_nodeTransforms[nodeIterator->second];
+
+        outFinalBoneMatrices[boneInfo.index] =
+            nodeInfo.globalTransform *
+            boneInfo.inverseBindMatrix;
     }
+}
+
+std::vector<NodeTransformInfo>& Mesh::GetNodeTransforms()
+{
+    return m_nodeTransforms;
 }
 
 void Mesh::LoadStaticMesh(const aiScene* scene)
@@ -599,7 +614,6 @@ void Mesh::LoadSkinnedMesh(const aiScene* scene)
         for (uint vertexIndex = 0; vertexIndex < assimpMesh->mNumVertices; vertexIndex++)
         {
             aiVector3D position = assimpMesh->mVertices[vertexIndex];
-            position *= m_scale;
 
             Vector2 texCoord(0.0f, 0.0f);
             if (assimpMesh->HasTextureCoords(0))

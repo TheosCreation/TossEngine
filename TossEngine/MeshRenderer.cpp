@@ -17,6 +17,58 @@ void MeshRenderer::onCreateLate()
     m_shadowShader = resourceManager.get<Shader>("ShadowShader");
 }
 
+void MeshRenderer::onUpdate()
+{
+    if (m_mesh != nullptr && m_mesh->IsSkinned() && !HasValidBoneObjectsForMesh())
+    {
+        CreateBoneObjects();
+    }
+}
+
+void MeshRenderer::onUpdateInternal()
+{
+    if (m_mesh != nullptr && m_mesh->IsSkinned() && !HasValidBoneObjectsForMesh())
+    {
+        CreateBoneObjects();
+    }
+}
+
+bool MeshRenderer::SkeletonChanged(MeshPtr oldMesh, MeshPtr newMesh) const
+{
+    if (oldMesh == nullptr || newMesh == nullptr)
+    {
+        return true;
+    }
+
+    if (!oldMesh->IsSkinned() || !newMesh->IsSkinned())
+    {
+        return oldMesh->IsSkinned() != newMesh->IsSkinned();
+    }
+
+    const std::vector<NodeTransformInfo>& oldNodes = oldMesh->GetNodeTransforms();
+    const std::vector<NodeTransformInfo>& newNodes = newMesh->GetNodeTransforms();
+
+    if (oldNodes.size() != newNodes.size())
+    {
+        return true;
+    }
+
+    for (int nodeIndex = 0; nodeIndex < static_cast<int>(oldNodes.size()); nodeIndex++)
+    {
+        if (oldNodes[nodeIndex].name != newNodes[nodeIndex].name)
+        {
+            return true;
+        }
+
+        if (oldNodes[nodeIndex].parentIndex != newNodes[nodeIndex].parentIndex)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void MeshRenderer::onShadowPass(uint index)
 {
     if (m_shadowShader == nullptr || m_mesh == nullptr) return;
@@ -167,7 +219,164 @@ void MeshRenderer::Render(UniformData data, RenderingPath renderPath)
 
 void MeshRenderer::SetMesh(MeshPtr mesh)
 {
+    if (m_mesh == mesh)
+    {
+        return;
+    }
+
+    bool shouldRebuildBones = false;
+
+    if (m_mesh != nullptr && mesh != nullptr)
+    {
+        shouldRebuildBones = SkeletonChanged(m_mesh, mesh);
+    }
+    else if (m_mesh != nullptr || mesh != nullptr)
+    {
+        shouldRebuildBones = true;
+    }
+
+    if (shouldRebuildBones)
+    {
+        DestroyBoneObjects();
+    }
+
     m_mesh = mesh;
+
+    if (m_mesh != nullptr && m_mesh->IsSkinned())
+    {
+        CreateBoneObjects();
+    }
+    else
+    {
+        DestroyBoneObjects();
+    }
+}
+
+void MeshRenderer::CreateBoneObjects()
+{
+    if (m_mesh == nullptr || !m_mesh->IsSkinned())
+    {
+        return;
+    }
+
+    const std::vector<NodeTransformInfo>& nodeTransforms = m_mesh->GetNodeTransforms();
+
+    if (nodeTransforms.empty())
+    {
+        return;
+    }
+
+    if (m_boneRootObject == nullptr)
+    {
+        m_boneRootObject = m_owner->getScene()->createGameObject<GameObject>(m_owner->name + "_Bones");
+    }
+
+    m_boneRootObject->m_transform.SetParent(&m_owner->m_transform);
+
+    if (m_boneObjects.size() != nodeTransforms.size())
+    {
+        m_boneObjects.resize(nodeTransforms.size(), nullptr);
+    }
+
+    for (int nodeIndex = 0; nodeIndex < static_cast<int>(nodeTransforms.size()); nodeIndex++)
+    {
+        const NodeTransformInfo& nodeInfo = nodeTransforms[nodeIndex];
+
+        if (m_boneObjects[nodeIndex] == nullptr)
+        {
+            m_boneObjects[nodeIndex] = m_owner->getScene()->createGameObject<GameObject>(nodeInfo.name);
+        }
+    }
+
+    for (int nodeIndex = 0; nodeIndex < static_cast<int>(nodeTransforms.size()); nodeIndex++)
+    {
+        const NodeTransformInfo& nodeInfo = nodeTransforms[nodeIndex];
+        GameObjectPtr boneObject = m_boneObjects[nodeIndex];
+
+        if (boneObject == nullptr)
+        {
+            continue;
+        }
+
+        boneObject->name = nodeInfo.name;
+
+        if (nodeInfo.parentIndex >= 0)
+        {
+            GameObjectPtr parentBoneObject = m_boneObjects[nodeInfo.parentIndex];
+            if (parentBoneObject != nullptr)
+            {
+                boneObject->m_transform.SetParent(&parentBoneObject->m_transform);
+            }
+        }
+        else
+        {
+            boneObject->m_transform.SetParent(&m_boneRootObject->m_transform);
+        }
+
+        boneObject->m_transform.SetLocalMatrix(nodeInfo.localTransform);
+    }
+
+    m_bonesCreated = true;
+}
+
+bool MeshRenderer::HasValidBoneObjectsForMesh() const
+{
+    if (m_mesh == nullptr || !m_mesh->IsSkinned())
+    {
+        return false;
+    }
+
+    const std::vector<NodeTransformInfo>& nodeTransforms = m_mesh->GetNodeTransforms();
+
+    if (m_boneObjects.size() != nodeTransforms.size())
+    {
+        return false;
+    }
+
+    if (m_boneRootObject == nullptr)
+    {
+        return false;
+    }
+
+    for (int nodeIndex = 0; nodeIndex < static_cast<int>(nodeTransforms.size()); nodeIndex++)
+    {
+        const NodeTransformInfo& nodeInfo = nodeTransforms[nodeIndex];
+        GameObjectPtr boneObject = m_boneObjects[nodeIndex];
+
+        if (boneObject == nullptr)
+        {
+            return false;
+        }
+
+        if (boneObject->name != nodeInfo.name)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void MeshRenderer::DestroyBoneObjects()
+{
+    for (int boneIndex = 0; boneIndex < static_cast<int>(m_boneObjects.size()); boneIndex++)
+    {
+        GameObjectPtr boneObject = m_boneObjects[boneIndex];
+        if (boneObject != nullptr)
+        {
+            m_owner->getScene()->deleteGameObject(boneObject);
+        }
+    }
+
+    m_boneObjects.clear();
+
+    if (m_boneRootObject != nullptr)
+    {
+        m_owner->getScene()->deleteGameObject(m_boneRootObject);
+        m_boneRootObject = nullptr;
+    }
+
+    m_bonesCreated = false;
 }
 
 MeshPtr MeshRenderer::GetMesh() const

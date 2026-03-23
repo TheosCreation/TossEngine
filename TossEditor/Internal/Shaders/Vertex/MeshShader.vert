@@ -21,18 +21,40 @@ out vec3 FragPos;
 void main()
 {
     mat4 skinMatrix = mat4(1.0f);
+    vec4 boneWeights = vertexBoneWeights;
 
     if (u_IsSkinned)
     {
+        float totalWeight =
+            boneWeights.x +
+            boneWeights.y +
+            boneWeights.z +
+            boneWeights.w;
+
+        if (totalWeight > 0.0f)
+        {
+            boneWeights /= totalWeight;
+        }
+
         skinMatrix =
-            u_BoneMatrices[vertexBoneIndices.x] * vertexBoneWeights.x +
-            u_BoneMatrices[vertexBoneIndices.y] * vertexBoneWeights.y +
-            u_BoneMatrices[vertexBoneIndices.z] * vertexBoneWeights.z +
-            u_BoneMatrices[vertexBoneIndices.w] * vertexBoneWeights.w;
+            u_BoneMatrices[vertexBoneIndices.x] * boneWeights.x +
+            u_BoneMatrices[vertexBoneIndices.y] * boneWeights.y +
+            u_BoneMatrices[vertexBoneIndices.z] * boneWeights.z +
+            u_BoneMatrices[vertexBoneIndices.w] * boneWeights.w;
     }
 
     vec4 localPosition = skinMatrix * vec4(vertexPosition, 1.0f);
-    vec3 localNormal = mat3(skinMatrix) * vertexNormal;
+
+    vec3 localNormal;
+    if (u_IsSkinned)
+    {
+        localNormal =
+            normalize(transpose(inverse(mat3(skinMatrix))) * vertexNormal);
+    }
+    else
+    {
+        localNormal = normalize(vertexNormal);
+    }
 
     mat4 finalModelMatrix = modelMatrix;
     if (u_IsInstanced)
@@ -44,6 +66,7 @@ void main()
 
     gl_Position = VPMatrix * worldPosition;
     FragTexcoord = vertexTexCoords;
-    FragNormal = mat3(transpose(inverse(finalModelMatrix))) * localNormal;
+    FragNormal =
+        normalize(mat3(transpose(inverse(finalModelMatrix))) * localNormal);
     FragPos = vec3(worldPosition);
 }

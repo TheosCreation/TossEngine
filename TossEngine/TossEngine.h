@@ -11,6 +11,7 @@ Mail : theo.morris@outlook.co.nz
 
 #pragma once
 #include "All.h"
+#include "SerializationUtils.h"
 
 class ScriptLoader;
 
@@ -187,32 +188,3 @@ private:
     TossEngine() = default;
     ~TossEngine() = default;
 };
-
-// --- JSON support for GameObjectPtr (serialization/deserialization) ---
-
-/**
- * @brief Serializes a GameObjectPtr to JSON.
- */
-inline void to_json(json& j, GameObjectPtr const& gameObject) {
-    if (gameObject) {
-        j = json{ { "id", gameObject->getId() } };
-    }
-    else {
-        j = nullptr;
-    }
-}
-
-/**
- * @brief Deserializes a GameObjectPtr from JSON.
- */
-inline void from_json(json const& j, GameObjectPtr& gameObject)
-{
-    if (j.contains("id") && !j["id"].is_null())
-    {
-        size_t id = j["id"].get<size_t>();
-        ScenePtr scene = TossEngine::GetInstance().getCurrentScene();
-        if (scene && scene->m_gameObjects.count(id)) {
-            gameObject = scene->m_gameObjects.at(id);
-        }
-    }
-}
